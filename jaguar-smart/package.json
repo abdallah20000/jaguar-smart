@@ -1,0 +1,12 @@
+{
+  "name": "jaguar-smart-webhook",
+  "version": "1.0.0",
+  "description": "Jaguar Smart WhatsApp auto-reply webhook",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
