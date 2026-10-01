@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Tuya Suez CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --ink:#000; --paper:#fff; --line:#e3e3e3; --soft:#f5f5f5; --muted:#6f6f6f;
+  --accent:#F25802; --accent-dark:#c24600; --cream:#FEF5E7; --red:#c62828; --amber:#b26a00;
+  --font:"IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.55;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--ink)}
+.login-box{width:100%;max-width:360px;color:#fff}
+.brand{font-weight:700;font-size:44px;letter-spacing:1px;color:var(--accent);line-height:1;direction:ltr;text-align:right}
+.login-box p{color:#aaa;margin:8px 0 28px}
+.login-box label{display:block;font-size:13px;color:#bbb;margin:14px 0 6px}
+.login-box input{width:100%;padding:12px 14px;border:1px solid #333;background:#111;color:#fff;border-radius:6px}
+.login-box button{width:100%;margin-top:22px;padding:12px;border:0;border-radius:6px;background:var(--accent);color:#fff;font-weight:700}
+.login-box .back{display:inline-block;margin-top:18px;color:#aaa;font-size:13px}
+.err{color:#ff8a80;font-size:13px;margin-top:12px;min-height:18px}
+
+/* top */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:5}
+header .brand{font-size:24px}
+header .who{font-size:13px;color:#bbb;display:flex;gap:12px;align-items:center}
+.ghost{background:transparent;border:1px solid #444;color:#fff;border-radius:6px;padding:6px 12px;font-size:13px}
+main{max-width:1180px;margin:0 auto;padding:20px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tabs button{border:0;background:none;padding:10px 16px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* products */
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;direction:ltr;unicode-bidi:isolate}
+.off{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:1px 8px;border-radius:4px;margin-inline-start:6px}
+tr.inactive td{color:var(--muted)}
+.edit-btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 12px;font-size:13px}
+.edit-btn:hover{border-color:var(--ink)}
+.price-in{width:110px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;text-align:left}
+.price-in:hover{border-color:#999}
+.price-in.saving{opacity:.5}
+.price-in.saved{border-color:var(--accent);background:#fef5e7}
+.price-in.missing{border-color:var(--red)}
+.f label.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);margin:0}
+.f label.check input{width:18px;height:18px}
+
+/* quotations list (inside lead drawer) */
+.q-list{list-style:none;margin:0;padding:0}
+.q-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.q-list li:hover{background:#fafafa}
+.q-list .num{font-weight:700;direction:ltr;unicode-bidi:isolate}
+.q-st{font-size:11px;padding:1px 8px;border-radius:20px;border:1px solid var(--line)}
+.q-st.sent{border-color:var(--ink)}
+.q-st.accepted{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.q-st.rejected{color:var(--muted);text-decoration:line-through}
+.q-st.del{border-color:var(--red);color:var(--red);font-weight:600}
+.q-lock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--ink);border-inline-start-width:4px;background:var(--soft);padding:12px 14px;border-radius:6px;margin-bottom:16px}
+.q-lock span{flex:1 1 260px;font-size:14px}
+.q-lock.req{border-color:var(--red)}
+.qv input:disabled,.qv select:disabled,.qv textarea:disabled{background:var(--soft);color:#555;border-color:var(--line);cursor:not-allowed}
+
+/* quotation editor (full screen) */
+.qv{position:fixed;inset:0;background:#fff;z-index:12;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.qv-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 20px;background:var(--ink);color:#fff}
+.qv-head h2{margin:0;font-size:17px}
+.qv-head .x{color:#fff}
+.qv-body{overflow-y:auto;flex:1;padding:20px;max-width:1000px;width:100%;margin:0 auto}
+.qv-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.picker{position:relative;margin-bottom:10px;display:flex;gap:8px}
+.picker input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--ink);border-radius:6px}
+.picker select{padding:10px 8px;border:1px solid var(--ink);border-radius:6px;background:#fff;max-width:38%}
+.picker .line-btn{white-space:nowrap}
+.line-btn{background:#fff;border:1px solid var(--ink);border-radius:6px;padding:9px 14px;font-weight:600}
+.pick-res{position:absolute;top:100%;inset-inline:0;background:#fff;border:1px solid var(--ink);border-top:0;max-height:300px;overflow-y:auto;z-index:3;border-radius:0 0 6px 6px}
+.pick-res button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:right;border:0;border-top:1px solid var(--line);background:#fff;padding:9px 12px}
+.pick-res button:hover,.pick-res button:focus{background:var(--soft)}
+.pick-res .p-name{font-weight:600}
+.pick-res .p-price{direction:ltr;white-space:nowrap}
+.q-items{width:100%;border-collapse:collapse;min-width:0}
+.q-items th{position:static}
+.q-items td{padding:6px 4px;vertical-align:top}
+.q-items input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.q-items .c-room{width:16%}.q-items .c-qty{width:9%}.q-items .c-price{width:15%}.q-items .c-total{width:14%;text-align:left;padding-top:13px;font-weight:600;white-space:nowrap}
+.q-items .c-del{width:34px}
+.q-items .c-disc{width:9%}
+.q-items .del{border:0;background:none;color:var(--red);font-size:20px;line-height:1;padding:6px}
+.q-items .desc{font-size:12px;color:var(--muted);margin-top:4px}
+.no-price{border-color:var(--red)!important}
+.q-totals{margin:18px 0 0 auto;width:min(360px,100%)}
+.q-totals div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.q-totals input{width:70px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;text-align:center}
+.q-totals .grand{font-size:20px;font-weight:700;border-bottom:2px solid var(--ink)}
+.qv-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:#fff}
+@media (max-width:720px){
+  .qv-meta{grid-template-columns:1fr 1fr}
+  .picker{flex-wrap:wrap}
+  .picker select{flex:1 1 100%;max-width:none}
+  .q-items thead{display:none}
+  .q-items tr{display:grid;grid-template-columns:1fr 1.3fr 1fr 34px;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .q-items td{padding:0;width:auto!important}
+  .q-items .c-name{grid-column:1/-1}
+  .q-items .c-room{grid-column:1/-1}
+  .q-items .c-total{grid-column:1/-2;padding-top:4px}
+}
+
+/* PDF template — rendered off-screen, captured by html2pdf (Odoo-style quotation layout) */
+#pdfHolder{position:fixed;left:-10000px;top:0}
+#pdfDoc{direction:ltr;text-align:left;width:794px;background:#fff;color:#1f1f1f;font-family:"Roboto","Helvetica Neue",Arial,sans-serif;font-size:12.5px;line-height:1.45;padding:0 0 10px}
+#pdfDoc .d-band{display:flex;justify-content:space-between;align-items:flex-start;background:#fef5e7;padding:26px 34px 46px}
+#pdfDoc .d-band img{height:84px;width:84px;border-radius:12px;display:block}
+#pdfDoc .d-mail{color:#1a3fd6;font-weight:700;font-size:12px;margin-top:10px}
+#pdfDoc .d-phone{font-weight:700;font-size:12px;margin-top:2px}
+#pdfDoc .d-addr{text-align:right;font-size:12.5px;line-height:1.55;padding-top:18px}
+#pdfDoc .d-titlerow{display:flex;justify-content:flex-end;margin-top:-34px;padding-right:34px}
+#pdfDoc .d-title{position:relative;background:#fff;color:#e05200;font-size:24px;font-weight:500;padding:4px 0 2px 26px}
+#pdfDoc .d-title::before{content:"";position:absolute;left:-22px;top:0;bottom:0;width:44px;background:#fff;transform:skewX(-42deg)}
+#pdfDoc .d-body{padding:0 34px}
+#pdfDoc .d-cust{margin:18px 0 14px}
+#pdfDoc .d-info{display:flex;background:#fdf1e2;border-radius:8px;padding:10px 6px 9px;margin-bottom:18px}
+#pdfDoc .d-info div{flex:1;padding:0 6px}
+#pdfDoc .d-info b{display:block;color:#e05200;font-weight:500;font-size:12px}
+#pdfDoc .d-tbl{border:1px solid #e05200;border-radius:8px;overflow:hidden}
+#pdfDoc table{width:100%;min-width:0;border-collapse:collapse}
+#pdfDoc th{background:#e05200;color:#fff;font-weight:500;font-size:12.5px;padding:9px 7px;text-align:right;border:0}
+#pdfDoc th:first-child{text-align:left}
+#pdfDoc td{padding:9px 7px;border-top:1px solid #a9adc1;border-left:1px solid #a9adc1;text-align:right;vertical-align:top;white-space:nowrap}
+#pdfDoc td:first-child{border-left:0;text-align:left;white-space:normal;width:100%}
+#pdfDoc td.amt{background:#f1f2f5}
+#pdfDoc tr{page-break-inside:avoid}
+#pdfDoc .room-row td{background:#fef8f0;font-weight:700;text-align:left;color:#e05200}
+#pdfDoc .d-sums{display:flex;flex-direction:column;align-items:flex-end;margin-top:0}
+#pdfDoc .d-sums .s{display:flex;gap:18px;padding:5px 10px;font-size:12px;color:#444}
+#pdfDoc .d-total{display:flex;background:#e05200;color:#fff;font-weight:700;border-radius:0 0 8px 8px;margin-top:0}
+#pdfDoc .d-total span{padding:8px 10px}
+#pdfDoc .d-total span+span{border-left:1px solid rgba(255,255,255,.35)}
+#pdfDoc .d-terms{margin-top:20px;white-space:pre-wrap;font-size:9px;line-height:1.7}
+#pdfDoc .d-note{margin-top:12px;white-space:pre-wrap;font-size:9px;color:#333}
+
+/* pipeline bar */
+.pipe{display:flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.pipe button{flex:1;min-width:0;border:0;border-inline-start:1px solid var(--line);background:var(--paper);padding:12px 8px;text-align:right}
+.pipe button:first-child{border-inline-start:0}
+.pipe b{display:block;font-size:26px;line-height:1.1}
+.pipe span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.pipe button.on{background:var(--ink);color:#fff}
+.pipe button.on span{color:#ccc}
+
+/* due strip */
+.due{border-inline-start:4px solid var(--accent);background:var(--soft);padding:12px 16px;margin-bottom:18px;border-radius:0 6px 6px 0}
+.due h3{margin:0 0 6px;font-size:15px}
+.due ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.due li button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 12px;font-size:13px}
+.due li.late button{border-color:var(--red);color:var(--red)}
+
+/* toolbar */
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tools input,.tools select{padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.tools input{flex:1;min-width:200px}
+.primary{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:10px 18px;font-weight:600}
+.primary:hover{background:#222}
+
+/* table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:right;padding:10px 12px;background:var(--soft);border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.row{cursor:pointer}
+tr.row:hover td{background:#fafafa}
+.name{font-weight:600}
+.sub{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+.st-new{border-color:var(--ink)}
+.st-won{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.st-lost{color:var(--muted);text-decoration:line-through}
+.st-quotation_sent,.st-negotiation{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dealer{font-size:11px;background:var(--soft);padding:1px 8px;border-radius:4px;margin-inline-start:6px}
+.late-date{color:var(--red);font-weight:600}
+.today-date{color:var(--accent-dark);font-weight:600}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.icon-link{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:6px;text-decoration:none;color:var(--ink);font-size:14px}
+.icon-link:hover{border-color:var(--ink)}
+
+/* drawer */
+.shade{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-start:0;width:min(520px,100%);background:#fff;z-index:11;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.drawer-head h2{margin:0;font-size:18px}
+.x{border:0;background:none;font-size:24px;line-height:1}
+.drawer-body{overflow-y:auto;padding:20px;flex:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid .full{grid-column:1/-1}
+.f label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.f textarea{min-height:70px;resize:vertical}
+.actions{display:flex;gap:10px;margin-top:16px;align-items:center}
+.gcal{border:1px solid var(--ink);border-radius:6px;padding:9px 14px;text-decoration:none;color:var(--ink);font-size:14px}
+.gcal:hover{background:var(--soft)}
+.danger{background:none;border:0;color:var(--red);font-size:13px;margin-inline-start:auto}
+.section-t{font-size:15px;font-weight:700;margin:28px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.fu-add textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;min-height:60px}
+.fu-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.fu-row .f{flex:1;min-width:140px}
+.timeline{list-style:none;margin:16px 0 0;padding:0}
+.timeline li{position:relative;padding:0 18px 16px 0;border-inline-start:0}
+.timeline li::before{content:"";position:absolute;right:3px;top:8px;bottom:-8px;width:1px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.timeline li::after{content:"";position:absolute;right:0;top:6px;width:7px;height:7px;border-radius:50%;background:var(--ink)}
+.timeline .meta{font-size:12px;color:var(--muted)}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;z-index:20;font-size:14px}
+
+@media (max-width:720px){
+  /* rows become cards on phones */
+  #tabLeads .tbl-wrap,#tabProducts .tbl-wrap{border:0;overflow:visible}
+  #tabLeads table,#tabProducts table{min-width:0}
+  #tabLeads thead,#tabProducts thead{display:none}
+  #tabLeads tbody,#tabLeads tr,#tabLeads td,#tabProducts tbody,#tabProducts tr,#tabProducts td{display:block}
+  #tabLeads tr.row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+  #tabLeads tr.row td{padding:0;border:0;font-size:13px}
+  #tabLeads tr.row td:nth-child(1){grid-column:1;grid-row:1;font-size:15px}
+  #tabLeads tr.row td:nth-child(4){grid-column:2;grid-row:1}
+  #tabLeads tr.row td:nth-child(2){grid-column:1;grid-row:2;color:var(--muted)}
+  #tabLeads tr.row td:nth-child(6){grid-column:2;grid-row:2;text-align:left}
+  #tabLeads tr.row td:nth-child(3),#tabLeads tr.row td:nth-child(5),#tabLeads tr.row td:nth-child(7){display:none}
+  #tabLeads tr.row td:nth-child(8){grid-column:1/-1;grid-row:3;margin-top:6px}
+  #tabProducts tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+  #tabProducts tbody td{padding:0;border:0}
+  #tabProducts tbody td:nth-child(2){grid-column:1/-1;grid-row:1}
+  #tabProducts tbody td:nth-child(1),#tabProducts tbody td:nth-child(3){font-size:12px;color:var(--muted)}
+  #tabProducts tbody td.empty{grid-column:1/-1}
+  #tabLeads td.empty{border:1px solid var(--line);border-radius:8px}
+  main{padding:14px}
+  .pipe{overflow-x:auto}
+  .pipe button{min-width:92px}
+  .grid{grid-template-columns:1fr}
+  header .who .email{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .drawer{animation:slide .18s ease-out}
+  @keyframes slide{from{transform:translateX(-24px);opacity:.6}to{transform:none;opacity:1}}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <form class="login-box" id="loginForm">
+    <img src="/tuya-suez/icon.png" alt="" width="72" height="72" style="border-radius:16px;margin-bottom:14px">
+    <div class="brand">tuya suez</div>
+    <p>دخول فريق العمل</p>
+    <label for="email">الإيميل</label>
+    <input id="email" type="email" autocomplete="username" required dir="ltr">
+    <label for="password">الباسورد</label>
+    <input id="password" type="password" autocomplete="current-password" required dir="ltr">
+    <button type="submit">دخول</button>
+    <div class="err" id="loginErr"></div>
+    <a class="back" href="/tuya-suez/">→ رجوع لموقع Tuya Suez</a>
+  </form>
+</section>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <header>
+    <div class="brand"><img src="/tuya-suez/icon.png" alt="" width="30" height="30" style="border-radius:7px;vertical-align:-7px;margin-inline-end:8px">tuya suez <span style="font-size:14px;color:#fff;font-weight:500">CRM</span></div>
+    <div class="who"><a href="/tuya-suez/inventory.html" class="admin-only hidden" style="color:#fff">المخزن</a><a href="/tuya-suez/installs.html" class="admin-only hidden" style="color:#fff">التركيبات</a><span class="email" id="userEmail" dir="ltr"></span><button class="ghost" id="logout">خروج</button></div>
+  </header>
+  <main>
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="tabLeads">العملاء</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="tabProducts">المنتجات</button>
+    </nav>
+
+    <section id="tabProducts" class="hidden">
+      <div class="tools">
+        <input id="pq" type="search" placeholder="دوّر باسم المنتج أو الكود">
+        <select id="pCat"><option value="">كل الأقسام</option></select>
+        <button class="primary hidden" id="newProduct">+ منتج جديد</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>الكود</th><th>المنتج</th><th>القسم</th><th>سعر العميل</th><th>سعر الديلر</th><th class="p-admin hidden"></th></tr></thead>
+          <tbody id="pRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tabLeads">
+    <div class="pipe" id="pipe"></div>
+    <div class="due hidden" id="due"><h3 id="dueTitle"></h3><ul id="dueList"></ul></div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="دوّر بالاسم، الموبايل أو المنطقة">
+      <select id="fType">
+        <option value="">كل العملاء</option>
+        <option value="end_customer">عميل نهائي</option>
+        <option value="dealer">ديلر</option>
+      </select>
+      <select id="fSource"><option value="">كل المصادر</option></select>
+      <button class="primary" id="newLead">+ عميل جديد</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>العميل</th><th>المنطقة</th><th>المصدر</th><th>الحالة</th><th>الميزانية</th><th>المتابعة الجاية</th><th>مسؤول</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    </section>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="shade hidden" id="shade"></div>
+<aside class="drawer hidden" id="drawer" aria-modal="true" role="dialog">
+  <div class="drawer-head"><h2 id="dTitle">عميل جديد</h2><button class="x" id="dClose" aria-label="إغلاق">×</button></div>
+  <div class="drawer-body">
+    <form id="leadForm">
+      <div class="grid">
+        <div class="f"><label>الاسم *</label><input name="name" required></div>
+        <div class="f"><label>الموبايل *</label><input name="phone" required dir="ltr" inputmode="tel"></div>
+        <div class="f"><label>المنطقة / الكمبوند</label><input name="area" list="areas"></div>
+        <div class="f"><label>جه منين</label><select name="source" id="sourceSel"></select></div>
+        <div class="f"><label>النوع</label>
+          <select name="client_type"><option value="end_customer">عميل نهائي</option><option value="dealer">ديلر</option></select></div>
+        <div class="f"><label>الحالة</label><select name="status" id="statusSel"></select></div>
+        <div class="f"><label>الميزانية (جنيه)</label><input name="budget" type="number" min="0" step="1000" dir="ltr"></div>
+        <div class="f"><label>مسؤول عنه</label><input name="assigned_to" list="team"></div>
+        <div class="f"><label>ميعاد المتابعة الجاية</label><input name="next_follow_up" type="date"></div>
+        <div class="f full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit" id="saveBtn">حفظ</button>
+        <a class="gcal hidden" id="gcalBtn" target="_blank" rel="noopener">📅 ضيف المتابعة لجوجل كالندر</a>
+        <button type="button" class="danger hidden" id="delBtn">مسح العميل</button>
+      </div>
+    </form>
+
+    <div id="fuBlock" class="hidden">
+      <div class="section-t">عروض الأسعار</div>
+      <button type="button" class="line-btn" id="newQuote">+ عرض سعر جديد</button>
+      <ul class="q-list" id="qList"></ul>
+
+      <div class="section-t">سجل المتابعة</div>
+      <form class="fu-add" id="fuForm">
+        <textarea name="note" required placeholder="حصل إيه؟ مثلاً: كلمته، طلب زيارة يوم الخميس"></textarea>
+        <div class="fu-row">
+          <div class="f"><label>غيّر الحالة إلى</label><select name="status" id="fuStatus"><option value="">بدون تغيير</option></select></div>
+          <div class="f"><label>المتابعة الجاية</label><input name="next" type="date"></div>
+        </div>
+        <div class="actions"><button class="primary" type="submit">سجّل المتابعة</button></div>
+      </form>
+      <ul class="timeline" id="timeline"></ul>
+    </div>
+  </div>
+</aside>
+
+<!-- QUOTATION EDITOR -->
+<section class="qv hidden" id="qv" role="dialog" aria-modal="true">
+  <div class="qv-head"><h2 id="qvTitle">عرض سعر جديد</h2><button class="x" id="qvClose" aria-label="إغلاق">×</button></div>
+  <div class="qv-body">
+    <div class="q-lock hidden" id="qLock"><span id="qLockMsg"></span>
+      <button type="button" class="line-btn hidden" id="qReqDel">🗑 اطلب من الأدمن يمسحه</button></div>
+    <form id="qForm" autocomplete="off">
+      <div class="qv-meta">
+        <div class="f"><label>العميل</label><input name="client_name" required></div>
+        <div class="f"><label>نوع الأسعار</label>
+          <select name="client_type"><option value="end_customer">سعر العميل</option><option value="dealer">سعر الديلر</option></select></div>
+        <div class="f"><label>التاريخ</label><input name="quote_date" type="date" required></div>
+        <div class="f"><label>ساري لحد</label><input name="valid_until" type="date"></div>
+      </div>
+
+      <div class="picker">
+        <select id="qBrand" aria-label="البراند"><option value="">كل البراندات</option></select>
+        <input id="pick" type="search" placeholder="ضيف منتج: اكتب الاسم أو الكود…" aria-label="بحث عن منتج">
+        <button type="button" class="line-btn" id="addCustom">+ بند يدوي</button>
+        <div class="pick-res hidden" id="pickRes"></div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="q-items">
+          <thead><tr><th class="c-name">البند</th><th class="c-room">المكان</th><th class="c-qty">العدد</th><th class="c-price">سعر الوحدة</th><th class="c-disc">خصم %</th><th class="c-total">الإجمالي</th><th class="c-del"></th></tr></thead>
+          <tbody id="qRows"></tbody>
+        </table>
+      </div>
+
+      <div class="q-totals">
+        <div><span>إجمالي المنتجات</span><b id="tSub" dir="ltr">0</b></div>
+        <div><span>تركيب وبرمجة <input id="tInstPct" type="number" min="0" step="any" dir="ltr"> %</span><b id="tInst" dir="ltr">0</b></div>
+        <div><span>خصم <input id="tDiscPct" type="number" min="0" max="100" step="any" dir="ltr"> %</span><b id="tDisc" dir="ltr">0</b></div>
+        <div class="grand"><span>الإجمالي</span><b id="tTotal" dir="ltr">0</b></div>
+      </div>
+
+      <div class="grid" style="margin-top:18px">
+        <div class="f"><label>الحالة</label>
+          <select name="status"><option value="draft">مسودة</option><option value="sent">اتبعت</option><option value="accepted">اتقبل ✓</option><option value="rejected">اترفض</option></select></div>
+        <div class="f"></div>
+        <div class="f full"><label>ملاحظات للعميل</label><textarea name="notes"></textarea></div>
+        <div class="f full"><label>الشروط</label><textarea name="terms"></textarea></div>
+      </div>
+    </form>
+  </div>
+  <div class="qv-foot">
+    <button class="primary" type="submit" form="qForm" id="qSave">حفظ</button>
+    <button class="line-btn" type="button" id="qPdf">📄 PDF وابعته</button>
+    <button class="line-btn hidden" type="button" id="qCopy">عرض جديد بنفس البنود</button>
+    <button type="button" class="danger hidden" id="qDel">مسح العرض</button>
+  </div>
+</section>
+<datalist id="brandList"></datalist>
+<datalist id="rooms">
+  <option>الصالة</option><option>الريسبشن</option><option>المطبخ</option><option>غرفة النوم الرئيسية</option>
+  <option>غرفة نوم 2</option><option>غرفة نوم 3</option><option>غرفة الأطفال</option><option>الحمام</option>
+  <option>المدخل</option><option>الجنينة</option><option>الروف</option><option>عام</option>
+</datalist>
+
+<!-- PDF TEMPLATE (filled by JS, captured off-screen) -->
+<div id="pdfHolder" aria-hidden="true"><div id="pdfDoc" dir="ltr"></div></div>
+
+<!-- PRODUCT DRAWER (admin only) -->
+<div class="shade hidden" id="pShade"></div>
+<aside class="drawer hidden" id="pDrawer" aria-modal="true" role="dialog">
+  <div class="drawer-head"><h2 id="pTitle">منتج جديد</h2><button class="x" id="pClose" aria-label="إغلاق">×</button></div>
+  <div class="drawer-body">
+    <form id="productForm">
+      <div class="grid">
+        <div class="f"><label>الكود</label><input name="code" dir="ltr"></div>
+        <div class="f"><label>القسم</label><select name="category" id="pCatSel"></select></div>
+        <div class="f full"><label>اسم المنتج *</label><input name="name" required></div>
+        <div class="f full"><label>الوصف</label><textarea name="description"></textarea></div>
+        <div class="f"><label>البراند</label><input name="brand" dir="auto" list="brandList"></div>
+        <div class="f"><label>سعر القائمة من المورد (للحساب بس، مش بيتحفظ)</label><input id="listPrice" type="number" min="0" step="any" inputmode="decimal" dir="ltr"></div>
+        <div class="f full sub" id="pricingHint"></div>
+        <div class="f"><label>سعر العميل (جنيه)</label><input name="end_user_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr"></div>
+        <div class="f"><label>سعر الديلر (جنيه)</label><input name="dealer_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr"></div>
+        <div class="f full"><label class="check"><input name="active" type="checkbox" checked> متاح (Active)</label></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit" id="pSaveBtn">حفظ</button></div>
+    </form>
+  </div>
+</aside>
+
+<datalist id="areas">
+  <option>السويس</option><option>حي الأربعين</option><option>حي فيصل</option><option>حي الجناين</option>
+  <option>حي عتاقة</option><option>حي السلام</option><option>بورتوفيق</option><option>العين السخنة</option>
+</datalist>
+<datalist id="team"><option>عمر</option><option>أحمد مصطفى</option></datalist>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+const SUPABASE_URL = "https://snrsfpprlynixotjipmo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const STATUSES = [
+  ["new","جديد"],["contacted","اتكلمنا"],["site_visit","زيارة موقع"],
+  ["quotation_sent","عرض سعر اتبعت"],["negotiation","تفاوض"],["won","اتقفل ✓"],["lost","خسرناه"]
+];
+const SOURCES = [
+  ["instagram","Instagram"],["facebook","Facebook"],["whatsapp","WhatsApp"],["referral","ترشيح"],
+  ["field_visit","زيارة ميدانية"],["website","الموقع"],["dealer","ديلر"],["other","أخرى"]
+];
+const sLabel = v => (STATUSES.find(s=>s[0]===v)||[,v||"—"])[1];
+const srcLabel = v => (SOURCES.find(s=>s[0]===v)||[,v||"—"])[1];
+
+let leads = [], user = null, current = null, statusFilter = "";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const todayStr = () => new Date().toLocaleDateString("en-CA");
+const fmtMoney = n => n ? Number(n).toLocaleString("en-US") : "—";
+const fmtDate = d => d ? new Date(d).toLocaleDateString("ar-EG",{day:"numeric",month:"short"}) : "—";
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("hidden");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add("hidden"),2600)}
+function gcalLink(l){
+  if(!l.next_follow_up) return null;
+  const d=l.next_follow_up.replace(/-/g,"");
+  const n=new Date(l.next_follow_up+"T00:00:00"); n.setDate(n.getDate()+1);
+  const e=n.toLocaleDateString("en-CA").replace(/-/g,"");
+  const details=[`موبايل: ${l.phone}`,`واتساب: ${waLink(l.phone)}`,l.area&&`المنطقة: ${l.area}`,`الحالة: ${sLabel(l.status)}`,l.budget&&`الميزانية: ${fmtMoney(l.budget)} جنيه`,l.notes&&`ملاحظات: ${l.notes}`].filter(Boolean).join("\n");
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE"+
+    "&text="+encodeURIComponent("متابعة Tuya Suez: "+l.name)+"&dates="+d+"/"+e+"&details="+encodeURIComponent(details);
+}
+function setGcal(l){const a=$("gcalBtn"),u=l&&gcalLink(l);a.classList.toggle("hidden",!u);if(u)a.href=u}
+function waLink(p){let n=String(p||"").replace(/\D/g,"");if(n.startsWith("0"))n="2"+n;return "https://wa.me/"+n}
+
+// fill selects
+const opt = (arr) => arr.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+$("statusSel").innerHTML = opt(STATUSES);
+$("fuStatus").innerHTML += opt(STATUSES);
+$("sourceSel").innerHTML = opt(SOURCES);
+$("fSource").innerHTML += opt(SOURCES);
+
+// ---------- AUTH ----------
+$("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault(); $("loginErr").textContent="";
+  const { error } = await sb.auth.signInWithPassword({ email:$("email").value.trim(), password:$("password").value });
+  if(error) $("loginErr").textContent = "الإيميل أو الباسورد غلط";
+});
+$("logout").onclick = ()=> sb.auth.signOut();
+// supabase-js can deadlock if the auth callback awaits other supabase calls, so defer
+sb.auth.onAuthStateChange((_ev, session)=>{ setTimeout(()=>onSession(session), 0); });
+async function onSession(session){
+  user = session?.user || null;
+  let role = null;
+  if(user){
+    ({ data: role } = await sb.rpc("my_role"));
+    const home = { inventory:"/tuya-suez/inventory.html", installs:"/tuya-suez/installs.html" }[role];
+    if(home){ location.replace(home); return; }
+    if(role !== "admin" && role !== "crm"){
+      await sb.auth.signOut();
+      $("loginErr").textContent = "الحساب ده لسه مش متفعّل — كلّم الأدمن";
+      return;
+    }
+  }
+  document.querySelectorAll(".admin-only").forEach(a=>a.classList.toggle("hidden", role !== "admin"));
+  isAdmin = role === "admin"; productsLoaded = false;
+  $("newProduct").classList.toggle("hidden", !isAdmin);
+  document.querySelectorAll(".p-admin").forEach(el=>el.classList.toggle("hidden", !isAdmin));
+  $("login").classList.toggle("hidden", !!user);
+  $("app").classList.toggle("hidden", !user);
+  if(user){ $("userEmail").textContent = user.email; loadLeads(); }
+}
+
+// ---------- DATA ----------
+async function loadLeads(){
+  const { data, error } = await sb.from("leads").select("*").order("created_at",{ascending:false});
+  if(error){ toast("مشكلة في تحميل العملاء"); console.error(error); return; }
+  leads = data; render();
+}
+
+function render(){
+  // pipeline
+  const counts = Object.fromEntries(STATUSES.map(([v])=>[v,0]));
+  leads.forEach(l=>{ if(counts[l.status]!==undefined) counts[l.status]++; });
+  $("pipe").innerHTML =
+    `<button class="${statusFilter===""?"on":""}" data-s=""><b>${leads.length}</b><span>الكل</span></button>` +
+    STATUSES.map(([v,l])=>`<button class="${statusFilter===v?"on":""}" data-s="${v}"><b>${counts[v]}</b><span>${l}</span></button>`).join("");
+  $("pipe").querySelectorAll("button").forEach(b=>b.onclick=()=>{statusFilter=b.dataset.s;render()});
+
+  // due today / overdue
+  const t = todayStr();
+  const due = leads.filter(l=>l.next_follow_up && l.next_follow_up<=t && !["won","lost"].includes(l.status))
+                   .sort((a,b)=>a.next_follow_up.localeCompare(b.next_follow_up));
+  $("due").classList.toggle("hidden", !due.length);
+  $("dueTitle").textContent = `محتاجين متابعة النهارده (${due.length})`;
+  $("dueList").innerHTML = due.map(l=>`<li class="${l.next_follow_up<t?"late":""}"><button data-id="${l.id}">${esc(l.name)}${l.next_follow_up<t?" · متأخر":""}</button></li>`).join("");
+  $("dueList").querySelectorAll("button").forEach(b=>b.onclick=()=>openLead(b.dataset.id));
+
+  // table
+  const q = $("q").value.trim().toLowerCase(), ft=$("fType").value, fs=$("fSource").value;
+  const list = leads.filter(l=>
+    (!statusFilter || l.status===statusFilter) && (!ft || l.client_type===ft) && (!fs || l.source===fs) &&
+    (!q || [l.name,l.phone,l.area].some(x=>String(x||"").toLowerCase().includes(q))));
+  if(!list.length){ $("rows").innerHTML = `<tr><td colspan="8" class="empty">${leads.length?"مفيش نتايج بالفلتر ده":"لسه مفيش عملاء — اضغط «عميل جديد» وابدأ"}</td></tr>`; return; }
+  $("rows").innerHTML = list.map(l=>{
+    const d=l.next_follow_up, cls = !d||["won","lost"].includes(l.status) ? "" : d<t ? "late-date" : d===t ? "today-date" : "";
+    return `<tr class="row" data-id="${l.id}">
+      <td><div class="name">${esc(l.name)}${l.client_type==="dealer"?'<span class="dealer">ديلر</span>':""}</div><div class="sub" dir="ltr" style="text-align:right">${esc(l.phone)}</div></td>
+      <td>${esc(l.area||"—")}</td>
+      <td>${esc(srcLabel(l.source))}</td>
+      <td><span class="tag st-${esc(l.status)}">${esc(sLabel(l.status))}</span></td>
+      <td dir="ltr" style="text-align:right">${fmtMoney(l.budget)}</td>
+      <td class="${cls}">${fmtDate(d)}</td>
+      <td>${esc(l.assigned_to||"—")}</td>
+      <td style="white-space:nowrap"><a class="icon-link" href="tel:${esc(l.phone)}" title="اتصال" onclick="event.stopPropagation()">☎</a>
+          <a class="icon-link" href="${waLink(l.phone)}" target="_blank" rel="noopener" title="واتساب" onclick="event.stopPropagation()">✆</a></td>
+    </tr>`;}).join("");
+  $("rows").querySelectorAll("tr.row").forEach(r=>r.onclick=()=>openLead(r.dataset.id));
+}
+["q","fType","fSource"].forEach(id=>$(id).addEventListener("input",render));
+
+// ---------- DRAWER ----------
+function showDrawer(on){ $("drawer").classList.toggle("hidden",!on); $("shade").classList.toggle("hidden",!on); }
+$("dClose").onclick = $("shade").onclick = ()=>showDrawer(false);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") showDrawer(false); });
+
+$("newLead").onclick = ()=>{
+  current=null; const f=$("leadForm"); f.reset(); setGcal(null);
+  f.status.value="new"; f.source.value="instagram";
+  $("dTitle").textContent="عميل جديد"; $("delBtn").classList.add("hidden"); $("fuBlock").classList.add("hidden");
+  showDrawer(true); f.name.focus();
+};
+
+async function openLead(id){
+  current = leads.find(l=>l.id===id); if(!current) return;
+  const f=$("leadForm");
+  ["name","phone","area","source","client_type","status","budget","assigned_to","next_follow_up","notes"].forEach(k=>f[k].value = current[k] ?? "");
+  $("dTitle").textContent=current.name; $("delBtn").classList.toggle("hidden", !isAdmin); $("fuBlock").classList.remove("hidden");
+  $("fuForm").reset(); setGcal(current); showDrawer(true); loadFollowUps(); loadQuotes();
+}
+
+$("leadForm").addEventListener("submit", async e=>{
+  e.preventDefault(); const f=e.target;
+  const row = {
+    name:f.name.value.trim(), phone:f.phone.value.trim(), area:f.area.value.trim()||null,
+    source:f.source.value, client_type:f.client_type.value, status:f.status.value,
+    budget:f.budget.value?Number(f.budget.value):null, assigned_to:f.assigned_to.value.trim()||null,
+    next_follow_up:f.next_follow_up.value||null, notes:f.notes.value.trim()||null
+  };
+  $("saveBtn").disabled=true;
+  const res = current ? await sb.from("leads").update(row).eq("id",current.id).select().single()
+                      : await sb.from("leads").insert(row).select().single();
+  $("saveBtn").disabled=false;
+  if(res.error){ toast("الحفظ فشل"); console.error(res.error); return; }
+  toast(current?"اتعدل ✓":"العميل اتضاف ✓");
+  await loadLeads(); openLead(res.data.id);
+});
+
+$("delBtn").onclick = async ()=>{
+  if(!current || !confirm(`مسح ${current.name} وكل متابعاته؟`)) return;
+  const { error } = await sb.from("leads").delete().eq("id",current.id);
+  if(error){ toast("المسح فشل"); return; }
+  showDrawer(false); toast("اتمسح"); loadLeads();
+};
+
+// ---------- FOLLOW-UPS ----------
+async function loadFollowUps(){
+  $("timeline").innerHTML = `<li class="meta">بيحمّل…</li>`;
+  const { data, error } = await sb.from("follow_ups").select("*").eq("lead_id",current.id).order("created_at",{ascending:false});
+  if(error){ $("timeline").innerHTML=""; toast("مشكلة في تحميل المتابعات"); return; }
+  $("timeline").innerHTML = data.length ? data.map(x=>`<li><div>${esc(x.note)}</div>
+    <div class="meta">${new Date(x.created_at).toLocaleString("ar-EG",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})} · ${esc(x.done_by||"")}</div></li>`).join("")
+    : `<li class="meta">لسه مفيش متابعات</li>`;
+}
+
+$("fuForm").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!current) return; const f=e.target;
+  const { error } = await sb.from("follow_ups").insert({ lead_id:current.id, note:f.note.value.trim(), done_by:user.email });
+  if(error){ toast("التسجيل فشل"); return; }
+  const upd = {};
+  if(f.status.value) upd.status=f.status.value;
+  if(f.next.value) upd.next_follow_up=f.next.value;
+  if(Object.keys(upd).length) await sb.from("leads").update(upd).eq("id",current.id);
+  toast("المتابعة اتسجلت ✓"); await loadLeads(); openLead(current.id);
+});
+
+// ---------- TABS ----------
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>{
+    const on = x===b; x.setAttribute("aria-selected", on); $(x.dataset.tab).classList.toggle("hidden", !on);
+  });
+  if(b.dataset.tab==="tabProducts") productsLoaded ? renderProducts() : loadProducts();
+});
+
+// ---------- PRODUCTS ----------
+// only these columns are ever requested, so cost/supplier data can't reach the page
+const PRODUCT_COLS = "id,code,name,description,category,brand,end_user_price,dealer_price,active";
+// pricing rule used when adding a product: end-user = supplier list +5%, dealer = list -35%, rounded to the nearest 10
+const PRICING = { endUserPct: 5, dealerPct: -35, roundTo: 10 };
+const CATEGORIES = ["Switches & Sockets","Curtains","Sensors","Screens & Hubs","Locks","Intercom","Cameras",
+  "Network","Audio","Remotes","KNX","Gate","Electrical","Voice Assistants","Installation","Other"];
+let products = [], isAdmin = false, productsLoaded = false, currentProduct = null;
+
+$("pCat").innerHTML += CATEGORIES.map(c=>`<option>${esc(c)}</option>`).join("");
+$("pCatSel").innerHTML = CATEGORIES.map(c=>`<option>${esc(c)}</option>`).join("");
+
+async function loadProducts(){
+  $("pRows").innerHTML = `<tr><td colspan="6" class="empty">بيحمّل…</td></tr>`;
+  const { data, error } = await sb.from("products").select(PRODUCT_COLS).order("category").order("name");
+  if(error){ $("pRows").innerHTML=""; toast("مشكلة في تحميل المنتجات"); console.error(error); return; }
+  products = data; productsLoaded = true; renderProducts();
+}
+
+function renderProducts(){
+  const q=$("pq").value.trim().toLowerCase(), fc=$("pCat").value, cols = isAdmin ? 6 : 5;
+  const list = products.filter(p=>(!fc || p.category===fc) &&
+    (!q || [p.name,p.code].some(x=>String(x||"").toLowerCase().includes(q))));
+  if(!list.length){ $("pRows").innerHTML = `<tr><td colspan="${cols}" class="empty">${products.length?"مفيش نتايج":"لسه مفيش منتجات"}</td></tr>`; return; }
+  $("pRows").innerHTML = list.map(p=>`<tr class="${p.active===false?"inactive":""}">
+      <td><span class="code">${esc(p.code||"—")}</span></td>
+      <td><div class="name">${esc(p.name)}${p.active===false?'<span class="off">موقوف</span>':""}</div>${p.brand?`<div class="sub" dir="auto">${esc(p.brand)}</div>`:""}</td>
+      <td>${esc(p.category||"—")}</td>
+      ${isAdmin ? ["end_user_price","dealer_price"].map(k=>`<td><input class="price-in${p[k]==null&&k==="end_user_price"?" missing":""}" type="number" min="0" step="any" inputmode="decimal" dir="ltr"
+          data-id="${p.id}" data-k="${k}" value="${p[k] ?? ""}" placeholder="—" aria-label="${k==="dealer_price"?"سعر الديلر":"سعر العميل"} — ${esc(p.name)}"></td>`).join("")
+        : `<td dir="ltr" style="text-align:right">${fmtMoney(p.end_user_price)}</td>
+      <td dir="ltr" style="text-align:right">${fmtMoney(p.dealer_price)}</td>`}
+      ${isAdmin?`<td><button class="edit-btn" data-id="${p.id}">تعديل</button></td>`:""}
+    </tr>`).join("");
+  if(isAdmin){
+    $("pRows").querySelectorAll(".edit-btn").forEach(b=>b.onclick=()=>openProduct(b.dataset.id));
+    $("pRows").querySelectorAll(".price-in").forEach(inp=>{
+      inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); inp.blur(); } if(e.key==="Escape"){ inp.value = products.find(x=>x.id===inp.dataset.id)?.[inp.dataset.k] ?? ""; inp.blur(); } });
+      inp.addEventListener("change", ()=>savePrice(inp));
+    });
+  }
+}
+["pq","pCat"].forEach(id=>$(id).addEventListener("input",renderProducts));
+
+// admin: change a price straight from the table — saved as soon as the field loses focus
+async function savePrice(inp){
+  const p = products.find(x=>x.id===inp.dataset.id), k = inp.dataset.k; if(!p) return;
+  const v = inp.value.trim()==="" ? null : Number(inp.value);
+  if(v!==null && !(v>=0)){ toast("السعر لازم يكون رقم"); inp.value = p[k] ?? ""; return; }
+  if(v === (p[k]==null ? null : Number(p[k]))) return;
+  inp.classList.add("saving"); inp.classList.remove("saved");
+  const { error } = await sb.from("products").update({ [k]: v }).eq("id",p.id);
+  inp.classList.remove("saving");
+  if(error){ toast("السعر ما اتحفظش"); console.error(error); inp.value = p[k] ?? ""; return; }
+  p[k] = v; inp.classList.add("saved"); inp.classList.toggle("missing", k==="end_user_price" && v===null);
+  setTimeout(()=>inp.classList.remove("saved"), 1500);
+  toast(`${p.name}: ${v===null ? "اتشال السعر" : money(v)+" ✓"}`);
+}
+
+function showProductDrawer(on){ $("pDrawer").classList.toggle("hidden",!on); $("pShade").classList.toggle("hidden",!on); }
+$("pClose").onclick = $("pShade").onclick = ()=>showProductDrawer(false);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") showProductDrawer(false); });
+
+function openProduct(id){
+  if(!isAdmin) return;
+  currentProduct = id ? products.find(p=>p.id===id) : null;
+  const f=$("productForm"); f.reset();
+  if(currentProduct){
+    ["code","name","description","brand","end_user_price","dealer_price"].forEach(k=>f[k].value = currentProduct[k] ?? "");
+    f.category.value = CATEGORIES.includes(currentProduct.category) ? currentProduct.category : "Other";
+    f.active.checked = currentProduct.active !== false;
+  } else { f.category.value = CATEGORIES[0]; f.active.checked = true; }
+  $("brandList").innerHTML = [...new Set(products.map(p=>p.brand).filter(Boolean))].map(b=>`<option>${esc(b)}</option>`).join("");
+  $("pTitle").textContent = currentProduct ? currentProduct.name : "منتج جديد";
+  showProductDrawer(true); f.name.focus();
+}
+$("newProduct").onclick = ()=>openProduct(null);
+// fills both prices from the supplier list price using PRICING (end-user +5%, dealer -35%, nearest 10)
+const roundTo = (v, n) => Math.round(v / n) * n;
+$("pricingHint").textContent = `سعر العميل = القائمة ${PRICING.endUserPct>=0?"+":""}${PRICING.endUserPct}% · سعر الديلر = القائمة ${PRICING.dealerPct}% · بيتقرب لأقرب ${PRICING.roundTo}`;
+$("listPrice").addEventListener("input", ()=>{
+  const v = Number($("listPrice").value), f = $("productForm");
+  if(!(v > 0)) return;
+  f.end_user_price.value = roundTo(v * (1 + PRICING.endUserPct/100), PRICING.roundTo);
+  f.dealer_price.value = roundTo(v * (1 + PRICING.dealerPct/100), PRICING.roundTo);
+});
+
+$("productForm").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!isAdmin) return; const f=e.target;
+  const num = v => v==="" ? null : Number(v);
+  const row = {
+    code:f.code.value.trim()||null, name:f.name.value.trim(), description:f.description.value.trim()||null,
+    category:f.category.value, brand:f.brand.value.trim()||null,
+    end_user_price:num(f.end_user_price.value), dealer_price:num(f.dealer_price.value), active:f.active.checked
+  };
+  $("pSaveBtn").disabled=true;
+  const res = currentProduct ? await sb.from("products").update(row).eq("id",currentProduct.id).select(PRODUCT_COLS).single()
+                             : await sb.from("products").insert(row).select(PRODUCT_COLS).single();
+  $("pSaveBtn").disabled=false;
+  if(res.error){ toast("الحفظ فشل"); console.error(res.error); return; }
+  toast(currentProduct ? "اتعدل ✓" : "المنتج اتضاف ✓");
+  showProductDrawer(false); loadProducts();
+});
+
+// ---------- QUOTATIONS ----------
+const Q_STATUS = { draft:"مسودة", sent:"اتبعت", accepted:"اتقبل ✓", rejected:"اترفض" };
+const DEFAULT_TERMS = [
+  "The quoted price includes installation and configuration fees.",
+  "Brands : Tuya",
+  "Payment Terms : 50% DP , 40% on Delivery - 10% After Installation And Configuration",
+  "Delivery : 1-2 weeks from PO & DP",
+  "Warranty : 1 Year",
+  "Thank you for your business!"].join("\n");
+const COMPANY = { name:"Tuya Suez", tagline:"Tuya Suez | Smart living starts here", email:"tuyasuez@gmail.com", phone:"+20 15 57777587",
+  address:["Suez","Egypt"], contact:"Tuya Suez" };
+const HTML2PDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+let quote = null;        // { id, quote_number, lead_id, items:[{product_id,name,description,room,qty,unit_price}] }
+let quoteDirty = false, sharedFile = null;
+const money = n => Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2});
+const addDays = (d,n) => { const x=new Date(d+"T00:00:00"); x.setDate(x.getDate()+n); return x.toLocaleDateString("en-CA"); };
+
+async function loadQuotes(){
+  const leadId = current?.id; if(!leadId) return;
+  $("qList").innerHTML = `<li class="sub">بيحمّل…</li>`;
+  const { data, error } = await sb.from("quotations").select("id,quote_number,quote_date,total,status,delete_requested_at")
+    .eq("lead_id",leadId).order("created_at",{ascending:false});
+  if(current?.id !== leadId) return;
+  if(error){ $("qList").innerHTML=""; toast("مشكلة في تحميل عروض الأسعار"); console.error(error); return; }
+  $("qList").innerHTML = data.length ? data.map(q=>`<li data-id="${q.id}">
+      <span><span class="num">${esc(q.quote_number)}</span> <span class="sub">· ${fmtDate(q.quote_date)}</span></span>
+      <span><b dir="ltr">${money(q.total)}</b> <span class="q-st ${esc(q.status)}">${esc(Q_STATUS[q.status]||q.status)}</span>${q.delete_requested_at?' <span class="q-st del">مطلوب مسحه</span>':""}</span></li>`).join("")
+    : `<li class="sub" style="cursor:default">لسه مفيش عروض أسعار للعميل ده</li>`;
+  $("qList").querySelectorAll("li[data-id]").forEach(li=>li.onclick=()=>openQuote(li.dataset.id));
+}
+$("newQuote").onclick = ()=>openQuote(null);
+
+async function ensureCatalog(){
+  if(productsLoaded) return true;
+  const { data, error } = await sb.from("products").select(PRODUCT_COLS).order("category").order("name");
+  if(error){ toast("مشكلة في تحميل المنتجات"); console.error(error); return false; }
+  products = data; productsLoaded = true; return true;
+}
+const priceFor = (p, type) => type==="dealer" ? (p.dealer_price ?? p.end_user_price) : p.end_user_price;
+
+async function openQuote(id){
+  if(!current) return;
+  if(!await ensureCatalog()) return;
+  const f = $("qForm"); f.reset(); sharedFile = null; $("qPdf").textContent = "📄 PDF وابعته";
+  if(id){
+    const [{ data:q, error:e1 }, { data:items, error:e2 }] = await Promise.all([
+      sb.from("quotations").select("*").eq("id",id).single(),
+      sb.from("quotation_items").select("product_id,name,description,room,qty,unit_price,discount_pct,sort_order").eq("quotation_id",id).order("sort_order")
+    ]);
+    if(e1||e2){ toast("مشكلة في فتح العرض"); console.error(e1||e2); return; }
+    quote = { id:q.id, quote_number:q.quote_number, lead_id:q.lead_id, status:q.status, items:items.map(({sort_order,...i})=>i),
+      delete_requested_by:q.delete_requested_by, delete_requested_at:q.delete_requested_at };
+    ["client_name","client_type","quote_date","valid_until","status","notes","terms"].forEach(k=>f[k].value = q[k] ?? "");
+    $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct;
+  } else {
+    quote = { id:null, quote_number:null, lead_id:current.id, status:"draft", items:[] };
+    const today = todayStr();
+    f.client_name.value = current.name; f.client_type.value = current.client_type==="dealer" ? "dealer" : "end_customer";
+    f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft"; f.terms.value = DEFAULT_TERMS;
+    $("tInstPct").value = 0; $("tDiscPct").value = 0;
+  }
+  $("qvTitle").textContent = quote.quote_number ? `عرض سعر ${quote.quote_number}` : "عرض سعر جديد";
+  $("qDel").classList.toggle("hidden", !quote.id || !isAdmin);
+  $("pick").value = ""; $("pickRes").classList.add("hidden");
+  fillBrands();
+  quoteDirty = !quote.id; renderQuoteItems();
+  $("qv").classList.remove("hidden");
+}
+function closeQuote(){
+  if(quoteDirty && quote?.items.length && !confirm("فيه تعديلات ما اتحفظتش. تقفل من غير حفظ؟")) return;
+  $("qv").classList.add("hidden"); quote = null;
+}
+$("qvClose").onclick = closeQuote;
+// capture phase so Escape closes only the quote editor, not the lead drawer under it
+document.addEventListener("keydown", e=>{
+  if(e.key!=="Escape" || $("qv").classList.contains("hidden")) return;
+  e.stopImmediatePropagation();
+  if(!$("pickRes").classList.contains("hidden")){ $("pickRes").classList.add("hidden"); return; }
+  closeQuote();
+}, true);
+
+const lineTotal = i => (Number(i.qty)||0) * (Number(i.unit_price)||0) * (1 - Math.min(Number(i.discount_pct)||0,100)/100);
+function calcQuote(){
+  const sub = quote.items.reduce((s,i)=>s + lineTotal(i), 0);
+  const instPct = Number($("tInstPct").value)||0, discPct = Number($("tDiscPct").value)||0;
+  const inst = Math.round(sub*instPct/100), disc = Math.round((sub+inst)*discPct/100);
+  return { sub, instPct, inst, discPct, disc, total: sub+inst-disc };
+}
+function updateTotals(){
+  const t = calcQuote();
+  $("tSub").textContent = money(t.sub); $("tInst").textContent = money(t.inst);
+  $("tDisc").textContent = t.disc ? "−"+money(t.disc) : "0"; $("tTotal").textContent = money(t.total);
+}
+["tInstPct","tDiscPct"].forEach(id=>$(id).addEventListener("input",()=>{ quoteDirty=true; updateTotals(); }));
+$("qForm").addEventListener("input", e=>{ if(e.target.name && e.target.name!=="client_type") quoteDirty=true; });
+
+function renderQuoteItems(){
+  $("qRows").innerHTML = quote.items.length ? quote.items.map((i,n)=>`<tr data-n="${n}">
+      <td class="c-name"><input data-k="name" value="${esc(i.name)}" dir="auto" aria-label="البند">${i.description?`<div class="desc" dir="auto">${esc(i.description)}</div>`:""}</td>
+      <td class="c-room"><input data-k="room" value="${esc(i.room||"")}" list="rooms" placeholder="المكان"></td>
+      <td class="c-qty"><input data-k="qty" type="number" min="0.01" step="any" inputmode="decimal" dir="ltr" value="${esc(i.qty)}" aria-label="العدد"></td>
+      <td class="c-price"><input data-k="unit_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr" value="${esc(i.unit_price ?? "")}" class="${i.unit_price?"":"no-price"}" aria-label="سعر الوحدة" placeholder="السعر"></td>
+      <td class="c-disc"><input data-k="discount_pct" type="number" min="0" max="100" step="any" inputmode="decimal" dir="ltr" value="${i.discount_pct ? esc(i.discount_pct) : ""}" placeholder="0" aria-label="خصم البند %"></td>
+      <td class="c-total" dir="ltr">${money(lineTotal(i))}</td>
+      <td class="c-del"><button type="button" class="del" aria-label="شيل البند">×</button></td>
+    </tr>`).join("")
+    : `<tr><td colspan="7" class="empty">دوّر على منتج من فوق وضيفه للعرض</td></tr>`;
+  $("qRows").querySelectorAll("tr[data-n]").forEach(tr=>{
+    const it = quote.items[+tr.dataset.n];
+    tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{
+      const k = inp.dataset.k; it[k] = (k==="qty"||k==="unit_price"||k==="discount_pct") ? (inp.value===""?null:Number(inp.value)) : inp.value;
+      if(k==="unit_price") inp.classList.toggle("no-price", !it.unit_price);
+      tr.querySelector(".c-total").textContent = money(lineTotal(it));
+      quoteDirty = true; updateTotals();
+    }));
+    tr.querySelector(".del").onclick = ()=>{ quote.items.splice(+tr.dataset.n,1); quoteDirty=true; renderQuoteItems(); };
+  });
+  updateTotals(); applyLock();
+}
+
+// product picker
+// brand picked first narrows the search to that brand's catalog
+function fillBrands(){
+  const sel = $("qBrand"), keep = sel.value;
+  const brands = [...new Set(products.filter(p=>p.active!==false && p.brand).map(p=>p.brand.trim()))].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML = `<option value="">كل البراندات</option>` + brands.map(b=>`<option>${esc(b)}</option>`).join("");
+  sel.value = brands.includes(keep) ? keep : "";
+}
+function showPicks(){
+  const q = $("pick").value.trim().toLowerCase(), type = $("qForm").client_type.value, brand = $("qBrand").value;
+  if(!q && !brand){ $("pickRes").classList.add("hidden"); return; }
+  const hits = products.filter(p=>p.active!==false && (!brand || (p.brand||"").trim()===brand) &&
+    (!q || [p.name,p.code,p.brand].some(x=>String(x||"").toLowerCase().includes(q)))).slice(0, q ? 30 : 60);
+  $("pickRes").innerHTML = hits.length ? hits.map(p=>{ const pr = priceFor(p,type);
+    return `<button type="button" data-id="${p.id}"><span><span class="p-name" dir="auto">${esc(p.name)}</span> <span class="sub">${esc(p.code||"")} · ${esc(p.category||"")}</span></span>
+      <span class="p-price">${pr!=null ? money(pr) : '<span class="sub">من غير سعر</span>'}</span></button>`; }).join("")
+    : `<div class="sub" style="padding:10px 12px">مفيش منتج بالاسم ده — استخدم «بند يدوي»</div>`;
+  $("pickRes").classList.remove("hidden");
+  $("pickRes").querySelectorAll("button").forEach(b=>b.onclick=()=>addProduct(b.dataset.id));
+}
+$("pick").addEventListener("input", showPicks);
+$("pick").addEventListener("focus", ()=>{ if($("qBrand").value) showPicks(); });
+$("qBrand").addEventListener("change", ()=>{
+  const b = $("qBrand").value, t = $("qForm").terms;
+  if(b && /^Brands : .*$/m.test(t.value)){ t.value = t.value.replace(/^Brands : .*$/m, "Brands : "+b); quoteDirty = true; }
+  showPicks(); $("pick").focus();
+});
+$("pick").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("pickRes").querySelector("button")?.click(); } });
+document.addEventListener("click", e=>{ if(!e.target.closest(".picker")) $("pickRes").classList.add("hidden"); });
+
+function addProduct(id){
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const lastRoom = quote.items.length ? quote.items[quote.items.length-1].room : "";
+  const same = quote.items.find(i=>i.product_id===p.id && (i.room||"")===(lastRoom||""));
+  if(same) same.qty = (Number(same.qty)||0) + 1;
+  else quote.items.push({ product_id:p.id, name:p.name, description:p.description, room:lastRoom||"", qty:1, unit_price:priceFor(p,$("qForm").client_type.value), discount_pct:0 });
+  quoteDirty = true; $("pick").value = ""; $("pickRes").classList.add("hidden"); renderQuoteItems(); $("pick").focus();
+}
+$("addCustom").onclick = ()=>{
+  const lastRoom = quote.items.length ? quote.items[quote.items.length-1].room : "";
+  quote.items.push({ product_id:null, name:"", description:null, room:lastRoom||"", qty:1, unit_price:null, discount_pct:0 });
+  quoteDirty = true; renderQuoteItems();
+  $("qRows").querySelector("tr:last-child input[data-k=name]")?.focus();
+};
+// switching end-user ↔ dealer re-prices the catalog lines (manual lines keep their price)
+$("qForm").client_type.addEventListener("change", ()=>{
+  const type = $("qForm").client_type.value; let n = 0;
+  quote.items.forEach(i=>{ const p = i.product_id && products.find(x=>x.id===i.product_id); if(p){ i.unit_price = priceFor(p,type); n++; } });
+  quoteDirty = true; renderQuoteItems(); if(n) toast("الأسعار اتحدثت حسب النوع");
+});
+
+async function saveQuote(){
+  const f = $("qForm");
+  if(!f.reportValidity()) return false;
+  const items = quote.items.filter(i=>String(i.name||"").trim());
+  if(!items.length){ toast("ضيف بند واحد على الأقل"); return false; }
+  if(items.some(i=>!(Number(i.qty)>0))){ toast("العدد لازم يكون أكبر من صفر"); return false; }
+  const t = calcQuote();
+  const row = {
+    lead_id: quote.lead_id, client_name: f.client_name.value.trim(), client_type: f.client_type.value,
+    quote_date: f.quote_date.value, valid_until: f.valid_until.value || null, status: f.status.value,
+    subtotal: t.sub, install_pct: t.instPct, install_amount: t.inst, discount_pct: t.discPct, discount_amount: t.disc, total: t.total,
+    notes: f.notes.value.trim() || null, terms: f.terms.value.trim() || null
+  };
+  if(!quote.id) row.created_by = user.email;
+  $("qSave").disabled = true;
+  try {
+    const res = quote.id ? await sb.from("quotations").update(row).eq("id",quote.id).select("id,quote_number").single()
+                         : await sb.from("quotations").insert(row).select("id,quote_number").single();
+    if(res.error) throw res.error;
+    quote.id = res.data.id; quote.quote_number = res.data.quote_number;
+    // replace the lines wholesale in one transaction on the server (sales have no direct delete rights)
+    const rep = await sb.rpc("replace_quotation_items", { p_quote: quote.id, p_items: items.map((i,n)=>({
+      product_id: i.product_id, name: i.name.trim(), description: i.description || null,
+      room: String(i.room||"").trim() || null, qty: Number(i.qty), unit_price: Number(i.unit_price)||0,
+      discount_pct: Math.min(Math.max(Number(i.discount_pct)||0,0),100), sort_order: n })) });
+    if(rep.error) throw rep.error;
+  } catch(err){ toast("الحفظ فشل"); console.error(err); return false; }
+  finally { $("qSave").disabled = false; }
+  quote.items = items; quote.status = f.status.value; quoteDirty = false;
+  $("qvTitle").textContent = `عرض سعر ${quote.quote_number}`; $("qDel").classList.toggle("hidden", !isAdmin);
+  applyLock(); loadQuotes(); return true;
+}
+$("qForm").addEventListener("submit", async e=>{ e.preventDefault(); if(await saveQuote()) toast(`العرض ${quote.quote_number} اتحفظ ✓`); });
+
+$("qDel").onclick = async ()=>{
+  if(!quote?.id || !confirm(`مسح عرض السعر ${quote.quote_number}؟`)) return;
+  const { error } = await sb.from("quotations").delete().eq("id",quote.id);
+  if(error){ toast("المسح فشل"); return; }
+  quoteDirty = false; closeQuote(); toast("العرض اتمسح"); loadQuotes();
+};
+
+// a sent quotation is read-only for sales: they make a new one and ask an admin to delete the old
+function applyLock(){
+  if(!quote) return;
+  const locked = !!quote.id && quote.status !== "draft" && !isAdmin, req = !!quote.delete_requested_at;
+  $("qForm").querySelectorAll("input,select,textarea").forEach(el=>el.disabled = locked);
+  $("qRows").querySelectorAll(".del").forEach(el=>el.classList.toggle("hidden", locked));
+  ["pick","qBrand","addCustom","tInstPct","tDiscPct"].forEach(id=>$(id).disabled = locked);
+  $("qSave").classList.toggle("hidden", locked);
+  $("qCopy").classList.toggle("hidden", !quote.id);
+  const by = (quote.delete_requested_by||"").split("@")[0];
+  $("qLock").classList.toggle("hidden", !locked && !(isAdmin && req));
+  $("qLock").classList.toggle("req", req);
+  $("qLockMsg").textContent = req
+    ? (isAdmin ? `${by} طلب مسح العرض ده — امسحه من زرار «مسح العرض» تحت.` : "طلبت مسح العرض ده، والأدمن هيمسحه.")
+    : "العرض ده اتبعت للعميل، فمش ممكن يتعدل. لو محتاج تغيّر حاجة، اعمل «عرض جديد بنفس البنود» واطلب من الأدمن يمسح القديم.";
+  $("qReqDel").classList.toggle("hidden", !locked || req);
+}
+$("qReqDel").onclick = async ()=>{
+  if(!quote?.id || !confirm(`تبعت للأدمن طلب يمسح العرض ${quote.quote_number}؟`)) return;
+  const { error } = await sb.rpc("request_quote_deletion", { p_quote: quote.id });
+  if(error){ toast("الطلب ما اتبعتش"); console.error(error); return; }
+  quote.delete_requested_at = new Date().toISOString(); quote.delete_requested_by = user.email;
+  applyLock(); loadQuotes(); toast("الطلب اتبعت للأدمن ✓");
+};
+$("qCopy").onclick = ()=>{
+  if(!quote) return;
+  const from = quote.quote_number, f = $("qForm"), today = todayStr();
+  quote = { id:null, quote_number:null, lead_id:quote.lead_id, status:"draft", items:quote.items.map(i=>({...i})) };
+  f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft";
+  $("qvTitle").textContent = `عرض سعر جديد (من ${from})`; $("qDel").classList.add("hidden");
+  sharedFile = null; $("qPdf").textContent = "📄 PDF وابعته";
+  quoteDirty = true; renderQuoteItems(); toast("نسخة جديدة — عدّل واحفظ");
+};
+
+// ---------- PDF ----------
+function loadScript(src){
+  return new Promise((ok,fail)=>{ if(window.html2pdf) return ok();
+    const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=()=>fail(new Error("load "+src)); document.head.appendChild(s); });
+}
+function buildPdf(){
+  const f = $("qForm"), t = calcQuote();
+  const d = v => v ? new Date(v+"T00:00:00").toLocaleDateString("en-US",{month:"2-digit",day:"2-digit",year:"numeric"}) : "—";
+  const n2 = v => Number(v||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  // keep rooms together, in the order they first appear (a room row only shows when rooms are used)
+  const order = [], groups = {};
+  quote.items.forEach(i=>{ const r = (i.room||"").trim(); if(!(r in groups)){ groups[r]=[]; order.push(r); } groups[r].push(i); });
+  const hasRooms = order.some(r=>r);
+  const rows = order.map(r=>(hasRooms ? `<tr class="room-row"><td colspan="5">${esc(r||"General")}</td></tr>` : "") +
+    groups[r].map(i=>`<tr><td dir="auto">${esc(i.name)}</td><td>${n2(i.qty)} Units</td><td>${n2(i.unit_price)}</td>
+      <td>${Number(i.discount_pct) ? n2(i.discount_pct) : ""}</td><td class="amt">${n2(lineTotal(i))} LE</td></tr>`).join("")).join("");
+  const extra = (t.inst ? `<div class="s"><span>Installation (${n2(t.instPct)}%)</span><span>${n2(t.inst)} LE</span></div>` : "") +
+                (t.disc ? `<div class="s"><span>Discount (${n2(t.discPct)}%)</span><span>-${n2(t.disc)} LE</span></div>` : "");
+  $("pdfDoc").innerHTML = `
+    <div class="d-band">
+      <div><img src="/tuya-suez/logo.png" alt="Tuya Suez"><div class="d-mail">${COMPANY.email}</div><div class="d-phone">${COMPANY.phone}</div></div>
+      <div class="d-addr">${COMPANY.address.join("<br>")}</div>
+    </div>
+    <div class="d-titlerow"><div class="d-title">Quotation # ${esc(quote.quote_number)}</div></div>
+    <div class="d-body">
+      <div class="d-cust"><div dir="auto">${esc(f.client_name.value)}</div></div>
+      <div class="d-info">
+        <div><b>Quotation Date</b>${d(f.quote_date.value)}</div>
+        <div><b>Expiration</b>${d(f.valid_until.value)}</div>
+        <div><b>Contact</b>${COMPANY.contact}</div>
+      </div>
+      <div class="d-tbl"><table>
+        <thead><tr><th>Description</th><th>Quantity</th><th>Unit Price</th><th>Disc.%</th><th>Amount</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+      <div class="d-sums">${extra ? `<div style="margin-top:6px">${extra}</div>` : ""}
+        <div class="d-total"><span>Total</span><span>${n2(t.total)} LE</span></div></div>
+      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc(f.terms.value.trim())}</div>`:""}
+      ${f.notes.value.trim()?`<div class="d-note" dir="auto">${esc(f.notes.value.trim())}</div>`:""}
+    </div>`;
+  keepArabicSpaces($("pdfDoc"));
+  return $("pdfDoc");
+}
+// html2canvas draws Arabic word-by-word and drops the spaces between words. Joining words with
+// no-break spaces makes it draw whole phrases; a breakable gap every few words still lets long text wrap.
+function keepArabicSpaces(root){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+  while(walker.nextNode()) if(/[؀-ۿ]/.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode);
+  nodes.forEach(n=>{
+    n.nodeValue = n.nodeValue.split("\n").map(line=>{
+      const w = line.split(/ +/), out = [];
+      for(let i=0;i<w.length;i+=5) out.push(w.slice(i,i+5).join(" "));
+      return out.join("  ");
+    }).join("\n");
+  });
+}
+async function shareOrDownload(file){
+  if(navigator.canShare && navigator.canShare({ files:[file] })){
+    try { await navigator.share({ files:[file], title:file.name }); return "shared"; }
+    catch(e){ if(e.name==="AbortError") return "cancelled"; if(e.name!=="NotAllowedError") console.error(e); }
+    return "needs-tap";   // the browser wants a fresh tap before sharing
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 30000);
+  return "downloaded";
+}
+$("qPdf").onclick = async ()=>{
+  if(sharedFile){ const r = await shareOrDownload(sharedFile); if(r!=="needs-tap"){ sharedFile=null; $("qPdf").textContent="📄 PDF وابعته"; } return; }
+  if(quoteDirty || !quote.id){ if(!await saveQuote()) return; }
+  const btn = $("qPdf"); btn.disabled = true; btn.textContent = "بيجهز الـ PDF…";
+  try {
+    await loadScript(HTML2PDF_URL);
+    const el = buildPdf(), filename = `${quote.quote_number}.pdf`;
+    const blob = await html2pdf().set({
+      margin:[16,0,42,0], filename, image:{ type:"jpeg", quality:0.95 },
+      html2canvas:{ scale:2, useCORS:true, backgroundColor:"#ffffff" },
+      jsPDF:{ unit:"pt", format:"a4", orientation:"portrait" }, pagebreak:{ mode:["css","legacy"] }
+    }).from(el).toPdf().get("pdf").then(pdf=>{
+      const n = pdf.internal.getNumberOfPages(), W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
+      for(let i=1;i<=n;i++){
+        pdf.setPage(i); pdf.setDrawColor(40); pdf.setLineWidth(0.7); pdf.line(25, H-32, W-25, H-32);
+        pdf.setFont("helvetica","normal"); pdf.setFontSize(9);
+        pdf.setTextColor(30); pdf.text(COMPANY.tagline, 25, H-18);
+        pdf.setTextColor(110); pdf.text(`Page ${i} / ${n}`, W-25, H-18, { align:"right" });
+      }
+    }).outputPdf("blob");
+    const file = new File([blob], filename, { type:"application/pdf" });
+    if(quote.status==="draft"){
+      const { error } = await sb.from("quotations").update({ status:"sent" }).eq("id",quote.id);
+      if(!error){ quote.status = "sent"; $("qForm").status.value = "sent"; applyLock(); loadQuotes(); }
+    }
+    const r = await shareOrDownload(file);
+    if(r==="needs-tap"){ sharedFile = file; btn.textContent = "📤 اضغط عشان تبعته"; }
+    else { btn.textContent = "📄 PDF وابعته"; if(r==="downloaded") toast("الـ PDF اتنزل ✓"); }
+  } catch(err){ toast("مقدرتش أعمل الـ PDF"); console.error(err); btn.textContent = "📄 PDF وابعته"; }
+  finally { btn.disabled = false; }
+};
+</script>
+</body>
+</html>

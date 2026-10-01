@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tuya Suez | البيت الذكي في السويس</title>
+<meta name="description" content="Tuya Suez — حلول البيت الذكي في السويس: إضاءة، ستائر، كاميرات، أقفال، تكييف وتحكم بالصوت، تركيب في البيت.">
+<link rel="icon" href="/tuya-suez/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F25802; --orange-dark:#c24600; --cream:#FEF5E7; --cream-2:#FCEBD2;
+  --ink:#111; --muted:#5f5a52; --line:#eadfcd; --black:#0b0b0b; --on-dark-muted:#a8a29a; --line-dark:#262626;
+  --font:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img,svg{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+.wrap{width:min(1180px,100% - 32px);margin-inline:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+
+.util{background:var(--black);color:var(--on-dark-muted);font-size:13px}
+.util .wrap{display:flex;gap:24px;align-items:center;height:38px}
+.util a{text-decoration:none}.util a:hover{color:#fff}
+.util .sp{margin-inline-start:auto}
+@media (max-width:640px){.util .hide-sm{display:none}.util .sp{margin-inline-start:0}}
+
+header.site{position:sticky;top:0;z-index:40;background:rgba(11,11,11,.95);backdrop-filter:blur(12px);color:#fff}
+header.site .wrap{display:flex;align-items:center;height:72px;gap:32px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{width:44px;height:44px;border-radius:11px}
+.brand b{font-size:21px;font-weight:700;letter-spacing:.01em;direction:ltr}
+nav.main{display:flex;gap:28px;margin-inline-start:auto}
+nav.main a{text-decoration:none;font-size:15px;opacity:.8;padding:6px 0;border-bottom:1px solid transparent}
+nav.main a:hover{opacity:1;border-bottom-color:#fff}
+.team{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 16px}
+.team:hover{border-color:var(--orange);color:var(--orange)}
+.team svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.menu-btn{display:none;background:none;border:1px solid var(--line-dark);color:#fff;width:44px;height:44px;cursor:pointer;border-radius:8px}
+.menu-btn span{display:block;width:18px;height:1.5px;background:currentColor;margin:4px auto}
+@media (max-width:900px){
+  nav.main{position:absolute;top:72px;inset-inline:0;flex-direction:column;gap:0;background:var(--black);padding:8px 16px 18px;display:none;border-top:1px solid var(--line-dark)}
+  nav.main.open{display:flex}
+  nav.main a{padding:14px 0;border-bottom:1px solid var(--line-dark);font-size:17px}
+  .menu-btn{display:block;margin-inline-start:auto}
+  header.site .wrap{gap:12px}
+}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:16px;font-weight:600;text-decoration:none;cursor:pointer;padding:14px 26px;border-radius:999px;border:1px solid transparent;transition:background .2s,color .2s,border-color .2s}
+.btn-orange{background:var(--orange);color:#fff}.btn-orange:hover{background:var(--orange-dark)}
+.btn-ghost{border-color:rgba(255,255,255,.4);color:#fff}.btn-ghost:hover{border-color:#fff}
+.btn-ink{background:var(--ink);color:#fff}.btn-ink:hover{background:var(--orange)}
+
+.hero{background:var(--black);color:#fff;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center;padding-block:72px 88px}
+.eyebrow{display:inline-block;color:var(--orange);font-weight:600;font-size:15px;margin-bottom:14px;direction:ltr}
+.hero h1{font-weight:600;font-size:clamp(36px,5.2vw,64px);line-height:1.15;margin:0 0 20px}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero .lead{color:var(--on-dark-muted);font-size:19px;max-width:40ch;margin:0 0 32px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.facts{display:flex;gap:32px;flex-wrap:wrap;margin-top:40px;padding-top:22px;border-top:1px solid var(--line-dark);font-size:14px;color:var(--on-dark-muted)}
+.facts strong{display:block;color:#fff;font-weight:600;font-size:16px}
+.hero-logo{justify-self:center;width:min(380px,100%);aspect-ratio:1;border-radius:36px;overflow:hidden;box-shadow:0 30px 80px rgba(242,88,2,.25);transform:rotate(-3deg)}
+.hero-logo img{width:100%;height:100%}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr;padding-block:40px 64px}.hero-logo{order:-1;width:min(220px,60%)}}
+
+section.block{padding-block:96px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:48px}
+.kicker{color:var(--orange);font-size:15px;font-weight:600;margin:0 0 10px}
+h2{font-weight:600;font-size:clamp(28px,3.4vw,44px);line-height:1.25;margin:0}
+.head p{color:var(--muted);margin:0;max-width:52ch}
+@media (max-width:860px){.head{grid-template-columns:1fr;gap:14px;margin-bottom:32px}section.block{padding-block:64px}}
+
+.sol-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.sol{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 22px}
+.sol .ic{width:48px;height:48px;border-radius:14px;background:var(--cream-2);color:var(--orange);display:grid;place-items:center;margin-bottom:16px}
+.sol .ic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sol h3{font-size:19px;font-weight:600;margin:0 0 6px}
+.sol p{color:var(--muted);font-size:15px;margin:0}
+@media (max-width:1000px){.sol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.sol-grid{grid-template-columns:1fr}}
+
+.pkg{background:var(--cream-2)}
+.pkg-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--black);color:#fff;border-radius:24px;overflow:hidden}
+.pkg-main{padding:44px}
+.pkg-main .tag{display:inline-block;background:var(--orange);color:#fff;font-size:13px;font-weight:600;border-radius:999px;padding:4px 14px;margin-bottom:18px}
+.pkg-main h3{font-size:30px;font-weight:600;margin:0 0 8px;line-height:1.3}
+.price{display:flex;align-items:baseline;gap:10px;margin:22px 0 4px}
+.price b{font-size:52px;line-height:1;color:var(--orange);direction:ltr}
+.price span{color:var(--on-dark-muted)}
+.pkg-main small{color:var(--on-dark-muted);display:block;margin-bottom:28px}
+.pkg-list{list-style:none;margin:0;padding:44px;background:#151515;display:grid;gap:14px;align-content:center}
+.pkg-list li{display:flex;gap:14px;align-items:center;font-size:17px}
+.pkg-list li b{min-width:46px;height:46px;border-radius:12px;background:rgba(242,88,2,.15);color:var(--orange);display:grid;place-items:center;font-size:19px;direction:ltr}
+@media (max-width:860px){.pkg-card{grid-template-columns:1fr}.pkg-main,.pkg-list{padding:28px}}
+.voice{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.voice span{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:15px;font-weight:500}
+
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;list-style:none;margin:0;padding:0;counter-reset:st}
+.steps li{counter-increment:st;border-top:2px solid var(--ink);padding-top:18px}
+.steps li::before{content:"0" counter(st);display:block;color:var(--orange);font-weight:700;font-size:14px;direction:ltr;text-align:right}
+.steps h3{font-size:19px;font-weight:600;margin:6px 0}
+.steps p{margin:0;color:var(--muted);font-size:15px}
+@media (max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}}
+
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:64px}
+.info dl{margin:28px 0 0;border-top:1px solid var(--line)}
+.info div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.info dt{color:var(--muted);font-size:14px;padding-top:2px}
+.info dd{margin:0}
+.info a{text-decoration:none}.info a:hover{color:var(--orange)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:22px 20px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px}
+form .full{grid-column:1/-1}
+.field label{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:17px;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:9px 0;border-radius:0;-webkit-appearance:none;appearance:none}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-bottom-color:var(--orange)}
+.field.invalid input{border-bottom-color:#C0392B}
+.err{color:#C0392B;font-size:14px;margin:0;min-height:1em;grid-column:1/-1}
+.form-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.form-foot small{color:var(--muted);font-size:13px}
+@media (max-width:860px){.contact-grid{grid-template-columns:1fr;gap:36px}}
+@media (max-width:520px){form{grid-template-columns:1fr;padding:20px}.info div{grid-template-columns:1fr;gap:2px}}
+
+footer{background:var(--black);color:var(--on-dark-muted);font-size:15px}
+.ftop{display:flex;justify-content:space-between;gap:28px;flex-wrap:wrap;padding-block:48px 36px}
+.ftop .brand b{color:#fff}
+.ftop p{max-width:36ch;margin:14px 0 0}
+.flinks{display:flex;gap:40px;flex-wrap:wrap}
+.flinks h4{color:#fff;font-weight:600;font-size:15px;margin:0 0 12px}
+.flinks ul{list-style:none;margin:0;padding:0}
+.flinks li{margin-bottom:8px}
+.flinks a{text-decoration:none}.flinks a:hover{color:#fff}
+.fbot{border-top:1px solid var(--line-dark);padding-block:20px;display:flex;justify-content:space-between;gap:10px 24px;flex-wrap:wrap;font-size:13px}
+.fbot a{color:#fff}
+
+.wa{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:20px;z-index:50;width:56px;height:56px;border-radius:50%;background:var(--orange);display:grid;place-items:center;box-shadow:0 10px 28px rgba(0,0,0,.25)}
+.wa svg{width:28px;height:28px;fill:#fff}
+</style>
+</head>
+<body>
+
+<div class="util">
+  <div class="wrap">
+    <a href="tel:+201557777587" dir="ltr">+20 15 57777587</a>
+    <a href="mailto:tuyasuez@gmail.com" class="hide-sm">tuyasuez@gmail.com</a>
+    <span class="hide-sm sp">السويس، مصر · خدمة في البيت</span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a href="#top" class="brand" aria-label="Tuya Suez">
+      <img src="/tuya-suez/icon.png" alt="" width="44" height="44"><b>tuya suez</b>
+    </a>
+    <nav class="main" id="nav">
+      <a href="#solutions">الحلول</a>
+      <a href="#package">الباقة</a>
+      <a href="#process">إزاي بنشتغل</a>
+      <a href="#contact">تواصل معانا</a>
+    </nav>
+    <a class="team" href="/tuya-suez/crm.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>دخول الفريق</a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav" aria-label="القائمة"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Smart living starts here</span>
+      <h1>بيتك يبقى <em>ذكي</em><br>من غير ما تكسر حيطة.</h1>
+      <p class="lead">بنحوّل بيتك في السويس لبيت ذكي: إضاءة، تكييف، تليفزيون، ستائر وكاميرات، كله من الموبايل أو بصوتك. وبنيجي لحد عندك نركّب ونبرمج.</p>
+      <div class="ctas">
+        <a class="btn btn-orange" id="heroWa" href="#contact">احجز معاينة مجانية</a>
+        <a class="btn btn-ghost" href="#package">شوف الباقة</a>
+      </div>
+      <div class="facts">
+        <div><strong>خدمة في البيت</strong>معاينة وتركيب عندك</div>
+        <div><strong>تطبيق واحد</strong>لكل أجهزة البيت</div>
+        <div><strong>Alexa و Google</strong>تحكم بالصوت</div>
+      </div>
+    </div>
+    <div class="hero-logo"><img src="/tuya-suez/logo.png" alt="Tuya Suez" width="380" height="380"></div>
+  </div>
+</section>
+
+<section class="block" id="solutions">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="kicker">الحلول</p><h2>كل حاجة في البيت تحت إيدك</h2></div>
+      <p>أجهزة Tuya بتشتغل مع بعض على تطبيق واحد، وتقدر تعمل مشاهد جاهزة زي "خارج من البيت" أو "وقت النوم" بلمسة واحدة.</p>
+    </div>
+    <div class="sol-grid">
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><h3>سويتشات تاتش</h3><p>سويتشات زجاج شكلها شيك، بتشتغل باللمس ومن الموبايل.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg></div><h3>إضاءة ذكية</h3><p>تشغيل وإطفاء ومواعيد ومشاهد إضاءة لكل أوضة.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="8" rx="2"/><path d="M7 18c1-1 2-1 3 0M14 18c1-1 2-1 3 0"/></svg></div><h3>تكييف وتليفزيون</h3><p>ريموت ذكي (IR) يشغّل التكييف والتليفزيون من أي مكان.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 4h18M5 4v12h14V4M5 8h14M5 12h14M12 16v4"/></svg></div><h3>ستائر موتور</h3><p>ستاير بتفتح وتقفل لوحدها مع الشمس أو بمواعيد.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 8l3-3h9l3 3v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="10.5" cy="11" r="2.5"/><path d="M18 10l3-2v8l-3-2"/></svg></div><h3>كاميرات مراقبة</h3><p>شوف بيتك لايف وجالك تنبيه أول ما يحصل حاجة.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.5"/></svg></div><h3>أقفال ذكية</h3><p>فتح بالبصمة أو بالكود أو من التطبيق، وسجل لكل دخول.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>حساسات</h3><p>حساسات حركة وأبواب ودخان وتسريب مياه.</p></div>
+      <div class="sol"><div class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><h3>تحكم بالصوت</h3><p>كلّم بيتك بالعربي أو الإنجليزي عن طريق Alexa أو Google.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block pkg" id="package">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="kicker">الباقة</p><h2>باقة Tuya Smart الكاملة</h2></div>
+      <p>باقة جاهزة لشقة أو فيلا كاملة، شاملة الأجهزة والتركيب والبرمجة. ولو محتاج حاجة على مقاسك بنعملك عرض سعر خاص.</p>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-main">
+        <span class="tag">الأكثر طلبًا</span>
+        <h3>Full Home Automation</h3>
+        <p style="color:var(--on-dark-muted);margin:0">تحكم كامل في الإضاءة والتكييف والتليفزيون من تطبيق واحد.</p>
+        <div class="price"><b>17,000</b><span>جنيه</span></div>
+        <small>شامل التركيب والبرمجة</small>
+        <a class="btn btn-orange" id="pkgWa" href="#contact">اطلب الباقة على واتساب</a>
+      </div>
+      <ul class="pkg-list">
+        <li><b>10</b>سويتش تاتش 3 خط</li>
+        <li><b>30</b>خط إضاءة متحكم فيه</li>
+        <li><b>5</b>ريموت ذكي IR</li>
+        <li><b>5</b>تكييفات بتتحكم فيها</li>
+        <li><b>5</b>تليفزيونات بتتحكم فيها</li>
+      </ul>
+    </div>
+    <div class="voice"><span>يشتغل مع Amazon Alexa</span><span>يشتغل مع Google Home</span><span>تطبيق Smart Life / Tuya</span></div>
+  </div>
+</section>
+
+<section class="block" id="process">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="kicker">إزاي بنشتغل</p><h2>أربع خطوات وبيتك يبقى ذكي</h2></div>
+      <p>من أول مكالمة لحد ما تستلم وأنت فاهم كل حاجة.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>معاينة في البيت</h3><p>بنيجي نشوف البيت ونفهم انت عايز إيه.</p></li>
+      <li><h3>عرض سعر واضح</h3><p>بنختار معاك الأجهزة وتعرف السعر النهائي قبل ما نبدأ.</p></li>
+      <li><h3>تركيب وبرمجة</h3><p>بنركّب ونربط كل حاجة على التطبيق ونجهّز المشاهد.</p></li>
+      <li><h3>تسليم ومتابعة</h3><p>بنعلّمك تستخدمه، ومعاك لو احتجت أي حاجة بعد كده.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="contact" style="background:#fff">
+  <div class="wrap contact-grid">
+    <div class="info">
+      <p class="kicker">تواصل معانا</p>
+      <h2>خلّينا نبدأ ببيتك</h2>
+      <dl>
+        <div><dt>موبايل / واتساب</dt><dd><a href="tel:+201557777587" dir="ltr">+20 15 57777587</a></dd></div>
+        <div><dt>إيميل</dt><dd><a href="mailto:tuyasuez@gmail.com">tuyasuez@gmail.com</a></dd></div>
+        <div><dt>المنطقة</dt><dd>السويس، مصر · خدمة في البيت</dd></div>
+        <div><dt>المواعيد</dt><dd>متاحين طول الأسبوع</dd></div>
+      </dl>
+    </div>
+    <form id="lead" novalidate>
+      <div class="field"><label for="fn">الاسم</label><input id="fn" autocomplete="name"></div>
+      <div class="field"><label for="fp">رقم الموبايل</label><input id="fp" type="tel" inputmode="tel" autocomplete="tel" dir="ltr"></div>
+      <div class="field"><label for="fu">نوع المكان</label><select id="fu"><option>شقة</option><option>فيلا</option><option>دوبلكس</option><option>محل / مكتب</option></select></div>
+      <div class="field"><label for="fa">المنطقة</label><input id="fa" placeholder="مثلاً: حي الأربعين"></div>
+      <div class="field full"><label for="fs">مهتم بإيه؟</label><select id="fs"><option>الباقة الكاملة</option><option>إضاءة وسويتشات</option><option>تكييف وتليفزيون</option><option>كاميرات وأمان</option><option>أقفال ذكية</option><option>ستائر</option><option>لسه مش متأكد، محتاج استشارة</option></select></div>
+      <div class="field full"><label for="fm">تفاصيل (اختياري)</label><textarea id="fm"></textarea></div>
+      <p class="err" id="err" role="alert"></p>
+      <div class="full form-foot"><button class="btn btn-ink" type="submit">ابعت الطلب</button><small>هيفتحلك واتساب والطلب جاهز تبعته.</small></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap ftop">
+    <div>
+      <a href="#top" class="brand"><img src="/tuya-suez/icon.png" alt="" width="44" height="44"><b>tuya suez</b></a>
+      <p>حلول البيت الذكي في السويس. Smart living starts here.</p>
+    </div>
+    <div class="flinks">
+      <div><h4>الموقع</h4><ul><li><a href="#solutions">الحلول</a></li><li><a href="#package">الباقة</a></li><li><a href="#process">إزاي بنشتغل</a></li><li><a href="#contact">تواصل معانا</a></li></ul></div>
+      <div><h4>تواصل</h4><ul><li><a href="tel:+201557777587" dir="ltr">+20 15 57777587</a></li><li><a href="mailto:tuyasuez@gmail.com">tuyasuez@gmail.com</a></li><li><a href="/tuya-suez/crm.html">دخول الفريق</a></li></ul></div>
+    </div>
+  </div>
+  <div class="wrap fbot">
+    <span>© 2026 Tuya Suez. كل الحقوق محفوظة.</span>
+    <span>إحدى شركات <a href="/">Jaguar Smart</a></span>
+  </div>
+</footer>
+
+<a class="wa" id="wa" href="#" target="_blank" rel="noopener" aria-label="كلّمنا على واتساب"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.3-.7.1a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.5 6.5 0 0 0 1.3 3.4 14.8 14.8 0 0 0 5.7 5c2.1.9 2.9 1 4 .8.6-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.3z"/></svg></a>
+
+<script>
+const WHATSAPP = "201557777587";
+const HI = "أهلاً Tuya Suez، عايز أحجز معاينة لبيتي.";
+const $ = s => document.querySelector(s);
+const wa = t => "https://wa.me/" + WHATSAPP + (t ? "?text=" + encodeURIComponent(t) : "");
+$("#wa").href = wa(HI);
+$("#pkgWa").href = wa("أهلاً Tuya Suez، عايز أعرف تفاصيل باقة Full Home Automation (17,000 جنيه).");
+$("#pkgWa").target = "_blank"; $("#pkgWa").rel = "noopener";
+
+const nav = $("#nav"), mb = $("#menuBtn");
+mb.addEventListener("click", () => { const o = nav.classList.toggle("open"); mb.setAttribute("aria-expanded", o); });
+nav.addEventListener("click", e => { if (e.target.tagName === "A") { nav.classList.remove("open"); mb.setAttribute("aria-expanded", false); } });
+
+$("#lead").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = id => document.getElementById(id).value.trim();
+  const nameOk = !!v("fn"), phoneOk = v("fp").replace(/\D/g, "").length >= 10;
+  $("#fn").parentElement.classList.toggle("invalid", !nameOk);
+  $("#fp").parentElement.classList.toggle("invalid", !phoneOk);
+  if (!nameOk || !phoneOk) { $("#err").textContent = "اكتب اسمك ورقم موبايل صحيح."; return; }
+  $("#err").textContent = "";
+  const L = ["الاسم", "الموبايل", "نوع المكان", "المنطقة", "مهتم بـ", "تفاصيل"], vals = ["fn", "fp", "fu", "fa", "fs", "fm"].map(v);
+  window.open(wa([HI, ...vals.map((x, i) => x ? `${L[i]}: ${x}` : "").filter(Boolean)].join("\n")), "_blank", "noopener");
+});
+</script>
+</body>
+</html>
