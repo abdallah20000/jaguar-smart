@@ -2,10 +2,10 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AreaBar } from "@/components/AreaPicker";
 import { BannerSlider } from "@/components/BannerSlider";
-import { CategoryIcon } from "@/components/CategoryIcon";
 import { PriceTicker } from "@/components/PriceTicker";
 import { ProductCard } from "@/components/ProductCard";
 import { SectionHead } from "@/components/Section";
+import { categoryImage } from "@/lib/category-images";
 import { DEFAULT_AREA } from "@/lib/config";
 import { getAreas, getBanners, getBrands, getCategories, getCurrentPrices, getProducts, nonEmptyCategories } from "@/lib/data";
 
@@ -27,14 +27,23 @@ export default async function Home() {
 
       <section className="wrap py-12 sm:py-16">
         <SectionHead title={t("categories")} />
-        <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
-          {cats.map((c) => (
-            <Link key={c.id} href={`/category/${c.slug}`} className="flex flex-col gap-3 bg-white p-4 no-underline transition-colors hover:bg-black hover:text-white sm:p-5">
-              <CategoryIcon name={c.icon} />
-              <span className="font-medium leading-tight">{c.name}</span>
-              <span className="text-xs opacity-60">{count(c.id)} items</span>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+          {cats.map((c) => {
+            const img = categoryImage(c.icon);
+            return (
+              <Link key={c.id} href={`/category/${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden bg-black text-white no-underline">
+                {img && (
+                  // eslint-disable-next-line @next/next/no-img-element -- static export
+                  <img src={img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
+                )}
+                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" aria-hidden="true" />
+                <span className="absolute inset-x-0 bottom-0 flex flex-col p-3 sm:p-4">
+                  <span className="font-medium leading-tight">{c.name}</span>
+                  <span className="text-xs text-white/70">{count(c.id)} items</span>
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

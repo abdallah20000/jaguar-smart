@@ -41,7 +41,7 @@ export async function SiteFooter() {
       </div>
       <div className="wrap fbot">
         <span>{t("rights")}</span>
-        <span>{t("register")}</span>
+        <span>{t("register")} · <Link href="/credits">Image credits</Link></span>
       </div>
     </footer>
   );
