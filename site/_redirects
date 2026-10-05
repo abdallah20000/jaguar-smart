@@ -1,0 +1,2 @@
+# Materials store (static export in /materials): unknown pages show the store's own 404
+/materials/*  /materials/404.html  404

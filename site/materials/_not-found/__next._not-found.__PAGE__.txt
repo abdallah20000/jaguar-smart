@@ -1,0 +1,21 @@
+1:"$Sreact.fragment"
+2:I[22016,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],""]
+3:I[97367,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+8:I[97367,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"ViewportBoundary"]
+9:I[97367,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"MetadataBoundary"]
+a:I[27201,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"IconMark"]
+c:I[39756,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"default"]
+d:I[37457,["/materials/_next/static/chunks/21kdpa0jvxq8o.js","/materials/_next/static/chunks/21d8xmnbvqxl6.js","/materials/_next/static/chunks/0mcfjqqdzidbf.js"],"default"]
+7:X
+f:X
+f:C
+0:{"buildId":"VPzykncWcQZAt-ForG7QH","data":[{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"wrap max-w-xl py-20 text-center","children":[["$","h1",null,{"className":"m-0 text-3xl font-light","children":"Page not found"}],["$","p",null,{"className":"text-muted","children":"This product or page isn't available."}],["$","$L2",null,{"href":"/","className":"btn btn-ink mt-4","children":"Back to materials"}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":"$@6","staleTime":"$7","varyParams":null},{"rsc":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L8",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#000000"}]]}],["$","div",null,{"hidden":true,"children":["$","$L9",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Jaguar Smart Materials | Building materials delivered in Cairo & Giza"}],["$","meta","1",{"name":"description","content":"Daily steel and cement prices, building materials by area, and fast delivery to your site from Jaguar Smart Construction."}],["$","meta","2",{"property":"og:title","content":"Jaguar Smart Materials | Building materials delivered in Cairo & Giza"}],["$","meta","3",{"property":"og:description","content":"Daily steel and cement prices, building materials by area, and fast delivery to your site from Jaguar Smart Construction."}],["$","meta","4",{"property":"og:site_name","content":"Jaguar Smart Construction"}],["$","meta","5",{"property":"og:image","content":"https://jaguarsmart.com/materials/jaguar-logo.png"}],["$","meta","6",{"property":"og:type","content":"website"}],["$","meta","7",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","8",{"name":"twitter:title","content":"Jaguar Smart Materials | Building materials delivered in Cairo & Giza"}],["$","meta","9",{"name":"twitter:description","content":"Daily steel and cement prices, building materials by area, and fast delivery to your site from Jaguar Smart Construction."}],["$","meta","10",{"name":"twitter:image","content":"https://jaguarsmart.com/materials/jaguar-logo.png"}],["$","link","11",{"rel":"icon","href":"/materials/jaguar-mark.png"}],["$","$La","12",{}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@b","staleTime":"$7","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Lc",null,{"parallelRouterKey":"children","template":["$","$Ld",null,{}]}]]}],"isPartial":"$@e","staleTime":"$7","varyParams":"$f"}],"isUpgradeableISRFallback":false,"a":"$@10","rootVaryParams":null,"needsRuntimeRequest":"$@11"}
+5:null
+11:true
+7:300
+7:C
+10:0
+b:"$undefined"
+e:"$undefined"
+6:"$undefined"
