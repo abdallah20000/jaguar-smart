@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #000;
+  --color-paper: #fff;
+  --color-paper-2: #f4f4f4;
+  --color-muted: #666;
+  --color-line: #e3e3e3;
+  --color-on-dark-muted: #9a9a9a;
+  --color-line-dark: #262626;
+  --color-gold: #c49a5c;
+  --color-up: #1a7f37;
+  --color-down: #c62828;
+  --font-sans: var(--font-manrope), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-cinzel), Georgia, serif;
+}
+
+/* ---------- base (same as jaguarsmart.com) ---------- */
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: #fff; color: #000;
+  font-family: var(--font-sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.wrap { width: min(1240px, 100% - 32px); margin-inline: auto; }
+@media (min-width: 640px) { .wrap { width: min(1240px, 100% - 48px); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- header (ported from jaguarsmart.com) ---------- */
+.util { background: #000; color: var(--color-on-dark-muted); font-size: 13px; border-bottom: 1px solid var(--color-line-dark); }
+.util .wrap { display: flex; gap: 28px; align-items: center; height: 38px; }
+.util a { text-decoration: none; }
+.util a:hover { color: #fff; }
+.util .sp { margin-inline-start: auto; }
+@media (max-width: 640px) { .util .hide-sm { display: none; } .util .sp { margin-inline-start: 0; } }
+
+header.site { position: sticky; top: 0; z-index: 40; background: rgba(0,0,0,.94); backdrop-filter: blur(12px); color: #fff; }
+header.site .wrap { display: flex; align-items: center; height: 78px; gap: 40px; }
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.brand img { height: 44px; width: auto; }
+.brand .wm { display: flex; flex-direction: column; line-height: 1.1; }
+.brand .wm b { font-family: var(--font-display); font-weight: 500; letter-spacing: .18em; font-size: 19px; color: var(--color-gold); }
+.brand .wm small { font-size: 9px; letter-spacing: .24em; color: var(--color-gold); margin-top: 5px; }
+nav.main { display: flex; gap: 32px; margin-inline-start: auto; }
+nav.main a { text-decoration: none; font-size: 15px; opacity: .75; padding: 6px 0; border-bottom: 1px solid transparent; }
+nav.main a:hover, nav.main a[aria-current="page"] { opacity: 1; border-bottom-color: #fff; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 500;
+  text-decoration: none; cursor: pointer; padding: 14px 28px; border: 1px solid transparent; transition: background .25s, color .25s, border-color .25s; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-white { background: #fff; color: #000; }
+.btn-white:hover { background: #000; color: #fff; border-color: #fff; }
+.btn-ghost { border-color: rgba(255,255,255,.4); color: #fff; background: transparent; }
+.btn-ghost:hover { border-color: #fff; }
+.btn-ink { background: #000; color: #fff; }
+.btn-ink:hover:not(:disabled) { background: #fff; color: #000; border-color: #000; }
+.btn-line { background: #fff; color: #000; border-color: #000; }
+.btn-line:hover { background: #000; color: #fff; }
+.icon-btn { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: #fff; text-decoration: none; }
+.icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.icon-btn .count { position: absolute; top: 4px; inset-inline-end: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: #fff; color: #000; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+.menu-btn { display: none; background: none; border: 1px solid var(--color-line-dark); color: #fff; width: 44px; height: 44px; cursor: pointer; }
+.menu-btn span { display: block; width: 18px; height: 1.5px; background: currentColor; margin: 4px auto; }
+@media (max-width: 1020px) {
+  header.site .wrap { gap: 8px; height: 68px; }
+  nav.main { position: absolute; top: 68px; inset-inline: 0; flex-direction: column; gap: 0; background: #000; padding: 8px 24px 20px;
+    display: none; border-top: 1px solid var(--color-line-dark); }
+  nav.main.open { display: flex; }
+  nav.main a { padding: 14px 0; border-bottom: 1px solid var(--color-line-dark); font-size: 17px; }
+  .menu-btn { display: block; }
+  header.site .btn-white { display: none; }
+  .brand img { height: 38px; }
+  .brand .wm b { font-size: 16px; }
+}
+@media (max-width: 380px) { .brand .wm { display: none; } }
+
+/* ---------- footer (ported from jaguarsmart.com) ---------- */
+footer.site { background: #000; color: var(--color-on-dark-muted); font-size: 15px; }
+.ftop { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 40px; padding-block: 72px 56px; }
+.ftop img { height: 120px; width: auto; margin-bottom: 18px; }
+.ftop h4 { color: #fff; font-weight: 500; font-size: 15px; margin: 0 0 16px; }
+.ftop ul { list-style: none; margin: 0; padding: 0; }
+.ftop li { margin-bottom: 10px; }
+.ftop a { text-decoration: none; }
+.ftop a:hover { color: #fff; }
+.fbot { border-top: 1px solid var(--color-line-dark); padding-block: 22px; display: flex; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; font-size: 13px; }
+@media (max-width: 900px) { .ftop { grid-template-columns: 1fr 1fr; } .ftop > div:first-child { grid-column: 1 / -1; } }
+
+/* ---------- floating WhatsApp (same as jaguarsmart.com) ---------- */
+.wa { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); inset-inline-end: 18px; z-index: 50; width: 56px; height: 56px;
+  border-radius: 50%; background: #fff; border: 1px solid #000; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.25); cursor: pointer; }
+.wa svg { width: 28px; height: 28px; }
+
+/* ---------- store pieces ---------- */
+.ticker { background: #0d0d0d; color: #cfcfcf; border-bottom: 1px solid var(--color-line-dark); overflow: hidden; font-size: 13px; }
+.ticker-track { display: flex; width: max-content; animation: ticker 40s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+[dir="rtl"] .ticker-track { animation-name: ticker-rtl; }
+@keyframes ticker-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+.up { color: #3fb950; }
+.down { color: #ff6b6b; }
+.up-ink { color: var(--color-up); }
+.down-ink { color: var(--color-down); }
+.field label { display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 4px; }
+.field input, .field select, .field textarea {
+  width: 100%; font: inherit; font-size: 16px; color: #000; background: #fff; border: 1px solid var(--color-line);
+  padding: 11px 12px; border-radius: 0; -webkit-appearance: none; appearance: none; }
+.field select { background-image: linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%);
+  background-size: 5px 5px; background-repeat: no-repeat; background-position: right 16px center, right 11px center; padding-inline-end: 32px; }
+[dir="rtl"] .field select { background-position: left 11px center, left 16px center; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #000; }
+.field.invalid input, .field.invalid textarea { border-color: var(--color-down); }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
