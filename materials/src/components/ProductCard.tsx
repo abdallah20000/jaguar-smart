@@ -23,13 +23,13 @@ export function ProductCard({ product }: { product: Product }) {
   const { priceOf, stockOf, live } = useStore();
   const stock = stockOf(product.id);
   return (
-    <Link href={`/product/${product.slug}`} className="group flex flex-col border border-line bg-white no-underline transition-colors hover:border-black">
-      <div className="aspect-[4/3] overflow-hidden"><ProductImage product={product} /></div>
+    <Link href={`/product/${product.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-[#eee6d8] bg-white no-underline shadow-[0_2px_10px_rgba(0,0,0,.05)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(0,0,0,.12)]">
+      <div className="relative aspect-[4/3] overflow-hidden"><ProductImage product={product} className="transition duration-500 group-hover:scale-105" /></div>
       <div className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
-        {product.brand && <span className="text-xs text-muted">{product.brand.name}</span>}
+        {product.brand && <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-dark">{product.brand.name}</span>}
         <h3 className="m-0 line-clamp-2 text-[15px] font-medium leading-snug">{product.name}</h3>
         <div className="mt-auto pt-2">
-          <div className={`text-base font-semibold tabular-nums ${live ? "" : "opacity-60"}`}>
+          <div className={`text-lg font-bold tabular-nums ${live ? "" : "opacity-60"}`}>
             {egp(priceOf(product))}<span className="text-xs font-normal text-muted"> / {UNIT_LABEL[product.unit]}</span>
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">

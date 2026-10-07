@@ -3,12 +3,15 @@
 @theme {
   --color-ink: #000;
   --color-paper: #fff;
-  --color-paper-2: #f4f4f4;
+  --color-paper-2: #f6f1e8;
+  --color-cream: #fbf8f3;
   --color-muted: #666;
   --color-line: #e3e3e3;
   --color-on-dark-muted: #9a9a9a;
   --color-line-dark: #262626;
   --color-gold: #c49a5c;
+  --color-gold-dark: #8a6430;
+  --color-gold-light: #f3e7d3;
   --color-up: #1a7f37;
   --color-down: #c62828;
   --font-sans: var(--font-manrope), "Helvetica Neue", Arial, sans-serif;
@@ -45,6 +48,7 @@ a { color: inherit; }
 @media (max-width: 640px) { .util .hide-sm { display: none; } .util .sp { margin-inline-start: 0; } }
 
 header.site { position: sticky; top: 0; z-index: 40; background: rgba(0,0,0,.94); backdrop-filter: blur(12px); color: #fff; }
+header.site .btn { border-radius: 0; }
 header.site .wrap { display: flex; align-items: center; height: 78px; gap: 40px; }
 .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
 .brand img { height: 44px; width: auto; }
@@ -54,17 +58,19 @@ header.site .wrap { display: flex; align-items: center; height: 78px; gap: 40px;
 nav.main { display: flex; gap: 32px; margin-inline-start: auto; }
 nav.main a { text-decoration: none; font-size: 15px; opacity: .75; padding: 6px 0; border-bottom: 1px solid transparent; }
 nav.main a:hover, nav.main a[aria-current="page"] { opacity: 1; border-bottom-color: #fff; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 500;
+.btn { border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 500;
   text-decoration: none; cursor: pointer; padding: 14px 28px; border: 1px solid transparent; transition: background .25s, color .25s, border-color .25s; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-white { background: #fff; color: #000; }
 .btn-white:hover { background: #000; color: #fff; border-color: #fff; }
 .btn-ghost { border-color: rgba(255,255,255,.4); color: #fff; background: transparent; }
 .btn-ghost:hover { border-color: #fff; }
-.btn-ink { background: #000; color: #fff; }
-.btn-ink:hover:not(:disabled) { background: #fff; color: #000; border-color: #000; }
-.btn-line { background: #fff; color: #000; border-color: #000; }
-.btn-line:hover { background: #000; color: #fff; }
+.btn-ink { background: var(--color-gold); color: #000; font-weight: 600; box-shadow: 0 6px 18px rgba(196,154,92,.35); }
+.btn-ink:hover:not(:disabled) { background: #b3874a; }
+.btn-dark { background: #000; color: #fff; }
+.btn-dark:hover { background: #222; }
+.btn-line { background: #fff; color: #000; border-color: #d9cdb8; }
+.btn-line:hover { border-color: var(--color-gold); background: var(--color-cream); }
 .icon-btn { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: #fff; text-decoration: none; }
 .icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; }
 .icon-btn .count { position: absolute; top: 4px; inset-inline-end: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
@@ -114,12 +120,12 @@ footer.site { background: #000; color: var(--color-on-dark-muted); font-size: 15
 .down-ink { color: var(--color-down); }
 .field label { display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 4px; }
 .field input, .field select, .field textarea {
-  width: 100%; font: inherit; font-size: 16px; color: #000; background: #fff; border: 1px solid var(--color-line);
-  padding: 11px 12px; border-radius: 0; -webkit-appearance: none; appearance: none; }
+  width: 100%; font: inherit; font-size: 16px; color: #000; background: #fff; border: 1px solid #ddd3c4;
+  padding: 11px 12px; border-radius: 10px; -webkit-appearance: none; appearance: none; }
 .field select { background-image: linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%);
   background-size: 5px 5px; background-repeat: no-repeat; background-position: right 16px center, right 11px center; padding-inline-end: 32px; }
 [dir="rtl"] .field select { background-position: left 11px center, left 16px center; }
-.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #000; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,154,92,.25); }
 .field.invalid input, .field.invalid textarea { border-color: var(--color-down); }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }

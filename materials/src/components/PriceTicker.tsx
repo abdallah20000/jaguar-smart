@@ -29,8 +29,8 @@ export function PriceTicker({ initial }: { initial: CurrentPrice[] }) {
   return (
     <div className="ticker" aria-label={t("ticker")}>
       <div className="flex">
-        <span className="z-10 flex shrink-0 items-center gap-2 bg-[#0d0d0d] px-4 font-semibold text-white">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#3fb950]" aria-hidden="true" />EGP{t("perTon")}
+        <span className="z-10 flex shrink-0 items-center gap-2 bg-gold px-4 font-bold text-black">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-black" aria-hidden="true" />EGP{t("perTon")}
         </span>
         <div className="ticker-track" aria-hidden="false">{items}{items.map((el) => <span key={`d-${el.key}`} aria-hidden="true">{el}</span>)}</div>
       </div>
