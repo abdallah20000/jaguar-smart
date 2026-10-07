@@ -22,7 +22,7 @@ export function QuoteStatus() {
   const at = STEPS.indexOf(q.status);
   return (
     <div className="wrap max-w-2xl py-10 sm:py-14">
-      <h1 className="m-0 text-3xl font-light">{t("trackTitle", { number: q.quote_number })}</h1>
+      <h1 className="m-0 text-3xl font-semibold">{t("trackTitle", { number: q.quote_number })}</h1>
       <p className="text-sm text-muted">{new Date(q.created_at).toLocaleString("en-GB", { timeZone: "Africa/Cairo" })}</p>
       <ol className="my-8 grid list-none grid-cols-4 gap-2 p-0">
         {STEPS.map((s, i) => (

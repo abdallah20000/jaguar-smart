@@ -18,10 +18,10 @@ export function PriceTicker({ initial }: { initial: CurrentPrice[] }) {
   if (!rows.length) return null;
   const items = rows.map((r) => (
     <Link key={r.item_id} href="/prices" className="flex shrink-0 items-center gap-2 px-5 py-2.5 no-underline">
-      <span className="text-white">{r.manufacturer}</span>
-      <span className="text-on-dark-muted">{r.kind === "steel" ? `${r.size_mm} mm` : r.label.split(" ")[0]}</span>
-      <span className="font-semibold tabular-nums text-white">{num(r.price)}</span>
-      <span className={`tabular-nums ${r.change_pct == null || r.change_pct === 0 ? "text-on-dark-muted" : r.change_pct > 0 ? "up" : "down"}`}>
+      <span className="font-semibold">{r.manufacturer}</span>
+      <span className="text-muted">{r.kind === "steel" ? `${r.size_mm} mm` : r.label.split(" ")[0]}</span>
+      <span className="font-bold tabular-nums">{num(r.price)}</span>
+      <span className={`tabular-nums ${r.change_pct == null || r.change_pct === 0 ? "text-muted" : r.change_pct > 0 ? "up" : "down"}`}>
         {r.change_pct != null && r.change_pct !== 0 ? (r.change_pct > 0 ? "▲ " : "▼ ") : ""}{pct(r.change_pct)}
       </span>
     </Link>

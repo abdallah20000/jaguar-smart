@@ -228,6 +228,75 @@ footer{background:#000;color:var(--on-dark-muted);font-size:15px}
 
 .wa{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom,0px));right:22px;z-index:50;width:54px;height:54px;border-radius:50%;background:#fff;border:1px solid #000;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .wa svg{width:28px;height:28px}
+
+/* ===== Light theme (Oct 2026): white first, soft gold accents, darker & heavier text. The hero villa animation keeps its dark stage. ===== */
+:root,:root[data-theme="dark"]{--paper:#fff;--paper-2:#FAF6EF;--ink:#1c1a17;--muted:#55504a;--line:#ECE3D3;--gold:#D6B98A;--gold-text:#94713C;--gold-bg:#F7EFE2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#fff;--paper-2:#FAF6EF;--ink:#1c1a17;--muted:#55504a;--line:#ECE3D3}}
+body{color:var(--ink)}
+.util{background:var(--gold-bg);color:#6d5a3d;border-bottom:1px solid var(--line)}
+.util a:hover{color:var(--ink)}
+header.site{background:rgba(255,255,255,.97);color:var(--ink);border-bottom:1px solid var(--line);box-shadow:0 2px 14px rgba(60,40,10,.06)}
+.brand .wm b,.brand .wm small{color:var(--gold-text)}
+nav.main a{opacity:1;color:#3b3732;font-weight:500}
+nav.main a:hover{border-bottom-color:var(--gold)}
+header.site .btn-white{background:var(--gold);color:var(--ink);border-radius:10px;font-weight:600}
+header.site .btn-white:hover{background:#c9a76f;color:var(--ink);border-color:transparent}
+.menu-btn{color:var(--ink);border-color:var(--line);border-radius:10px}
+@media (max-width:1020px){nav.main{background:#fff;border-top:1px solid var(--line);box-shadow:0 14px 24px rgba(60,40,10,.08)}nav.main a{border-bottom-color:var(--line)}}
+.btn{border-radius:10px}
+.hero h1{font-weight:500}
+.hero .lead{color:#d8d2c8}
+.hero .note{color:#c9c2b6}
+.hero .btn-white{background:var(--gold);color:var(--ink);font-weight:600}
+.hero .btn-white:hover{background:#c9a76f;color:var(--ink);border-color:transparent}
+.standards{background:var(--paper-2);color:var(--muted);border-top:0;border-bottom:1px solid var(--line)}
+.standards .lbl{color:var(--ink);font-weight:600}
+.standards ul{color:#3b3732;font-weight:600}
+h2{font-weight:600;color:var(--ink)}
+.kicker{color:var(--gold-text);font-weight:700;letter-spacing:.04em}
+.head p{color:var(--muted)}
+.tab{color:#6b655d}
+.tab[aria-selected="true"]{font-weight:700}
+.tab::after{background:var(--gold);height:2px}
+.panel h3{font-weight:600}
+.panel p{color:var(--muted)}
+.panel .art{background:var(--gold-bg);border-radius:18px}
+.panel .art svg [stroke]{stroke:var(--gold-text)}
+.panel .art svg text{fill:var(--gold-text)}
+.panel .art svg circle[fill]{fill:var(--gold)}
+.panel li::before{background:var(--gold);border-radius:50%;width:7px;height:7px;margin-top:9px}
+.aud{background:var(--paper-2)}
+.aud-item h3{font-weight:600}
+.aud-item a{color:var(--gold-text)}
+.proc{background:#fff;color:var(--ink);border-top:1px solid var(--line)}
+.proc .kicker{color:var(--gold-text)}
+.proc .head p,.steps p{color:var(--muted)}
+.steps li::before{background:var(--line);height:2px}
+.steps li::after{background:var(--gold);border-radius:50%;width:13px;height:13px;top:-1px}
+.steps .n{color:var(--gold-text);font-weight:700}
+.steps h3{font-weight:600}
+.filters button{border-radius:999px}
+.filters button[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-bg);color:var(--ink)}
+.pcard .ph{background:var(--gold-bg);border-radius:16px}
+.pcard .ph svg>rect:first-child{fill:var(--gold-bg)}
+.pcard .ph svg [stroke]{stroke:var(--gold-text)}
+.pcard .ph svg g[fill="#fff"]{fill:var(--gold);opacity:.35}
+.pcard h3{font-weight:600}
+.quote{background:var(--paper-2)}
+.quote svg{color:var(--gold)}
+.quote blockquote{font-weight:500}
+.band{background:linear-gradient(135deg,#FBF5EA,#EEDDBE);color:var(--ink)}
+.band img{opacity:.14}
+.band .btn-white{background:var(--ink);color:#fff;border-radius:10px}
+.band .btn-white:hover{background:#3b3732;color:#fff;border-color:transparent}
+.btn-ink{background:var(--gold);color:var(--ink);font-weight:600}
+.btn-ink:hover{background:#c9a76f;color:var(--ink);border-color:transparent}
+.field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:var(--gold)}
+footer{background:#221e19;color:#cbc2b4}
+.ftop h4{color:#fff}
+.fbot{border-top-color:#3a332a}
+.social a{border-color:#3a332a;border-radius:10px}
+.wa{background:var(--gold);border-color:var(--gold)}
 </style>
 </head>
 <body>

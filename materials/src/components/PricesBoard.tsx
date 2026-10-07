@@ -43,14 +43,14 @@ export function PricesBoard({ initialArea, initialPrices, initialHistory }: Prop
 
   return (
     <div className="wrap py-10 sm:py-14">
-      <h1 className="m-0 text-[clamp(28px,4vw,44px)] font-light tracking-[-0.03em]">{t("title")}</h1>
+      <h1 className="m-0 text-[clamp(28px,4vw,44px)] font-semibold tracking-[-0.03em]">{t("title")}</h1>
       <p className="mb-6 mt-3 max-w-[60ch] text-muted">{t("intro", { area: area.name })}</p>
-      {sample && <p className="mb-6 border-s-4 border-black bg-paper-2 px-4 py-3 text-sm">{t("sampleNotice")}</p>}
+      {sample && <p className="mb-6 rounded-xl border-s-4 border-gold bg-paper-2 px-4 py-3 text-sm">{t("sampleNotice")}</p>}
 
       <div role="tablist" aria-label="Area" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
         {areas.map((a) => (
           <button key={a.slug} role="tab" aria-selected={a.slug === slug} onClick={() => setSlug(a.slug)}
-            className={`shrink-0 border px-4 py-2 text-sm ${a.slug === slug ? "border-black bg-black text-white" : "border-line bg-white text-muted hover:border-black hover:text-black"}`}>
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm ${a.slug === slug ? "border-gold bg-gold-light font-semibold text-ink" : "border-line bg-white text-muted hover:border-gold hover:text-ink"}`}>
             {a.name.replace(/ \(.*\)/, "")}
           </button>
         ))}
@@ -60,7 +60,7 @@ export function PricesBoard({ initialArea, initialPrices, initialHistory }: Prop
         {groups.map(([key, rows]) => {
           const [kind, maker] = key.split("|");
           return (
-            <section key={key} className="min-w-0 border border-line">
+            <section key={key} className="min-w-0 overflow-hidden rounded-2xl border border-line">
               <header className="flex items-baseline justify-between gap-3 border-b border-line bg-paper-2 px-4 py-3">
                 <h2 className="m-0 text-lg font-medium">{maker}</h2>
                 <span className="text-xs text-muted">{kind === "steel" ? t("steel") : t("cement")}</span>

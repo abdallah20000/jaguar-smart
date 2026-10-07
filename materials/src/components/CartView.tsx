@@ -41,7 +41,7 @@ export function CartView() {
   if (!cart.length) {
     return (
       <div className="wrap max-w-xl py-16 text-center">
-        <h1 className="m-0 text-3xl font-light">Your cart is empty</h1>
+        <h1 className="m-0 text-3xl font-semibold">Your cart is empty</h1>
         <p className="text-muted">Browse materials or send us your full list and we&apos;ll price it.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/" className="btn btn-ink">Browse materials</Link>
@@ -53,7 +53,7 @@ export function CartView() {
 
   return (
     <div className="wrap py-10 sm:py-14">
-      <h1 className="m-0 mb-6 text-[clamp(28px,4vw,40px)] font-light tracking-[-0.03em]">Cart</h1>
+      <h1 className="m-0 mb-6 text-[clamp(28px,4vw,40px)] font-semibold tracking-[-0.03em]">Cart</h1>
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <ul className="m-0 list-none border-t border-line p-0">
           {lines.map(({ p, qty }) => {

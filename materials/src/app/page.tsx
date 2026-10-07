@@ -85,15 +85,15 @@ export default async function Home() {
       )}
 
       <section className="wrap">
-        <div className="relative grid gap-6 overflow-hidden rounded-3xl bg-black px-6 py-10 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:px-12 sm:py-14">
-          <span className="pointer-events-none absolute -end-20 -top-20 h-64 w-64 rounded-full bg-gold/25 blur-3xl" aria-hidden="true" />
+        <div className="relative grid gap-6 overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-[#fbf5ea] to-[#eeddbe] px-6 py-10 sm:grid-cols-[1fr_auto] sm:items-center sm:px-12 sm:py-14">
+          
           <div>
             <h2 className="m-0 text-[clamp(26px,3.6vw,40px)] font-semibold tracking-[-0.02em]">{t("rfqTitle")}</h2>
-            <p className="mb-0 mt-3 max-w-[52ch] text-on-dark-muted">{t("rfqText")}</p>
+            <p className="mb-0 mt-3 max-w-[52ch] text-[#4a443c]">{t("rfqText")}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/quote" className="btn btn-ink">{t("rfqCta")}</Link>
-            <Link href="/prices" className="btn btn-ghost">{t("pricesCta")}</Link>
+            <Link href="/quote" className="btn btn-dark">{t("rfqCta")}</Link>
+            <Link href="/prices" className="btn btn-white">{t("pricesCta")}</Link>
           </div>
         </div>
       </section>

@@ -77,7 +77,7 @@ export function CategoryView({ category, products, others }: { category: Categor
         )}
         <div className="wrap relative py-10 sm:py-14">
           <nav className="mb-3 text-sm text-white/70"><Link href="/" className="no-underline hover:underline">Materials</Link> / {category.name}</nav>
-          <h1 className="m-0 text-[clamp(30px,5vw,48px)] font-light tracking-[-0.03em]">{category.name}</h1>
+          <h1 className="m-0 text-[clamp(30px,5vw,48px)] font-semibold tracking-[-0.03em]">{category.name}</h1>
           <p className="mb-0 mt-2 text-white/80">{t("products", { count: products.length })}</p>
         </div>
       </section>
@@ -86,7 +86,7 @@ export function CategoryView({ category, products, others }: { category: Categor
         <div className="no-scrollbar -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           {others.map((c) => (
             <Link key={c.id} href={`/category/${c.slug}`} aria-current={c.id === category.id ? "page" : undefined}
-              className={`shrink-0 border px-3 py-1.5 text-sm no-underline ${c.id === category.id ? "border-black bg-black text-white" : "border-line text-muted hover:border-black hover:text-black"}`}>
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-sm no-underline ${c.id === category.id ? "border-gold bg-gold-light font-semibold text-ink" : "border-line text-muted hover:border-gold hover:text-ink"}`}>
               {c.name}
             </Link>
           ))}

@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #000;
+  --color-ink: #1c1a17;
   --color-paper: #fff;
-  --color-paper-2: #f6f1e8;
+  --color-paper-2: #faf6ef;
   --color-cream: #fbf8f3;
-  --color-muted: #666;
-  --color-line: #e3e3e3;
+  --color-muted: #55504a;
+  --color-line: #ece3d3;
   --color-on-dark-muted: #9a9a9a;
   --color-line-dark: #262626;
-  --color-gold: #c49a5c;
-  --color-gold-dark: #8a6430;
-  --color-gold-light: #f3e7d3;
+  --color-gold: #d6b98a;
+  --color-gold-dark: #94713c;
+  --color-gold-light: #f7efe2;
   --color-up: #1a7f37;
   --color-down: #c62828;
   --font-sans: var(--font-manrope), "Helvetica Neue", Arial, sans-serif;
@@ -23,7 +23,7 @@
 /* ---------- base (same as jaguarsmart.com) ---------- */
 html { scroll-behavior: smooth; }
 body {
-  margin: 0; background: #fff; color: #000;
+  margin: 0; background: #fff; color: #1c1a17;
   font-family: var(--font-sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -40,49 +40,51 @@ a { color: inherit; }
 
 @layer components {
 /* ---------- header (ported from jaguarsmart.com) ---------- */
-.util { background: #000; color: var(--color-on-dark-muted); font-size: 13px; border-bottom: 1px solid var(--color-line-dark); }
+.util { background: var(--color-gold-light); color: #6d5a3d; font-size: 13px; border-bottom: 1px solid var(--color-line); }
 .util .wrap { display: flex; gap: 28px; align-items: center; height: 38px; }
 .util a { text-decoration: none; }
-.util a:hover { color: #fff; }
+.util a:hover { color: var(--color-ink); }
 .util .sp { margin-inline-start: auto; }
 @media (max-width: 640px) { .util .hide-sm { display: none; } .util .sp { margin-inline-start: 0; } }
 
-header.site { position: sticky; top: 0; z-index: 40; background: rgba(0,0,0,.94); backdrop-filter: blur(12px); color: #fff; }
-header.site .btn { border-radius: 0; }
+header.site { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.97); backdrop-filter: blur(12px); color: var(--color-ink); border-bottom: 1px solid var(--color-line); box-shadow: 0 2px 14px rgba(60,40,10,.06); }
+
 header.site .wrap { display: flex; align-items: center; height: 78px; gap: 40px; }
 .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
 .brand img { height: 44px; width: auto; }
 .brand .wm { display: flex; flex-direction: column; line-height: 1.1; }
-.brand .wm b { font-family: var(--font-display); font-weight: 500; letter-spacing: .18em; font-size: 19px; color: var(--color-gold); }
-.brand .wm small { font-size: 9px; letter-spacing: .24em; color: var(--color-gold); margin-top: 5px; }
+.brand .wm b { font-family: var(--font-display); font-weight: 500; letter-spacing: .18em; font-size: 19px; color: var(--color-gold-dark); }
+.brand .wm small { font-size: 9px; letter-spacing: .24em; color: var(--color-gold-dark); margin-top: 5px; }
 nav.main { display: flex; gap: 32px; margin-inline-start: auto; }
-nav.main a { text-decoration: none; font-size: 15px; opacity: .75; padding: 6px 0; border-bottom: 1px solid transparent; }
-nav.main a:hover, nav.main a[aria-current="page"] { opacity: 1; border-bottom-color: #fff; }
+nav.main a { text-decoration: none; font-size: 15px; font-weight: 500; color: #3b3732; padding: 6px 0; border-bottom: 1px solid transparent; }
+nav.main a:hover, nav.main a[aria-current="page"] { border-bottom-color: var(--color-gold); }
 .btn { border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 500;
   text-decoration: none; cursor: pointer; padding: 14px 28px; border: 1px solid transparent; transition: background .25s, color .25s, border-color .25s; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-white { background: #fff; color: #000; }
-.btn-white:hover { background: #000; color: #fff; border-color: #fff; }
+.btn-white { background: #fff; color: var(--color-ink); }
+.btn-white:hover { background: var(--color-gold-light); }
+header.site .btn-white { background: var(--color-gold); font-weight: 600; }
+header.site .btn-white:hover { background: #c9a76f; }
 .btn-ghost { border-color: rgba(255,255,255,.4); color: #fff; background: transparent; }
 .btn-ghost:hover { border-color: #fff; }
-.btn-ink { background: var(--color-gold); color: #000; font-weight: 600; box-shadow: 0 6px 18px rgba(196,154,92,.35); }
-.btn-ink:hover:not(:disabled) { background: #b3874a; }
+.btn-ink { background: var(--color-gold); color: var(--color-ink); font-weight: 600; box-shadow: 0 6px 18px rgba(214,185,138,.35); }
+.btn-ink:hover:not(:disabled) { background: #c9a76f; }
 .btn-dark { background: #000; color: #fff; }
 .btn-dark:hover { background: #222; }
 .btn-line { background: #fff; color: #000; border-color: #d9cdb8; }
 .btn-line:hover { border-color: var(--color-gold); background: var(--color-cream); }
-.icon-btn { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: #fff; text-decoration: none; }
+.icon-btn { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: var(--color-ink); text-decoration: none; }
 .icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; }
 .icon-btn .count { position: absolute; top: 4px; inset-inline-end: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
-  background: #fff; color: #000; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
-.menu-btn { display: none; background: none; border: 1px solid var(--color-line-dark); color: #fff; width: 44px; height: 44px; cursor: pointer; }
+  background: var(--color-gold); color: var(--color-ink); font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+.menu-btn { display: none; background: none; border: 1px solid var(--color-line); border-radius: 10px; color: var(--color-ink); width: 44px; height: 44px; cursor: pointer; }
 .menu-btn span { display: block; width: 18px; height: 1.5px; background: currentColor; margin: 4px auto; }
 @media (max-width: 1020px) {
   header.site .wrap { gap: 8px; height: 68px; }
-  nav.main { position: absolute; top: 68px; inset-inline: 0; flex-direction: column; gap: 0; background: #000; padding: 8px 24px 20px;
-    display: none; border-top: 1px solid var(--color-line-dark); }
+  nav.main { position: absolute; top: 68px; inset-inline: 0; flex-direction: column; gap: 0; background: #fff; padding: 8px 24px 20px;
+    display: none; border-top: 1px solid var(--color-line); box-shadow: 0 14px 24px rgba(60,40,10,.08); }
   nav.main.open { display: flex; }
-  nav.main a { padding: 14px 0; border-bottom: 1px solid var(--color-line-dark); font-size: 17px; }
+  nav.main a { padding: 14px 0; border-bottom: 1px solid var(--color-line); font-size: 17px; }
   .menu-btn { display: block; }
   header.site .btn-white { display: none; }
   .brand img { height: 38px; }
@@ -91,7 +93,7 @@ nav.main a:hover, nav.main a[aria-current="page"] { opacity: 1; border-bottom-co
 @media (max-width: 380px) { .brand .wm { display: none; } }
 
 /* ---------- footer (ported from jaguarsmart.com) ---------- */
-footer.site { background: #000; color: var(--color-on-dark-muted); font-size: 15px; }
+footer.site { background: #221e19; color: #cbc2b4; font-size: 15px; }
 .ftop { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 40px; padding-block: 72px 56px; }
 .ftop img { height: 120px; width: auto; margin-bottom: 18px; }
 .ftop h4 { color: #fff; font-weight: 500; font-size: 15px; margin: 0 0 16px; }
@@ -99,23 +101,23 @@ footer.site { background: #000; color: var(--color-on-dark-muted); font-size: 15
 .ftop li { margin-bottom: 10px; }
 .ftop a { text-decoration: none; }
 .ftop a:hover { color: #fff; }
-.fbot { border-top: 1px solid var(--color-line-dark); padding-block: 22px; display: flex; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; font-size: 13px; }
+.fbot { border-top: 1px solid #3a332a; padding-block: 22px; display: flex; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; font-size: 13px; }
 @media (max-width: 900px) { .ftop { grid-template-columns: 1fr 1fr; } .ftop > div:first-child { grid-column: 1 / -1; } }
 
 /* ---------- floating WhatsApp (same as jaguarsmart.com) ---------- */
 .wa { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); inset-inline-end: 18px; z-index: 50; width: 56px; height: 56px;
-  border-radius: 50%; background: #fff; border: 1px solid #000; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.25); cursor: pointer; }
+  border-radius: 50%; background: var(--color-gold); border: 0; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.25); cursor: pointer; }
 .wa svg { width: 28px; height: 28px; }
 
 /* ---------- store pieces ---------- */
-.ticker { background: #0d0d0d; color: #cfcfcf; border-bottom: 1px solid var(--color-line-dark); overflow: hidden; font-size: 13px; }
+.ticker { background: #fff; color: #3b3732; border-bottom: 1px solid var(--color-line); overflow: hidden; font-size: 13px; }
 .ticker-track { display: flex; width: max-content; animation: ticker 40s linear infinite; }
 .ticker:hover .ticker-track { animation-play-state: paused; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 [dir="rtl"] .ticker-track { animation-name: ticker-rtl; }
 @keyframes ticker-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
-.up { color: #3fb950; }
-.down { color: #ff6b6b; }
+.up { color: var(--color-up); }
+.down { color: var(--color-down); }
 .up-ink { color: var(--color-up); }
 .down-ink { color: var(--color-down); }
 .field label { display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 4px; }

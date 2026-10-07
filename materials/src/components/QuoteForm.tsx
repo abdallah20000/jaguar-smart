@@ -74,7 +74,7 @@ export function QuoteForm() {
     return (
       <div className="wrap max-w-xl py-14">
         <p className="m-0 text-4xl">✓</p>
-        <h1 className="mb-3 mt-2 text-3xl font-light">{t("doneTitle", { number: done.number })}</h1>
+        <h1 className="mb-3 mt-2 text-3xl font-semibold">{t("doneTitle", { number: done.number })}</h1>
         <p className="text-muted">{t("doneText", { phone: done.phone })}</p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link href={link} className="btn btn-ink">{t("openLink")}</Link>
@@ -88,7 +88,7 @@ export function QuoteForm() {
   const err = (k: string) => errors[k] ? <p className="mb-0 mt-1 text-sm text-down" role="alert">{errors[k]}</p> : null;
   return (
     <div className="wrap max-w-3xl py-10 sm:py-14">
-      <h1 className="m-0 text-[clamp(28px,4vw,44px)] font-light tracking-[-0.03em]">{t("title")}</h1>
+      <h1 className="m-0 text-[clamp(28px,4vw,44px)] font-semibold tracking-[-0.03em]">{t("title")}</h1>
       <p className="mb-8 mt-3 max-w-[56ch] text-muted">{t("intro")}</p>
       <form onSubmit={submit} noValidate className="grid gap-5">
         <div className={`field ${errors.materials ? "invalid" : ""}`}>

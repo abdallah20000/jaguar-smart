@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Image credits", robots: { index: fal
 export default function Credits() {
   return (
     <div className="wrap max-w-3xl py-12">
-      <h1 className="m-0 text-3xl font-light">Image credits</h1>
+      <h1 className="m-0 text-3xl font-semibold">Image credits</h1>
       <p className="text-muted">Photos used in the materials store, with their authors and licenses.</p>
       <ul className="m-0 list-none p-0">
         {credits.map((c) => (
