@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Tuya Suez المخزن</title>
+<title>Jaguar المخزن</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 <style>
 :root{
   --ink:#000; --paper:#fff; --line:#e3e3e3; --soft:#f5f5f5; --muted:#6f6f6f;
-  --accent:#F25802; --accent-dark:#c24600; --cream:#FEF5E7; --red:#c62828; --amber:#b26a00;
+  --accent:#94713C; --accent-dark:#7d5d30; --cream:#FAF6EF; --red:#c62828; --amber:#b26a00;
   --font:"IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
 }
 *{box-sizing:border-box}
@@ -110,21 +110,41 @@ tr.row:hover td{background:#fafafa}
   .qty{font-size:22px}
   td.empty{border:1px solid var(--line);border-radius:8px}
 }
+
+/* Jaguar light theme */
+#login,#gate{background:#FAF6EF !important;color:#1c1a17}
+.login-box{color:#1c1a17}
+.login-box p,.login-box label,#gate p{color:#55504a}
+.login-box input{background:#fff;border-color:#ddd3c4;color:#1c1a17}
+.login-box .back{color:#55504a}
+.brand{color:#94713C;font-family:"Cinzel",Georgia,serif;letter-spacing:.14em}
+header{background:#fff;color:#1c1a17;border-bottom:1px solid #ECE3D3;box-shadow:0 2px 14px rgba(60,40,10,.06)}
+header .who{color:#55504a}
+header .who a{color:#1c1a17 !important;font-weight:600}
+.ghost{border-color:#ddd3c4;color:#1c1a17}
+.qv-head{background:#fff;color:#1c1a17;border-bottom:1px solid #ECE3D3}
+.qv-head .x{color:#1c1a17}
+.primary{background:#94713C}
+.primary:hover{background:#7d5d30}
+.pipe,.stats,.kinds{border-color:#d9c9ab}
+.pipe button.on,.stats button.on,.kinds button[aria-pressed="true"]{background:#94713C}
+.tabs button[aria-selected="true"]{border-bottom-color:#94713C}
+.toast{background:#1c1a17}
 </style>
 </head>
 <body>
 
 <section id="gate">
   <div>
-    <img src="/tuya-suez/icon.png" alt="" width="72" height="72" style="border-radius:16px;margin:0 auto 12px"><div class="brand" style="text-align:center">tuya suez</div>
+    <img src="/crm/jaguar-mark.png" alt="" width="104" height="72" style="margin:0 auto 12px"><div class="brand" style="text-align:center">JAGUAR</div>
     <p id="gateMsg">بيحمّل…</p>
   </div>
 </section>
 
 <div id="app" class="hidden">
   <header>
-    <div class="brand"><img src="/tuya-suez/icon.png" alt="" width="30" height="30" style="border-radius:7px;vertical-align:-7px;margin-inline-end:8px">tuya suez <span style="font-size:14px;color:#fff;font-weight:500">المخزن</span></div>
-    <div class="who"><a href="/tuya-suez/crm.html" class="admin-only hidden">العملاء</a><a href="/tuya-suez/installs.html" class="admin-only hidden">التركيبات</a><span class="email" id="userEmail" dir="ltr"></span><button class="ghost" id="logout">خروج</button></div>
+    <div class="brand"><img src="/crm/jaguar-mark.png" alt="" width="43" height="30" style="vertical-align:-7px;margin-inline-end:8px">JAGUAR <span style="font-size:14px;color:#fff;font-weight:500">المخزن</span></div>
+    <div class="who"><a href="/crm/" class="admin-only hidden">العملاء</a><a href="/crm/installs.html" class="admin-only hidden">التركيبات</a><span class="email" id="userEmail" dir="ltr"></span><button class="ghost" id="logout">خروج</button></div>
   </header>
   <main>
     <div class="stats" id="stats"></div>
@@ -196,7 +216,7 @@ tr.row:hover td{background:#fafafa}
 <div class="toast hidden" id="toast"></div>
 
 <script>
-const COMPANY_ID = "tuya-suez", LOGIN_PAGE = "/tuya-suez/crm.html";
+const COMPANY_ID = "jaguar", LOGIN_PAGE = "/crm/";
 const SUPABASE_URL = "https://snrsfpprlynixotjipmo.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -211,17 +231,17 @@ const isLow = i => i.min_qty != null && Number(i.quantity) <= Number(i.min_qty);
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("hidden");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add("hidden"),2600)}
 
 // ---------- AUTH ----------
-$("logout").onclick = async ()=>{ await sb.auth.signOut(); location.replace("/tuya-suez/crm.html"); };
+$("logout").onclick = async ()=>{ await sb.auth.signOut(); location.replace("/crm/"); };
 // supabase-js can deadlock if the auth callback awaits other supabase calls, so defer
 sb.auth.onAuthStateChange((_ev, session)=>{ setTimeout(()=>onSession(session), 0); });
 async function onSession(session){
   user = session?.user || null;
-  if(!user){ location.replace("/tuya-suez/crm.html"); return; }
+  if(!user){ location.replace("/crm/"); return; }
   const { data: role } = await sb.rpc("my_role");
   const { data: company } = await sb.rpc("my_company");
   if(company && company !== COMPANY_ID){ $("gateMsg").innerHTML = 'الحساب ده تبع شركة تانية. <a href="' + LOGIN_PAGE + '">ارجع</a>'; return; }
   if(role !== "admin" && role !== "inventory"){
-    $("gateMsg").innerHTML = 'الحساب ده مش مسموح له يدخل المخزن. <a href="/tuya-suez/crm.html">ارجع</a>';
+    $("gateMsg").innerHTML = 'الحساب ده مش مسموح له يدخل المخزن. <a href="/crm/">ارجع</a>';
     return;
   }
   document.querySelectorAll(".admin-only").forEach(a=>a.classList.toggle("hidden", role !== "admin"));
