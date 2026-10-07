@@ -107,6 +107,9 @@ tr.inactive td{color:var(--muted)}
 .q-totals{margin:18px 0 0 auto;width:min(360px,100%)}
 .q-totals div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
 .q-totals input{width:70px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;text-align:center}
+.q-totals .disc-chips{justify-content:flex-start;gap:6px;border-bottom:0;padding-top:0}
+.disc-chips button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.disc-chips button.on{background:var(--accent,#94713C);border-color:var(--accent,#94713C);color:#fff}
 .q-totals .grand{font-size:20px;font-weight:700;border-bottom:2px solid var(--ink)}
 .qv-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:#fff}
 @media (max-width:720px){
@@ -420,10 +423,12 @@ header .who a{color:#1c1a17 !important;font-weight:600}
         </table>
       </div>
 
+      <datalist id="discList"><option value="10"><option value="20"><option value="30"><option value="40"></datalist>
       <div class="q-totals">
         <div><span>إجمالي المنتجات</span><b id="tSub" dir="ltr">0</b></div>
         <div><span>تركيب وبرمجة <input id="tInstPct" type="number" min="0" step="any" dir="ltr"> %</span><b id="tInst" dir="ltr">0</b></div>
         <div><span>خصم <input id="tDiscPct" type="number" min="0" max="100" step="any" dir="ltr"> %</span><b id="tDisc" dir="ltr">0</b></div>
+        <div class="disc-chips" id="discChips" aria-label="اختيار خصم سريع"><button type="button" data-d="0">0%</button><button type="button" data-d="10">10%</button><button type="button" data-d="20">20%</button><button type="button" data-d="30">30%</button><button type="button" data-d="40">40%</button></div>
         <div class="grand"><span>الإجمالي</span><b id="tTotal" dir="ltr">0</b></div>
       </div>
 
@@ -838,13 +843,13 @@ async function openQuote(id){
     quote = { id:q.id, quote_number:q.quote_number, lead_id:q.lead_id, status:q.status, items:items.map(({sort_order,...i})=>i),
       delete_requested_by:q.delete_requested_by, delete_requested_at:q.delete_requested_at };
     ["client_name","client_type","quote_date","valid_until","status","notes","terms"].forEach(k=>f[k].value = q[k] ?? "");
-    $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct;
+    $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct; markDisc();
   } else {
     quote = { id:null, quote_number:null, lead_id:current.id, status:"draft", items:[] };
     const today = todayStr();
     f.client_name.value = current.name; f.client_type.value = current.client_type==="dealer" ? "dealer" : "end_customer";
     f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft"; f.terms.value = DEFAULT_TERMS;
-    $("tInstPct").value = 0; $("tDiscPct").value = 0;
+    $("tInstPct").value = 0; $("tDiscPct").value = 0; markDisc();
   }
   $("qvTitle").textContent = quote.quote_number ? `عرض سعر ${quote.quote_number}` : "عرض سعر جديد";
   $("qDel").classList.toggle("hidden", !quote.id || !isAdmin);
@@ -879,6 +884,9 @@ function updateTotals(){
   $("tDisc").textContent = t.disc ? "−"+money(t.disc) : "0"; $("tTotal").textContent = money(t.total);
 }
 ["tInstPct","tDiscPct"].forEach(id=>$(id).addEventListener("input",()=>{ quoteDirty=true; updateTotals(); }));
+const markDisc = () => { const v = Number($("tDiscPct").value)||0; document.querySelectorAll("#discChips button").forEach(b=>b.classList.toggle("on", Number(b.dataset.d)===v)); };
+$("discChips").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; $("tDiscPct").value = b.dataset.d; $("tDiscPct").dispatchEvent(new Event("input")); });
+$("tDiscPct").addEventListener("input", markDisc);
 $("qForm").addEventListener("input", e=>{ if(e.target.name && e.target.name!=="client_type") quoteDirty=true; });
 
 function renderQuoteItems(){
@@ -887,7 +895,7 @@ function renderQuoteItems(){
       <td class="c-room"><input data-k="room" value="${esc(i.room||"")}" list="rooms" placeholder="المكان"></td>
       <td class="c-qty"><input data-k="qty" type="number" min="0.01" step="any" inputmode="decimal" dir="ltr" value="${esc(i.qty)}" aria-label="العدد"></td>
       <td class="c-price"><input data-k="unit_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr" value="${esc(i.unit_price ?? "")}" class="${i.unit_price?"":"no-price"}" aria-label="سعر الوحدة" placeholder="السعر"></td>
-      <td class="c-disc"><input data-k="discount_pct" type="number" min="0" max="100" step="any" inputmode="decimal" dir="ltr" value="${i.discount_pct ? esc(i.discount_pct) : ""}" placeholder="0" aria-label="خصم البند %"></td>
+      <td class="c-disc"><input data-k="discount_pct" type="number" min="0" max="100" step="any" inputmode="decimal" dir="ltr" value="${i.discount_pct ? esc(i.discount_pct) : ""}" placeholder="0" list="discList" aria-label="خصم البند %"></td>
       <td class="c-total" dir="ltr">${money(lineTotal(i))}</td>
       <td class="c-del"><button type="button" class="del" aria-label="شيل البند">×</button></td>
     </tr>`).join("")
