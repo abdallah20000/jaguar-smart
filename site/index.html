@@ -339,13 +339,15 @@ nav.main a,header.site .btn-white{white-space:nowrap}
 .pk-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px 26px}
 .pk-card.pk-hi{border:2px solid var(--gold);box-shadow:0 14px 34px rgba(60,40,10,.12)}
 .pk-tag{position:absolute;top:-13px;left:24px;background:var(--gold);color:var(--ink);font-size:12px;font-weight:700;padding:4px 12px;border-radius:12px}
-.pk-card h3{font-family:"Cinzel",Georgia,serif;font-weight:500;font-size:28px;letter-spacing:.06em;color:var(--gold-text);margin:0}
+.pk-card h3{font-family:"Cinzel",Georgia,serif;font-weight:500;font-size:22px;letter-spacing:.03em;color:var(--gold-text);margin:0}
 .pk-for{margin:4px 0 18px;color:var(--muted);font-size:15px}
 .pk-card ul{list-style:none;margin:0 0 24px;padding:0;flex:1}
 .pk-card li{position:relative;padding:7px 0 7px 26px;font-size:15px;border-top:1px solid var(--line)}
 .pk-card li::before{content:"";position:absolute;left:3px;top:13px;width:11px;height:6px;border-left:2px solid var(--gold-text);border-bottom:2px solid var(--gold-text);transform:rotate(-45deg)}
 .pk-card .btn{border-radius:10px;width:100%}
 .btn-line{background:#fff;color:var(--ink);border-color:var(--gold)}.btn-line:hover{background:var(--gold-bg)}
+.pk-price{margin:0;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.01em}.pk-price small{font-size:14px;font-weight:500;color:var(--muted);margin-right:4px}
+.pk-inc{margin:2px 0 16px;font-size:13px;color:var(--gold-text);font-weight:600}
 .pk-note{margin:22px 0 0;color:var(--muted);font-size:14px;text-align:center}
 .pg .pg-brand{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--gold-text);margin:0 16px 6px;text-transform:uppercase}
 .pg .pg-use{color:var(--ink);font-size:14.5px;margin:0 16px 10px}
@@ -544,15 +546,15 @@ nav.main a,header.site .btn-white{white-space:nowrap}
 <section class="block pk" id="packages">
   <div class="wrap">
     <div class="head">
-      <div><p class="kicker">Smart home packages</p><h2>Three starting points. Tailored to your home.</h2></div>
+      <div><p class="kicker">Smart home packages</p><h2>A package for every home. Tailored to yours.</h2></div>
       <p>Every package is adjusted after a site survey. The final price depends on the area, number of rooms and the systems you choose.</p>
     </div>
-    <div class="pk-grid">
+    <div class="pk-grid" id="pkGrid">
       <div class="pk-card"><h3>Basic</h3><p class="pk-for">Apartments and small homes</p><ul><li>Smart gateway (Zigbee)</li><li>Smart lighting switches for the main rooms</li><li>A/C control for 2 units</li><li>Video doorbell</li><li>Smoke, water-leak and door sensors</li><li>App and voice control (Alexa / Google)</li></ul><a class="btn btn-line" href="#contact" data-pkg="Basic">Get the Basic package price</a></div>
       <div class="pk-card pk-hi"><span class="pk-tag">Recommended for villas</span><h3>Villa</h3><p class="pk-for">Villas and duplexes</p><ul><li>Wired gateway with signal repeaters</li><li>Lighting and dimming for the whole villa</li><li>4 motorized curtains</li><li>A/C control for 4 units</li><li>6″ wall control panel with speakers</li><li>Fully automatic smart lock and HD video intercom</li><li>Presence, smoke, gas and water-leak sensors</li></ul><a class="btn btn-ink" href="#contact" data-pkg="Villa">Get the Villa package price</a></div>
       <div class="pk-card"><h3>Luxury</h3><p class="pk-for">Large villas and palaces</p><ul><li>Gold metal-frame switches throughout</li><li>8 motorized curtains and room dimming</li><li>Climate control for 6 A/C units</li><li>10″ and 8″ control panels with built-in Alexa</li><li>Face and palm-vein smart lock</li><li>Video intercom</li><li>Full safety with automatic gas/water shut-off</li></ul><a class="btn btn-line" href="#contact" data-pkg="Luxury">Get the Luxury package price</a></div>
     </div>
-    <p class="pk-note">All packages include engineering design, installation, programming, training and a 5-year warranty.</p>
+    <p class="pk-note">All packages include engineering design, installation, programming, training and a 5-year warranty. Prices are for the devices listed and are adjusted after a site survey.</p>
   </div>
 </section>
 
@@ -727,8 +729,35 @@ const wa=t=>"https://wa.me/"+WHATSAPP+(t?"?text="+encodeURIComponent(t):"");
 const HI="Hello Jaguar Smart Construction, I'd like to book a consultation.";
 $("#wa").href=wa(HI);
 document.querySelectorAll(".pg[data-wa]").forEach(a=>{a.href=wa(`Hello Jaguar Smart Construction, I would like a price for: ${a.dataset.wa}`);a.target="_blank";a.rel="noopener"});
-document.querySelectorAll("[data-pkg]").forEach(a=>a.addEventListener("click",()=>{$("#fk").value=a.dataset.pkg}));
+document.addEventListener("click",e=>{const a=e.target.closest("[data-pkg]");if(a)$("#fk").value=a.dataset.pkg});
 const SB_URL="https://snrsfpprlynixotjipmo.supabase.co",SB_KEY="sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
+/* packages are managed in the Jaguar CRM; the cards above are only a fallback if this request fails */
+(async()=>{
+ try{
+  const r=await fetch(SB_URL+"/rest/v1/rpc/get_site_packages",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_company:"jaguar"})});
+  if(!r.ok)return;const list=await r.json();if(!Array.isArray(list)||!list.length)return;
+  const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const pl=(n,one,many)=>`${n} ${n==1?one:many}`;
+  const LINE={
+   "Switches & Sockets":(n)=>pl(n,"smart switch & module","smart switches & modules"),
+   "Curtains":(n)=>pl(n,"motorized curtain","motorized curtains"),
+   "Remotes":(n)=>`A/C control for ${pl(n,"unit","units")}`,
+   "Screens & Hubs":(n,k)=>k.highlights?.some(h=>/control panel/i.test(h.name_en))?"Smart gateway &amp; wall control panel":"Smart gateway",
+   "Locks":()=>"Smart door lock","Intercom":()=>"Video doorbell / intercom",
+   "Cameras":(n)=>pl(n,"security camera","security cameras"),
+   "Sensors":(n)=>pl(n,"safety &amp; presence sensor","safety &amp; presence sensors"),
+   "Electrical":(n)=>pl(n,"smart breaker","smart breakers")};
+  const ORDER=Object.keys(LINE);
+  const money=v=>Math.floor(v/1000)*1000;
+  $("#pkGrid").innerHTML=list.map(k=>{
+   const lines=(k.sections||[]).filter(x=>LINE[x.category]).sort((a,b)=>ORDER.indexOf(a.category)-ORDER.indexOf(b.category)).map(x=>LINE[x.category](Math.round(x.qty),k));
+   const name=esc(k.name_en);
+   return `<div class="pk-card${k.highlight?" pk-hi":""}">${k.highlight?'<span class="pk-tag">Most recommended</span>':""}<h3>${name}</h3><p class="pk-for">${esc(k.subtitle_en||"")}</p>`+
+    (k.price?`<p class="pk-price"><small>From</small> EGP ${money(k.price).toLocaleString("en-US")}</p><p class="pk-inc">Installation &amp; programming included${k.has_unpriced?" · cameras priced by model":""}</p>`:"")+
+    `<ul>${lines.map(l=>`<li>${l}</li>`).join("")}</ul><a class="btn ${k.highlight?"btn-ink":"btn-line"}" href="#contact" data-pkg="${name}">${k.price?"Request this package":`Get the ${name} price`}</a></div>`}).join("");
+  $("#fk").innerHTML=["Not sure yet",...list.map(k=>k.name_en)].map(n=>`<option>${esc(n)}</option>`).join("");
+ }catch(_){}
+})();
 $("#lead").addEventListener("submit",async e=>{
  e.preventDefault();const v=id=>document.getElementById(id).value.trim();
  const nameOk=v("fn").length>=2,phoneOk=v("fp").replace(/\D/g,"").length>=10;

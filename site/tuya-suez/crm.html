@@ -304,6 +304,25 @@ tr.row:hover td{background:#fafafa}
 #pdfDoc.ar .room-row td{text-align:right}
 #pdfDoc.ar .d-total span+span{border-left:0;border-right:1px solid rgba(255,255,255,.35)}
 #pdfDoc.ar .num{direction:ltr;unicode-bidi:isolate}
+/* packages */
+.pk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.pk-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;cursor:pointer;text-align:right;font:inherit;display:flex;flex-direction:column;gap:4px}
+.pk-card:hover{border-color:var(--accent)}
+.pk-card h3{margin:0;font-size:18px}
+.pk-card .pk-price{font-size:20px;font-weight:700;color:var(--accent);direction:ltr;text-align:right;margin-top:6px}
+.pk-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pk-badges span{font-size:12px;border-radius:10px;padding:2px 9px;background:var(--soft,#f3f3f3)}
+.pk-badges .on{background:#e8f5e9;color:#1b5e20}
+.pk-meta{grid-template-columns:repeat(2,1fr)}
+.pk-opts{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:0 0 16px}
+.pk-opts label{display:flex;align-items:center;gap:6px;font-size:14px}
+.pk-menu{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:grid;place-items:center;padding:16px}
+.pk-menu.hidden{display:none}
+.pk-menu .box{background:#fff;border-radius:14px;max-width:440px;width:100%;max-height:80vh;overflow:auto;padding:14px}
+.pk-menu .box h3{margin:4px 4px 10px}
+.pk-menu button.pk-opt{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:right;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px;margin-bottom:8px;font:inherit;cursor:pointer}
+.pk-menu button.pk-opt:hover{border-color:var(--accent)}
+@media (max-width:640px){.pk-meta{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -334,6 +353,7 @@ tr.row:hover td{background:#fafafa}
     <nav class="tabs" role="tablist">
       <button type="button" role="tab" aria-selected="true" data-tab="tabLeads">العملاء</button>
       <button type="button" role="tab" aria-selected="false" data-tab="tabProducts">المنتجات</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="tabPackages">الباقات</button>
     </nav>
 
     <section id="tabProducts" class="hidden">
@@ -348,6 +368,14 @@ tr.row:hover td{background:#fafafa}
           <tbody id="pRows"></tbody>
         </table>
       </div>
+    </section>
+
+    <section id="tabPackages" class="hidden">
+      <div class="tools">
+        <p class="sub" style="margin:0;flex:1">الباقات بتتعمل من المنتجات، وسعرها بيتحسب لوحده. الباقة اللي عليها «على الموقع» بتظهر للعملاء على موقع الشركة.</p>
+        <button class="primary hidden" id="newPkg">+ باقة جديدة</button>
+      </div>
+      <div class="pk-list" id="pkList"></div>
     </section>
 
     <section id="tabLeads">
@@ -436,6 +464,7 @@ tr.row:hover td{background:#fafafa}
       <div class="picker">
         <select id="qBrand" aria-label="البراند"><option value="">كل البراندات</option></select>
         <input id="pick" type="search" placeholder="دوّر بالعربي… مثلاً: مفتاح 3 خط، ستارة، كالون، شاشة" aria-label="بحث عن منتج">
+        <button type="button" class="line-btn" id="addPkg">📦 ضيف باقة</button>
         <button type="button" class="line-btn" id="addCustom">+ بند يدوي</button>
         <div class="pick-res hidden" id="pickRes"></div>
       </div>
@@ -478,6 +507,44 @@ tr.row:hover td{background:#fafafa}
     <button type="button" class="danger hidden" id="qDel">مسح العرض</button>
   </div>
 </section>
+<section class="qv hidden" id="pkv" role="dialog" aria-modal="true">
+  <div class="qv-head"><h2 id="pkvTitle">باقة جديدة</h2><button class="x" id="pkvClose" aria-label="إغلاق">×</button></div>
+  <div class="qv-body">
+    <form id="pkForm" autocomplete="off">
+      <div class="qv-meta pk-meta">
+        <div class="f"><label>اسم الباقة (عربي) *</label><input name="name_ar" required></div>
+        <div class="f"><label>المساحة / لمين (عربي)</label><input name="subtitle_ar" placeholder="مثلاً: لحد ~130 م²"></div>
+        <div class="f"><label>اسم الباقة على الموقع (English)</label><input name="name_en" dir="ltr"></div>
+        <div class="f"><label>المساحة على الموقع (English)</label><input name="subtitle_en" dir="ltr" placeholder="Up to ~130 m²"></div>
+      </div>
+      <div class="pk-opts">
+        <label class="check"><input type="checkbox" name="show_on_site"> تظهر على الموقع</label>
+        <label class="check"><input type="checkbox" name="show_price"> السعر يظهر للعميل على الموقع</label>
+        <label class="check"><input type="checkbox" name="highlight"> مميزة (الأكثر ترشيحاً)</label>
+        <label>الترتيب <input name="sort" type="number" min="0" step="1" dir="ltr" style="width:70px"></label>
+      </div>
+      <div class="picker">
+        <input id="pkPick" type="search" placeholder="دوّر بالعربي… مثلاً: مفتاح 2 خط، ستارة، كاميرا" aria-label="بحث عن منتج">
+      </div>
+      <div class="cat-chips" id="pkCats"></div>
+      <div class="store-grid" id="pkGrid"></div>
+      <h3 class="cart-h">📦 محتوى الباقة</h3>
+      <div class="tbl-wrap"><table class="q-items"><thead><tr><th class="c-name">المنتج</th><th class="c-qty">العدد</th><th class="c-price">سعر الوحدة</th><th class="c-total">الإجمالي</th></tr></thead><tbody id="pkRows"></tbody></table></div>
+      <div class="q-totals">
+        <div><span>سعر الأجهزة</span><b id="pkDev" dir="ltr">0</b></div>
+        <div><span>تركيب وبرمجة <input name="install_pct" id="pkPct" type="number" min="0" max="100" step="any" dir="ltr"> %</span><b id="pkInst" dir="ltr">0</b></div>
+        <div class="disc-chips" id="pkPctChips"><button type="button" data-d="5">5%</button><button type="button" data-d="10">10%</button><button type="button" data-d="15">15%</button></div>
+        <div class="grand"><span>سعر الباقة</span><b id="pkTotal" dir="ltr">0</b></div>
+        <p class="sub" id="pkNote"></p>
+      </div>
+    </form>
+  </div>
+  <div class="qv-foot">
+    <button class="primary" type="submit" form="pkForm" id="pkSave">حفظ الباقة</button>
+    <button type="button" class="danger hidden" id="pkDel">مسح الباقة</button>
+  </div>
+</section>
+<div class="pk-menu hidden" id="pkgMenu" role="dialog" aria-label="اختار باقة"></div>
 <datalist id="brandList"></datalist>
 <datalist id="rooms">
   <option>الصالة</option><option>الريسبشن</option><option>المطبخ</option><option>غرفة النوم الرئيسية</option>
@@ -591,6 +658,7 @@ async function onSession(session){
   document.querySelectorAll(".admin-only").forEach(a=>a.classList.toggle("hidden", role !== "admin"));
   isAdmin = role === "admin"; productsLoaded = false;
   $("newProduct").classList.toggle("hidden", !isAdmin);
+  $("newPkg").classList.toggle("hidden", !isAdmin);
   document.querySelectorAll(".p-admin").forEach(el=>el.classList.toggle("hidden", !isAdmin));
   $("login").classList.toggle("hidden", !!user);
   $("app").classList.toggle("hidden", !user);
@@ -716,6 +784,7 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
     const on = x===b; x.setAttribute("aria-selected", on); $(x.dataset.tab).classList.toggle("hidden", !on);
   });
   if(b.dataset.tab==="tabProducts") productsLoaded ? renderProducts() : loadProducts();
+  if(b.dataset.tab==="tabPackages") loadPackages();
 });
 
 // ---------- PRODUCTS ----------
@@ -896,6 +965,132 @@ $("productForm").addEventListener("submit", async e=>{
   toast(currentProduct ? "اتعدل ✓" : "المنتج اتضاف ✓");
   showProductDrawer(false); loadProducts();
 });
+
+// ---------- PACKAGES ----------
+let packages = [], pkg = null, pkgDirty = false, pkCat = "";
+async function loadPackages(){
+  if(!await ensureCatalog()) return;
+  const { data, error } = await sb.from("packages").select("*, package_items(product_id,qty)").order("sort").order("name_ar");
+  if(error){ toast("مشكلة في تحميل الباقات"); console.error(error); return; }
+  packages = data; renderPackages();
+}
+function pkgTotals(items, pct){
+  let dev = 0, unpriced = 0, count = 0;
+  items.forEach(({product_id, qty})=>{ const p = products.find(x=>x.id===product_id); count += Number(qty)||0;
+    if(p && p.end_user_price != null) dev += Number(qty) * Number(p.end_user_price); else unpriced++; });
+  const inst = Math.round(dev * (Number(pct)||0) / 100);
+  return { dev, inst, total: dev + inst, unpriced, count };
+}
+function renderPackages(){
+  $("pkList").innerHTML = packages.length ? packages.map(k=>{ const t = pkgTotals(k.package_items, k.install_pct);
+    return `<button type="button" class="pk-card" data-id="${k.id}"><h3>${esc(k.name_ar)}</h3><span class="sub">${esc(k.subtitle_ar||"")} · ${money(t.count)} جهاز</span>
+      <span class="pk-price">${money(t.total)} ج</span><span class="sub">شامل ${money(k.install_pct)}% تركيب وبرمجة${t.unpriced?" · فيه منتجات من غير سعر":""}</span>
+      <span class="pk-badges"><span class="${k.show_on_site?"on":""}">${k.show_on_site?"على الموقع":"مخفية من الموقع"}</span>${k.show_on_site && !k.show_price?"<span>السعر مخفي</span>":""}${k.highlight?"<span>مميزة</span>":""}</span></button>`; }).join("")
+    : `<p class="sub">لسه مفيش باقات${isAdmin?" — اعمل أول باقة من «+ باقة جديدة»":""}.</p>`;
+  $("pkList").querySelectorAll(".pk-card").forEach(b=>b.onclick=()=>openPkg(b.dataset.id));
+}
+$("newPkg").onclick = ()=>openPkg(null);
+async function openPkg(id){
+  if(!await ensureCatalog()) return;
+  const k = id ? packages.find(x=>x.id===id) : null, f = $("pkForm"); f.reset();
+  pkg = { id: k?.id || null, items: (k?.package_items || []).map(i=>({ product_id:i.product_id, qty:Number(i.qty) })) };
+  ["name_ar","name_en","subtitle_ar","subtitle_en"].forEach(n=>f[n].value = k?.[n] ?? "");
+  f.install_pct.value = k ? k.install_pct : 10; f.sort.value = k ? k.sort : packages.length + 1;
+  f.show_on_site.checked = k ? k.show_on_site : false; f.show_price.checked = k ? k.show_price : true; f.highlight.checked = !!k?.highlight;
+  $("pkvTitle").textContent = k ? `باقة: ${k.name_ar}` : "باقة جديدة";
+  $("pkDel").classList.toggle("hidden", !k || !isAdmin); $("pkSave").classList.toggle("hidden", !isAdmin);
+  f.querySelectorAll("input").forEach(el=>{ if(el.id!=="pkPick") el.disabled = !isAdmin; });
+  $("pkPick").value = ""; pkCat = ""; pkgDirty = false;
+  renderPkg(); $("pkv").classList.remove("hidden");
+}
+const pkQty = id => pkg.items.find(i=>i.product_id===id)?.qty || 0;
+function renderPkg(){
+  const q = $("pkPick").value.trim().toLowerCase(), act = products.filter(p=>p.active!==false);
+  const cats = CATEGORIES.filter(c=>act.some(p=>(p.category||"Other")===c));
+  if(pkCat && !cats.includes(pkCat)) pkCat = "";
+  $("pkCats").innerHTML = [["","الكل"],...cats.map(c=>[c,catAr(c)])].map(([v,l])=>`<button type="button" data-c="${esc(v)}" class="${pkCat===v?"on":""}">${esc(l)}</button>`).join("");
+  const inCat = act.filter(p=>!pkCat || (p.category||"Other")===pkCat);
+  let list = inCat.filter(p=>matchProduct(p, q)), fuzzy = false;
+  if(q && !list.length){ list = inCat.filter(p=>fuzzyMatch(p, q)); fuzzy = list.length > 0; }
+  list.sort((a,b)=>(nameScore(a,q,fuzzy)-nameScore(b,q,fuzzy)) || (cats.indexOf(a.category||"Other")-cats.indexOf(b.category||"Other")) || String(a.code||a.name).localeCompare(String(b.code||b.name)));
+  $("pkGrid").innerHTML = (fuzzy ? `<div class="fuzzy-note">مفيش نتيجة بالظبط لـ «${esc(q)}» — دي أقرب حاجات ليها:</div>` : "") + (list.length ? list.map(p=>{ const n = pkQty(p.id);
+    return `<div class="tile${n?" in":""}" data-id="${p.id}">
+      <div class="t-img">${p.image_url?`<img src="${esc(p.image_url)}" alt="" loading="lazy">`:"<span>📦</span>"}</div>
+      <div class="t-name">${esc(pName(p))}</div>${p.description_ar ? `<div class="t-desc">${esc(p.description_ar)}</div>` : ""}<div class="t-brand">${esc(p.brand||"")}</div>
+      <div class="t-foot"><b class="t-price">${p.end_user_price!=null ? money(p.end_user_price) : "—"}</b>
+        <div class="qty"><button type="button" class="minus" ${!n||!isAdmin?"disabled":""} aria-label="قلّل">−</button><span>${n}</span><button type="button" class="plus" ${!isAdmin?"disabled":""} aria-label="زوّد">+</button></div></div></div>`; }).join("")
+    : `<div class="sub" style="padding:14px">مفيش منتجات بالبحث ده</div>`);
+  const rows = pkg.items.map(i=>({ i, p: products.find(x=>x.id===i.product_id) })).filter(r=>r.p)
+    .sort((a,b)=>cats.indexOf(a.p.category||"Other")-cats.indexOf(b.p.category||"Other"));
+  $("pkRows").innerHTML = rows.length ? rows.map(({i,p})=>`<tr><td class="c-name"><div class="nm">${esc(pName(p))}</div></td><td class="c-qty" dir="ltr">${money(i.qty)}</td>
+      <td class="c-price" dir="ltr">${p.end_user_price!=null?money(p.end_user_price):"—"}</td><td class="c-total" dir="ltr">${p.end_user_price!=null?money(i.qty*p.end_user_price):"—"}</td></tr>`).join("")
+    : `<tr><td colspan="4" class="empty">الباقة فاضية — دوس + على المنتجات من فوق</td></tr>`;
+  const t = pkgTotals(pkg.items, $("pkPct").value);
+  $("pkDev").textContent = money(t.dev); $("pkInst").textContent = money(t.inst); $("pkTotal").textContent = money(t.total);
+  $("pkNote").textContent = `${money(t.count)} جهاز` + (t.unpriced ? ` · ${t.unpriced} منتج من غير سعر (مش داخل في الحساب)` : "");
+  const pct = Number($("pkPct").value)||0; $("pkPctChips").querySelectorAll("button").forEach(b=>b.classList.toggle("on", Number(b.dataset.d)===pct));
+}
+$("pkPick").addEventListener("input", renderPkg);
+$("pkPct").addEventListener("input", ()=>{ pkgDirty = true; renderPkg(); });
+$("pkPctChips").addEventListener("click", e=>{ const b = e.target.closest("button"); if(!b || !isAdmin) return; $("pkPct").value = b.dataset.d; pkgDirty = true; renderPkg(); });
+$("pkCats").addEventListener("click", e=>{ const b = e.target.closest("button"); if(!b) return; pkCat = b.dataset.c; renderPkg(); });
+$("pkGrid").addEventListener("click", e=>{
+  const b = e.target.closest("button"), t = e.target.closest(".tile"); if(!b || !t || !isAdmin) return;
+  const id = t.dataset.id, it = pkg.items.find(i=>i.product_id===id);
+  if(b.classList.contains("plus")){ if(it) it.qty++; else pkg.items.push({ product_id:id, qty:1 }); }
+  else if(it){ it.qty--; if(it.qty<=0) pkg.items = pkg.items.filter(i=>i!==it); }
+  pkgDirty = true; renderPkg();
+});
+$("pkForm").addEventListener("input", e=>{ if(e.target.id!=="pkPick") pkgDirty = true; });
+function closePkg(){ if(pkgDirty && isAdmin && !confirm("فيه تعديلات ما اتحفظتش. تقفل من غير حفظ؟")) return; $("pkv").classList.add("hidden"); pkg = null; }
+$("pkvClose").onclick = closePkg;
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("pkv").classList.contains("hidden")){ e.stopImmediatePropagation(); closePkg(); } }, true);
+$("pkForm").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!isAdmin) return; const f = e.target;
+  if(!f.reportValidity()) return;
+  if(!pkg.items.length){ toast("ضيف منتج واحد على الأقل للباقة"); return; }
+  const row = { name_ar:f.name_ar.value.trim(), name_en:f.name_en.value.trim()||null, subtitle_ar:f.subtitle_ar.value.trim()||null, subtitle_en:f.subtitle_en.value.trim()||null,
+    install_pct: Math.min(Math.max(Number(f.install_pct.value)||0,0),100), sort: Number(f.sort.value)||0,
+    show_on_site:f.show_on_site.checked, show_price:f.show_price.checked, highlight:f.highlight.checked };
+  $("pkSave").disabled = true;
+  try {
+    const res = pkg.id ? await sb.from("packages").update(row).eq("id",pkg.id).select("id").single() : await sb.from("packages").insert(row).select("id").single();
+    if(res.error) throw res.error;
+    pkg.id = res.data.id;
+    const del = await sb.from("package_items").delete().eq("package_id", pkg.id); if(del.error) throw del.error;
+    const ins = await sb.from("package_items").insert(pkg.items.map(i=>({ package_id:pkg.id, product_id:i.product_id, qty:i.qty }))); if(ins.error) throw ins.error;
+  } catch(err){ toast("الحفظ فشل"); console.error(err); return; }
+  finally { $("pkSave").disabled = false; }
+  pkgDirty = false; toast("الباقة اتحفظت ✓"); $("pkv").classList.add("hidden"); pkg = null; loadPackages();
+});
+$("pkDel").onclick = async ()=>{
+  if(!pkg?.id || !confirm("مسح الباقة دي؟ هتختفي من الموقع كمان.")) return;
+  const { error } = await sb.from("packages").delete().eq("id", pkg.id);
+  if(error){ toast("المسح فشل"); return; }
+  pkgDirty = false; $("pkv").classList.add("hidden"); pkg = null; toast("الباقة اتمسحت"); loadPackages();
+};
+// add a whole package to the quotation cart
+$("addPkg").onclick = async ()=>{
+  if(isLocked()) return;
+  if(!packages.length) await loadPackages();
+  $("pkgMenu").innerHTML = `<div class="box"><h3>اختار باقة تضيفها للعرض</h3>${packages.length ? packages.map(k=>{ const t = pkgTotals(k.package_items, k.install_pct);
+      return `<button type="button" class="pk-opt" data-id="${k.id}"><span><b>${esc(k.name_ar)}</b><br><span class="sub">${esc(k.subtitle_ar||"")} · ${money(t.count)} جهاز</span></span><b dir="ltr">${money(t.dev)} ج</b></button>`; }).join("")
+    : `<p class="sub">لسه مفيش باقات. الأدمن يعملها من تبويب «الباقات».</p>`}<button type="button" class="line-btn" id="pkgMenuClose">إلغاء</button></div>`;
+  $("pkgMenu").classList.remove("hidden");
+  $("pkgMenuClose").onclick = ()=>$("pkgMenu").classList.add("hidden");
+  $("pkgMenu").querySelectorAll(".pk-opt").forEach(b=>b.onclick=()=>{
+    const k = packages.find(x=>x.id===b.dataset.id), type = $("qForm").client_type.value; let n = 0;
+    k.package_items.forEach(({product_id, qty})=>{ const p = products.find(x=>x.id===product_id); if(!p || p.active===false) return;
+      const same = quote.items.find(i=>i.product_id===p.id && !(i.room||""));
+      if(same) same.qty = (Number(same.qty)||0) + Number(qty);
+      else quote.items.push({ product_id:p.id, name:p.name, description:p.description, room:"", qty:Number(qty), unit_price:priceFor(p,type), discount_pct:0 });
+      n++; });
+    if(!(Number($("tInstPct").value) > 0)) $("tInstPct").value = k.install_pct;
+    $("pkgMenu").classList.add("hidden"); quoteDirty = true; renderQuoteItems();
+    toast(`باقة «${k.name_ar}» اتضافت (${n} منتج) ✓`);
+  });
+};
+$("pkgMenu").addEventListener("click", e=>{ if(e.target.id==="pkgMenu") $("pkgMenu").classList.add("hidden"); });
 
 // ---------- QUOTATIONS ----------
 const Q_STATUS = { draft:"مسودة", sent:"اتبعت", accepted:"اتقبل ✓", rejected:"اترفض" };
@@ -1166,7 +1361,7 @@ function applyLock(){
   const locked = !!quote.id && quote.status !== "draft" && !isAdmin, req = !!quote.delete_requested_at;
   $("qForm").querySelectorAll("input,select,textarea").forEach(el=>el.disabled = locked);
   $("qRows").querySelectorAll(".del").forEach(el=>el.classList.toggle("hidden", locked));
-  ["pick","qBrand","addCustom","tInstPct","tDiscPct"].forEach(id=>$(id).disabled = locked);
+  ["pick","qBrand","addCustom","addPkg","tInstPct","tDiscPct"].forEach(id=>$(id).disabled = locked);
   $("qSave").classList.toggle("hidden", locked);
   $("qCopy").classList.toggle("hidden", !quote.id);
   const by = (quote.delete_requested_by||"").split("@")[0];
