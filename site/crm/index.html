@@ -292,6 +292,7 @@ header .who a{color:#1c1a17 !important;font-weight:600}
 .t-img img{width:100%;height:100%;object-fit:contain;padding:8px}
 .t-img span{font-size:34px}
 .t-name{font-size:13.5px;font-weight:600;line-height:1.35;padding:8px 9px 2px;flex:1}
+.fuzzy-note{grid-column:1/-1;font-size:13px;color:var(--accent);padding:2px 2px 4px}
 .t-desc{font-size:11.5px;color:#777;padding:0 9px 2px;line-height:1.35}
 .t-brand{font-size:11.5px;color:var(--muted,#666);padding:0 9px 6px;direction:ltr;text-align:right}
 .t-foot{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0 7px 8px 9px}
@@ -759,7 +760,9 @@ const SEARCH_SYN = [
   [/^(wifi|wi-fi|وايفاي)$/, "واي فاي"],
   [/^(zigbee|زجبي|زيجبى)$/, "زيجبي"],
   [/^(ديمر|dimmer|تعتيم)$/, "ديمر"],
-  [/^(كاميرا|كاميرات|camera|cctv)$/, "كاميرا"]
+  [/^(كاميرا|كاميرات|camera|cctv)$/, "كاميرا"],
+  [/^(ميه|مايه|ماء|water)$/, "مياه"],
+  [/^(smoke|دخان|دخنه)$/, "دخان"]
 ];
 const prodHay = p => normAr([p.name_ar, p.name, p.brand, p.description_ar, p.description].join(" "));
 // a plain number ("2" in "مفتاح 2 خط") must match a whole number, not a digit inside another one or the code
@@ -770,8 +773,44 @@ function matchProduct(p, q, hayFn = prodHay){
   const hay = hayFn(p), code = normAr(p.code);
   return words.every(w => searchWords(w).some(x => wordIn(hay, x)) || (w.length > 2 && code.includes(w)));
 }
+// typo-tolerant fallback: used only when nothing matches exactly. A word matches a word in the product
+// (or one of the everyday words above) that is within 1 edit (2 for long words), also as the start of a word.
+function editDist(a, b){
+  const m = a.length, n = b.length; if(Math.abs(m-n) > 2) return 3;
+  let prev = Array.from({length:n+1}, (_,j)=>j), prev2 = null;
+  for(let i=1;i<=m;i++){
+    const cur = [i];
+    for(let j=1;j<=n;j++){
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1] ? 0 : 1));
+      if(i>1 && j>1 && a[i-1]===b[j-2] && a[i-2]===b[j-1]) cur[j] = Math.min(cur[j], prev2[j-2]+1);   // swapped letters
+    }
+    prev2 = prev; prev = cur;
+  }
+  return prev[n];
+}
+const SYN_WORDS = SEARCH_SYN.flatMap(([re, to]) => (re.source.match(/^\^\((.*)\)\$$/)?.[1] || "").split("|")
+  .filter(w=>/^[\u0600-\u06FFa-z]+$/.test(w)).map(w=>[w, to]));
+function fuzzyWord(w, tokens){
+  // 3-letter words get one edit only against short words (دخن → دخان، ميه → مياه)
+  const tol = w.length >= 7 ? 2 : w.length >= 3 ? 1 : 0; if(!tol) return false;
+  const near = t => (w.length > 3 || t.length <= 4) && editDist(w, t) <= tol || (t.length > w.length && editDist(w, t.slice(0, w.length)) <= tol);
+  if(tokens.some(near)) return true;
+  return SYN_WORDS.some(([sw, to]) => editDist(w, sw) <= tol && to.split("|").some(x=>tokens.some(t=>t.startsWith(normAr(x)))));
+}
+function fuzzyMatch(p, q){
+  const words = normAr(q).trim().split(/\s+/).filter(Boolean); if(!words.length) return true;
+  const hay = prodHay(p), tokens = hay.split(/[\s()\/،,+\-]+/).filter(Boolean);
+  return words.every(w => searchWords(w).some(x => wordIn(hay, x)) || fuzzyWord(w, tokens));
+}
 // results whose name itself matches come first (e.g. "جرس" → doorbells before locks that mention a bell)
-const nameScore = (p, q) => q && matchProduct(p, q, x => normAr([x.name_ar, x.name].join(" "))) ? 0 : 1;
+// 0: every word starts a word of the name · 1: the name contains them · 2: only the description does
+function nameScore(p, q, fuzzy){
+  if(!q) return 0;
+  const name = normAr([p.name_ar, p.name].join(" ")), tokens = name.split(/[\s()\/،,+\-]+/).filter(Boolean);
+  const words = normAr(q).trim().split(/\s+/).filter(Boolean);
+  if(words.every(w => searchWords(w).some(x => /^[\d.]+$/.test(x) ? wordIn(name, x) : tokens.some(t=>t.startsWith(x))) || (fuzzy && fuzzyWord(w, tokens)))) return 0;
+  return matchProduct(p, q, () => name) ? 1 : 2;
+}
 const CAT_AR = { "Switches & Sockets":"مفاتيح وبرايز", "Curtains":"ستاير", "Sensors":"حساسات", "Screens & Hubs":"شاشات وجيتواي", "Locks":"كوالين",
   "Intercom":"إنتركم وأجراس", "Cameras":"كاميرات", "Network":"شبكات", "Audio":"صوتيات", "Remotes":"ريموتات", "KNX":"KNX", "Gate":"بوابات",
   "Electrical":"كهرباء", "Voice Assistants":"مساعد صوتي", "Installation":"تركيب", "Other":"أخرى" };
@@ -1040,16 +1079,18 @@ function renderStore(){
   const cats = CATEGORIES.filter(c=>act.some(p=>(p.category||"Other")===c)).concat([...new Set(act.map(p=>p.category||"Other"))].filter(c=>!CATEGORIES.includes(c)));
   if(storeCat && !cats.includes(storeCat)) storeCat = "";
   $("catChips").innerHTML = [["","الكل"],...cats.map(c=>[c,catAr(c)])].map(([v,l])=>`<button type="button" data-c="${esc(v)}" class="${storeCat===v?"on":""}">${esc(l)}</button>`).join("");
-  const list = act.filter(p=>(!storeCat || (p.category||"Other")===storeCat) &&
-    matchProduct(p, q))
-    .sort((a,b)=>(nameScore(a,q)-nameScore(b,q)) || (cats.indexOf(a.category||"Other")-cats.indexOf(b.category||"Other")) || String(a.code||a.name).localeCompare(String(b.code||b.name)));
-  $("storeGrid").innerHTML = list.length ? list.map(p=>{ const pr = priceFor(p,type), n = storeQty(p.id);
+  const inCat = act.filter(p=>!storeCat || (p.category||"Other")===storeCat);
+  let list = inCat.filter(p=>matchProduct(p, q)), fuzzy = false;
+  if(q && !list.length){ list = inCat.filter(p=>fuzzyMatch(p, q)); fuzzy = list.length > 0; }
+  list = list
+    .sort((a,b)=>(nameScore(a,q,fuzzy)-nameScore(b,q,fuzzy)) || (cats.indexOf(a.category||"Other")-cats.indexOf(b.category||"Other")) || String(a.code||a.name).localeCompare(String(b.code||b.name)));
+  $("storeGrid").innerHTML = (fuzzy ? `<div class="fuzzy-note">مفيش نتيجة بالظبط لـ «${esc(q)}» — دي أقرب حاجات ليها:</div>` : "") + (list.length ? list.map(p=>{ const pr = priceFor(p,type), n = storeQty(p.id);
     return `<div class="tile${n?" in":""}" data-id="${p.id}">
       <div class="t-img">${p.image_url?`<img src="${esc(p.image_url)}" alt="" loading="lazy">`:"<span>📦</span>"}</div>
       <div class="t-name">${esc(pName(p))}</div>${p.description_ar ? `<div class="t-desc">${esc(p.description_ar)}</div>` : ""}<div class="t-brand">${esc(p.brand||"")}</div>
       <div class="t-foot"><b class="t-price">${pr!=null ? money(pr) : "—"}</b>
         <div class="qty"><button type="button" class="minus" ${!n||locked?"disabled":""} aria-label="قلّل">−</button><span>${n}</span><button type="button" class="plus" ${locked?"disabled":""} aria-label="زوّد">+</button></div></div></div>`; }).join("")
-    : `<div class="sub" style="padding:14px">مفيش منتجات بالبحث ده — استخدم «بند يدوي»</div>`;
+    : `<div class="sub" style="padding:14px">مفيش منتجات بالبحث ده — استخدم «بند يدوي»</div>`);
 }
 function updateCart(){
   if(!quote) return;
