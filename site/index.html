@@ -297,6 +297,18 @@ footer{background:#221e19;color:#cbc2b4}
 .fbot{border-top-color:#3a332a}
 .social a{border-color:#3a332a;border-radius:10px}
 .wa{background:var(--gold);border-color:var(--gold)}
+
+.panel .art.photo{padding:0;overflow:hidden;background:var(--gold-bg)}
+.panel .art.photo img{width:100%;height:100%;object-fit:cover}
+.prods{background:#fff}
+.prods .head p{display:flex;justify-content:flex-end}
+.pgal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.pg{display:flex;flex-direction:column;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(60,40,10,.05);transition:transform .25s,box-shadow .25s}
+.pg:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(60,40,10,.12)}
+.pg img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--gold-bg);padding:14px}
+.pg b{font-size:17px;font-weight:700;margin:14px 16px 2px}
+.pg span{font-size:14px;color:var(--muted);margin:0 16px 16px}
+@media (max-width:900px){.pgal{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.prods .head p{justify-content:flex-start}.pg b{font-size:15px;margin:10px 12px 2px}.pg span{font-size:12.5px;margin:0 12px 12px}.pg img{padding:10px}}
 </style>
 </head>
 <body>
@@ -317,6 +329,7 @@ footer{background:#221e19;color:#cbc2b4}
     </a>
     <nav class="main" id="nav">
       <a href="#solutions">Solutions</a>
+      <a href="#products">Products</a>
       <a href="#sectors">Who we serve</a>
       <a href="#process">Our process</a>
       <a href="#projects">Projects</a>
@@ -333,7 +346,7 @@ footer{background:#221e19;color:#cbc2b4}
   <div class="wrap">
     <div>
       <h1>From the structural plan to a fully smart home.</h1>
-      <p class="lead">We build and automate luxury villas and residential developments in Egypt, so your home is handed over complete, connected and ready to live in.</p>
+      <p class="lead">We build and automate luxury villas in Egypt, handed over complete and connected.</p>
       <div class="ctas">
         <a class="btn btn-white" href="#contact">Book a free consultation</a>
         <a class="btn btn-ghost" href="#solutions">Explore solutions</a>
@@ -408,9 +421,29 @@ footer{background:#221e19;color:#cbc2b4}
   <div class="wrap">
     <div class="head">
       <div><p class="kicker">Solutions</p><h2>One contractor, one system, one home that runs itself</h2></div>
-      <p>We deliver the building works and every smart system together, designed to work as one and controlled from a single app, a wall panel or your voice.</p>
+      <p>Building works and every smart system, controlled from one app, a wall panel or your voice.</p>
     </div>
     <div class="sol"><div class="tabs" role="tablist" id="tabs"></div><div id="panels"></div></div>
+  </div>
+</section>
+
+<section class="block prods" id="products">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="kicker">Smart products</p><h2>The devices we install</h2></div>
+      <p><a class="btn btn-ink" href="/files/jaguar-smart-home-catalogue.pdf" target="_blank" rel="noopener" download>Download full catalogue (PDF)</a></p>
+    </div>
+    <div class="pgal">
+      <a class="pg" href="#" data-wa="Smart locks"><img src="/img/catalog/lock-1.webp" alt="" loading="lazy"><b>Smart locks</b><span>Face, fingerprint, code &amp; app</span></a>
+      <a class="pg" href="#" data-wa="Control panels"><img src="/img/catalog/panel-2.webp" alt="" loading="lazy"><b>Control panels</b><span>Whole home on one screen</span></a>
+      <a class="pg" href="#" data-wa="Smart switches"><img src="/img/catalog/switch-1.webp" alt="" loading="lazy"><b>Switches &amp; sockets</b><span>Glass touch, 1–4 gang</span></a>
+      <a class="pg" href="#" data-wa="Smart curtains"><img src="/img/catalog/curtain-life.webp" alt="" loading="lazy"><b>Curtains &amp; blinds</b><span>Silent motors &amp; tracks</span></a>
+      <a class="pg" href="#" data-wa="Thermostats"><img src="/img/catalog/thermostat-2.webp" alt="" loading="lazy"><b>Thermostats</b><span>A/C &amp; floor heating</span></a>
+      <a class="pg" href="#" data-wa="Cameras"><img src="/img/catalog/camera-solar.webp" alt="" loading="lazy"><b>Cameras</b><span>Indoor, outdoor &amp; solar</span></a>
+      <a class="pg" href="#" data-wa="Video intercom"><img src="/img/catalog/intercom-1.webp" alt="" loading="lazy"><b>Video intercom</b><span>Doorbells &amp; screens</span></a>
+      <a class="pg" href="#" data-wa="Sensors"><img src="/img/catalog/sensor-gas.webp" alt="" loading="lazy"><b>Sensors</b><span>Gas, smoke, motion, climate</span></a>
+      <a class="pg" href="#" data-wa="Smart breakers"><img src="/img/catalog/breaker-life.webp" alt="" loading="lazy"><b>Smart breakers</b><span>Energy metering</span></a>
+    </div>
   </div>
 </section>
 
@@ -418,7 +451,7 @@ footer{background:#221e19;color:#cbc2b4}
   <div class="wrap">
     <div class="head">
       <div><p class="kicker">Who we serve</p><h2>A construction and technology partner from day one</h2></div>
-      <p>Whether you are building your home, developing a residential project or designing an interior, we bring the right solution at the right stage.</p>
+      <p>Homeowners, developers and designers, at every stage of the project.</p>
     </div>
     <div class="aud-grid">
       <div class="aud-item"><h3>Villa and luxury homeowners</h3><p>A home designed around how you live, built and automated by one team, handed over with full training.</p><a href="#contact">Book a site visit</a></div>
@@ -432,7 +465,7 @@ footer{background:#221e19;color:#cbc2b4}
   <div class="wrap">
     <div class="head">
       <div><p class="kicker">Our process</p><h2>Five clear stages, and a final price before we start</h2></div>
-      <p>We plan the smart systems with the building, so there is no breaking walls or re-wiring later, and we work to an agreed schedule.</p>
+      <p>Smart systems planned with the building: no breaking walls later.</p>
     </div>
     <ol class="steps">
       <li><span class="n"></span><h3>Consultation & survey</h3><p>We understand your needs and survey the site or drawings.</p></li>
@@ -567,7 +600,8 @@ function projArt(n){
 }
 const $=s=>document.querySelector(s);let active=0;
 $("#tabs").innerHTML=SOL.map((s,i)=>`<button class="tab" role="tab" id="t${i}" aria-controls="p${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}">${s[1]}</button>`).join("");
-$("#panels").innerHTML=SOL.map((s,i)=>`<div class="panel" role="tabpanel" id="p${i}" aria-labelledby="t${i}" ${i?"hidden":""}><div class="art"><svg viewBox="0 0 400 290" aria-hidden="true">${ICON[s[0]]}</svg></div><div><h3>${s[1]}</h3><p>${s[2]}</p><ul>${s[3].map(x=>`<li>${x}</li>`).join("")}</ul></div></div>`).join("");
+const PHOTO={build:"home-overview",light:"switch-life",climate:"thermostat-1",security:"camera-kit",access:"lock-door",shading:"curtain-life",cinema:"panel-life",network:"panel-1"};
+$("#panels").innerHTML=SOL.map((s,i)=>`<div class="panel" role="tabpanel" id="p${i}" aria-labelledby="t${i}" ${i?"hidden":""}><div class="art${PHOTO[s[0]]?" photo":""}">${PHOTO[s[0]]?`<img src="/img/catalog/${PHOTO[s[0]]}.webp" alt="${s[1]}" loading="lazy">`:`<svg viewBox="0 0 400 290" aria-hidden="true">${ICON[s[0]]}</svg>`}</div><div><h3>${s[1]}</h3><p>${s[2]}</p><ul>${s[3].slice(0,3).map(x=>`<li>${x}</li>`).join("")}</ul></div></div>`).join("");
 $("#fsol").innerHTML=SOL.slice(0,5).map((s,i)=>`<li><a href="#solutions" data-go="${i}">${s[1]}</a></li>`).join("");
 function selectTab(i,focus){active=i;document.querySelectorAll(".tab").forEach((t,j)=>{t.setAttribute("aria-selected",j===i);t.tabIndex=j===i?0:-1});document.querySelectorAll(".panel").forEach((p,j)=>p.hidden=j!==i);if(focus)$("#t"+i).focus()}
 $("#tabs").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)selectTab(+t.id.slice(1))});
@@ -581,6 +615,7 @@ nav.addEventListener("click",e=>{if(e.target.tagName==="A"){nav.classList.remove
 const wa=t=>"https://wa.me/"+WHATSAPP+(t?"?text="+encodeURIComponent(t):"");
 const HI="Hello Jaguar Smart Construction, I'd like to book a consultation.";
 $("#wa").href=wa(HI);
+document.querySelectorAll(".pg[data-wa]").forEach(a=>{a.href=wa(`Hello Jaguar Smart Construction, I would like a price for: ${a.dataset.wa}`);a.target="_blank";a.rel="noopener"});
 $("#lead").addEventListener("submit",e=>{
  e.preventDefault();const v=id=>document.getElementById(id).value.trim();
  const nameOk=!!v("fn"),phoneOk=v("fp").replace(/\D/g,"").length>=10;
