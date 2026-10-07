@@ -292,6 +292,7 @@ header .who a{color:#1c1a17 !important;font-weight:600}
 .t-img img{width:100%;height:100%;object-fit:contain;padding:8px}
 .t-img span{font-size:34px}
 .t-name{font-size:13.5px;font-weight:600;line-height:1.35;padding:8px 9px 2px;flex:1}
+.t-desc{font-size:11.5px;color:#777;padding:0 9px 2px;line-height:1.35}
 .t-brand{font-size:11.5px;color:var(--muted,#666);padding:0 9px 6px;direction:ltr;text-align:right}
 .t-foot{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0 7px 8px 9px}
 .t-price{font-size:14px;color:var(--accent);direction:ltr;white-space:nowrap}
@@ -453,7 +454,7 @@ header .who a{color:#1c1a17 !important;font-weight:600}
 
       <div class="picker">
         <select id="qBrand" aria-label="البراند"><option value="">كل البراندات</option></select>
-        <input id="pick" type="search" placeholder="دوّر على منتج بالاسم أو الكود…" aria-label="بحث عن منتج">
+        <input id="pick" type="search" placeholder="دوّر بالعربي… مثلاً: مفتاح 3 خط، ستارة، كالون، شاشة" aria-label="بحث عن منتج">
         <button type="button" class="line-btn" id="addCustom">+ بند يدوي</button>
         <div class="pick-res hidden" id="pickRes"></div>
       </div>
@@ -738,7 +739,39 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
 
 // ---------- PRODUCTS ----------
 // only these columns are ever requested, so cost/supplier data can't reach the page
-const PRODUCT_COLS = "id,code,name,name_ar,image_url,description,category,brand,end_user_price,dealer_price,active";
+const PRODUCT_COLS = "id,code,name,name_ar,image_url,description,description_ar,category,brand,end_user_price,dealer_price,active";
+// Arabic-friendly search: ignores hamza/taa-marbuta/alef-maqsura differences, and understands the
+// everyday words sales use (سويتش / تاتش → مفتاح, قفل → كالون, ستارة, بانل → شاشة …). Every word typed must match.
+const normAr = s => String(s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\u064B-\u0652\u0640]/g,"");
+const SEARCH_SYN = [
+  [/^(سويتش|سوتش|سويش|تاتش|تتش|switch|touch|مفاتيح|زرار|زر)$/, "مفتاح"],
+  [/^(قفل|لوك|lock|كوالين|كالونات|باب)$/, "كالون"],
+  [/^(ستاره|ستائر|ستاير|برداي?ه|براد(ي|ا)ت?|curtain|blind|شيش)$/, "ستار"],
+  [/^(بانل|panel|سكرين|screen|شاشات)$/, "شاشه"],
+  [/^(سنسور|سينسور|سنسر|sensor|حساسات)$/, "حساس"],
+  [/^(انتركوم|انتركم|doorbell|intercom|جرس|اجراس)$/, "انتركم|جرس"],
+  [/^(هب|hub|gateway|جيت|بوابه)$/, "جيتواي"],
+  [/^(فيشه|plug|socket|برايز|بريزه)$/, "بريزه|فيشه"],
+  [/^(تكيف|تكييف|ac|a\/c|مكيف|سخان|ثرموستات|ترموستات)$/, "تكييف|ثرموستات|سخان"],
+  [/^(breaker|بريكر|قواطع|سكينه)$/, "قاطع"],
+  [/^(remote|ريموتات|ir)$/, "ريموت"],
+  [/^(اليكسا|الكسا|alexa)$/, "alexa"],
+  [/^(wifi|wi-fi|وايفاي)$/, "واي فاي"],
+  [/^(zigbee|زجبي|زيجبى)$/, "زيجبي"],
+  [/^(ديمر|dimmer|تعتيم)$/, "ديمر"],
+  [/^(كاميرا|كاميرات|camera|cctv)$/, "كاميرا"]
+];
+const prodHay = p => normAr([p.name_ar, p.name, p.brand, p.description_ar, p.description].join(" "));
+// a plain number ("2" in "مفتاح 2 خط") must match a whole number, not a digit inside another one or the code
+const wordIn = (hay, w) => /^[\d.]+$/.test(w) ? new RegExp("(^|[^\\d.])" + w.replace(/\./g,"\\.") + "($|[^\\d.])").test(hay) : hay.includes(w);
+function searchWords(w){ const syn = SEARCH_SYN.find(([re])=>re.test(w)); return [w, ...(syn ? syn[1].split("|").map(normAr) : [])]; }
+function matchProduct(p, q, hayFn = prodHay){
+  const words = normAr(q).trim().split(/\s+/).filter(Boolean); if(!words.length) return true;
+  const hay = hayFn(p), code = normAr(p.code);
+  return words.every(w => searchWords(w).some(x => wordIn(hay, x)) || (w.length > 2 && code.includes(w)));
+}
+// results whose name itself matches come first (e.g. "جرس" → doorbells before locks that mention a bell)
+const nameScore = (p, q) => q && matchProduct(p, q, x => normAr([x.name_ar, x.name].join(" "))) ? 0 : 1;
 const CAT_AR = { "Switches & Sockets":"مفاتيح وبرايز", "Curtains":"ستاير", "Sensors":"حساسات", "Screens & Hubs":"شاشات وجيتواي", "Locks":"كوالين",
   "Intercom":"إنتركم وأجراس", "Cameras":"كاميرات", "Network":"شبكات", "Audio":"صوتيات", "Remotes":"ريموتات", "KNX":"KNX", "Gate":"بوابات",
   "Electrical":"كهرباء", "Voice Assistants":"مساعد صوتي", "Installation":"تركيب", "Other":"أخرى" };
@@ -763,11 +796,11 @@ async function loadProducts(){
 function renderProducts(){
   const q=$("pq").value.trim().toLowerCase(), fc=$("pCat").value, cols = isAdmin ? 6 : 5;
   const list = products.filter(p=>(!fc || p.category===fc) &&
-    (!q || [p.name,p.name_ar,p.code].some(x=>String(x||"").toLowerCase().includes(q))));
+    matchProduct(p, q));
   if(!list.length){ $("pRows").innerHTML = `<tr><td colspan="${cols}" class="empty">${products.length?"مفيش نتايج":"لسه مفيش منتجات"}</td></tr>`; return; }
   $("pRows").innerHTML = list.map(p=>`<tr class="${p.active===false?"inactive":""}">
       <td><span class="code">${esc(p.code||"—")}</span></td>
-      <td><div class="name">${esc(pName(p))}${p.active===false?'<span class="off">موقوف</span>':""}</div><div class="sub" dir="auto">${esc([p.brand, p.name_ar ? p.name : ""].filter(Boolean).join(" · "))}</div></td>
+      <td><div class="name">${esc(pName(p))}${p.active===false?'<span class="off">موقوف</span>':""}</div><div class="sub" dir="auto">${esc([p.brand, p.description_ar || p.description].filter(Boolean).join(" · "))}</div></td>
       <td>${esc(catAr(p.category))}</td>
       ${isAdmin ? ["end_user_price","dealer_price"].map(k=>`<td><input class="price-in${p[k]==null&&k==="end_user_price"?" missing":""}" type="number" min="0" step="any" inputmode="decimal" dir="ltr"
           data-id="${p.id}" data-k="${k}" value="${p[k] ?? ""}" placeholder="—" aria-label="${k==="dealer_price"?"سعر الديلر":"سعر العميل"} — ${esc(p.name)}"></td>`).join("")
@@ -966,7 +999,7 @@ $("qForm").addEventListener("input", e=>{ if(e.target.name && e.target.name!=="c
 
 function renderQuoteItems(){
   $("qRows").innerHTML = quote.items.length ? quote.items.map((i,n)=>`<tr data-n="${n}">
-      <td class="c-name">${i.product_id && prodOf(i) ? `<div class="nm">${esc(pName(prodOf(i)))}</div><div class="nm-en">${esc(i.name)}</div>` : `<input data-k="name" value="${esc(i.name)}" dir="auto" aria-label="البند">`}${i.description?`<div class="desc" dir="auto">${esc(i.description)}</div>`:""}</td>
+      <td class="c-name">${i.product_id && prodOf(i) ? `<div class="nm">${esc(pName(prodOf(i)))}</div>${prodOf(i).description_ar ? `<div class="desc">${esc(prodOf(i).description_ar)}</div>` : ""}` : `<input data-k="name" value="${esc(i.name)}" dir="auto" aria-label="البند">${i.description?`<div class="desc" dir="auto">${esc(i.description)}</div>`:""}`}</td>
       <td class="c-room"><input data-k="room" value="${esc(i.room||"")}" list="rooms" placeholder="المكان"></td>
       <td class="c-qty"><input data-k="qty" type="number" min="0.01" step="any" inputmode="decimal" dir="ltr" value="${esc(i.qty)}" aria-label="العدد"></td>
       <td class="c-price"><input data-k="unit_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr" value="${esc(i.unit_price ?? "")}" class="${i.unit_price?"":"no-price"}" aria-label="سعر الوحدة" placeholder="السعر"></td>
@@ -1008,12 +1041,12 @@ function renderStore(){
   if(storeCat && !cats.includes(storeCat)) storeCat = "";
   $("catChips").innerHTML = [["","الكل"],...cats.map(c=>[c,catAr(c)])].map(([v,l])=>`<button type="button" data-c="${esc(v)}" class="${storeCat===v?"on":""}">${esc(l)}</button>`).join("");
   const list = act.filter(p=>(!storeCat || (p.category||"Other")===storeCat) &&
-    (!q || [p.name,p.name_ar,p.code,p.brand].some(x=>String(x||"").toLowerCase().includes(q))))
-    .sort((a,b)=>(cats.indexOf(a.category||"Other")-cats.indexOf(b.category||"Other")) || String(a.code||a.name).localeCompare(String(b.code||b.name)));
+    matchProduct(p, q))
+    .sort((a,b)=>(nameScore(a,q)-nameScore(b,q)) || (cats.indexOf(a.category||"Other")-cats.indexOf(b.category||"Other")) || String(a.code||a.name).localeCompare(String(b.code||b.name)));
   $("storeGrid").innerHTML = list.length ? list.map(p=>{ const pr = priceFor(p,type), n = storeQty(p.id);
     return `<div class="tile${n?" in":""}" data-id="${p.id}">
       <div class="t-img">${p.image_url?`<img src="${esc(p.image_url)}" alt="" loading="lazy">`:"<span>📦</span>"}</div>
-      <div class="t-name">${esc(pName(p))}</div><div class="t-brand">${esc(p.brand||"")}</div>
+      <div class="t-name">${esc(pName(p))}</div>${p.description_ar ? `<div class="t-desc">${esc(p.description_ar)}</div>` : ""}<div class="t-brand">${esc(p.brand||"")}</div>
       <div class="t-foot"><b class="t-price">${pr!=null ? money(pr) : "—"}</b>
         <div class="qty"><button type="button" class="minus" ${!n||locked?"disabled":""} aria-label="قلّل">−</button><span>${n}</span><button type="button" class="plus" ${locked?"disabled":""} aria-label="زوّد">+</button></div></div></div>`; }).join("")
     : `<div class="sub" style="padding:14px">مفيش منتجات بالبحث ده — استخدم «بند يدوي»</div>`;
