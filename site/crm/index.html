@@ -343,6 +343,12 @@ header .who a{color:#1c1a17 !important;font-weight:600}
 .pk-menu button.pk-opt{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:right;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px;margin-bottom:8px;font:inherit;cursor:pointer}
 .pk-menu button.pk-opt:hover{border-color:var(--accent)}
 @media (max-width:640px){.pk-meta{grid-template-columns:1fr}}
+.inst-mode{flex-wrap:wrap}
+.im-btns{display:flex;gap:6px}
+.im-btns button{border:1px solid var(--line);background:#fff;border-radius:18px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.im-btns button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.im-btns button:disabled{opacity:.6;cursor:default}
+#instRow.hidden{display:none}
 </style>
 </head>
 <body>
@@ -503,7 +509,8 @@ header .who a{color:#1c1a17 !important;font-weight:600}
       <datalist id="discList"><option value="10"><option value="20"><option value="30"><option value="40"></datalist>
       <div class="q-totals">
         <div><span>إجمالي المنتجات</span><b id="tSub" dir="ltr">0</b></div>
-        <div><span>تركيب وبرمجة <input id="tInstPct" type="number" min="0" step="any" dir="ltr"> %</span><b id="tInst" dir="ltr">0</b></div>
+        <div class="inst-mode" id="instMode"><span>نوع العرض</span><span class="im-btns"><button type="button" data-m="supply">توريد فقط</button><button type="button" data-m="install">توريد + تركيب وبرمجة</button></span></div>
+        <div id="instRow"><span>تركيب وبرمجة (<span dir="ltr" id="instPctLbl">10%</span> من المنتجات)</span><b id="tInst" dir="ltr">0</b><input id="tInstPct" type="hidden"></div>
         <div><span>خصم <input id="tDiscPct" type="number" min="0" max="100" step="any" dir="ltr"> %</span><b id="tDisc" dir="ltr">0</b></div>
         <div class="disc-chips" id="discChips" aria-label="اختيار خصم سريع"><button type="button" data-d="0">0%</button><button type="button" data-d="10">10%</button><button type="button" data-d="20">20%</button><button type="button" data-d="30">30%</button><button type="button" data-d="40">40%</button></div>
         <div class="grand"><span>الإجمالي</span><b id="tTotal" dir="ltr">0</b></div>
@@ -1105,7 +1112,6 @@ $("addPkg").onclick = async ()=>{
       if(same) same.qty = (Number(same.qty)||0) + Number(qty);
       else quote.items.push({ product_id:p.id, name:p.name, description:p.description, room:"", qty:Number(qty), unit_price:priceFor(p,type), discount_pct:0 });
       n++; });
-    if(!(Number($("tInstPct").value) > 0)) $("tInstPct").value = k.install_pct;
     $("pkgMenu").classList.add("hidden"); quoteDirty = true; renderQuoteItems();
     toast(`باقة «${k.name_ar}» اتضافت (${n} منتج) ✓`);
   });
@@ -1140,6 +1146,7 @@ function termsAr(text){
     if((m = t.match(/^Delivery\s*:\s*([\d\-–]+)\s*weeks? from PO & DP$/i))) return "مدة التوريد: " + m[1] + " أسابيع من أمر الشراء ودفع المقدم";
     if((m = t.match(/^Warranty\s*:\s*(\d+)\s*Years?$/i))) return "الضمان: " + yrs(+m[1]);
     if(t==="Thank you for your business!") return "شكراً لثقتكم!";
+    if(t==="Supply only. Installation and configuration are not included.") return "السعر توريد فقط، ولا يشمل التركيب والبرمجة.";
     return l; }).join("\n");
 }
 const HTML2PDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
@@ -1184,13 +1191,13 @@ async function openQuote(id){
     quote = { id:q.id, quote_number:q.quote_number, lead_id:q.lead_id, status:q.status, items:items.map(({sort_order,...i})=>i),
       delete_requested_by:q.delete_requested_by, delete_requested_at:q.delete_requested_at };
     ["client_name","client_type","quote_date","valid_until","status","notes","terms"].forEach(k=>f[k].value = q[k] ?? "");
-    $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct; markDisc();
+    $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct; markDisc(); markInst();
   } else {
     quote = { id:null, quote_number:null, lead_id:current.id, status:"draft", items:[] };
     const today = todayStr();
     f.client_name.value = current.name; f.client_type.value = current.client_type==="dealer" ? "dealer" : "end_customer";
     f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft"; f.terms.value = DEFAULT_TERMS;
-    $("tInstPct").value = 0; $("tDiscPct").value = 0; markDisc();
+    $("tInstPct").value = INSTALL_PCT; $("tDiscPct").value = 0; markDisc(); markInst();
   }
   $("qvTitle").textContent = quote.quote_number ? `عرض سعر ${quote.quote_number}` : "عرض سعر جديد";
   $("qDel").classList.toggle("hidden", !quote.id || !isAdmin);
@@ -1226,6 +1233,13 @@ function updateTotals(){
   updateCart();
 }
 ["tInstPct","tDiscPct"].forEach(id=>$(id).addEventListener("input",()=>{ quoteDirty=true; updateTotals(); }));
+// installation is a separate line: "supply only" (0) or "supply + installation & programming" at a fixed share of the products
+const INSTALL_PCT = 10;
+const markInst = () => { const on = (Number($("tInstPct").value)||0) > 0;
+  $("instMode").querySelectorAll("button").forEach(b=>b.classList.toggle("on", (b.dataset.m==="install")===on));
+  $("instRow").classList.toggle("hidden", !on); $("instPctLbl").textContent = (Number($("tInstPct").value)||INSTALL_PCT) + "%"; };
+$("instMode").addEventListener("click", e=>{ const b = e.target.closest("button"); if(!b || b.disabled) return;
+  $("tInstPct").value = b.dataset.m==="install" ? INSTALL_PCT : 0; quoteDirty = true; markInst(); updateTotals(); });
 const markDisc = () => { const v = Number($("tDiscPct").value)||0; document.querySelectorAll("#discChips button").forEach(b=>b.classList.toggle("on", Number(b.dataset.d)===v)); };
 $("discChips").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; $("tDiscPct").value = b.dataset.d; $("tDiscPct").dispatchEvent(new Event("input")); });
 $("tDiscPct").addEventListener("input", markDisc);
@@ -1382,6 +1396,7 @@ function applyLock(){
   $("qForm").querySelectorAll("input,select,textarea").forEach(el=>el.disabled = locked);
   $("qRows").querySelectorAll(".del").forEach(el=>el.classList.toggle("hidden", locked));
   ["pick","qBrand","addCustom","addPkg","tInstPct","tDiscPct"].forEach(id=>$(id).disabled = locked);
+  $("instMode").querySelectorAll("button").forEach(b=>b.disabled = locked);
   $("qSave").classList.toggle("hidden", locked);
   $("qCopy").classList.toggle("hidden", !quote.id);
   const by = (quote.delete_requested_by||"").split("@")[0];
@@ -1417,8 +1432,8 @@ function loadScript(src){
 }
 function buildPdf(){
   const f = $("qForm"), t = calcQuote(), ar = $("qLang").value === "ar";
-  const L = ar ? { general:"عام", units:"وحدة", quote:"عرض سعر رقم", date:"تاريخ العرض", exp:"ساري حتى", contact:"للتواصل", desc:"البيان", qty:"الكمية", price:"سعر الوحدة", disc:"خصم %", amt:"الإجمالي", inst:"التركيب والبرمجة", discount:"الخصم", total:"الإجمالي النهائي", le:"ج.م" }
-             : { general:"General", units:"Units", quote:"Quotation #", date:"Quotation Date", exp:"Expiration", contact:"Contact", desc:"Description", qty:"Quantity", price:"Unit Price", disc:"Disc.%", amt:"Amount", inst:"Installation", discount:"Discount", total:"Total", le:"LE" };
+  const L = ar ? { supply:"توريد فقط — بدون تركيب", products:"إجمالي المنتجات", general:"عام", units:"وحدة", quote:"عرض سعر رقم", date:"تاريخ العرض", exp:"ساري حتى", contact:"للتواصل", desc:"البيان", qty:"الكمية", price:"سعر الوحدة", disc:"خصم %", amt:"الإجمالي", inst:"التركيب والبرمجة", discount:"الخصم", total:"الإجمالي النهائي", le:"ج.م" }
+             : { supply:"Supply only — installation not included", products:"Products total", general:"General", units:"Units", quote:"Quotation #", date:"Quotation Date", exp:"Expiration", contact:"Contact", desc:"Description", qty:"Quantity", price:"Unit Price", disc:"Disc.%", amt:"Amount", inst:"Installation & Programming", discount:"Discount", total:"Total", le:"LE" };
   const itemName = i => ar && i.product_id && prodOf(i) ? pName(prodOf(i)) : i.name;
   const d = v => v ? new Date(v+"T00:00:00").toLocaleDateString("en-US",{month:"2-digit",day:"2-digit",year:"numeric"}) : "—";
   const n2 = v => Number(v||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1429,7 +1444,9 @@ function buildPdf(){
   const rows = order.map(r=>(hasRooms ? `<tr class="room-row"><td colspan="5">${esc(r||L.general)}</td></tr>` : "") +
     groups[r].map(i=>`<tr><td dir="auto">${esc(itemName(i))}</td><td><span class="num">${n2(i.qty)}</span> ${L.units}</td><td class="num">${n2(i.unit_price)}</td>
       <td class="num">${Number(i.discount_pct) ? n2(i.discount_pct) : ""}</td><td class="amt"><span class="num">${n2(lineTotal(i))}</span> ${L.le}</td></tr>`).join("")).join("");
-  const extra = (t.inst ? `<div class="s"><span>${L.inst} (<span class="num">${n2(t.instPct)}%</span>)</span><span><span class="num">${n2(t.inst)}</span> ${L.le}</span></div>` : "") +
+  const extra = `<div class="s"><span>${L.products}</span><span><span class="num">${n2(t.sub)}</span> ${L.le}</span></div>` +
+                (t.inst ? `<div class="s"><span>${L.inst} (<span class="num">${n2(t.instPct)}%</span>)</span><span><span class="num">${n2(t.inst)}</span> ${L.le}</span></div>` : "") +
+                (!t.inst ? `<div class="s"><span>${L.supply}</span><span></span></div>` : "") +
                 (t.disc ? `<div class="s"><span>${L.discount} (<span class="num">${n2(t.discPct)}%</span>)</span><span><span class="num">-${n2(t.disc)}</span> ${L.le}</span></div>` : "");
   $("pdfDoc").innerHTML = `
     <div class="d-band">
@@ -1449,7 +1466,7 @@ function buildPdf(){
         <tbody>${rows}</tbody></table></div>
       <div class="d-sums">${extra ? `<div style="margin-top:6px">${extra}</div>` : ""}
         <div class="d-total"><span>${L.total}</span><span><span class="num">${n2(t.total)}</span> ${L.le}</span></div></div>
-      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc(ar ? termsAr(f.terms.value.trim()) : f.terms.value.trim())}</div>`:""}
+      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc((v => ar ? termsAr(v) : v)(t.inst ? f.terms.value.trim() : f.terms.value.trim().replace(/^The quoted price includes installation and configuration fees\.$/m, "Supply only. Installation and configuration are not included.")))}</div>`:""}
       ${f.notes.value.trim()?`<div class="d-note" dir="auto">${esc(f.notes.value.trim())}</div>`:""}
     </div>`;
   $("pdfDoc").className = ar ? "ar" : ""; $("pdfDoc").dir = ar ? "rtl" : "ltr";
