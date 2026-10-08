@@ -1122,10 +1122,10 @@ $("pkgMenu").addEventListener("click", e=>{ if(e.target.id==="pkgMenu") $("pkgMe
 const Q_STATUS = { draft:"مسودة", sent:"اتبعت", accepted:"اتقبل ✓", rejected:"اترفض" };
 const DEFAULT_TERMS = [
   "The quoted price includes installation and configuration fees.",
-  "Brands : TYSH",
+  "Brands : Tuya",
   "Payment Terms : 50% DP , 40% on Delivery - 10% After Installation And Configuration",
   "Delivery : 2-4 weeks from PO & DP",
-  "Warranty : 1 Year",
+  "Warranty : 5 Years",
   "Thank you for your business!"].join("\n");
 const COMPANY = { name:"Jaguar Smart Construction", tagline:"Jaguar Smart Construction | From the structural plan to a fully smart home", email:"info@jaguarsmart.com", phone:"+20 111 112 6938",
   address:["57 Hassan El-Sherif St., 8th District","Office A35, 1st Floor, Nasr City","Cairo, Egypt"], contact:"Jaguar Smart" };
@@ -1147,6 +1147,7 @@ function termsAr(text){
     if((m = t.match(/^Warranty\s*:\s*(\d+)\s*Years?$/i))) return "الضمان: " + yrs(+m[1]);
     if(t==="Thank you for your business!") return "شكراً لثقتكم!";
     if(t==="Supply only. Installation and configuration are not included.") return "السعر توريد فقط، ولا يشمل التركيب والبرمجة.";
+    if(/^Payment Terms\s*:\s*50% DP\s*,\s*50% on Delivery$/i.test(t)) return "شروط الدفع: 50% مقدم، 50% عند التوريد";
     return l; }).join("\n");
 }
 const HTML2PDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
@@ -1466,7 +1467,7 @@ function buildPdf(){
         <tbody>${rows}</tbody></table></div>
       <div class="d-sums">${extra ? `<div style="margin-top:6px">${extra}</div>` : ""}
         <div class="d-total"><span>${L.total}</span><span><span class="num">${n2(t.total)}</span> ${L.le}</span></div></div>
-      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc((v => ar ? termsAr(v) : v)(t.inst ? f.terms.value.trim() : f.terms.value.trim().replace(/^The quoted price includes installation and configuration fees\.$/m, "Supply only. Installation and configuration are not included.")))}</div>`:""}
+      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc((v => ar ? termsAr(v) : v)(t.inst ? f.terms.value.trim() : f.terms.value.trim().replace(/^The quoted price includes installation and configuration fees\.$/m, "Supply only. Installation and configuration are not included.").replace(/^Payment Terms\s*:\s*50% DP\s*,\s*40% on Delivery\s*-\s*10% After Installation And Configuration$/mi, "Payment Terms : 50% DP , 50% on Delivery")))}</div>`:""}
       ${f.notes.value.trim()?`<div class="d-note" dir="auto">${esc(f.notes.value.trim())}</div>`:""}
     </div>`;
   $("pdfDoc").className = ar ? "ar" : ""; $("pdfDoc").dir = ar ? "rtl" : "ltr";

@@ -1127,6 +1127,7 @@ function termsAr(text){
     if((m = t.match(/^Warranty\s*:\s*(\d+)\s*Years?$/i))) return "الضمان: " + yrs(+m[1]);
     if(t==="Thank you for your business!") return "شكراً لثقتكم!";
     if(t==="Supply only. Installation and configuration are not included.") return "السعر توريد فقط، ولا يشمل التركيب والبرمجة.";
+    if(/^Payment Terms\s*:\s*50% DP\s*,\s*50% on Delivery$/i.test(t)) return "شروط الدفع: 50% مقدم، 50% عند التوريد";
     return l; }).join("\n");
 }
 const HTML2PDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
@@ -1446,7 +1447,7 @@ function buildPdf(){
         <tbody>${rows}</tbody></table></div>
       <div class="d-sums">${extra ? `<div style="margin-top:6px">${extra}</div>` : ""}
         <div class="d-total"><span>${L.total}</span><span><span class="num">${n2(t.total)}</span> ${L.le}</span></div></div>
-      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc((v => ar ? termsAr(v) : v)(t.inst ? f.terms.value.trim() : f.terms.value.trim().replace(/^The quoted price includes installation and configuration fees\.$/m, "Supply only. Installation and configuration are not included.")))}</div>`:""}
+      ${f.terms.value.trim()?`<div class="d-terms" dir="auto">${esc((v => ar ? termsAr(v) : v)(t.inst ? f.terms.value.trim() : f.terms.value.trim().replace(/^The quoted price includes installation and configuration fees\.$/m, "Supply only. Installation and configuration are not included.").replace(/^Payment Terms\s*:\s*50% DP\s*,\s*40% on Delivery\s*-\s*10% After Installation And Configuration$/mi, "Payment Terms : 50% DP , 50% on Delivery")))}</div>`:""}
       ${f.notes.value.trim()?`<div class="d-note" dir="auto">${esc(f.notes.value.trim())}</div>`:""}
     </div>`;
   $("pdfDoc").className = ar ? "ar" : ""; $("pdfDoc").dir = ar ? "rtl" : "ltr";
