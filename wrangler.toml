@@ -1,0 +1,4 @@
+# Cloudflare Pages configuration: the site is plain static files in /site (no build step).
+name = "jaguarsmart"
+pages_build_output_dir = "site"
+compatibility_date = "2026-10-01"
