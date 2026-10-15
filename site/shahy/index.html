@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>شاهي | Shahi — عزومات ومناسبات بمستوى فنادق الخمس نجوم</title>
+<meta name="description" content="شاهي: عزومات ومناسبات بمستوى فنادق الخمس نجوم. صواني، مقبلات، تجهيز حفلات، ووجبات صحية أسبوعية. ابعتلنا واحجز سفرتك.">
+<meta name="theme-color" content="#1b1410">
+<meta property="og:type" content="website">
+<meta property="og:title" content="شاهي | Shahi — طعم الفنادق على سفرتك">
+<meta property="og:description" content="عزومات ومناسبات بمستوى فنادق الخمس نجوم. صواني، مقبلات، وتجهيز حفلات.">
+<meta property="og:image" content="https://jaguarsmart.com/shahy/og.jpg">
+<meta property="og:url" content="https://jaguarsmart.com/shahy/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b1410'/%3E%3Cpath d='M12 42h40M15 40a17 17 0 0 1 34 0' fill='none' stroke='%23d4ad66' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='20' r='2.6' fill='none' stroke='%23d4ad66' stroke-width='2.4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1b1410; --bg-2:#241a14; --bg-3:#2e231b;
+  --cream:#f4ebdd; --cream-2:#e9dcc6; --paper:#fbf7f0;
+  --gold:#d4ad66; --gold-2:#b8893f; --gold-soft:rgba(212,173,102,.18);
+  --ink:#1b1410; --muted:#b9a891; --muted-d:#6e5d4b; --line:rgba(212,173,102,.28);
+  --serif:"Cormorant Garamond",Georgia,serif; --ar:"Alexandria","Segoe UI",Tahoma,sans-serif;
+  --wa:"201151914912";
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--cream);font-family:var(--ar);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,100% - 32px);margin-inline:auto}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.en{font-family:var(--serif);font-style:italic;letter-spacing:.01em;direction:ltr;unicode-bidi:isolate}
+.caps{font-family:var(--serif);font-weight:600;font-size:13px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);direction:ltr;unicode-bidi:isolate}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:700;font-size:16px;padding:15px 28px;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:transform .2s,background .25s,color .25s,border-color .25s}
+.btn:active{transform:scale(.98)}
+.btn-gold{background:var(--gold);color:var(--ink)}
+.btn-gold:hover{background:#e2bf7c}
+.btn-line{border-color:var(--line);color:var(--cream)}
+.btn-line:hover{border-color:var(--gold);color:var(--gold)}
+.btn svg{width:20px;height:20px}
+.orn{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold)}
+.orn::before,.orn::after{content:"";height:1px;width:48px;background:currentColor;opacity:.6}
+.orn i{width:6px;height:6px;background:currentColor;transform:rotate(45deg)}
+
+/* header */
+header{position:fixed;inset:0 0 auto;z-index:40;transition:background .3s,box-shadow .3s,border-color .3s;border-bottom:1px solid transparent}
+header.solid{background:rgba(27,20,16,.94);backdrop-filter:blur(10px);border-bottom-color:var(--line)}
+header .wrap{display:flex;align-items:center;gap:28px;height:78px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo svg{width:44px;height:30px;color:var(--gold)}
+.logo b{font-weight:800;font-size:28px;line-height:1;color:var(--cream)}
+.logo small{display:block;font-family:var(--serif);font-weight:600;font-size:10px;letter-spacing:.5em;color:var(--gold);margin-top:3px;direction:ltr}
+nav.main{display:flex;gap:26px;margin-inline-start:auto}
+nav.main a{font-size:15px;color:var(--cream-2);padding:6px 0;border-bottom:1px solid transparent}
+nav.main a:hover{color:var(--gold);border-bottom-color:var(--gold)}
+header .btn{padding:11px 22px;font-size:15px}
+.menu-btn{display:none;margin-inline-start:auto;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--cream);cursor:pointer}
+.menu-btn span{display:block;width:18px;height:1.5px;background:currentColor;margin:4px auto}
+@media (max-width:960px){
+  nav.main{position:fixed;inset:78px 0 auto;flex-direction:column;gap:0;background:var(--bg);padding:6px 24px 22px;border-bottom:1px solid var(--line);display:none}
+  nav.main.open{display:flex}
+  nav.main a{padding:14px 0;border-bottom:1px solid var(--line);font-size:17px}
+  .menu-btn{display:block}
+  header .btn{display:none}
+}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;padding:120px 0 80px;overflow:hidden;
+  background:radial-gradient(60% 50% at 50% 38%,#3a2b20 0%,var(--bg) 70%)}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(212,173,102,.08) 1px,transparent 1px);background-size:26px 26px;mask-image:radial-gradient(70% 60% at 50% 45%,#000 30%,transparent 80%)}
+.hero .arch{position:absolute;left:50%;top:92px;transform:translateX(-50%);width:min(560px,86vw);height:calc(100% - 140px);border:1px solid var(--line);border-bottom:0;border-radius:999px 999px 0 0;pointer-events:none}
+.hero-in{position:relative;z-index:1;max-width:760px;padding:0 16px}
+.cloche{width:150px;height:118px;margin:0 auto 18px;color:var(--gold)}
+.cloche .lid{transform-origin:75px 82px;animation:lid 5.5s ease-in-out infinite}
+.cloche .steam path{stroke-dasharray:40;stroke-dashoffset:40;opacity:0;animation:steam 5.5s ease-in-out infinite}
+.cloche .steam path:nth-child(2){animation-delay:.25s}.cloche .steam path:nth-child(3){animation-delay:.5s}
+@keyframes lid{0%,18%{transform:none}32%,62%{transform:translate(18px,-26px) rotate(14deg)}78%,100%{transform:none}}
+@keyframes steam{0%,26%{stroke-dashoffset:40;opacity:0}40%{opacity:.9}62%{stroke-dashoffset:0;opacity:0}100%{opacity:0}}
+.hero h1{font-weight:800;font-size:clamp(40px,7.4vw,84px);line-height:1.15;margin:8px 0 14px;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .lead{font-size:clamp(17px,2.2vw,20px);color:var(--cream-2);margin:0 auto 10px;max-width:560px;font-weight:300}
+.hero .en{font-size:21px;color:var(--muted);margin:0 0 30px}
+.hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.hero .chips span{font-size:14px;color:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:6px 16px;background:rgba(36,26,20,.6)}
+
+/* sections */
+section.block{padding:clamp(72px,10vw,120px) 0}
+.sec-head{text-align:center;max-width:680px;margin:0 auto clamp(40px,6vw,64px)}
+.sec-head h2{font-weight:800;font-size:clamp(30px,4.6vw,48px);line-height:1.25;margin:12px 0 10px}
+.sec-head p{margin:0;color:var(--muted)}
+.sec-head .en{font-size:20px;color:var(--muted);display:block;margin-top:4px}
+.light{background:var(--paper);color:var(--ink)}
+.light .sec-head p,.light .sec-head .en{color:var(--muted-d)}
+.light .caps{color:var(--gold-2)}
+
+/* services */
+.svc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.svc-card{position:relative;background:#fff;border:1px solid #eadfcd;border-radius:22px;padding:30px 24px 26px;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.svc-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(60,40,20,.12)}
+.svc-card .ic{width:58px;height:58px;border-radius:16px;background:var(--bg);display:grid;place-items:center;color:var(--gold);margin-bottom:18px}
+.svc-card .ic svg{width:32px;height:32px}
+.svc-card .caps{font-size:11px;letter-spacing:.32em}
+.svc-card h3{font-weight:800;font-size:22px;line-height:1.35;margin:6px 0 8px}
+.svc-card p{margin:0;color:var(--muted-d);font-size:15px}
+.svc-card .en{display:block;margin-top:12px;color:var(--gold-2);font-size:17px}
+@media (max-width:1000px){.svc{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.svc{grid-template-columns:1fr}}
+
+/* hotel taste band */
+.band{position:relative;overflow:hidden}
+.band .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.band h2{font-weight:800;font-size:clamp(34px,5vw,58px);line-height:1.2;margin:14px 0 16px}
+.band h2 em{font-style:normal;color:var(--gold)}
+.band p{color:var(--cream-2);margin:0 0 12px;max-width:520px}
+.band .en{font-size:22px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-top:30px}
+.stats div{background:var(--bg-2);padding:18px 14px;text-align:center}
+.stats b{display:block;color:var(--gold);font-size:22px;font-weight:800}
+.stats span{font-size:13px;color:var(--muted)}
+.plate{position:relative;aspect-ratio:1;max-width:440px;width:100%;margin-inline:auto}
+.plate svg{width:100%;height:100%}
+@media (max-width:900px){.band .wrap{grid-template-columns:1fr;gap:30px;text-align:center}.band p{margin-inline:auto}.plate{max-width:300px;order:-1}}
+
+/* occasions */
+.occ{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.occ-card{position:relative;border:1px solid var(--line);border-radius:999px 999px 22px 22px;padding:58px 22px 30px;text-align:center;background:linear-gradient(180deg,var(--bg-3),var(--bg-2));transition:border-color .3s,transform .3s}
+.occ-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+.occ-card .ic{width:54px;height:54px;margin:0 auto 14px;color:var(--gold)}
+.occ-card h3{font-weight:700;font-size:21px;margin:0 0 2px}
+.occ-card .en{font-size:16px;color:var(--muted)}
+.occ-card p{font-size:14px;color:var(--cream-2);margin:12px 0 0}
+@media (max-width:1000px){.occ{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.occ{gap:10px}.occ-card{padding:44px 12px 22px}.occ-card h3{font-size:17px}.occ-card p{display:none}}
+
+/* shahi fit */
+.fit .wrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center}
+.fit-card{background:var(--bg);color:var(--cream);border-radius:28px;padding:38px 34px;position:relative;overflow:hidden}
+.fit-card::after{content:"";position:absolute;inset:auto -60px -60px auto;width:220px;height:220px;border-radius:50%;border:1px solid var(--line)}
+.fit-card .caps{font-size:12px}
+.fit-card h3{font-weight:800;font-size:clamp(28px,3.8vw,40px);line-height:1.25;margin:10px 0 6px}
+.fit-card .gold{color:var(--gold);font-weight:500}
+.fit-card .en{display:block;font-size:19px;color:var(--muted);margin-top:16px}
+.fit h2{font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.3;margin:12px 0 14px}
+.ticks{list-style:none;margin:18px 0 26px;padding:0}
+.ticks li{position:relative;padding:10px 34px 10px 0;border-bottom:1px solid #eadfcd}
+.ticks li::before{content:"";position:absolute;right:4px;top:19px;width:14px;height:7px;border-left:2px solid var(--gold-2);border-bottom:2px solid var(--gold-2);transform:rotate(-45deg)}
+@media (max-width:900px){.fit .wrap{grid-template-columns:1fr;gap:30px}}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:s;position:relative}
+.steps::before{content:"";position:absolute;top:34px;right:12.5%;left:12.5%;height:1px;background:var(--line)}
+.step{text-align:center;padding:0 12px;position:relative}
+.step .n{width:68px;height:68px;margin:0 auto 18px;border-radius:50%;border:1px solid var(--gold);background:var(--bg);display:grid;place-items:center;font-weight:800;font-size:24px;color:var(--gold);position:relative}
+.step h3{font-weight:700;font-size:19px;margin:0}
+.step .caps{font-size:10.5px;letter-spacing:.3em;display:block;margin-top:2px}
+.step p{font-size:14px;color:var(--muted);margin:10px 0 0}
+@media (max-width:760px){.steps{grid-template-columns:1fr;gap:26px}.steps::before{top:0;bottom:0;right:33px;left:auto;width:1px;height:auto}
+  .step{display:grid;grid-template-columns:68px 1fr;gap:4px 18px;text-align:right;padding:0}.step .n{margin:0;grid-row:span 3}.step p{margin:4px 0 0}}
+
+/* booking */
+.book .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.book h2{font-weight:800;font-size:clamp(30px,4.4vw,46px);line-height:1.25;margin:12px 0 12px}
+.book .info p{color:var(--muted-d);margin:0 0 22px}
+.contact-list{list-style:none;padding:0;margin:0 0 24px}
+.contact-list li{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #eadfcd}
+.contact-list .ic{width:44px;height:44px;border-radius:12px;background:var(--bg);color:var(--gold);display:grid;place-items:center;flex:none}
+.contact-list .ic svg{width:22px;height:22px}
+.contact-list small{display:block;color:var(--muted-d);font-size:13px}
+.contact-list b{font-weight:700;direction:ltr;unicode-bidi:isolate}
+form.bk{background:#fff;border:1px solid #eadfcd;border-radius:26px;padding:30px;box-shadow:0 24px 60px rgba(60,40,20,.08);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.f label{display:block;font-size:14px;font-weight:500;margin-bottom:6px;color:var(--muted-d)}
+.f input,.f select,.f textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid #e3d6c1;border-radius:14px;padding:12px 14px;-webkit-appearance:none;appearance:none}
+.f select{background-image:linear-gradient(45deg,transparent 50%,#8a7660 50%),linear-gradient(135deg,#8a7660 50%,transparent 50%);background-size:6px 6px;background-repeat:no-repeat;background-position:left 18px center,left 12px center;padding-left:34px}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(212,173,102,.25);background:#fff}
+.f.full{grid-column:1/-1}
+.f textarea{min-height:96px;resize:vertical}
+.f.bad input{border-color:#c0392b}
+.guests{display:flex;align-items:center;border:1px solid #e3d6c1;border-radius:14px;background:var(--paper);overflow:hidden}
+.guests button{width:48px;height:48px;border:0;background:transparent;font-size:22px;color:var(--gold-2);cursor:pointer}
+.guests input{border:0;background:transparent;text-align:center;padding:0;box-shadow:none!important}
+form.bk .err{grid-column:1/-1;color:#c0392b;font-size:14px;margin:0;min-height:0}
+form.bk .btn{grid-column:1/-1;width:100%;padding:17px;font-size:17px;background:var(--bg);color:var(--cream)}
+form.bk .btn:hover{background:#000}
+form.bk .note{grid-column:1/-1;text-align:center;font-size:13px;color:var(--muted-d);margin:-4px 0 0}
+@media (max-width:900px){.book .wrap{grid-template-columns:1fr;gap:34px}}
+@media (max-width:520px){form.bk{grid-template-columns:1fr;padding:22px}}
+
+/* quote band */
+.quote{text-align:center;padding:clamp(64px,9vw,104px) 0;background:radial-gradient(60% 80% at 50% 50%,#33261d,var(--bg))}
+.quote p{font-weight:800;font-size:clamp(24px,3.8vw,42px);line-height:1.45;margin:18px auto 8px;max-width:900px;text-wrap:balance}
+.quote p span{display:block;font-weight:400;color:var(--cream-2);font-size:.62em;margin-top:8px}
+.quote .en{font-size:22px;color:var(--muted)}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:40px 0 calc(28px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:space-between}
+footer .social{display:flex;gap:10px}
+footer .social a{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold)}
+footer .social a:hover{border-color:var(--gold)}
+footer .social svg{width:19px;height:19px}
+footer small{color:var(--muted);font-size:13px}
+
+/* floating whatsapp */
+.wa-float{position:fixed;left:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:10px;background:var(--gold);color:var(--ink);border-radius:999px;padding:12px 18px 12px 14px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.wa-float svg{width:24px;height:24px}
+@media (max-width:560px){.wa-float span{display:none}.wa-float{padding:14px}}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cloche" viewBox="0 0 64 44"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 38h56"/><path d="M8 35a24 24 0 0 1 48 0"/><circle cx="32" cy="8" r="2.8"/></g></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.2-.2-.2-.4-.3z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M14 8V6c0-.9.6-1 1-1h2.5V1.1L14.1 1C10.4 1 9.6 3.8 9.6 5.6V8H7v4h2.6v11H14V12h3.3l.4-4z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></symbol>
+</svg>
+
+<header id="hdr">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="شاهي — الرئيسية">
+      <svg><use href="#i-cloche"/></svg>
+      <span><b>شاهي</b><small>SHAHI</small></span>
+    </a>
+    <nav class="main" id="nav">
+      <a href="#services">خدماتنا</a>
+      <a href="#occasions">المناسبات</a>
+      <a href="#fit">شاهي فيت</a>
+      <a href="#how">إزاي تحجز</a>
+      <a href="#book">تواصل معانا</a>
+    </nav>
+    <a class="btn btn-gold" href="#book">احجز سفرتك</a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="القائمة" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="arch" aria-hidden="true"></div>
+  <div class="hero-in">
+    <svg class="cloche" viewBox="0 0 150 118" aria-hidden="true">
+      <g class="steam" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M60 70c-6-8 6-12 0-22"/><path d="M75 66c-6-8 6-12 0-22"/><path d="M90 70c-6-8 6-12 0-22"/>
+      </g>
+      <path d="M14 98h122" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M22 104h106" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+      <g class="lid" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+        <path d="M24 93a51 51 0 0 1 102 0z" fill="rgba(212,173,102,.06)"/>
+        <circle cx="75" cy="36" r="4.5"/>
+        <path d="M40 80a38 38 0 0 1 22-28" opacity=".55" stroke-width="1.6"/>
+      </g>
+    </svg>
+    <p class="caps">Gatherings · Platters · Catering</p>
+    <h1>طعم الفنادق<br><em>على سفرتك</em></h1>
+    <p class="lead">عزومات ومناسبات بمستوى فنادق الخمس نجوم. صواني، مقبلات، وتجهيز حفلات بإيد شيف، وتوصلك جاهزة للتقديم.</p>
+    <p class="en">Five-star kitchen experience, served at home.</p>
+    <div class="ctas">
+      <a class="btn btn-gold" href="#book">احجز عزومتك</a>
+      <a class="btn btn-line" data-wa="أهلاً شاهي، عايز أعرف تفاصيل أكتر عن العزومات." href="#"><svg><use href="#i-wa"/></svg> كلمنا واتساب</a>
+    </div>
+    <div class="chips"><span>لمّة العيلة</span><span>خطوبة وكتب كتاب</span><span>أعياد الميلاد</span><span>عزومات الشغل</span></div>
+  </div>
+</section>
+
+<section class="block light" id="services">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="orn"><i></i></div>
+      <h2>إنت استقبل ضيوفك<br>وإحنا نجهّز السفرة</h2>
+      <p>يوم العزومة مكانك مع ضيوفك، مش في المطبخ. إحنا نجهّز، ونغلّف، ونوصّل، وإنت تستقبل وتنبسط.</p>
+      <span class="en">You host. We handle the table.</span>
+    </div>
+    <div class="svc">
+      <article class="svc-card rv">
+        <div class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 22h26"/><path d="M5 20a11 11 0 0 1 22 0"/><circle cx="16" cy="7" r="1.6"/><path d="M8 26h16"/></g></svg></div>
+        <span class="caps">Gatherings</span>
+        <h3>عزومات كاملة</h3>
+        <p>سفرة متكاملة على قد ضيوفك، من الأطباق الرئيسية للحلو، متظبطة على ذوقك ومناسبتك.</p>
+        <span class="en">Every occasion deserves a proper table.</span>
+      </article>
+      <article class="svc-card rv">
+        <div class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><ellipse cx="16" cy="18" rx="13" ry="6"/><path d="M3 18v2c0 3.3 5.8 6 13 6s13-2.7 13-6v-2"/><circle cx="11" cy="17" r="1.8"/><circle cx="17" cy="16" r="1.8"/><circle cx="21" cy="19" r="1.8"/></g></svg></div>
+        <span class="caps">Platters</span>
+        <h3>صواني تتقدّم بفخر</h3>
+        <p>صواني بتتحضّر بإيد شيف وتوصلك جاهزة، شكلها يشرّف قبل طعمها.</p>
+        <span class="en">Platters made to be presented.</span>
+      </article>
+      <article class="svc-card rv">
+        <div class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 14h22l-3 12H8z"/><path d="M10 14c0-4 2-7 6-7s6 3 6 7"/><path d="M16 4v3"/></g></svg></div>
+        <span class="caps">Starters</span>
+        <h3>المقبلات أول انطباع</h3>
+        <p>مقبلات وتشكيلات تفتح النفس وتبدأ بيها السهرة صح.</p>
+        <span class="en">First impressions start with the starters.</span>
+      </article>
+      <article class="svc-card rv">
+        <div class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M16 3l2.6 6.4L25 10l-5 4.4L21.5 21 16 17.6 10.5 21 12 14.4 7 10l6.4-.6z"/><path d="M8 27h16"/></g></svg></div>
+        <span class="caps">Events</span>
+        <h3>تجهيز حفلات</h3>
+        <p>من الخطوبة لعيد الميلاد لعزومات الشغل، بنجهّز السفرة كاملة ونوصّلها في ميعادها.</p>
+        <span class="en">Thursday dinner? We've got it.</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block band">
+  <div class="wrap">
+    <div class="rv">
+      <p class="caps">Five-star chef</p>
+      <h2>شيف بخبرة <em>فنادق الخمس نجوم</em></h2>
+      <p>نفس المستوى اللي بتاكله في أحسن الفنادق، بس على سفرتك وفي بيتك ووسط ناسك.</p>
+      <p class="en">Five-star kitchen experience, served at home.</p>
+      <div class="stats">
+        <div><b>٥ نجوم</b><span>مستوى المطبخ</span></div>
+        <div><b>جاهزة</b><span>للتقديم على طول</span></div>
+        <div><b>لحد بابك</b><span>توصيل في الميعاد</span></div>
+      </div>
+    </div>
+    <div class="plate rv" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <defs><radialGradient id="pg" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#3b2c21"/><stop offset="1" stop-color="#1b1410"/></radialGradient></defs>
+        <circle cx="200" cy="200" r="196" fill="url(#pg)" stroke="rgba(212,173,102,.35)"/>
+        <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(212,173,102,.25)" stroke-dasharray="2 8"/>
+        <circle cx="200" cy="200" r="116" fill="none" stroke="#d4ad66" stroke-width="1.5"/>
+        <g fill="none" stroke="#d4ad66" stroke-width="2.6" stroke-linecap="round" transform="translate(110 130)">
+          <path d="M10 118h160"/><path d="M20 112a70 70 0 0 1 140 0z" fill="rgba(212,173,102,.08)"/><circle cx="90" cy="34" r="6"/>
+        </g>
+        <text x="200" y="300" text-anchor="middle" font-family="Alexandria" font-weight="800" font-size="40" fill="#f4ebdd">شاهي</text>
+        <text x="200" y="326" text-anchor="middle" font-family="Cormorant Garamond" font-weight="600" font-size="13" letter-spacing="7" fill="#d4ad66">SHAHI</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="occasions" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="caps">Occasions</p>
+      <h2>لكل مناسبة سفرتها</h2>
+      <p>قولنا المناسبة وعدد الضيوف، ونقترح عليك السفرة اللي تليق بيها.</p>
+    </div>
+    <div class="occ">
+      <div class="occ-card rv"><svg class="ic" viewBox="0 0 54 54" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="18" r="6"/><circle cx="36" cy="18" r="6"/><path d="M6 44c0-7 5-12 12-12s12 5 12 12M24 44c0-7 5-12 12-12s12 5 12 12"/></g></svg><h3>لمّة العيلة</h3><span class="en">Family gatherings</span><p>جمعة الجمعة وعزومة الخميس، من غير تعب.</p></div>
+      <div class="occ-card rv"><svg class="ic" viewBox="0 0 54 54" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="21" cy="32" r="11"/><circle cx="33" cy="32" r="11"/><path d="M23 12l4-5 4 5-4 4z"/></g></svg><h3>خطوبة وكتب كتاب</h3><span class="en">Engagements</span><p>سفرة تليق بأحلى يوم وتشرّف قدام العيلتين.</p></div>
+      <div class="occ-card rv"><svg class="ic" viewBox="0 0 54 54" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 46h34V28H10z"/><path d="M10 34c4 3 8 3 11 0s7-3 11 0 8 3 12 0"/><path d="M20 28v-7M27 28v-7M34 28v-7"/><path d="M20 15c-2 2 0 4 0 4s2-2 0-4zM27 15c-2 2 0 4 0 4s2-2 0-4zM34 15c-2 2 0 4 0 4s2-2 0-4z"/></g></svg><h3>أعياد الميلاد</h3><span class="en">Birthdays</span><p>مقبلات وصواني تفرّح الكبير والصغير.</p></div>
+      <div class="occ-card rv"><svg class="ic" viewBox="0 0 54 54" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="8" y="18" width="38" height="26" rx="3"/><path d="M20 18v-5h14v5M8 29h38"/></g></svg><h3>عزومات الشغل</h3><span class="en">Corporate dinners</span><p>غدا اجتماع أو عشا فريق، بمستوى يليق بشركتك.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block light fit" id="fit">
+  <div class="wrap">
+    <div class="fit-card rv">
+      <p class="caps">Shahi Fit</p>
+      <h3>أكلك الصحي<br>جاهز كل أسبوع</h3>
+      <p class="gold">وجبات صحية للجيم وللمغتربين</p>
+      <span class="en">Weekly meal prep, made for training days.</span>
+    </div>
+    <div class="rv">
+      <p class="caps">من شاهي كمان</p>
+      <h2>وجبات صحية متحضّرة كل أسبوع</h2>
+      <p style="color:var(--muted-d);margin:0">مناسبة للي بيتمرّن، وللي عايش لوحده ومش لاقي وقت يطبخ. ابعتلنا وإحنا نظبطلك اشتراكك.</p>
+      <ul class="ticks">
+        <li>اشتراك أسبوعي على حسب هدفك ونظامك</li>
+        <li>وجبات متوازنة متحضّرة طازة</li>
+        <li>بتوصلك جاهزة، تسخّن وتاكل</li>
+      </ul>
+      <a class="btn btn-gold" data-wa="أهلاً شاهي، عايز أشترك في وجبات شاهي فيت الأسبوعية." href="#"><svg><use href="#i-wa"/></svg> ظبّط اشتراكك</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="caps">How to book</p>
+      <h2>إزاي تحجز عزومتك</h2>
+      <p>الحجز مع شاهي سهل، أربع خطوات وسفرتك جاهزة.</p>
+      <span class="en">Four steps to a ready table.</span>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="n">١</div><h3>ابعتلنا رسالة</h3><span class="caps">Send a message</span><p>على الواتساب أو من الفورم تحت.</p></div>
+      <div class="step rv"><div class="n">٢</div><h3>قولنا عدد الضيوف والميعاد</h3><span class="caps">Guests &amp; date</span><p>والمناسبة، عشان نحضّر على قدها.</p></div>
+      <div class="step rv"><div class="n">٣</div><h3>نقترح عليك السفرة</h3><span class="caps">We plan the menu</span><p>منيو مناسب لذوقك ولميزانيتك.</p></div>
+      <div class="step rv"><div class="n">٤</div><h3>نوصّلها جاهزة</h3><span class="caps">Delivered ready</span><p>متغلّفة وجاهزة للتقديم في ميعادها.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="quote">
+  <div class="wrap rv">
+    <div class="orn"><i></i></div>
+    <p>الخميس جاي والعزومة عليك؟<span>احجز من بدري، وسيب التجهيز على شاهي.</span></p>
+    <span class="en">Thursday dinner at yours? Book early and leave the cooking to us.</span>
+  </div>
+</section>
+
+<section class="block light book" id="book">
+  <div class="wrap">
+    <div class="info rv">
+      <p class="caps">Book your table</p>
+      <h2>احجز سفرتك</h2>
+      <p>املا البيانات وهتفتحلك رسالة واتساب جاهزة بكل التفاصيل، تبعتها وإحنا نرد عليك ونقترح السفرة المناسبة.</p>
+      <ul class="contact-list">
+        <li><span class="ic"><svg><use href="#i-wa"/></svg></span><div><small>واتساب واتصال</small><b><a href="tel:+201151914912">+20 11 51914912</a></b></div></li>
+        <li><span class="ic"><svg><use href="#i-fb"/></svg></span><div><small>تابعنا على فيسبوك</small><b><a href="https://www.facebook.com/profile.php?id=61594947255123" target="_blank" rel="noopener">Shahi شاهي</a></b></div></li>
+        <li><span class="ic"><svg><use href="#i-clock"/></svg></span><div><small>نصيحة</small><b style="direction:rtl">احجز من بدري عشان نلحق نجهّز</b></div></li>
+      </ul>
+    </div>
+    <form class="bk rv" id="bk" novalidate>
+      <div class="f"><label for="bn">الاسم</label><input id="bn" autocomplete="name" required></div>
+      <div class="f"><label for="bp">رقم الموبايل</label><input id="bp" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required></div>
+      <div class="f"><label for="bo">المناسبة</label>
+        <select id="bo"><option>عزومة عيلة</option><option>خطوبة / كتب كتاب</option><option>عيد ميلاد</option><option>عزومة شغل</option><option>صواني ومقبلات بس</option><option>اشتراك شاهي فيت</option><option>حاجة تانية</option></select></div>
+      <div class="f"><label for="bg">عدد الضيوف</label>
+        <div class="guests"><button type="button" data-g="1" aria-label="زوّد">+</button><input id="bg" type="number" inputmode="numeric" min="1" max="500" value="10" aria-label="عدد الضيوف"><button type="button" data-g="-1" aria-label="قلّل">−</button></div></div>
+      <div class="f"><label for="bd">الميعاد</label><input id="bd" type="date"></div>
+      <div class="f"><label for="ba">المنطقة</label><input id="ba" placeholder="مثلاً: مدينة نصر"></div>
+      <div class="f full"><label for="bm">تفاصيل أو طلبات خاصة (اختياري)</label><textarea id="bm" placeholder="أصناف معينة، حساسية من أكل، ميزانية تقريبية…"></textarea></div>
+      <p class="err" id="bErr" role="alert"></p>
+      <button class="btn" type="submit"><svg><use href="#i-wa"/></svg> ابعت الطلب على واتساب</button>
+      <p class="note">بياناتك بتروح لشاهي بس، عشان نتواصل معاك بخصوص طلبك.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="شاهي"><svg><use href="#i-cloche"/></svg><span><b>شاهي</b><small>SHAHI</small></span></a>
+    <div class="social">
+      <a href="https://www.facebook.com/profile.php?id=61594947255123" target="_blank" rel="noopener" aria-label="فيسبوك"><svg><use href="#i-fb"/></svg></a>
+      <a data-wa="أهلاً شاهي" href="#" aria-label="واتساب"><svg><use href="#i-wa"/></svg></a>
+      <a href="tel:+201151914912" aria-label="اتصال"><svg><use href="#i-phone"/></svg></a>
+    </div>
+    <small>© <span id="yr"></span> شاهي · Shahi — عزومات ومناسبات بمستوى فنادق الخمس نجوم</small>
+  </div>
+</footer>
+
+<a class="wa-float" data-wa="أهلاً شاهي، عايز أحجز عزومة." href="#" aria-label="احجز على واتساب"><svg><use href="#i-wa"/></svg><span>احجز على واتساب</span></a>
+
+<script>
+const WA="201151914912";
+const wa=t=>`https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+const $=s=>document.querySelector(s);
+document.querySelectorAll("[data-wa]").forEach(a=>{a.href=wa(a.dataset.wa);a.target="_blank";a.rel="noopener"});
+$("#yr").textContent=new Date().getFullYear();
+
+const hdr=$("#hdr"),onScroll=()=>hdr.classList.toggle("solid",scrollY>30);onScroll();addEventListener("scroll",onScroll,{passive:true});
+const nav=$("#nav"),mb=$("#menuBtn");
+mb.addEventListener("click",()=>{const o=nav.classList.toggle("open");mb.setAttribute("aria-expanded",o);hdr.classList.add("solid")});
+nav.addEventListener("click",e=>{if(e.target.tagName==="A"){nav.classList.remove("open");mb.setAttribute("aria-expanded",false)}});
+
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12});
+ document.querySelectorAll(".rv").forEach(el=>io.observe(el));} else document.querySelectorAll(".rv").forEach(el=>el.classList.add("in"));
+
+const g=$("#bg");document.querySelectorAll("[data-g]").forEach(b=>b.addEventListener("click",()=>{g.value=Math.min(500,Math.max(1,(+g.value||0)+ +b.dataset.g))}));
+const d=$("#bd");d.min=new Date().toLocaleDateString("en-CA");
+
+$("#bk").addEventListener("submit",e=>{
+  e.preventDefault();const v=id=>$("#"+id).value.trim();
+  const nOk=v("bn").length>=2,pOk=v("bp").replace(/\D/g,"").length>=10;
+  $("#bn").parentElement.classList.toggle("bad",!nOk);$("#bp").parentElement.classList.toggle("bad",!pOk);
+  if(!nOk||!pOk){$("#bErr").textContent="اكتب اسمك ورقم موبايل صحيح.";return}
+  $("#bErr").textContent="";
+  const date=v("bd")?new Date(v("bd")+"T00:00").toLocaleDateString("ar-EG",{weekday:"long",day:"numeric",month:"long"}):"";
+  const lines=["أهلاً شاهي، عايز أحجز 🍽️",`الاسم: ${v("bn")}`,`الموبايل: ${v("bp")}`,`المناسبة: ${v("bo")}`,`عدد الضيوف: ${v("bg")}`,date&&`الميعاد: ${date}`,v("ba")&&`المنطقة: ${v("ba")}`,v("bm")&&`تفاصيل: ${v("bm")}`].filter(Boolean);
+  window.open(wa(lines.join("\n")),"_blank","noopener");
+});
+</script>
+</body>
+</html>
