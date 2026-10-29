@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /crm/
+Disallow: /tuya-suez/crm.html
+Disallow: /tuya-suez/inventory.html
+Disallow: /tuya-suez/installs.html
+Sitemap: https://jaguarsmart.com/sitemap.xml
