@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>شاهي — باسورد جديدة</title>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(60% 60% at 50% 40%,#3a2a1f,#1E1410);font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;color:#1E1410;padding:20px;box-sizing:border-box}
+.box{width:min(380px,100%);background:#faf6ee;border-radius:22px;padding:30px 26px;display:grid;gap:12px}
+h1{font-family:"Reem Kufi",sans-serif;text-align:center;margin:0 0 6px;font-size:28px}
+label span{display:block;font-size:13px;color:#7a6650;margin-bottom:4px}
+input{width:100%;box-sizing:border-box;border:1px solid #e6d8bf;border-radius:10px;padding:10px;font:inherit;direction:ltr}
+button{border:0;background:#1E1410;color:#F3E9D6;border-radius:10px;padding:10px;font:inherit;cursor:pointer}
+.msg{min-height:20px;font-size:14px;color:#b03a2e}.msg.ok{color:#2e7d4f}
+a{color:#a97a2b;text-align:center}
+</style>
+</head>
+<body>
+<form class="box" id="f">
+  <h1>شاهي</h1>
+  <p id="intro" style="margin:0">بنجهّز الرابط…</p>
+  <label><span>الباسورد الجديدة (8 حروف على الأقل)</span><input id="p1" type="password" minlength="8" autocomplete="new-password" required disabled></label>
+  <label><span>اكتبها تاني</span><input id="p2" type="password" minlength="8" autocomplete="new-password" required disabled></label>
+  <button id="go" disabled>حفظ الباسورد</button>
+  <div class="msg" id="m"></div>
+  <a href="./">رجوع للدخول</a>
+</form>
+<script>
+const sb = supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds");
+const ready = () => { document.getElementById("intro").textContent = "اكتب الباسورد الجديدة."; ["p1","p2","go"].forEach(id => document.getElementById(id).disabled = false); };
+sb.auth.onAuthStateChange((ev, s) => { if (s && (ev === "PASSWORD_RECOVERY" || ev === "SIGNED_IN" || ev === "INITIAL_SESSION")) ready(); });
+setTimeout(async () => { const { data } = await sb.auth.getSession(); if (!data.session) document.getElementById("intro").textContent = "الرابط ده انتهى أو مش صحيح. اطلب رابط جديد من «نسيت الباسورد»."; }, 2500);
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const a = p1.value, b = p2.value, m = document.getElementById("m");
+  if (a !== b) { m.className = "msg"; m.textContent = "الباسوردين مش زي بعض."; return; }
+  const { error } = await sb.auth.updateUser({ password: a });
+  if (error) { m.className = "msg"; m.textContent = "مقدرناش نغيّرها: " + error.message; return; }
+  m.className = "msg ok"; m.textContent = "تمام ✓ الباسورد اتغيّرت. هنحوّلك للوحة…";
+  setTimeout(() => location.href = "./", 1500);
+});
+</script>
+</body>
+</html>
