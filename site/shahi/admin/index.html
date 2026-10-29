@@ -223,7 +223,7 @@ $("#forgotBtn").onclick = () => { $("#loginForm").classList.add("hidden"); $("#f
 $("#backLogin").onclick = () => { $("#forgotForm").classList.add("hidden"); $("#loginForm").classList.remove("hidden"); };
 $("#forgotForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const redirectTo = new URL("reset.html", location.href).href;
+  const redirectTo = new URL("reset", location.href).href;
   const { error } = await sb.auth.resetPasswordForEmail($("#fEmail").value.trim(), { redirectTo });
   $("#fMsg").className = "msg" + (error ? "" : " ok");
   $("#fMsg").textContent = error ? "مقدرناش نبعت الرابط. كلّم الأدمن يغيّرلك الباسورد من «الفريق»." : "لو الإيميل مسجّل عندنا هيوصلك رابط خلال دقايق.";
