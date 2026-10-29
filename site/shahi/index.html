@@ -213,6 +213,38 @@ footer small{color:var(--muted);font-size:13px}
 .rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+/* areas, menu gallery, packages */
+.hero .areas{margin:22px auto 0;font-size:14px;color:var(--muted);max-width:640px}
+.hero .areas b{color:var(--gold);font-weight:600}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:34px}
+.gallery figure{margin:0;border-radius:22px;overflow:hidden;background:#fff;border:1px solid #eadfcd;box-shadow:0 14px 34px rgba(60,40,20,.08)}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover}
+.gallery figcaption{padding:12px 16px;font-size:14px;color:var(--muted-d)}
+.dishes{background:var(--bg);color:var(--cream);border-radius:26px;padding:30px;text-align:center}
+.dishes h3{margin:0 0 16px;color:var(--gold);font-size:20px}
+.dishes ul{list-style:none;margin:0 auto 14px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:820px}
+.dishes li{border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:15px}
+.dishes p{color:var(--muted);margin:0 0 18px}
+.sig{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.sig div{border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--bg-3)}
+.sig h3{margin:0 0 6px;color:var(--gold);font-size:19px}
+.sig p{margin:0;color:var(--cream-2);font-size:14.5px}
+.incl{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 28px}
+.incl span{background:rgba(212,173,102,.1);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:14px}
+.incl span::before{content:"◆ ";color:var(--gold);font-size:10px}
+.pkgs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}
+.pkg{position:relative;text-align:center;border:1px solid var(--line);border-radius:24px;padding:38px 22px 24px;background:var(--bg)}
+.pkg.hot{border:2px solid var(--gold);padding-top:40px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.pkg .tag{z-index:1;position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-style:normal;font-weight:700;font-size:13px;border-radius:999px;padding:4px 14px;white-space:nowrap}
+.pkg .n{display:block;font-size:20px;margin-bottom:6px}
+.pkg s{display:block;color:var(--muted);font-size:15px}
+.pkg strong{display:block;font-size:42px;font-weight:800;color:var(--gold);line-height:1.2;margin:4px 0}
+.pkg strong small{font-size:18px;font-weight:500}
+.pkg .pp{display:block;color:var(--cream-2);font-size:14px;margin-bottom:18px}
+.pkg .btn{width:100%}
+.pk-note{text-align:center;color:var(--muted);font-size:14px;margin:22px 0 0}
+@media (max-width:900px){.gallery,.sig,.pkgs{grid-template-columns:1fr}.pkgs{gap:22px}.dishes ul{grid-template-columns:1fr 1fr}.gallery{max-width:440px;margin-inline:auto;margin-bottom:28px}}
+@media (max-width:480px){.dishes ul{grid-template-columns:1fr}.dishes{padding:24px 16px}}
 </style>
 </head>
 <body>
@@ -222,6 +254,7 @@ footer small{color:var(--muted);font-size:13px}
   <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.2-.2-.2-.4-.3z"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
   <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M14 8V6c0-.9.6-1 1-1h2.5V1.1L14.1 1C10.4 1 9.6 3.8 9.6 5.6V8H7v4h2.6v11H14V12h3.3l.4-4z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></g></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></symbol>
 </svg>
 
@@ -233,6 +266,8 @@ footer small{color:var(--muted);font-size:13px}
     </a>
     <nav class="main" id="nav">
       <a href="#services">خدماتنا</a>
+      <a href="#menu">المنيو</a>
+      <a href="#packages">الباقات</a>
       <a href="#occasions">المناسبات</a>
       <a href="#fit">شاهي فيت</a>
       <a href="#how">إزاي تحجز</a>
@@ -259,7 +294,7 @@ footer small{color:var(--muted);font-size:13px}
         <path d="M40 80a38 38 0 0 1 22-28" opacity=".55" stroke-width="1.6"/>
       </g>
     </svg>
-    <p class="caps">Gatherings · Platters · Catering</p>
+    <p class="caps">Private Dining · Grazing Tables · Fine Catering</p>
     <h1>طعم الفنادق<br><em>على سفرتك</em></h1>
     <p class="lead">عزومات ومناسبات بمستوى فنادق الخمس نجوم. صواني، مقبلات، وتجهيز حفلات بإيد شيف، وتوصلك جاهزة للتقديم.</p>
     <p class="en">Five-star kitchen experience, served at home.</p>
@@ -268,6 +303,7 @@ footer small{color:var(--muted);font-size:13px}
       <a class="btn btn-line" data-wa="أهلاً شاهي، عايز أعرف تفاصيل أكتر عن العزومات." href="#"><svg><use href="#i-wa"/></svg> كلمنا واتساب</a>
     </div>
     <div class="chips"><span>لمّة العيلة</span><span>خطوبة وكتب كتاب</span><span>أعياد الميلاد</span><span>عزومات الشغل</span></div>
+    <p class="areas"><b>بالحجز المسبق فقط</b> · الشيخ زايد · 6 أكتوبر · التجمع الخامس · مدينتي · الزمالك · المعادي</p>
   </div>
 </section>
 
@@ -312,6 +348,30 @@ footer small{color:var(--muted);font-size:13px}
   </div>
 </section>
 
+<section class="block light" id="menu">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="caps">Private dining at home</p>
+      <h2>نفسك في إيه؟</h2>
+      <p>قولّنا نفسك في إيه، وشيف شاهي يحضّره ويقدّمه في بيتك بتفاصيل الفنادق العالمية: من ترتيب السفرة لحد آخر طبق.. وإنت تستقبل ضيوفك وبس.</p>
+    </div>
+    <div class="gallery">
+      <figure class="rv"><img src="img/platters.webp" alt="صواني فراخ وجمبري مقرمشة بالسلطة من مطبخ شاهي" loading="lazy" width="414" height="414"><figcaption>صواني بتتحضّر طازة لحد التقديم</figcaption></figure>
+      <figure class="rv"><img src="img/grazing.webp" alt="صينية فواكه وأجبان من شاهي" loading="lazy" width="414" height="414"><figcaption>Grazing Tables · فواكه وأجبان</figcaption></figure>
+      <figure class="rv"><img src="img/canapes.webp" alt="كانابيه وسكيورز مشكلة من شاهي" loading="lazy" width="414" height="414"><figcaption>مقبلات وكانابيه بلمسة شيف</figcaption></figure>
+    </div>
+    <div class="dishes rv">
+      <h3>من سفرة البيت لأطباق العالم</h3>
+      <ul>
+        <li>بط محمّر بصوص البرتقال</li><li>ديك رومي بالفريك والمكسرات</li><li>محاشي وورق عنب بلمسة شيف</li>
+        <li>كفتة وريش على الفحم</li><li>فيليه بصوص الترافل</li><li>سالمون وجمبري جامبو</li>
+      </ul>
+      <p>ولو نفسك في طبق مش هنا.. ابعتهولنا وإحنا نعملهولك.</p>
+      <a class="btn btn-gold" data-wa="أهلاً شاهي، نفسي في:" href="#"><svg><use href="#i-wa"/></svg> ابعتلنا نفسك في إيه</a>
+    </div>
+  </div>
+</section>
+
 <section class="block band">
   <div class="wrap">
     <div class="rv">
@@ -338,6 +398,28 @@ footer small{color:var(--muted);font-size:13px}
         <text x="200" y="326" text-anchor="middle" font-family="Cormorant Garamond" font-weight="600" font-size="13" letter-spacing="7" fill="#d4ad66">SHAHI</text>
       </svg>
     </div>
+  </div>
+</section>
+
+<section class="block" id="packages" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="caps">Gatherings</p>
+      <h2>عزومتك.. بتتحضّر قدام ضيوفك</h2>
+      <p>كل حاجة بتتعمل طازة يوم العزومة، ومتقدّمة بشكل يشرّفك قدام ضيوفك.</p>
+    </div>
+    <div class="sig">
+      <div class="rv"><h3>طبق شاهي للعزومات</h3><p>روستو بيف بالشيدر الأحمر • فراخ بانيه • ميني بيتزا • حلو تركي بعين الجمل • سلطة خس وفلفل ألوان</p></div>
+      <div class="rv"><h3>رولات سموك سالمون</h3><p>محشية كريم تشيز بالشبت، مع كابرز على جرجير فريش وبرتقال</p></div>
+      <div class="rv"><h3>كروكيت بطاطس بالفراخ</h3><p>مقرمشة بالبانكو، فوقها بنجر وبارميزان على ميكروجرين</p></div>
+    </div>
+    <div class="incl rv"><span>توصيل لحد مكانك</span><span>فريق متكامل بيحضّر ويقدّم</span><span>طازة في وقتها</span></div>
+    <div class="pkgs">
+      <div class="pkg rv"><em class="tag">خصم 10%</em><b class="n">15 فرد</b><s>15,000 ج</s><strong>13,500 <small>ج</small></strong><span class="pp">900 ج للفرد</span><a class="btn btn-line" href="#book" data-pkg="باقة 15 فرد">احجز الباقة</a></div>
+      <div class="pkg hot rv"><em class="tag">خصم 10%</em><b class="n">25 فرد</b><s>24,000 ج</s><strong>21,600 <small>ج</small></strong><span class="pp">864 ج للفرد</span><a class="btn btn-gold" href="#book" data-pkg="باقة 25 فرد">احجز الباقة</a></div>
+      <div class="pkg rv"><em class="tag">خصم 10%</em><b class="n">35 فرد</b><s>32,000 ج</s><strong>28,800 <small>ج</small></strong><span class="pp">823 ج للفرد</span><a class="btn btn-line" href="#book" data-pkg="باقة 35 فرد">احجز الباقة</a></div>
+    </div>
+    <p class="pk-note rv">الأسعار شاملة الأكل والتقديم. لعدد ضيوف مختلف أو منيو خاص، ابعتلنا ونظبطلك عرض على قدك.</p>
   </div>
 </section>
 
@@ -412,19 +494,20 @@ footer small{color:var(--muted);font-size:13px}
       <p>املا البيانات وهتفتحلك رسالة واتساب جاهزة بكل التفاصيل، تبعتها وإحنا نرد عليك ونقترح السفرة المناسبة.</p>
       <ul class="contact-list">
         <li><span class="ic"><svg><use href="#i-wa"/></svg></span><div><small>واتساب واتصال</small><b><a href="tel:+201151914912">+20 11 51914912</a></b></div></li>
+        <li><span class="ic"><svg><use href="#i-mail"/></svg></span><div><small>الإيميل</small><b><a href="mailto:shahifoodegypt@gmail.com">shahifoodegypt@gmail.com</a></b></div></li>
         <li><span class="ic"><svg><use href="#i-fb"/></svg></span><div><small>تابعنا على فيسبوك</small><b><a href="https://www.facebook.com/profile.php?id=61594947255123" target="_blank" rel="noopener">Shahi شاهي</a></b></div></li>
-        <li><span class="ic"><svg><use href="#i-clock"/></svg></span><div><small>نصيحة</small><b style="direction:rtl">احجز من بدري عشان نلحق نجهّز</b></div></li>
+        <li><span class="ic"><svg><use href="#i-clock"/></svg></span><div><small>بالحجز المسبق فقط</small><b style="direction:rtl">الشيخ زايد · 6 أكتوبر · التجمع الخامس · مدينتي · الزمالك · المعادي</b></div></li>
       </ul>
     </div>
     <form class="bk rv" id="bk" novalidate>
       <div class="f"><label for="bn">الاسم</label><input id="bn" autocomplete="name" required></div>
       <div class="f"><label for="bp">رقم الموبايل</label><input id="bp" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required></div>
       <div class="f"><label for="bo">المناسبة</label>
-        <select id="bo"><option>عزومة عيلة</option><option>خطوبة / كتب كتاب</option><option>عيد ميلاد</option><option>عزومة شغل</option><option>صواني ومقبلات بس</option><option>اشتراك شاهي فيت</option><option>حاجة تانية</option></select></div>
+        <select id="bo"><option>باقة 15 فرد</option><option>باقة 25 فرد</option><option>باقة 35 فرد</option><option selected>عزومة عيلة</option><option>خطوبة / كتب كتاب</option><option>عيد ميلاد</option><option>عزومة شغل</option><option>صواني ومقبلات بس</option><option>اشتراك شاهي فيت</option><option>حاجة تانية</option></select></div>
       <div class="f"><label for="bg">عدد الضيوف</label>
         <div class="guests"><button type="button" data-g="1" aria-label="زوّد">+</button><input id="bg" type="number" inputmode="numeric" min="1" max="500" value="10" aria-label="عدد الضيوف"><button type="button" data-g="-1" aria-label="قلّل">−</button></div></div>
       <div class="f"><label for="bd">الميعاد</label><input id="bd" type="date"></div>
-      <div class="f"><label for="ba">المنطقة</label><input id="ba" placeholder="مثلاً: مدينة نصر"></div>
+      <div class="f"><label for="ba">المنطقة</label><select id="ba"><option>الشيخ زايد</option><option>6 أكتوبر</option><option>التجمع الخامس</option><option>مدينتي</option><option>الزمالك</option><option>المعادي</option><option>منطقة تانية</option></select></div>
       <div class="f full"><label for="bm">تفاصيل أو طلبات خاصة (اختياري)</label><textarea id="bm" placeholder="أصناف معينة، حساسية من أكل، ميزانية تقريبية…"></textarea></div>
       <p class="err" id="bErr" role="alert"></p>
       <button class="btn" type="submit"><svg><use href="#i-wa"/></svg> ابعت الطلب على واتساب</button>
@@ -441,6 +524,7 @@ footer small{color:var(--muted);font-size:13px}
       <a href="https://www.facebook.com/profile.php?id=61594947255123" target="_blank" rel="noopener" aria-label="فيسبوك"><svg><use href="#i-fb"/></svg></a>
       <a data-wa="أهلاً شاهي" href="#" aria-label="واتساب"><svg><use href="#i-wa"/></svg></a>
       <a href="tel:+201151914912" aria-label="اتصال"><svg><use href="#i-phone"/></svg></a>
+      <a href="mailto:shahifoodegypt@gmail.com" aria-label="إيميل"><svg><use href="#i-mail"/></svg></a>
     </div>
     <small>© <span id="yr"></span> شاهي · Shahi — عزومات ومناسبات بمستوى فنادق الخمس نجوم</small>
   </div>
@@ -464,6 +548,7 @@ if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>es.fo
  document.querySelectorAll(".rv").forEach(el=>io.observe(el));} else document.querySelectorAll(".rv").forEach(el=>el.classList.add("in"));
 
 const g=$("#bg");document.querySelectorAll("[data-g]").forEach(b=>b.addEventListener("click",()=>{g.value=Math.min(500,Math.max(1,(+g.value||0)+ +b.dataset.g))}));
+document.querySelectorAll("[data-pkg]").forEach(a=>a.addEventListener("click",()=>{$("#bo").value=a.dataset.pkg;const n=parseInt(a.dataset.pkg.replace(/\D/g,""));if(n)$("#bg").value=n}));
 const d=$("#bd");d.min=new Date().toLocaleDateString("en-CA");
 
 $("#bk").addEventListener("submit",e=>{
