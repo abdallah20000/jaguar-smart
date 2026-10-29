@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="شاهي — SHAHI">
+  <rect width="400" height="300" fill="#1E1410"/>
+  <g fill="none" stroke="#C9963B" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="200" cy="44" r="5" stroke-width="2"/>
+    <path d="M150 96a50 50 0 0 1 100 0" stroke-width="2"/>
+    <path d="M168 84a34 34 0 0 1 22-24" stroke-width="1.2" opacity=".6"/>
+    <path d="M136 100h128" stroke-width="2"/>
+    <path d="M146 106h108" stroke-width="1" opacity=".55"/>
+  </g>
+  <text x="200" y="176" text-anchor="middle" fill="#F3E9D6" font-family="'Reem Kufi','Noto Kufi Arabic','IBM Plex Sans Arabic',sans-serif" font-size="58" font-weight="600">شاهي</text>
+  <text x="200" y="214" text-anchor="middle" fill="#C9963B" font-family="'Cormorant Garamond',Georgia,serif" font-size="20" letter-spacing="14" font-weight="600">SHAHI</text>
+  <path d="M120 232h160" stroke="#C9963B" stroke-width=".8" opacity=".5"/>
+  <text x="200" y="256" text-anchor="middle" fill="#C9963B" font-family="'Cormorant Garamond',Georgia,serif" font-size="11" letter-spacing="4">GATHERINGS · PLATTERS · CATERING</text>
+</svg>
