@@ -731,9 +731,15 @@ async function team(){
     <p class="small muted">الأدوار: <b>أدمن</b> كل حاجة · <b>مبيعات</b> الطلبات والعملاء والحجوزات · <b>تشغيل</b> الحجوزات والجدول والمطبخ · <b>مطبخ</b> المنيو المطلوب والعدد والميعاد والحساسية بس.</p>`;
   $$("[data-role]").forEach(sel => sel.onchange = async () => { try { await sb.from("shahi_staff").update({ role: sel.value }).eq("user_id", sel.dataset.role).then(must); toast("الدور اتغيّر ✓"); } catch (e) { fail(e); team(); } });
   $$("[data-act]").forEach(b => b.onclick = async () => { try { await adminCall({ action: "set_active", user_id: b.dataset.act, active: b.dataset.on === "true" }); toast("اتعمل ✓"); team(); } catch (e) { fail(e); } });
-  $$("[data-pw]").forEach(b => b.onclick = async () => {
-    const pw = prompt("اكتب الباسورد الجديدة (8 حروف على الأقل):"); if (!pw) return;
-    try { await adminCall({ action: "set_password", user_id: b.dataset.pw, password: pw }); toast("الباسورد اتغيّرت ✓"); } catch (e) { fail(e); }
+  $$("[data-pw]").forEach(b => b.onclick = () => {
+    const d = drawer("باسورد جديدة لـ" + staffName(b.dataset.pw), `<form id="pwf"><label class="f"><span>الباسورد الجديدة (8 حروف على الأقل)</span><input name="password" minlength="8" dir="ltr" autocomplete="new-password" required></label></form>`, `<button class="btn primary" id="pwSave">حفظ الباسورد</button>`);
+    const f = $("#pwf");
+    f.onsubmit = e => { e.preventDefault(); $("#pwSave").click(); };
+    $("#pwSave").onclick = async () => {
+      if (!f.reportValidity()) return;
+      try { await adminCall({ action: "set_password", user_id: b.dataset.pw, password: f.password.value }); toast("الباسورد اتغيّرت ✓"); d.close(); } catch (e) { fail(e); }
+    };
+    f.password.focus();
   });
   $("#addMember").onclick = () => {
     const d = drawer("عضو جديد في الفريق", `<form id="tf" class="grid">
