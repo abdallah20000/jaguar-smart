@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nile Digital Solutions — مواقع ومتاجر وأنظمة وبوت واتساب في مصر</title>
+<meta name="description" content="فريق مصري بيبني مواقع ومتاجر وتطبيقات وأنظمة ERP وCRM وبوتات واتساب، بسعر ثابت مكتوب قبل ما نبدأ وشهر دعم مجاني بعد التسليم.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_EG">
+<meta property="og:site_name" content="Nile Digital Solutions">
+<meta property="og:title" content="Nile Digital Solutions — مواقع ومتاجر وأنظمة وبوت واتساب في مصر">
+<meta property="og:description" content="فريق مصري بيبني مواقع ومتاجر وتطبيقات وأنظمة ERP وCRM وبوتات واتساب، بسعر ثابت مكتوب قبل ما نبدأ.">
+<meta property="og:url" content="https://jaguarsmart.com/nile-digital-solution/">
+<meta property="og:image" content="https://jaguarsmart.com/nile-digital-solution/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+/* Meta Pixel: put the ID here, the site stays pixel-free while it is empty */
+window.NILE_PIXEL_ID='';
+if(window.NILE_PIXEL_ID){
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init',window.NILE_PIXEL_ID);fbq('track','PageView');
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cairo:wght@400;600;700;800;900&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+/* Layout: RTL Arabic one-page site, Nile-blue night with a gold river line. Single deliberate dark look.
+   hero → trust strip → services (with starting prices) → portfolio (live demos) → process → why us → FAQ → contact */
+:root{
+  --night:#0b182e; --deep:#10233f; --panel:#142b4d; --panel-2:#1a3458;
+  --gold:#c9a35a; --gold-soft:#e2c48a; --gold-dim:rgba(201,163,90,.14);
+  --cream:#f4ecdc; --mist:#aeb8ca; --line:rgba(201,163,90,.32);
+  --ok:#5fd39a; --bad:#ff8f84;
+  --display:'Cormorant Garamond',Georgia,serif; --body:'Cairo',Tahoma,sans-serif; --latin:'Montserrat',Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--body);line-height:1.8;font-size:17px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:rgba(11,24,46,.96)}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(11,24,46,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo b{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:.2em;direction:ltr;line-height:1}
+.logo small{font-family:var(--latin);font-size:9.5px;letter-spacing:.3em;color:var(--gold);display:block;line-height:1;margin-top:5px}
+nav{display:flex;gap:22px;font-weight:600;font-size:15px}
+nav a{text-decoration:none;color:var(--mist)} nav a:hover{color:var(--gold-soft)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:var(--night);font-weight:800;text-decoration:none;padding:12px 24px;border:0;font-family:var(--body);font-size:16px;cursor:pointer;border-radius:2px;transition:background .15s,transform .15s}
+.btn:hover{background:var(--gold-soft)} .btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--cream);border:1px solid var(--line)} .btn.ghost:hover{background:var(--gold-dim)}
+.btn.wa{background:#25d366;color:#06301a} .btn.wa:hover{background:#3fe07c}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--gold-soft);outline-offset:3px}
+.kicker{font-family:var(--latin);letter-spacing:.35em;font-size:11.5px;color:var(--gold);direction:ltr;text-align:right}
+/* hero */
+.hero{position:relative;padding-block:84px 112px;overflow:hidden;background:radial-gradient(ellipse at 70% 15%,#1b3863 0%,var(--night) 60%)}
+.hero h1{font-size:clamp(38px,6vw,72px);line-height:1.25;margin:0;font-weight:900;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{max-width:620px;color:var(--mist);font-size:19px;margin:22px 0 32px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.river{position:absolute;inset-inline:0;bottom:26px;height:90px;width:100%}
+.river path{fill:none;stroke:var(--gold);stroke-width:1.5;stroke-dasharray:1400;stroke-dashoffset:1400;animation:flow 3s ease-out .3s forwards}
+@keyframes flow{to{stroke-dashoffset:0}}
+.facts{display:flex;gap:36px;flex-wrap:wrap;margin-top:52px}
+.facts div{border-inline-start:2px solid var(--gold);padding-inline-start:14px;min-width:0}
+.facts b{display:block;font-size:22px;line-height:1.3} .facts span{color:var(--mist);font-size:14px}
+/* trust strip */
+.strip{background:var(--deep);border-block:1px solid var(--line)}
+.strip .wrap{display:flex;flex-wrap:wrap;gap:12px 36px;padding-block:16px;font-size:15px;color:var(--mist);justify-content:center}
+.strip span::before{content:"✓";color:var(--gold);margin-inline-end:8px;font-weight:800}
+section{padding-block:84px}
+h2{font-size:clamp(30px,4vw,44px);margin:0 0 8px;text-wrap:balance;font-weight:800}
+.lead{color:var(--mist);margin:0 0 40px;max-width:640px}
+.alt{background:var(--deep)}
+/* services */
+.svc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.svc article{background:var(--deep);padding:30px 26px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.alt .svc article{background:var(--panel)}
+.svc h3{margin:0;font-size:22px;font-weight:800} .svc .en{font-family:var(--display);font-style:italic;color:var(--gold-soft);font-size:19px;direction:ltr;text-align:right}
+.svc p{color:var(--mist);margin:6px 0 0;font-size:15.5px;flex:1}
+.svc .price{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.svc .price small{color:var(--mist);font-size:13px}
+.svc .price b{font-size:20px;color:var(--gold-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.svc .price i{font-style:normal;font-size:13px;color:var(--mist)}
+/* portfolio */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.tabs button{background:transparent;border:1px solid var(--line);color:var(--mist);font-family:var(--body);font-weight:700;font-size:14px;padding:7px 16px;cursor:pointer;border-radius:999px}
+.tabs button[aria-pressed="true"]{background:var(--gold);color:var(--night);border-color:var(--gold)}
+.work{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.work a{display:flex;flex-direction:column;gap:8px;text-decoration:none;border:1px solid var(--line);padding:26px;background:linear-gradient(160deg,var(--panel),var(--night));min-width:0;transition:border-color .2s,transform .2s;position:relative}
+.work a:hover{border-color:var(--gold);transform:translateY(-2px)}
+.work a:not([href]):hover{border-color:var(--line);transform:none}
+.work a[hidden]{display:none}
+.work .tag{font-family:var(--latin);font-size:10.5px;letter-spacing:.14em;color:var(--gold);direction:ltr;text-align:right;text-transform:uppercase}
+.work b{font-size:21px;font-weight:800;line-height:1.3}
+.work span{color:var(--mist);font-size:15px;flex:1}
+.work i{display:block;font-style:normal;color:var(--gold-soft);font-size:14px;margin-top:10px}
+.work i::before{content:"↗ ";}
+.work .live{position:absolute;top:14px;inset-inline-end:14px;font-size:11px;font-weight:800;color:var(--ok);border:1px solid rgba(95,211,154,.4);padding:1px 8px;border-radius:999px}
+/* process */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;counter-reset:s;padding:0;margin:0}
+.steps li{list-style:none;min-width:0;border-top:1px solid var(--gold);padding-top:18px}
+.steps li::before{counter-increment:s;content:"0" counter(s);font-family:var(--display);font-size:40px;color:var(--gold);display:block;line-height:1}
+.steps h3{margin:10px 0 4px;font-size:20px;font-weight:800} .steps p{margin:0;color:var(--mist);font-size:15px}
+/* why */
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.why div{border:1px solid var(--line);padding:24px;background:var(--panel);min-width:0}
+.why h3{margin:0 0 6px;font-size:19px;font-weight:800} .why p{margin:0;color:var(--mist);font-size:15px}
+/* faq */
+.faq{display:grid;gap:10px;max-width:760px}
+details{border:1px solid var(--line);background:var(--deep);padding:0 20px}
+summary{cursor:pointer;font-weight:800;padding-block:14px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";color:var(--gold);font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:0 0 16px;color:var(--mist);font-size:15.5px}
+/* contact */
+.contact{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:start}
+.card{border:1px solid var(--line);padding:28px;background:var(--deep)}
+.row{display:flex;justify-content:space-between;gap:12px;padding-block:13px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.row:last-child{border:0} .row span{color:var(--mist)} .row b{direction:ltr;font-family:var(--latin);font-weight:600;user-select:all}
+form{display:grid;gap:14px}
+label{font-size:14px;color:var(--mist);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;background:var(--night);border:1px solid var(--line);color:var(--cream);padding:12px 14px;font-family:var(--body);font-size:16px;border-radius:2px}
+textarea{min-height:110px;resize:vertical}
+.hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
+.note{font-size:15px;min-height:1.5em;color:var(--gold-soft)}
+.note.ok{color:var(--ok)} .note.bad{color:var(--bad)}
+.done{display:none;text-align:center;padding:20px 0}
+.done.show{display:block} form.sent .fields{display:none!important}
+.done h3{margin:0 0 8px;font-size:24px;color:var(--ok)}
+.done p{color:var(--mist);margin:0 0 18px}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--mist);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.float{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.4);border-radius:999px;padding:12px 18px}
+@media (max-width:900px){nav{display:none}.svc,.work,.why{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.contact{grid-template-columns:1fr}}
+@media (max-width:600px){.svc,.work,.why,.steps{grid-template-columns:1fr}.hero{padding-block:60px 104px}section{padding-block:64px}.bar .btn{padding:9px 14px;font-size:14px;white-space:nowrap}.logo b{font-size:22px}}
+@media (prefers-reduced-motion:reduce){.river path{animation:none;stroke-dashoffset:0}html{scroll-behavior:auto}.work a:hover{transform:none}}
+</style>
+</head>
+<body>
+<div dir="rtl" lang="ar">
+<header><div class="wrap bar">
+  <a class="logo" href="#top" aria-label="Nile Digital Solutions">
+    <svg width="40" height="40" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke="#c9a35a" stroke-width="5"/><path d="M58 66C80 50 120 50 142 66" fill="none" stroke="#c9a35a" stroke-width="6"/><text x="100" y="140" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-size="96" fill="#f4ecdc">N</text></svg>
+    <span><b>NILE</b><small>DIGITAL SOLUTIONS</small></span>
+  </a>
+  <nav><a href="#services">الخدمات والأسعار</a><a href="#work">شغلنا</a><a href="#process">طريقة الشغل</a><a href="#faq">أسئلة</a><a href="#contact">تواصل</a></nav>
+  <a class="btn" href="#contact">اطلب عرض سعر</a>
+</div></header>
+
+<div class="hero" id="top"><div class="wrap">
+  <div class="kicker">FROM EGYPT, TO THE WORLD</div>
+  <h1>بنحوّل فكرتك<br>لـ<em>نظام شغّال</em> بيكسب</h1>
+  <p>فريق مصري بيبني مواقع ومتاجر وتطبيقات، وأنظمة ERP وCRM، وأتمتة وذكاء اصطناعي. سعر مكتوب قبل ما نبدأ، وتشوف التقدم أول بأول، ودعم بعد التسليم.</p>
+  <div class="cta"><a class="btn" href="#contact">اطلب عرض سعر مجاني</a><a class="btn ghost" href="#work">شوف شغلنا الحي</a></div>
+  <div class="facts">
+    <div><b>٦ خدمات</b><span>من الموقع لحد الذكاء الاصطناعي</span></div>
+    <div><b>منذ ٢٠٢٠</b><span>في أنظمة IoT والبيوت الذكية</span></div>
+    <div><b>٣ براندات</b><span>بنبنيها وبنديرها بنفسنا</span></div>
+    <div><b>٤٨ ساعة</b><span>أقصى مدة لرد بعرض سعر</span></div>
+  </div>
+</div>
+<svg class="river" viewBox="0 0 1400 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 C 250 10, 450 85, 700 45 S 1150 10, 1400 55"/></svg>
+</div>
+
+<div class="strip"><div class="wrap">
+  <span>سعر ثابت مكتوب في العقد</span><span>دفع على مراحل</span><span>تدريب لفريقك</span><span>شهر دعم مجاني بعد التسليم</span><span>كل الشغل أونلاين من أي محافظة</span>
+</div></div>
+
+<section id="services"><div class="wrap">
+  <h2>الخدمات والأسعار</h2>
+  <p class="lead">أسعار "يبدأ من" عشان تعرف تحسب قبل ما تكلمنا. السعر النهائي بيتحدد بعد مكالمة واحدة ويتكتب في العرض.</p>
+  <div class="svc">
+    <article><h3>مواقع تعريفية</h3><div class="en">Websites</div><p>موقع سريع على الموبايل، بالعربي والإنجليزي، مربوط بالواتساب ولوحة تحكم تعدّل منها بنفسك.</p><div class="price"><small>يبدأ من</small><b>٨٬٠٠٠ ج</b><i>تسليم ٧–١٠ أيام</i></div></article>
+    <article><h3>متاجر إلكترونية</h3><div class="en">Online Stores</div><p>متجر بالدفع الإلكتروني والشحن وكوبونات الخصم، وتطبيق إدارة الطلبات على موبايلك.</p><div class="price"><small>يبدأ من</small><b>١٥٬٠٠٠ ج</b><i>تسليم ٢–٣ أسابيع</i></div></article>
+    <article><h3>تطبيقات موبايل</h3><div class="en">Mobile Apps</div><p>تطبيقات أندرويد وآيفون لعملائك أو لفريقك، مربوطة بنظامك وبإشعارات.</p><div class="price"><small>يبدأ من</small><b>٤٠٬٠٠٠ ج</b><i>تسليم ٤–٨ أسابيع</i></div></article>
+    <article><h3>أنظمة ERP</h3><div class="en">ERP Systems</div><p>مخازن ومبيعات ومشتريات وحسابات في نظام واحد، بتقارير لحظية وصلاحيات لكل موظف.</p><div class="price"><small>يبدأ من</small><b>٦٠٬٠٠٠ ج</b><i>حسب عدد الأقسام</i></div></article>
+    <article><h3>أنظمة CRM</h3><div class="en">CRM Systems</div><p>متابعة العملاء والعروض والتحصيل، وتنبيهات واتساب للمبيعات، وفريق عارف هو رايح فين.</p><div class="price"><small>يبدأ من</small><b>٢٥٬٠٠٠ ج</b><i>تسليم ٣–٤ أسابيع</i></div></article>
+    <article><h3>أتمتة + مساعد ذكي</h3><div class="en">Automation &amp; AI</div><p>ربط أنظمتك ببعض، بوت واتساب يرد على عملائك ٢٤ ساعة، وتقارير بتتبعت لوحدها كل يوم.</p><div class="price"><small>يبدأ من</small><b>٧٬٠٠٠ ج</b><i>+ اشتراك شهري</i></div></article>
+  </div>
+</div></section>
+
+<section id="work" class="alt"><div class="wrap">
+  <h2>شغلنا الحي</h2>
+  <p class="lead">براندات بنديرها بنفسنا ومواقعها شغّالة دلوقتي، ونماذج بنبني منها لعملائنا.</p>
+  <div class="tabs" id="tabs" role="group" aria-label="تصفية الأعمال">
+    <button type="button" data-f="all" aria-pressed="true">الكل</button>
+    <button type="button" data-f="site" aria-pressed="false">مواقع ومتاجر</button>
+    <button type="button" data-f="platform" aria-pressed="false">منصات وأنظمة</button>
+    <button type="button" data-f="ai" aria-pressed="false">أتمتة وذكاء اصطناعي</button>
+  </div>
+  <div class="work" id="work-grid">
+    <a data-k="site" href="https://jaguarsmart.com/" target="_blank" rel="noopener"><span class="live">LIVE</span><span class="tag">Brand site</span><b>Jaguar Smart</b><span>موقع شركة السمارت هوم والبناء: خدمات، مشاريع، ومتجر مواد بناء.</span><i>jaguarsmart.com</i></a>
+    <a data-k="site" href="https://jaguarsmart.com/tuya-suez/" target="_blank" rel="noopener"><span class="live">LIVE</span><span class="tag">Product line</span><b>Tuya Suez</b><span>صفحة منتجات السمارت هوم بأسعارها، مربوطة بالواتساب للطلب.</span><i>jaguarsmart.com/tuya-suez</i></a>
+    <a data-k="site" href="https://aixsmart.com/" target="_blank" rel="noopener"><span class="live">LIVE</span><span class="tag">International</span><b>AIXSmart</b><span>منصة سمارت هوم موجهة للسوق الأمريكي، بالإنجليزي بالكامل.</span><i>aixsmart.com</i></a>
+    <a data-k="platform"><span class="tag">Demo · Marketplace</span><b>منصة تشطيب وصيانة</b><span>تسعير بالمتر، طلب ٣ تسعيرات من حرفيين، محفظة ودفع على مراحل، ودليل أسعار ومكتب إدارة.</span></a>
+    <a data-k="platform"><span class="tag">Demo · Marketplace</span><b>سوق إعلانات مبوّبة</b><span>عقارات وعربيات وأجهزة: نشر مجاني وباقات إبراز، مزاد مباشر بضمان جدية، أداة "قيّم سعرك"، شات مع البايع ولوحة أرقام.</span></a>
+    <a data-k="platform"><span class="tag">Demo · Platform</span><b>منصة البناء والتشطيب المتكاملة</b><span>سوق إعلانات بباقات تمييز، مزاد بتأمين، حاسبة تشطيب بالمتر وطلب ٣ عروض، دفع محجوز على مراحل، ودليل فنيين بتقييم وإيقاف تلقائي.</span></a>
+    <a data-k="site"><span class="tag">Demo · Store</span><b>وهج للإضاءة</b><span>صفحة هبوط لشركة إضاءة: أداة تجرّب درجة الكلفن على الأوضة، محاكي مشاهد سمارت، وفورم طلب تصميم بالواتساب.</span></a>
+    <a data-k="ai"><span class="tag">Demo · AI agent</span><b>مساعد البيت الذكي</b><span>مساعد ذكاء اصطناعي يتحكم في أجهزة البيت ويرد بالمصري، كتطبيق ويب.</span></a>
+    <a data-k="ai"><span class="tag">Demo · Tool</span><b>حاسبة تكلفة الوكيل الذكي</b><span>أداة تحسب تكلفة بوت الواتساب لنشاطك حسب عدد الرسايل في الشهر.</span></a>
+  </div>
+</div></section>
+
+<section id="process"><div class="wrap">
+  <h2>طريقة الشغل</h2>
+  <p class="lead">أربع خطوات واضحة من أول مكالمة لحد ما النظام يشتغل. دي الترتيب الفعلي لأي مشروع معانا.</p>
+  <ol class="steps">
+    <li><h3>نسمعك</h3><p>مكالمة ٣٠ دقيقة نفهم فيها شغلك والمشكلة اللي عايز تحلها.</p></li>
+    <li><h3>نخطط</h3><p>عرض مكتوب خلال ٤٨ ساعة: المطلوب بالتفصيل، والمدة، والتكلفة الثابتة.</p></li>
+    <li><h3>نبني</h3><p>تصميم وبرمجة، ولينك تجريبي تشوف عليه التقدم كل أسبوع وتعلّق.</p></li>
+    <li><h3>نسلّم ونتابع</h3><p>تدريب لفريقك، وشهر دعم مجاني، وعقد صيانة اختياري بعدها.</p></li>
+  </ol>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <h2>ليه تشتغل معانا</h2>
+  <p class="lead">إحنا مش شركة برمجة بس. إحنا بنشغّل شركات بنفسنا، فعارفين الموقع أو النظام لازم يعمل إيه عشان يجيب فلوس.</p>
+  <div class="why">
+    <div><h3>فريق واحد لكل حاجة</h3><p>الموقع والمتجر والنظام والبوت من نفس الفريق، فمفيش "ده مش شغلنا".</p></div>
+    <div><h3>بنشغّل براندات حقيقية</h3><p>الأدوات اللي بنبنيها لعملائنا بنستخدمها إحنا كل يوم في شركاتنا.</p></div>
+    <div><h3>ذكاء اصطناعي من أول يوم</h3><p>أي نظام بنبنيه بيبقى جاهز يتربط ببوت واتساب وتقارير أوتوماتيك.</p></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>أسئلة بتتكرر</h2>
+  <p class="lead">لو سؤالك مش هنا، ابعته على الواتساب وهنرد في ساعات.</p>
+  <div class="faq">
+    <details><summary>بتدفع إزاي؟</summary><p>٥٠٪ عند التعاقد، و٥٠٪ عند التسليم. للمشاريع الكبيرة بنقسمها على مراحل، وكل مرحلة ليها تسليم واضح.</p></details>
+    <details><summary>هل الموقع هيبقى ملكي بالكامل؟</summary><p>أيوه. الدومين والاستضافة والكود كلهم باسمك، وتقدر تاخدهم لأي حد تاني في أي وقت.</p></details>
+    <details><summary>أنا في محافظة تانية، ينفع؟</summary><p>كل الشغل بيتم أونلاين: مكالمات، لينك تجريبي، وتسليم. اشتغلنا كده مع عملاء من مصر كلها.</p></details>
+    <details><summary>إيه اللي بيحصل بعد التسليم؟</summary><p>شهر دعم مجاني لأي تعديل أو مشكلة. بعدها تقدر تاخد عقد صيانة شهري أو تكلمنا لما تحتاج.</p></details>
+    <details><summary>الأسعار اللي فوق نهائية؟</summary><p>دي أسعار بداية للحجم المعتاد. بعد مكالمة واحدة بنبعتلك عرض بسعر ثابت مكتوب، ومفيش زيادة بعده إلا بموافقتك.</p></details>
+  </div>
+</div></section>
+
+<section id="contact" class="alt"><div class="wrap contact">
+  <div>
+    <h2>عندك فكرة؟ خلّينا نبنيها سوا</h2>
+    <p class="lead">كلمنا على الواتساب دلوقتي، أو سيب بياناتك وهنرجعلك خلال ساعات الشغل.</p>
+    <div class="card">
+      <div class="row"><span>واتساب / اتصال</span><b id="phone">+20 111 112 6938</b></div>
+      <div class="row"><span>الإيميل</span><b>niledigitalsolution@gmail.com</b></div>
+      <div class="row"><span>العنوان</span><span style="color:var(--cream)">٥٧ ش حسن الشريف، الحي الثامن، مدينة نصر — مكتب A35</span></div>
+      <div class="row"><span>مواعيد الرد</span><span style="color:var(--cream)">السبت–الخميس، ١٠ ص – ٨ م</span></div>
+      <div class="row" style="gap:10px"><a class="btn wa" id="wa-direct" href="https://wa.me/201111126938?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%AC%D8%A7%D9%8A%20%D9%85%D9%86%20%D9%85%D9%88%D9%82%D8%B9%20Nile%20Digital%20Solutions%20%D9%88%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%B9%D8%B1%D8%B6%20%D8%B3%D8%B9%D8%B1%20%D9%84%D9%80" target="_blank" rel="noopener">افتح واتساب</a><button class="btn ghost" type="button" id="copy">انسخ الرقم</button></div>
+    </div>
+  </div>
+  <form class="card" id="lead" novalidate>
+    <div class="fields" style="display:grid;gap:14px">
+      <div><label for="n">الاسم</label><input id="n" name="name" autocomplete="name" required></div>
+      <div><label for="p">رقم الموبايل (واتساب)</label><input id="p" name="phone" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx" required></div>
+      <div><label for="s">الخدمة</label><select id="s" name="service"><option>موقع تعريفي</option><option>متجر إلكتروني</option><option>تطبيق موبايل</option><option>نظام ERP</option><option>نظام CRM</option><option>أتمتة / بوت واتساب</option><option>مش عارف، عايز استشارة</option></select></div>
+      <div><label for="m">عن مشروعك (اختياري)</label><textarea id="m" name="message" placeholder="مثلاً: عندي محل عطور وعايز متجر أونلاين بالدفع الإلكتروني"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="w">website</label><input id="w" name="website" tabindex="-1" autocomplete="off"></div>
+      <button class="btn" type="submit" id="send">ابعت الطلب</button>
+      <div class="note" id="note" aria-live="polite"></div>
+    </div>
+    <div class="done" id="done" aria-live="polite">
+      <h3>وصل طلبك ✓</h3>
+      <p>هنكلمك على الواتساب خلال ساعات الشغل. لو مستعجل، افتح الشات دلوقتي:</p>
+      <a class="btn wa" id="wa-after" href="https://wa.me/201111126938" target="_blank" rel="noopener">كلمنا على الواتساب</a>
+    </div>
+  </form>
+</div></section>
+
+<footer><div class="wrap"><span>© ٢٠٢٦ Nile Digital Solutions — جزء من مجموعة Jaguar Smart</span><span style="display:flex;gap:16px;flex-wrap:wrap;align-items:center"><a href="https://www.facebook.com/profile.php?id=61595101341486" target="_blank" rel="noopener" style="color:var(--gold-soft);font-weight:700;text-decoration:none">تابعنا على فيسبوك ↗</a><span style="direction:ltr">Nasr City, Cairo · niledigitalsolution@gmail.com</span></span></div></footer>
+
+<a class="btn wa float" href="https://wa.me/201111126938?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%AC%D8%A7%D9%8A%20%D9%85%D9%86%20%D9%85%D9%88%D9%82%D8%B9%20Nile%20Digital%20Solutions" target="_blank" rel="noopener" aria-label="واتساب">واتساب</a>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT='https://jaguarabdallah.app.n8n.cloud/webhook/nile-lead';
+  var $=function(s){return document.querySelector(s)};
+  var track=function(ev){if(window.fbq)fbq('track',ev)};
+  /* whatsapp clicks, including the fallback button added after a failed send */
+  document.addEventListener('click',function(e){if(e.target.closest('a[href*="wa.me/"]'))track('Contact')});
+  /* copy phone */
+  $('#copy').onclick=function(){var t='+201111126938',b=this;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='اتنسخ ✓'}).catch(function(){var r=document.createRange();r.selectNodeContents($('#phone'));var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='حدد ونسخ'});};
+  /* portfolio filter */
+  var tabs=$('#tabs'),cards=document.querySelectorAll('#work-grid a');
+  tabs.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(!b)return;
+    tabs.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+    var f=b.dataset.f;cards.forEach(function(c){c.hidden=!(f==='all'||c.dataset.k===f)});});
+  /* lead form */
+  var form=$('#lead'),note=$('#note'),btn=$('#send');
+  var waBase='https://wa.me/201111126938?text=';
+  function setNote(t,k){note.textContent=t;note.className='note'+(k?' '+k:'')}
+  form.addEventListener('submit',function(e){e.preventDefault();
+    var n=$('#n').value.trim(),p=$('#p').value.trim(),s=$('#s').value,m=$('#m').value.trim();
+    if($('#w').value){return;}
+    if(n.length<2){setNote('اكتب اسمك عشان نعرف نكلمك.','bad');$('#n').focus();return;}
+    var digits=p.replace(/\D/g,'');
+    if(!/^(0|20|0020)?1\d{9}$/.test(digits)){setNote('رقم الموبايل مش مظبوط. اكتبه زي 01xxxxxxxxx','bad');$('#p').focus();return;}
+    setNote('ثواني…');btn.disabled=true;
+    var body=new URLSearchParams({name:n,phone:p,service:s,message:m,source:'website:'+location.hostname});
+    var waText='أهلاً، أنا '+n+'، جاي من موقع Nile Digital Solutions وعايز عرض سعر لـ'+s+(m?'. '+m:'')+' — رقمي '+p;
+    $('#wa-after').href=waBase+encodeURIComponent(waText);
+    var finish=function(ok){btn.disabled=false;
+      if(ok){setNote('');form.classList.add('sent');$('#done').classList.add('show');track('Lead');try{sessionStorage.setItem('nile_sent','1')}catch(x){}}
+      else{setNote('مقدرناش نبعت الطلب دلوقتي. ابعته على الواتساب بضغطة:','bad');var a=document.createElement('a');a.className='btn wa';a.style.marginTop='8px';a.target='_blank';a.rel='noopener';a.href=waBase+encodeURIComponent(waText);a.textContent='ابعت الطلب على الواتساب';note.appendChild(document.createElement('br'));note.appendChild(a);}
+    };
+    fetch(ENDPOINT,{method:'POST',body:body}).then(function(r){finish(r.ok)}).catch(function(){finish(false)});
+  });
+})();
+</script>
+</body>
+</html>
