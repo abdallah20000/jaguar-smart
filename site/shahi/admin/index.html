@@ -134,6 +134,36 @@ table.list tr.row:hover td{background:#fdf9f1}
 .chk{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
 .chk input[type=checkbox]{width:18px;height:18px;min-height:0;flex:none}
 .chk input.note{flex:1}
+
+/* whatsapp inbox */
+.inbox{display:grid;grid-template-columns:320px minmax(0,1fr);height:calc(100vh - 290px);min-height:440px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.inbox .conv-list{border-inline-end:1px solid var(--line);overflow-y:auto}
+.conv{display:block;width:100%;text-align:start;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 14px;cursor:pointer;color:var(--ink)}
+.conv:hover{background:#fdf9f1}
+.conv.on{background:#f4ecdc}
+.conv .r1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.conv .r1 b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv .r1 time{font-size:12px;color:var(--muted);white-space:nowrap}
+.conv p{margin:2px 0 0;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thread{display:flex;flex-direction:column;min-width:0;min-height:0}
+.thread .th{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
+.bub{max-width:min(72%,540px);padding:7px 12px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);align-self:flex-start}
+.bub.out{align-self:flex-end;background:#f4ecdc}
+.bub.manual{border-color:var(--gold)}
+.bub small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.compose{border-top:1px solid var(--line);padding:10px 14px;display:grid;gap:8px}
+.compose .acts{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.st-paused{background:#f4dcd8;color:var(--red)}.st-live{background:#dcefe3;color:var(--green)}
+.thread .back{display:none}
+@media (max-width:760px){
+  .inbox{grid-template-columns:1fr;height:calc(100vh - 250px)}
+  .inbox.open .conv-list{display:none}
+  .inbox:not(.open) .thread{display:none}
+  .inbox .conv-list{border:0}
+  .thread .back{display:inline-flex}
+  .bub{max-width:88%}
+}
 </style>
 </head>
 <body>
@@ -201,6 +231,7 @@ const waLink = phone => "https://wa.me/" + String(phone || "").replace(/\D/g, ""
 let me = null, staff = [], packages = [], menuItems = [];
 const TABS = [
   { id:"leads", label:"الطلبات", roles:["admin","sales"] },
+  { id:"inbox", label:"الواتساب", roles:["admin","sales"] },
   { id:"cal", label:"الحجوزات والكالندر", roles:["admin","sales","ops"] },
   { id:"kitchen", label:"المطبخ", roles:["admin","ops","chef"] },
   { id:"customers", label:"العملاء", roles:["admin","sales"] },
@@ -257,7 +288,8 @@ const pkgName = id => packages.find(p => p.id === id)?.name_ar || "—";
 function show(id){
   $$("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === id));
   try { sessionStorage.setItem("shahi_tab", id); } catch (_) {}
-  ({ leads, cal, kitchen, customers, menu, team, reports, log, settings })[id]().catch(fail);
+  clearInterval(inboxTimer); inboxPhone = null;
+  ({ leads, inbox, cal, kitchen, customers, menu, team, reports, log, settings })[id]().catch(fail);
 }
 
 // ---------- drawer helper ----------
@@ -367,6 +399,74 @@ function normPhone(p){
   if (/^00201[0125]\d{8}$/.test(n)) return "+" + n.slice(2);
   if (/^1[0125]\d{8}$/.test(n)) return "+20" + n;
   return "+" + n;
+}
+
+// ========== WHATSAPP INBOX ==========
+const INBOX_API = "https://jaguarabdallah.app.n8n.cloud/webhook/shahi-team";
+let inboxTimer = null, inboxPhone = null, inboxSeq = 0, inboxRows = [];
+const shortTime = v => { const t = new Date(v); if (isNaN(t)) return ""; const same = t.toDateString() === new Date().toDateString(); return t.toLocaleString("ar-EG", same ? { hour:"numeric", minute:"2-digit" } : { day:"numeric", month:"short", hour:"numeric", minute:"2-digit" }); };
+async function inboxCall(action, extra){
+  const { data } = await sb.auth.getSession();
+  const res = await fetch(INBOX_API, { method:"POST", body:new URLSearchParams({ action, token:data.session?.access_token || "", ...extra }) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(j.error || "حصلت مشكلة. جرّب تاني");
+  return j;
+}
+async function inbox(){
+  $("#main").innerHTML = `<div class="stats" id="inboxStats"></div><div class="inbox" id="inboxBox"><div class="conv-list" id="convList"><p class="empty">بيحمّل…</p></div><div class="thread" id="thread"><p class="empty">اختار محادثة من القايمة</p></div></div>`;
+  await inboxRefresh();
+  inboxTimer = setInterval(() => { if (!document.hidden) inboxRefresh().catch(console.error); }, 20000);
+}
+async function inboxRefresh(){
+  const d = await inboxCall("list");
+  if (!$("#inboxBox")) return;
+  $("#inboxStats").innerHTML = [["محادثات شاهي", d.stats.conversations], ["نشطة النهارده", d.stats.today], ["آخر رسالة من العميل", d.stats.waiting], ["البوت موقوف", d.stats.paused]]
+    .map(([l, v]) => `<div class="card stat"><b>${esc(v)}</b><span class="small muted">${esc(l)}</span></div>`).join("");
+  inboxRows = d.conversations;
+  renderConvs();
+  if (inboxPhone) await openConv(inboxPhone, true);
+}
+function renderConvs(){
+  const box = $("#convList");
+  box.innerHTML = inboxRows.length ? inboxRows.map(c => `<button type="button" class="conv${c.phone === inboxPhone ? " on" : ""}" data-p="${esc(c.phone)}"><div class="r1"><b>${esc(c.name || c.phone)}</b><time>${esc(shortTime(c.lastAt))}</time></div><p>${esc(String(c.last || "").replace("[يدوي] ", ""))}</p>${c.paused ? `<span class="badge st-paused">البوت موقوف</span>` : ""}</button>`).join("") : `<p class="empty">لسه مفيش محادثات شاهي</p>`;
+  $$("#convList .conv").forEach(b => b.onclick = () => { openConv(b.dataset.p, false).catch(fail); });
+}
+async function openConv(phone, quiet){
+  const mine = ++inboxSeq; inboxPhone = phone;
+  $("#inboxBox").classList.add("open");
+  if (!quiet) renderConvs();
+  const t = await inboxCall("thread", { phone });
+  if (mine !== inboxSeq || !$("#thread")) return;
+  const keep = $("#reply")?.value || "", old = $("#msgs");
+  const atEnd = !old || old.scrollHeight - old.scrollTop - old.clientHeight < 60;
+  renderThread(t);
+  if (quiet && keep && $("#reply")) $("#reply").value = keep;
+  const m = $("#msgs"); if (atEnd || !quiet) m.scrollTop = m.scrollHeight;
+}
+function renderThread(t){
+  const bubbles = t.messages.map(x => {
+    const text = String(x.text || ""), manual = x.dir === "out" && text.includes("[يدوي]");
+    return `<div class="bub${x.dir === "in" ? "" : " out"}${manual ? " manual" : ""}">${esc(text.replace("[يدوي] ", ""))}<small>${x.dir === "in" ? "العميل" : manual ? "رد يدوي" : "البوت"} · ${esc(shortTime(x.at))}</small></div>`;
+  }).join("");
+  $("#thread").innerHTML = `<div class="th"><div><b class="money">${esc(t.phone)}</b> <span class="badge ${t.paused ? "st-paused" : "st-live"}">${t.paused ? "البوت موقوف" : "البوت شغال"}</span></div>
+    <div style="display:flex;gap:8px"><button class="btn sm back" type="button" id="convBack">رجوع</button><button class="btn sm${t.paused ? " gold" : ""}" type="button" id="botToggle">${t.paused ? "خلّي البوت يكمل" : "وقّف البوت"}</button></div></div>
+    <div class="msgs" id="msgs">${bubbles}</div>
+    ${t.canReply ? `<form class="compose" id="replyForm"><textarea id="reply" maxlength="2000" placeholder="اكتب ردك للعميل" aria-label="ردك للعميل"></textarea><div class="acts"><span class="small muted">${t.paused ? "البوت موقوف، والرد هيتبعت من رقم الواتساب." : "لما تبعت رد، البوت هيقف للعميل ده لحد ما تضغط «خلّي البوت يكمل»."}</span><button class="btn primary" type="submit" id="replySend">ابعت</button></div></form>`
+      : `<div class="compose"><span class="small muted">عدّت 24 ساعة من آخر رسالة للعميل، فواتساب مش هيسمح برد من هنا. كلّمه مباشرة من الموبايل.</span></div>`}`;
+  $("#convBack").onclick = () => { inboxPhone = null; inboxSeq++; $("#inboxBox").classList.remove("open"); renderConvs(); };
+  $("#botToggle").onclick = async e => {
+    e.target.disabled = true;
+    try { await inboxCall(t.paused ? "resume" : "pause", { phone:t.phone }); await inboxRefresh(); } catch (x) { fail(x); e.target.disabled = false; }
+  };
+  const form = $("#replyForm");
+  if (form) form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const text = $("#reply").value.trim(); if (!text) return;
+    $("#replySend").disabled = true;
+    try { await inboxCall("reply", { phone:t.phone, text }); $("#reply").value = ""; toast("الرد اتبعت"); setTimeout(() => inboxRefresh().catch(console.error), 2500); }
+    catch (x) { fail(x); }
+    if ($("#replySend")) $("#replySend").disabled = false;
+  });
 }
 
 // ========== BOOKINGS ==========
