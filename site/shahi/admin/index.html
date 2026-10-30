@@ -134,6 +134,7 @@ table.list tr.row:hover td{background:#fdf9f1}
 .chk{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
 .chk input[type=checkbox]{width:18px;height:18px;min-height:0;flex:none}
 .chk input.note{flex:1}
+.codebox{font-size:26px;font-weight:600;letter-spacing:.12em;text-align:center;direction:ltr;background:#fff;border:1px dashed var(--gold);border-radius:12px;padding:14px;user-select:all;overflow-wrap:anywhere}
 
 /* whatsapp inbox */
 .inbox{display:grid;grid-template-columns:320px minmax(0,1fr);height:calc(100vh - 290px);min-height:440px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
@@ -182,6 +183,16 @@ table.list tr.row:hover td{background:#fdf9f1}
       <button class="btn primary" type="submit">دخول</button>
       <div class="msg" id="lMsg"></div>
       <button class="linkbtn" type="button" id="forgotBtn">نسيت الباسورد؟</button>
+      <button class="linkbtn" type="button" id="joinBtn">عندك كود تسجيل؟</button>
+    </form>
+    <form id="joinForm" class="hidden">
+      <p class="small muted" style="margin:0">اكتب إيميلك وكود التسجيل اللي وصلك، واختار باسورد لحسابك.</p>
+      <label class="f"><span>الإيميل</span><input id="jEmail" type="email" autocomplete="username" dir="ltr" required></label>
+      <label class="f"><span>كود التسجيل</span><input id="jCode" autocomplete="one-time-code" dir="ltr" required></label>
+      <label class="f"><span>اختار باسورد (8 حروف على الأقل)</span><input id="jPass" type="password" autocomplete="new-password" minlength="8" dir="ltr" required></label>
+      <button class="btn primary" type="submit" id="jSend">سجّل حسابك</button>
+      <div class="msg" id="jMsg"></div>
+      <button class="linkbtn" type="button" id="joinBack">رجوع للدخول</button>
     </form>
     <form id="forgotForm" class="hidden">
       <p class="small muted" style="margin:0">اكتب إيميلك وهيوصلك رابط تعمل منه باسورد جديدة.</p>
@@ -258,6 +269,20 @@ $("#forgotForm").addEventListener("submit", async e => {
   const { error } = await sb.auth.resetPasswordForEmail($("#fEmail").value.trim(), { redirectTo });
   $("#fMsg").className = "msg" + (error ? "" : " ok");
   $("#fMsg").textContent = error ? "مقدرناش نبعت الرابط. كلّم الأدمن يغيّرلك الباسورد من «الفريق»." : "لو الإيميل مسجّل عندنا هيوصلك رابط خلال دقايق.";
+});
+$("#joinBtn").onclick = () => { $("#loginForm").classList.add("hidden"); $("#joinForm").classList.remove("hidden"); $("#jEmail").value = $("#lEmail").value; };
+$("#joinBack").onclick = () => { $("#joinForm").classList.add("hidden"); $("#loginForm").classList.remove("hidden"); };
+$("#joinForm").addEventListener("submit", async e => {
+  e.preventDefault(); $("#jMsg").textContent = ""; $("#jSend").disabled = true;
+  const email = $("#jEmail").value.trim(), password = $("#jPass").value;
+  try {
+    await adminCall({ email, code: $("#jCode").value, password }, "shahi-join");
+    $("#jPass").value = ""; $("#jCode").value = "";
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw new Error("حسابك اتعمل. ادخل من صفحة الدخول.");
+    start();
+  } catch (x) { $("#jMsg").textContent = x.message.includes("Failed to send") ? "مفيش اتصال. جرّب تاني." : x.message; }
+  $("#jSend").disabled = false;
 });
 $("#logout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
@@ -715,20 +740,42 @@ function editPlan(m){
 }
 
 // ========== TEAM ==========
-async function adminCall(body){
-  const { data, error } = await sb.functions.invoke("shahi-admin", { body });
+async function adminCall(body, fn = "shahi-admin"){
+  const { data, error } = await sb.functions.invoke(fn, { body });
   if (error) { let msg = error.message; try { msg = (await error.context.json()).error || msg; } catch (_) {} throw new Error(msg); }
   return data;
 }
 async function team(){
   await loadRefs();
-  $("#main").innerHTML = `<div class="bar"><h2 style="flex:1">الفريق</h2><button class="btn gold" id="addMember">+ عضو جديد</button></div>
+  const invites = await sb.from("shahi_invites").select("id,full_name,role,expires_at,used_at").order("created_at", { ascending:false }).limit(50).then(must);
+  const inviteState = i => i.used_at ? `<span class="badge st-booked">اتستخدم</span>` : new Date(i.expires_at) < new Date() ? `<span class="badge st-cancelled">انتهى</span>` : `<span class="badge st-new">مستني التسجيل</span>`;
+  $("#main").innerHTML = `<div class="bar"><h2 style="flex:1">الفريق</h2><button class="btn" id="addInvite">+ كود تسجيل</button><button class="btn gold" id="addMember">+ عضو جديد</button></div>
     <table class="list"><thead><tr><th>الاسم</th><th>الإيميل</th><th>الدور</th><th>الحالة</th><th></th></tr></thead><tbody>${staff.map(s => `<tr>
       <td><b>${esc(s.full_name)}</b>${s.user_id === me.user_id ? ` <span class="badge">إنت</span>` : ""}</td><td data-l="الإيميل" class="money">${esc(s.email)}</td>
       <td data-l="الدور"><select data-role="${s.user_id}"${s.user_id === me.user_id ? " disabled" : ""}>${opts(ROLE, s.role)}</select></td>
       <td data-l="الحالة">${s.active ? `<span class="badge st-booked">مفعّل</span>` : `<span class="badge st-cancelled">موقوف</span>`}</td>
       <td style="white-space:nowrap">${s.user_id === me.user_id ? "" : `<button class="btn sm" data-act="${s.user_id}" data-on="${!s.active}">${s.active ? "إيقاف" : "تفعيل"}</button>`} <button class="btn sm" data-pw="${s.user_id}">باسورد جديدة</button></td></tr>`).join("")}</tbody></table>
-    <p class="small muted">الأدوار: <b>أدمن</b> كل حاجة · <b>مبيعات</b> الطلبات والعملاء والحجوزات · <b>تشغيل</b> الحجوزات والجدول والمطبخ · <b>مطبخ</b> المنيو المطلوب والعدد والميعاد والحساسية بس.</p>`;
+    <p class="small muted">الأدوار: <b>أدمن</b> كل حاجة · <b>مبيعات</b> الطلبات والعملاء والحجوزات · <b>تشغيل</b> الحجوزات والجدول والمطبخ · <b>مطبخ</b> المنيو المطلوب والعدد والميعاد والحساسية بس.</p>
+    ${invites.length ? `<div class="section-t" style="margin:18px 0 8px">أكواد التسجيل</div><table class="list"><thead><tr><th>الاسم</th><th>الدور</th><th>ينتهي</th><th>الحالة</th><th></th></tr></thead><tbody>${invites.map(i => `<tr>
+      <td><b>${esc(i.full_name)}</b></td><td data-l="الدور">${esc(ROLE[i.role])}</td><td data-l="ينتهي">${dt(i.expires_at)}</td><td data-l="الحالة">${inviteState(i)}</td>
+      <td>${i.used_at ? "" : `<button class="btn sm danger" data-inv="${i.id}">إلغاء</button>`}</td></tr>`).join("")}</tbody></table>` : ""}`;
+  $$("[data-inv]").forEach(b => b.onclick = async () => { if (!confirm("تلغي الكود ده؟")) return; try { await sb.from("shahi_invites").delete().eq("id", b.dataset.inv).then(must); toast("الكود اتلغى ✓"); team(); } catch (e) { fail(e); } });
+  $("#addInvite").onclick = () => {
+    const d = drawer("كود تسجيل جديد", `<form id="inf" class="grid">
+      <label class="f"><span>الاسم *</span><input name="full_name" required></label>
+      <label class="f"><span>الدور *</span><select name="role">${opts(ROLE, "sales")}</select></label></form>
+      <p class="small muted">الكود بيشتغل مرة واحدة وبينتهي بعد 7 أيام. الشخص بيكتب إيميله والكود ويختار الباسورد بنفسه.</p>`, `<button class="btn primary" id="iSave">اعمل الكود</button>`);
+    $("#iSave").onclick = async () => {
+      const f = $("#inf"); if (!f.reportValidity()) return; const v = Object.fromEntries(new FormData(f)), code = genCode();
+      try {
+        await sb.from("shahi_invites").insert({ ...v, code_hash: await sha256(code), created_by: me.user_id }).then(must);
+        d.el.querySelector(".db").innerHTML = `<div class="codebox">${esc(code)}</div><p class="small muted" style="margin:0">انسخ الكود دلوقتي وابعته لـ${esc(v.full_name)} مع لينك اللوحة، لأنه مش هيظهر تاني.</p>`;
+        d.el.querySelector(".df").innerHTML = `<button class="btn primary" id="iCopy">انسخ الكود</button>`;
+        $("#iCopy").onclick = e => navigator.clipboard.writeText(code).then(() => { e.target.textContent = "اتنسخ ✓"; }).catch(() => toast("حدد الكود وانسخه بإيدك"));
+        team().catch(fail);
+      } catch (e) { fail(e); }
+    };
+  };
   $$("[data-role]").forEach(sel => sel.onchange = async () => { try { await sb.from("shahi_staff").update({ role: sel.value }).eq("user_id", sel.dataset.role).then(must); toast("الدور اتغيّر ✓"); } catch (e) { fail(e); team(); } });
   $$("[data-act]").forEach(b => b.onclick = async () => { try { await adminCall({ action: "set_active", user_id: b.dataset.act, active: b.dataset.on === "true" }); toast("اتعمل ✓"); team(); } catch (e) { fail(e); } });
   $$("[data-pw]").forEach(b => b.onclick = async () => {
@@ -747,6 +794,8 @@ async function team(){
   };
 }
 function genPw(){ const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; const r = crypto.getRandomValues(new Uint32Array(10)); return "Sh-" + [...r].map(x => a[x % a.length]).join(""); }
+function genCode(){ const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const r = crypto.getRandomValues(new Uint32Array(12)); return [...r].map(x => a[x % a.length]).join(""); }
+const sha256 = async text => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))].map(b => b.toString(16).padStart(2, "0")).join("");
 
 // ========== REPORTS ==========
 async function reports(){
