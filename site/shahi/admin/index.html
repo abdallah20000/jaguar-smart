@@ -402,7 +402,7 @@ function normPhone(p){
 }
 
 // ========== WHATSAPP INBOX ==========
-const INBOX_API = "https://jaguarabdallah.app.n8n.cloud/webhook/shahi-team";
+const INBOX_API = "https://n8n-hesb.srv2112249.hstgr.cloud/webhook/shahi-team";
 let inboxTimer = null, inboxPhone = null, inboxSeq = 0, inboxRows = [];
 const shortTime = v => { const t = new Date(v); if (isNaN(t)) return ""; const same = t.toDateString() === new Date().toDateString(); return t.toLocaleString("ar-EG", same ? { hour:"numeric", minute:"2-digit" } : { day:"numeric", month:"short", hour:"numeric", minute:"2-digit" }); };
 async function inboxCall(action, extra){
