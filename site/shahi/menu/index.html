@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اطلب عزومتك من شاهي</title>
+<meta name="description" content="اختار أصناف عزومتك من شاهي أو اعمل صينيتك بنفسك، والسعر يطلعلك على طول، وابعت طلبك على واتساب.">
+<link rel="canonical" href="https://jaguarsmart.com/shahi/menu/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="شاهي SHAHI">
+<meta property="og:title" content="اطلب عزومتك من شاهي">
+<meta property="og:description" content="اختار أصناف عزومتك من شاهي أو اعمل صينيتك بنفسك، والسعر يطلعلك على طول، وابعت طلبك على واتساب.">
+<meta property="og:image" content="https://jaguarsmart.com/shahi/og.jpg">
+<meta property="og:url" content="https://jaguarsmart.com/shahi/menu/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=El+Messiri:wght@500;700&family=Readex+Pro:wght@300;400;500&display=swap">
+<style>
+/* Layout: guest-facing order sheet — dish picker first, live quote ticket beside it on desktop, under it on phone */
+:root{
+  --bg:#1E1410; --panel:#271A14; --line:#4A3527; --gold:#C9963B; --gold-hi:#E2B866; --cream:#F3E9D6; --muted:#B7A68B; --chip:#3A281E;
+  --brand:"Aref Ruqaa",serif; --display:"El Messiri",Georgia,serif; --body:"Readex Pro",Tahoma,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--cream);font-family:var(--body);margin:0;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding-block:26px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:22px}
+.hero svg{width:62px;height:46px}
+.hero .ar{font-family:var(--brand);font-size:48px;color:var(--gold);line-height:1}
+.hero .en{letter-spacing:.5em;font-size:12px;color:var(--gold-hi);margin-right:-.5em}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6vw,42px);margin:10px 0 0;line-height:1.25;text-wrap:balance}
+.hero p{margin:4px 0 0;color:var(--muted);font-weight:300;max-width:52ch}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
+h2{font-family:var(--display);font-weight:600;color:var(--gold-hi);font-size:21px;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+h2.first{margin-top:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:14px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--cream);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:9px 11px;width:100%}
+input::placeholder,textarea::placeholder{color:#7f6d58}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+.search{border:1px solid var(--gold);background:rgba(201,150,59,.07);border-radius:6px;padding:14px 16px;margin-top:6px}
+.search .t{font-family:var(--display);font-size:20px;color:var(--gold-hi);margin-bottom:6px}
+.search .row{display:flex;gap:8px}
+.search .row input{flex:1;min-width:0}
+.btn{font:500 15px var(--body);background:var(--gold);color:var(--bg);border:0;border-radius:4px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--gold-hi);border:1px solid var(--gold)}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:var(--chip);border:1px solid var(--gold);border-radius:999px;padding:4px 6px 4px 12px;font-size:14px;display:flex;align-items:center;gap:6px}
+.chip button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0 4px}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 14px}
+.item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;cursor:pointer;border:1px solid transparent}
+.item[hidden]{display:none}
+.item:hover{background:rgba(201,150,59,.08)}
+.item:has(input:checked){border-color:var(--gold);background:rgba(201,150,59,.1)}
+.item input{accent-color:var(--gold);width:18px;height:18px;flex:none;padding:0}
+.item .n{flex:1;min-width:0}
+.item .p{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.empty{color:var(--muted);font-size:14px;padding:6px 2px}
+.ticket{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.ticket h3{font-family:var(--display);font-size:22px;margin:0 0 8px;color:var(--gold-hi)}
+.line{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+.line span:first-child{color:var(--muted)}
+.pp{font-family:var(--display);font-size:40px;color:var(--gold-hi);line-height:1.1;font-variant-numeric:tabular-nums}
+.total{margin-top:10px;padding-top:10px;border-top:1px solid var(--gold);display:flex;justify-content:space-between;align-items:baseline}
+.total b{font-family:var(--display);font-size:30px}
+.fine{font-size:13px;color:var(--muted);margin:10px 0 14px}
+a.send{display:block;text-align:center;text-decoration:none;font:500 17px var(--body);background:var(--gold);color:var(--bg);border-radius:4px;padding:12px}
+.err{color:#E8A06A;font-size:14px;margin-top:8px;min-height:20px}
+.phone{margin-top:10px;font-size:14px;color:var(--muted);text-align:center}
+.phone b{color:var(--cream);user-select:all;font-variant-numeric:tabular-nums}
+
+.iconbtn{display:inline-flex;align-items:center;gap:8px;font:500 15px var(--body);background:var(--chip);color:var(--gold-hi);border:1px solid var(--gold);border-radius:4px;padding:9px 12px;cursor:pointer;white-space:nowrap}
+.iconbtn svg{width:22px;height:22px}
+.bigtray{display:flex;align-items:center;gap:14px;width:100%;margin-top:12px;text-align:right;background:linear-gradient(90deg,rgba(201,150,59,.18),rgba(201,150,59,.05));border:1px dashed var(--gold);border-radius:6px;padding:12px 14px;color:var(--cream);font:inherit;cursor:pointer}
+.bigtray svg{width:46px;height:46px;flex:none}
+.bigtray b{font-family:var(--display);color:var(--gold-hi);font-size:19px;display:block}
+.bigtray span{font-size:13px;color:var(--muted)}
+.trays{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.trayrow{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px}
+.trayrow .tt{color:var(--gold-hi);font-weight:500}
+.trayrow .ti{color:var(--muted)}
+.trayrow button{margin-inline-start:auto;background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+dialog.board{width:min(760px,calc(100vw - 20px));max-height:calc(100dvh - 20px);background:var(--panel);color:var(--cream);border:1px solid var(--gold);border-radius:8px;padding:0}
+dialog.board::backdrop{background:rgba(10,6,4,.75)}
+.bd{padding:16px 18px 18px;overflow:auto;max-height:calc(100dvh - 22px)}
+.bd-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.bd-head h3{font-family:var(--display);font-size:24px;color:var(--gold-hi);margin:0}
+.x{background:none;border:0;color:var(--muted);font-size:26px;cursor:pointer;line-height:1}
+.opt-t{font-size:14px;color:var(--muted);margin:12px 0 6px}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.opt{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 6px;color:var(--cream);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.opt svg{width:34px;height:34px}
+.opt small{color:var(--muted);font-size:12px}
+.opt[aria-pressed=true]{border-color:var(--gold);background:rgba(201,150,59,.14)}
+.bd-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:14px;align-items:start}
+@media (max-width:640px){.bd-main{grid-template-columns:minmax(0,1fr)}}
+.stage{background:radial-gradient(circle at 50% 40%,#3a2a1f,#1a110d);border-radius:8px;padding:10px;display:flex;justify-content:center}
+.stage svg{width:100%;max-width:330px;height:auto}
+.sug{display:flex;flex-direction:column;gap:2px;margin-top:6px;max-height:190px;overflow:auto}
+.sug button{background:none;border:0;border-bottom:1px solid var(--line);color:var(--cream);font:inherit;text-align:right;padding:7px 4px;cursor:pointer;display:flex;justify-content:space-between}
+.sug button:hover,.sug button:focus-visible{background:rgba(201,150,59,.1)}
+.sug button small{color:var(--gold-hi)}
+.inTray{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bd-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.bd-foot .est{font-size:14px;color:var(--muted)}
+.bd-foot .est b{font-family:var(--display);color:var(--gold-hi);font-size:22px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" dir="rtl">
+  <header class="hero">
+    <svg viewBox="0 0 74 56" aria-hidden="true"><g fill="none" stroke="#C9963B" stroke-width="2.4" stroke-linecap="round"><circle cx="37" cy="9" r="4"/><path d="M37 13v4"/><path d="M8 44c0-17 13-27 29-27s29 10 29 27"/><path d="M3 44h68"/><path d="M10 50h54"/></g></svg>
+    <div class="ar">شاهي</div><div class="en">SHAHI</div>
+    <h1>اختار عزومتك على مزاجك</h1>
+    <p>إحنا بنيجي لحد فيلتك أو مكان عزومتك، نجهّز ونقدّم عندك. اختار الأصناف، أو اعمل صينيتك بنفسك، أو اكتب أي طبق في دماغك ونعملهولك. السعر بيطلعلك على طول.</p>
+  </header>
+
+  <div class="grid">
+    <section class="box" aria-label="تفاصيل العزومة">
+      <h2 class="first">بياناتك</h2>
+      <div class="fields">
+        <label class="f">اسمك<input id="cname" type="text" placeholder="مثلًا: أحمد محمود" autocomplete="name"></label>
+        <label class="f">عدد الأفراد<input id="guests" type="number" min="10" value="15" inputmode="numeric"></label>
+        <label class="f">ميعاد العزومة<input id="date" type="date"></label>
+        <label class="f">المناسبة
+          <select id="occasion"><option>عزومة عيلة</option><option>خطوبة / كتب كتاب</option><option>عيد ميلاد</option><option>عزومة شغل</option><option>مناسبة تانية</option></select>
+        </label>
+        <label class="f">المنطقة
+          <select id="area">
+            <option value="150">الشيخ زايد / 6 أكتوبر</option>
+            <option value="300">الزمالك / المعادي</option>
+            <option value="400">التجمع الخامس / مدينتي / الرحاب</option>
+          </select>
+        </label>
+        <label class="f">فريق تقديم في المكان
+          <select id="waiters"><option value="0">لأ، توصيل بس</option><option value="1">أيوه، عايز فريق يقدّم</option></select>
+        </label>
+      </div>
+
+      <div class="search" role="search">
+        <div class="t">اختار طبقك</div>
+        <div class="row">
+          <button class="iconbtn" id="openTray" type="button" aria-label="افتح لوحة اختار طبقك"><svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="30" rx="21" ry="10" fill="none" stroke="#C9963B" stroke-width="2"/><ellipse cx="24" cy="28" rx="15" ry="6" fill="#C9963B" opacity=".25"/><circle cx="17" cy="26" r="3" fill="#E2B866"/><circle cx="26" cy="25" r="3.4" fill="#E2B866"/><circle cx="31" cy="29" r="2.6" fill="#E2B866"/><circle cx="21" cy="30" r="2.4" fill="#E2B866"/></svg></button>
+          <input id="q" type="search" placeholder="اكتب أي طبق بتحبه.. مثلًا: محشي، سالمون، كبدة إسكندراني" aria-label="ابحث عن طبق أو اكتب طبق جديد">
+          <button class="btn" id="addCustom" type="button">ضيف الطبق</button>
+        </div>
+        <button class="bigtray" id="openTray2" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="30" rx="21" ry="10" fill="none" stroke="#C9963B" stroke-width="2"/><ellipse cx="24" cy="28" rx="15" ry="6" fill="#C9963B" opacity=".25"/><circle cx="17" cy="26" r="3" fill="#E2B866"/><circle cx="26" cy="25" r="3.4" fill="#E2B866"/><circle cx="31" cy="29" r="2.6" fill="#E2B866"/><circle cx="21" cy="30" r="2.4" fill="#E2B866"/></svg><div><b>اعمل صينيتك بنفسك</b><span>اختار شكل الصينية ومقاسها، وحط فيها اللي نفسك فيه: سمبوسك، كفتة مشوية، فراخ مشوية..</span></div></button>
+        <div class="trays" id="trays"></div>
+        <div class="hint">لو الطبق مش موجود تحت، دوس "ضيف الطبق" وإحنا نعملهولك ونسعرهولك.</div>
+        <div class="chips" id="customs"></div>
+      </div>
+
+      <div id="menu"></div>
+      <label class="f" style="margin-top:18px">ملاحظات (حساسية من أكل، طريقة تقديم..)<textarea id="notes" rows="2" placeholder="اختياري"></textarea></label>
+    </section>
+
+    <aside class="box ticket" aria-label="عرض السعر">
+      <h3>عرض السعر المبدئي</h3>
+      <div style="color:var(--muted);font-size:14px">سعر الفرد</div>
+      <div class="pp" id="pp">—</div>
+      <div class="line" style="margin-top:8px"><span>الأكل × <span id="g2">—</span></span><span id="food">—</span></div>
+      <div class="line"><span>التوصيل</span><span id="del">—</span></div>
+      <div class="line"><span>فريق التقديم</span><span id="srv">—</span></div>
+      <div class="line"><span>الصواني</span><span id="trp">—</span></div>
+      <div class="total"><span>الإجمالي</span><b id="tot">—</b></div>
+      <div class="line"><span>الأصناف المختارة</span><span id="cnt">0</span></div>
+      <p class="fine">العزومة بتبدأ من 450 ج للفرد، وأقل عدد 10 أفراد. الأطباق اللي بتضيفها بنفسك بتتسعّر مع فريق شاهي، والسعر النهائي بيتأكد على الواتساب. الحجز قبلها بـ 48 ساعة بعربون 30%.</p>
+      <a class="send" id="send" href="#" target="_blank" rel="noopener">ابعت طلبي على واتساب</a>
+      <div class="err" id="err" aria-live="polite"></div>
+      <div class="phone">أو كلمنا على <b dir="ltr">0115 191 4912</b></div>
+    </aside>
+  </div>
+</div>
+
+
+<dialog class="board" id="board" dir="rtl" aria-labelledby="bdT">
+ <div class="bd">
+  <div class="bd-head"><h3 id="bdT">اختار طبقك</h3><button class="x" type="button" id="bdClose" aria-label="اقفل">×</button></div>
+  <div class="opt-t">شكل الصينية</div>
+  <div class="opts" id="shapes"></div>
+  <div class="opt-t">المقاس</div>
+  <div class="opts" id="sizes"></div>
+  <div class="bd-main">
+   <div class="stage"><svg id="traySvg" viewBox="0 0 320 320" role="img" aria-label="شكل الصينية باللي اخترته"></svg></div>
+   <div>
+    <div class="opt-t" style="margin-top:0">حط في الصينية (لحد 8 أصناف)</div>
+    <div class="row" style="display:flex;gap:8px"><input id="tq" type="search" placeholder="دوّر: سمبوسك، كفتة، فراخ مشوية.." aria-label="دوّر على صنف للصينية"><button class="btn" id="tAdd" type="button">ضيف</button></div>
+    <div class="sug" id="sug"></div>
+    <div class="inTray" id="inTray"></div>
+   </div>
+  </div>
+  <div class="bd-foot"><div class="est">سعر الصينية المبدئي<br><b id="tEst">—</b></div><button class="btn" id="tSave" type="button" style="padding:11px 18px">ضيف الصينية للطلب</button></div>
+ </div>
+</dialog>
+<script>
+const WA="201151914912", BASE=120, FLOOR=450, WAITER=500, MIN=10;
+const MENU=[
+ ["شرقي بيتي",[["محشي مشكل",55],["ورق عنب",55],["رقاق باللحمة",50],["مكرونة بشاميل",45],["ممبار",65],["فتة باللحمة",55]]],
+ ["الرئيسي",[["ربع فرخة محمرة",110],["فراخ بانيه",100],["ربع بطة محمرة",230],["ديك رومي محشي",200],["موزة ضاني",300],["نص حمامة محشية",150],["كفتة وريش مشوية",220]]],
+ ["فينجر فود",[["ميني روست بيف",55],["رول سالمون مدخن",85],["كروكيت فراخ",40],["ميني بيتزا",35],["سمبوسك وجلاش",40],["بلاتر أجبان وفاكهة",90]]],
+ ["الحلو",[["أم علي",45],["رز بلبن بالمكسرات",40],["تيراميسو",65],["ماجنوليا",65],["حلو تركي بالعين جمل",60]]]
+];
+const PRE=new Set(["محشي مشكل","ورق عنب","ربع بطة محمرة","أم علي"]);
+const customs=[];
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString("en-US")+" ج";
+const norm=s=>s.replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").trim();
+
+const menu=$("menu");let k=0;
+MENU.forEach(([sec,items])=>{
+  const h=document.createElement("h2");h.textContent=sec;h.dataset.sec=sec;menu.appendChild(h);
+  const g=document.createElement("div");g.className="items";g.dataset.sec=sec;
+  items.forEach(([n,p])=>{
+    const id="d"+(k++);
+    const l=document.createElement("label");l.className="item";l.dataset.n=n;
+    l.innerHTML=`<input type="checkbox" id="${id}" data-n="${n}" data-p="${p}"><span class="n">${n}</span><span class="p">+${p} ج للفرد</span>`;
+    l.querySelector("input").checked=PRE.has(n);
+    g.appendChild(l);
+  });
+  const e=document.createElement("div");e.className="empty";e.hidden=true;e.textContent="مفيش أصناف بالاسم ده هنا";
+  g.appendChild(e);menu.appendChild(g);
+});
+
+function filter(){
+  const q=norm($("q").value);
+  document.querySelectorAll(".items").forEach(g=>{
+    let shown=0;
+    g.querySelectorAll(".item").forEach(it=>{const ok=!q||norm(it.dataset.n).includes(q);it.hidden=!ok;if(ok)shown++});
+    g.querySelector(".empty").hidden=shown>0||!q;
+  });
+}
+function renderCustoms(){
+  const box=$("customs");box.innerHTML="";
+  customs.forEach((c,i)=>{
+    const s=document.createElement("span");s.className="chip";
+    s.innerHTML=`<span></span><button type="button" aria-label="شيل ${c}">×</button>`;
+    s.firstChild.textContent=c+" (يتسعّر مع الفريق)";
+    s.querySelector("button").onclick=()=>{customs.splice(i,1);renderCustoms();calc()};
+    box.appendChild(s);
+  });
+}
+function addCustom(){
+  const v=$("q").value.trim();if(!v)return;
+  const match=[...document.querySelectorAll('#menu input[type=checkbox]')].find(c=>norm(c.dataset.n)===norm(v));
+  if(match){match.checked=true}else if(!customs.includes(v)){customs.push(v)}
+  $("q").value="";filter();renderCustoms();calc();
+}
+$("addCustom").onclick=addCustom;
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addCustom()}});
+$("q").addEventListener("input",filter);
+
+
+// ===== صواني: اختار طبقك =====
+const SHAPES=[["مدور",'<circle cx="17" cy="17" r="14" fill="none" stroke="#C9963B" stroke-width="2.4"/>'],["مربع",'<rect x="4" y="4" width="26" height="26" rx="3" fill="none" stroke="#C9963B" stroke-width="2.4"/>'],["مستطيل",'<rect x="2" y="9" width="30" height="16" rx="3" fill="none" stroke="#C9963B" stroke-width="2.4"/>']];
+const SIZES=[["صغيرة","40 سم · 8-10 أفراد",10,22],["وسط","55 سم · 15 فرد",15,30],["كبيرة","70 سم · 25 فرد",25,40]];
+const TITEMS=[["سمبوسك لحمة",9],["سمبوسك جبنة",8],["كفتة مشوية",22],["فراخ مشوية",20],["شيش طاووق",20],["ريش ضاني",45],["كبيبة",12],["ورق عنب",8],["محشي كرنب",8],["ممبار",12],["سجق إسكندراني",14],["كبدة إسكندراني",14],["ميني برجر",18],["ميني بيتزا",10],["ميني حواوشي",12],["كروكيت فراخ",9],["جلاش باللحمة",10],["رقاق باللحمة",10],["فراخ بانيه",15],["رول سالمون",22],["روست بيف",18],["جبن مشكل",12],["فاكهة موسم",10],["حمص وبابا غنوج",8],["مخللات وزيتون",5],["سلطة خضرا",6]];
+const T={shape:0,size:1,items:[]};const trays=[];
+const COLORS=["#C9963B","#8E5B33","#D9B26A","#6E4A2E","#E8CF97","#A8743F","#5C3D27","#C5A26B"];
+function opt(container,list,key,render){const box=$(container);box.innerHTML="";list.forEach((o,i)=>{const b=document.createElement("button");b.type="button";b.className="opt";b.setAttribute("aria-pressed",T[key]===i);b.innerHTML=render(o);b.onclick=()=>{T[key]=i;drawBoard()};box.appendChild(b)})}
+function esc(t){return t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function traySvg(){
+  const n=T.items.length, sh=T.shape, svg=[];
+  const rim='stroke="#C9963B" stroke-width="5" fill="#2b1d15"';
+  if(sh===0) svg.push(`<circle cx="160" cy="160" r="150" ${rim}/><circle cx="160" cy="160" r="134" fill="none" stroke="#C9963B" stroke-opacity=".35"/>`);
+  else if(sh===1) svg.push(`<rect x="10" y="10" width="300" height="300" rx="14" ${rim}/><rect x="24" y="24" width="272" height="272" rx="8" fill="none" stroke="#C9963B" stroke-opacity=".35"/>`);
+  else svg.push(`<rect x="6" y="70" width="308" height="180" rx="14" ${rim}/><rect x="20" y="84" width="280" height="152" rx="8" fill="none" stroke="#C9963B" stroke-opacity=".35"/>`);
+  if(!n){svg.push(`<text x="160" y="165" text-anchor="middle" fill="#B7A68B" font-size="15" font-family="Readex Pro">صينيتك فاضية.. ضيف أصناف</text>`);return svg.join("")}
+  const label=(x,y,t,w)=>{const fs=(n>5||(T.shape!==0&&n>2))?12:14;return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="#1E1410" font-size="${fs}" font-weight="600" font-family="Readex Pro">${esc(t.length>14?t.slice(0,13)+"…":t)}</text>`};
+  if(sh===0){
+    if(n===1){svg.push(`<circle cx="160" cy="160" r="128" fill="${COLORS[0]}"/>`+label(160,160,T.items[0][0]))}
+    else{const r=128;T.items.forEach((it,i)=>{const a0=-Math.PI/2+i*2*Math.PI/n,a1=a0+2*Math.PI/n;const x0=160+r*Math.cos(a0),y0=160+r*Math.sin(a0),x1=160+r*Math.cos(a1),y1=160+r*Math.sin(a1);svg.push(`<path d="M160 160 L${x0} ${y0} A${r} ${r} 0 ${n<=1?1:0} 1 ${x1} ${y1} Z" fill="${COLORS[i%8]}" stroke="#2b1d15" stroke-width="3"/>`);const am=(a0+a1)/2;svg.push(label(160+r*.62*Math.cos(am),160+r*.62*Math.sin(am),it[0]))})}
+  }else{
+    const box=sh===1?[26,26,268,268]:[22,86,276,148];const cols=sh===1?Math.ceil(Math.sqrt(n)):Math.min(n,4),rows=Math.ceil(n/cols);
+    const cw=box[2]/cols,ch=box[3]/rows;
+    T.items.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols);const inRow=(r===rows-1)?n-cols*(rows-1):cols;const w=box[2]/inRow;const x=box[0]+(r===rows-1?c*w:c*cw),y=box[1]+r*ch;const ww=r===rows-1?w:cw;svg.push(`<rect x="${x+3}" y="${y+3}" width="${ww-6}" height="${ch-6}" rx="6" fill="${COLORS[i%8]}"/>`);svg.push(label(x+ww/2,y+ch/2,it[0]))});
+  }
+  return svg.join("");
+}
+function trayPrice(){const sz=SIZES[T.size];if(!T.items.length)return 0;const sum=T.items.reduce((a,it)=>a+(it[1]||15),0);return Math.round((sz[3]*10+sum*sz[2]*0.6)/10)*10}
+function drawBoard(){
+  opt("shapes",SHAPES,"shape",o=>`<svg viewBox="0 0 34 34">${o[1]}</svg>${o[0]}`);
+  opt("sizes",SIZES,"size",o=>`<b>${o[0]}</b><small>${o[1]}</small>`);
+  $("traySvg").innerHTML=traySvg();
+  const box=$("inTray");box.innerHTML="";
+  T.items.forEach((it,i)=>{const s=document.createElement("span");s.className="chip";s.innerHTML=`<span></span><button type="button" aria-label="شيل">×</button>`;s.firstChild.textContent=it[0]+(it[1]?"":" (يتسعّر)");s.querySelector("button").onclick=()=>{T.items.splice(i,1);drawBoard()};box.appendChild(s)});
+  const p=trayPrice();$("tEst").textContent=p?fmt(p)+(T.items.some(it=>!it[1])?" +":""):"—";
+  sug();
+}
+function sug(){
+  const q=norm($("tq").value),box=$("sug");box.innerHTML="";
+  const list=TITEMS.filter(([n])=>!q||norm(n).includes(q)).filter(([n])=>!T.items.some(it=>it[0]===n)).slice(0,q?8:6);
+  list.forEach(([n])=>{const b=document.createElement("button");b.type="button";b.innerHTML=`<span></span><small>+ ضيف</small>`;b.firstChild.textContent=n;b.onclick=()=>addT(n);box.appendChild(b)});
+  if(q&&!TITEMS.some(([n])=>norm(n)===q)){const b=document.createElement("button");b.type="button";b.innerHTML=`<span></span><small>صنف خاص</small>`;b.firstChild.textContent="ضيف «"+$("tq").value.trim()+"»";b.onclick=()=>addT($("tq").value.trim());box.appendChild(b)}
+}
+function addT(name){if(!name||T.items.length>=8)return;const f=TITEMS.find(([n])=>norm(n)===norm(name));if(T.items.some(it=>norm(it[0])===norm(name)))return;T.items.push(f?[f[0],f[1]]:[name,0]);$("tq").value="";drawBoard();$("tq").focus()}
+$("tq").addEventListener("input",sug);
+$("tq").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const first=$("sug").querySelector("button");if(first)first.click()}});
+$("tAdd").onclick=()=>{const v=$("tq").value.trim();if(v)addT(v)};
+function openBoard(){const v=$("q").value.trim();T.items=[];T.shape=0;T.size=1;$("tq").value=v;$("board").showModal();drawBoard();$("tq").focus()}
+$("openTray").onclick=openBoard;$("openTray2").onclick=openBoard;
+$("bdClose").onclick=()=>$("board").close();
+$("board").addEventListener("click",e=>{if(e.target===$("board"))$("board").close()});
+$("tSave").onclick=()=>{if(!T.items.length){$("tq").focus();return}trays.push({shape:SHAPES[T.shape][0],size:SIZES[T.size][0]+" ("+SIZES[T.size][1]+")",items:T.items.map(it=>it[0]),price:trayPrice(),custom:T.items.some(it=>!it[1])});$("board").close();renderTrays();calc()};
+function renderTrays(){const box=$("trays");box.innerHTML="";trays.forEach((t,i)=>{const d=document.createElement("div");d.className="trayrow";d.innerHTML=`<div><div class="tt"></div><div class="ti"></div></div><button type="button" aria-label="شيل الصينية">×</button>`;d.querySelector(".tt").textContent=`صينية ${t.shape} ${t.size.split(" (")[0]} · ${fmt(t.price)}${t.custom?" +":""}`;d.querySelector(".ti").textContent=t.items.join("، ");d.querySelector("button").onclick=()=>{trays.splice(i,1);renderTrays();calc()};box.appendChild(d)})}
+
+function state(){
+  const guests=Math.max(MIN,parseInt($("guests").value)||MIN);
+  let raw=BASE;const chosen=[];
+  document.querySelectorAll('#menu input[type=checkbox]:checked').forEach(c=>{raw+=+c.dataset.p;chosen.push(c.dataset.n)});
+  const pp=Math.max(raw,FLOOR), food=pp*guests, del=+$("area").value;
+  const nW=$("waiters").value==="1"?Math.ceil(guests/15):0, srv=nW*WAITER;
+  const tr=trays.reduce((a,t)=>a+t.price,0);
+  return {guests,pp,food,del,nW,srv,tr,tot:food+del+srv+tr,chosen};
+}
+function calc(){
+  const s=state();
+  $("pp").textContent=fmt(s.pp);$("g2").textContent=s.guests;
+  $("food").textContent=fmt(s.food);$("del").textContent=fmt(s.del);
+  $("trp").textContent=trays.length?`${trays.length} صينية · ${fmt(s.tr)}`:"—";
+  $("srv").textContent=s.nW?`${s.nW} × 500 = ${fmt(s.srv)}`:"—";
+  $("tot").textContent=fmt(s.tot)+(customs.length||trays.some(t=>t.custom)?" +":"");
+  $("cnt").textContent=s.chosen.length+customs.length+trays.length;
+  const name=$("cname").value.trim(), date=$("date").value;
+  const area=$("area").selectedOptions[0].text;
+  const msg=
+`أهلاً شاهي 🤍 عايز أحجز عزومة
+الاسم: ${name||"—"}
+المناسبة: ${$("occasion").value}
+العدد: ${s.guests} فرد
+الميعاد: ${date||"لسه هحدده"}
+المنطقة: ${area}
+فريق تقديم: ${s.nW?"أيوه":"لأ"}
+
+الأصناف:
+${s.chosen.map(x=>"• "+x).join("\n")||"—"}${customs.length?"\n\nأطباق عايزها زيادة:\n"+customs.map(x=>"• "+x).join("\n"):""}${trays.length?"\n\nالصواني:\n"+trays.map(t=>"• صينية "+t.shape+" "+t.size+": "+t.items.join("، ")+" ("+fmt(t.price)+(t.custom?" + الصنف الخاص":"")+")").join("\n"):""}${$("notes").value.trim()?"\n\nملاحظات: "+$("notes").value.trim():""}
+
+السعر المبدئي: ${fmt(s.pp)} للفرد، والإجمالي ${fmt(s.tot)}${customs.length?" + الأطباق الزيادة":""}`;
+  $("send").href="https://wa.me/"+WA+"?text="+encodeURIComponent(msg);
+}
+$("send").addEventListener("click",e=>{
+  const s=state();
+  if(!$("cname").value.trim()){e.preventDefault();$("err").textContent="اكتب اسمك الأول علشان نعرف نرد عليك.";$("cname").focus();return}
+  if(!s.chosen.length&&!customs.length&&!trays.length){e.preventDefault();$("err").textContent="اختار صنف واحد على الأقل، أو اكتب الطبق اللي بتحبه.";return}
+  $("err").textContent="";
+});
+document.addEventListener("input",calc);document.addEventListener("change",calc);
+calc();
+</script>
+</body>
+</html>
