@@ -28,7 +28,7 @@ button,input,textarea{font-family:var(--body);font-size:16px}
 .btn.ghost:hover{background:var(--gold-dim)}
 .btn.go{background:var(--ok);color:#06301a}
 .btn:focus-visible,input:focus-visible,textarea:focus-visible,.conv:focus-visible,.tab:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
-input,textarea{width:100%;background:var(--night);border:1px solid var(--line);color:var(--cream);padding:11px 13px;border-radius:2px}
+input,textarea,select{width:100%;background:var(--night);border:1px solid var(--line);color:var(--cream);padding:11px 13px;border-radius:2px}
 label{display:block;font-size:14px;color:var(--mist);margin-bottom:4px}
 [hidden]{display:none!important}
 .logo{font-family:var(--display);font-size:24px;letter-spacing:.2em;direction:ltr}
@@ -82,9 +82,15 @@ table{width:100%;border-collapse:collapse;font-size:15px}
 th{font-size:13px;color:var(--mist);text-align:start;font-weight:600}
 th,td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 td .ph{direction:ltr;display:inline-block;font-family:var(--latin);font-size:13px}
+.add{display:grid;grid-template-columns:1fr 1.3fr 140px auto;gap:10px;align-items:end;margin-bottom:8px}
+.code{border:1px solid var(--gold);background:var(--gold-dim);padding:12px 14px;margin-bottom:12px}
+.code b{direction:ltr;display:inline-block;font-family:var(--latin);font-size:18px;letter-spacing:.08em;user-select:all}
+.rowacts{display:flex;gap:6px;flex-wrap:wrap}
+.rowacts .btn{padding:4px 10px;font-size:14px}
 .back{display:none}
 @media (max-width:760px){
   .stats{grid-template-columns:repeat(3,1fr)}
+  .add{grid-template-columns:1fr}
   .list{width:100%;border:0}
   .body.open .list{display:none}
   .body:not(.open) .thread{display:none}
@@ -120,12 +126,24 @@ td .ph{direction:ltr;display:inline-block;font-family:var(--latin);font-size:13p
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-v="chats">المحادثات</button>
     <button class="tab" role="tab" aria-selected="false" data-v="sales">المبيعات</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="team" id="teamTab" hidden>الفريق</button>
   </div>
   <main class="body" id="chats">
     <nav class="list" id="list" aria-label="المحادثات"></nav>
     <section class="thread" id="thread"><p class="empty">اختار محادثة من القايمة</p></section>
   </main>
   <main class="sales" id="sales" hidden></main>
+  <main class="sales" id="team" hidden>
+    <form class="add" id="addMember" novalidate>
+      <div><label for="mName">الاسم</label><input id="mName" autocomplete="off"></div>
+      <div><label for="mEmail">الإيميل</label><input id="mEmail" type="email" dir="ltr" autocomplete="off"></div>
+      <div><label for="mRole">الصلاحية</label><select id="mRole"><option value="member">موظف</option><option value="admin">مدير</option></select></div>
+      <button class="btn" type="submit" id="mSend">ضيف</button>
+    </form>
+    <p class="err" id="teamErr" aria-live="polite"></p>
+    <div class="code" id="teamCode" hidden aria-live="polite"></div>
+    <div id="members"></div>
+  </main>
 </div>
 
 <script>
@@ -182,20 +200,74 @@ td .ph{direction:ltr;display:inline-block;font-family:var(--latin);font-size:13p
   function enter(s){
     token=s.token;$('who').textContent=s.name;
     $('gate').hidden=true;$('app').hidden=false;
-    refresh();clearInterval(timer);
+    refresh();loadTeam();clearInterval(timer);
     timer=setInterval(function(){if(!document.hidden)refresh()},20000);
   }
   function signOut(){
     token='';current=null;save(null);clearInterval(timer);
+    showTab('chats');$('teamTab').hidden=true;$('teamCode').hidden=true;
     $('app').hidden=true;$('gate').hidden=false;setMode(false);
   }
   $('logout').onclick=signOut;
 
   /* tabs */
-  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){
-    document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',x===t?'true':'false')});
-    $('chats').hidden=t.dataset.v!=='chats';$('sales').hidden=t.dataset.v!=='sales';
-  }});
+  function showTab(v){
+    document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',x.dataset.v===v?'true':'false')});
+    ['chats','sales','team'].forEach(function(id){$(id).hidden=id!==v});
+  }
+  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){showTab(t.dataset.v)}});
+
+  /* team, admins only: the server decides, a 403 keeps the tab hidden */
+  function showCode(name,code){
+    var box=$('teamCode');box.textContent='';
+    box.appendChild(document.createTextNode('كود التفعيل لـ'+name+': '));
+    box.appendChild(el('b',null,code));
+    box.appendChild(el('p','hint','ابعته له، وهو يفعّل حسابه ويختار كلمة السر بنفسه. الكود مش هيظهر هنا تاني.'));
+    box.hidden=false;
+  }
+  function loadTeam(){
+    return api('team_list').then(function(d){$('teamTab').hidden=false;renderMembers(d.members,d.me)}).catch(function(){$('teamTab').hidden=true});
+  }
+  function teamUpdate(m,extra){
+    var b={id:m.id};for(var k in extra)b[k]=extra[k];
+    $('teamErr').textContent='';
+    api('team_update',b).then(function(r){if(r.code)showCode(m.name||m.email,r.code);return loadTeam()}).catch(function(x){$('teamErr').textContent=x.message});
+  }
+  function renderMembers(items,me){
+    var box=$('members');box.textContent='';
+    var t=el('table'),head=el('thead'),hr=el('tr');
+    ['الاسم','الإيميل','الصلاحية','الحالة','إجراءات'].forEach(function(x){hr.appendChild(el('th',null,x))});
+    head.appendChild(hr);t.appendChild(head);
+    var bd=el('tbody');
+    items.forEach(function(m){
+      var r=el('tr');
+      r.appendChild(el('td',null,m.name||'—'));
+      var e=el('td');e.appendChild(el('span','ph',m.email));r.appendChild(e);
+      r.appendChild(el('td',null,m.role==='admin'?'مدير':'موظف'));
+      var s=el('td');s.appendChild(!m.active?el('span','pill off','موقوف'):m.activated?el('span','pill on','مفعّل'):el('span','pill','مستني التفعيل'));r.appendChild(s);
+      var a=el('td'),w=el('div','rowacts');
+      if(m.email.toLowerCase()!==me){
+        var role=el('button','btn ghost',m.role==='admin'?'خلّيه موظف':'خلّيه مدير');role.type='button';
+        role.onclick=function(){teamUpdate(m,{op:'role',role:m.role==='admin'?'member':'admin'})};
+        var act=el('button','btn ghost',m.active?'وقّف الحساب':'شغّل الحساب');act.type='button';
+        act.onclick=function(){if(!m.active||confirm('توقف حساب '+(m.name||m.email)+'؟'))teamUpdate(m,{op:'active',active:!m.active})};
+        w.appendChild(role);w.appendChild(act);
+      }
+      var reset=el('button','btn ghost','كود جديد');reset.type='button';
+      reset.onclick=function(){if(confirm('كلمة السر الحالية هتتلغي ولازم يتفعّل الحساب تاني. نكمل؟'))teamUpdate(m,{op:'reset'})};
+      w.appendChild(reset);a.appendChild(w);r.appendChild(a);
+      bd.appendChild(r);
+    });
+    t.appendChild(bd);box.appendChild(t);
+  }
+  $('addMember').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('mName').value.trim(),btn=$('mSend'),err=$('teamErr');
+    err.textContent='';btn.disabled=true;
+    api('team_add',{name:name,email:$('mEmail').value.trim(),role:$('mRole').value}).then(function(r){
+      showCode(name,r.code);$('mName').value='';$('mEmail').value='';$('mRole').value='member';return loadTeam();
+    }).catch(function(x){err.textContent=x.message}).then(function(){btn.disabled=false});
+  });
 
   /* data */
   function refresh(){
