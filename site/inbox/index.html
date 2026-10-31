@@ -134,6 +134,40 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .flow h3{margin:0}
 .flow p{margin:0;color:var(--muted);font-size:14px}
 .flow small{display:block;margin-top:8px;color:var(--faint);font-size:12px}
+.page .mt{margin-top:26px}
+.summary{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
+.summary .stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:8px}
+.chart h3{margin-bottom:12px}
+.plot{display:flex;gap:6px;align-items:stretch;height:140px}
+.col{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;outline-offset:2px;border-radius:6px}
+.col:hover{background:var(--hover)}
+.val{font-size:12px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:block;width:min(70%,22px);background:var(--accent);border-radius:4px 4px 0 0;flex:0 1 auto}
+.bar.zero{background:var(--line)}
+.lbl{font-size:11px;color:var(--faint);white-space:nowrap}
+.tip{display:none;position:absolute;bottom:100%;inset-inline-start:50%;transform:translateX(50%);background:var(--ink);color:#fff;font-size:12px;border-radius:8px;padding:4px 8px;white-space:nowrap;z-index:2}
+.col:hover .tip,.col:focus .tip{display:block}
+.imp{margin-bottom:6px}
+.item{display:flex;align-items:center;gap:10px;width:100%;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-top:6px;cursor:pointer;text-align:start;font-weight:700}
+.item:hover{border-color:var(--accent)}
+.item.high{background:var(--bad-soft);border-color:#fdba74}
+.item .grow{flex:1;min-width:0}
+.sides{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+.side-card{display:grid;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px;cursor:pointer;text-align:start;min-width:0}
+.side-card:hover{border-color:var(--accent)}
+.side-card[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#f3fbf9}
+.sc-top{display:flex;align-items:center;gap:8px;min-width:0}
+.sc-top i{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c)}
+.sc-top b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-sub{color:var(--muted);font-size:13px}
+.sc-need{color:var(--bad);font-size:13px;font-weight:700}
+#detail{scroll-margin-top:14px}
+.row-conv{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:9px 2px;cursor:pointer;text-align:start;min-width:0}
+.row-conv:hover{background:var(--hover)}
+.row-conv .tx{flex:1;min-width:0;display:grid}
+.row-conv .tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-conv .pv{color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-conv time{font-size:12px;color:var(--faint);white-space:nowrap;flex:none}
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 14px;cursor:pointer;font-weight:700;color:var(--muted)}
 .tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -143,7 +177,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .app.pageview{display:flex}
   .views{display:flex;gap:4px;margin:0;flex:none}
   .view{width:auto;flex:none;padding:6px 10px}
-  .cols{grid-template-columns:minmax(0,1fr)}
+  .cols,.summary{grid-template-columns:minmax(0,1fr)}
+  .tip{inset-inline-start:auto;inset-inline-end:0;transform:none;white-space:normal;width:160px}
   .page{flex:1;padding:16px}
   .nav{flex-direction:row;align-items:center;gap:6px;padding:8px 12px;overflow-x:auto;overflow-y:hidden;flex:none;scrollbar-width:none}
   .nav::-webkit-scrollbar{display:none}
@@ -208,7 +243,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   var VIEWS=[['home','الرئيسية'],['messages','الرسايل'],['notes','التنبيهات'],['flows','الأتمتة']];
   var STATE={ok:'شغال',late:'متأخر',none:'لسه ما اشتغلش'};
   var rows=[],total=0,filter='all',current=null,timer=null,seq=0;
-  var view='home',notes=[],flows=[],noteTab='all',overviewFailed=false;
+  var view='home',notes=[],flows=[],stats=null,homeBrand=null,noteTab='all',overviewFailed=false;
 
   function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
   function media(type){for(var i=0;i<MEDIA.length;i++)if(MEDIA[i][0].test(type||''))return MEDIA[i][1]}
@@ -297,27 +332,83 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     tx.appendChild(el('p',null,[n.who,n.text].filter(Boolean).join(' — ')));
     r.appendChild(tx);r.appendChild(el('time',null,when(n.at)));box.appendChild(r);
   }
-  function renderHome(box){
-    box.appendChild(el('h2',null,'الرئيسية'));box.appendChild(el('p','sub',dayName(new Date())+'، ودي أهم حاجة عندك دلوقتي.'));
-    var s=el('div','stats');
-    stat(s,countOf('need'),'محتاج رد',function(){go('messages','need')},true);
-    stat(s,todayNotes().length,'تنبيهات النهارده',function(){go('notes')});
-    stat(s,total,'كل المحادثات',function(){go('messages','all')});
-    stat(s,badFlows().length,'أتمتة متأخرة',function(){go('flows')},true);
-    box.appendChild(s);
-    var c=el('div','cols');
-    var a=el('section','card'),h=el('h3',null,'محتاج رد');var more=el('button','link','عرض الكل');more.type='button';more.onclick=function(){go('messages','need')};h.appendChild(more);a.appendChild(h);
-    var need=rows.filter(needsReply).slice(0,5);
-    if(!need.length)a.appendChild(el('p','hint','مفيش حد مستني رد 🎉'));
-    need.forEach(function(x){
-      var r=el('div','line');r.appendChild(avatar(x,true));
-      var tx=el('div','tx');tx.appendChild(el('div','tt',x.name||x.phone));tx.appendChild(el('p',null,clean(x.last)));r.appendChild(tx);r.appendChild(el('time',null,when(x.lastAt)));
-      r.style.cursor='pointer';r.onclick=function(){go('messages','need');open(x.id,false)};a.appendChild(r);
+  /* home reads top to bottom: summary, what matters, pick a side, then its conversations */
+  function brandStats(key){return (stats&&stats.brands&&stats.brands[key])||{convs:0,todayIn:0,todayOut:0,week:0,waiting:0,paused:0,lastAt:''}}
+  function renderChart(box){
+    var card=el('section','card chart');card.appendChild(el('h3',null,'الرسايل في آخر 7 أيام'));
+    var days=stats?stats.days:[],max=1;days.forEach(function(d){max=Math.max(max,d.in+d.out)});
+    var plot=el('div','plot');plot.setAttribute('role','img');plot.setAttribute('aria-label','عدد الرسايل في كل يوم من آخر 7 أيام');
+    days.forEach(function(d){
+      var n=d.in+d.out,col=el('div','col');col.tabIndex=0;
+      var date=new Date(d.d+'T12:00:00');
+      var tip=el('div','tip',date.toLocaleDateString('ar-EG',{weekday:'long'})+': '+n+' رسالة، '+d.in+' جت و'+d.out+' اتبعتت');
+      col.appendChild(tip);
+      var val=el('span','val',n?n:'');col.appendChild(val);
+      var bar=el('span','bar');bar.style.height=Math.max(n?4:2,n/max*100)+'%';if(!n)bar.classList.add('zero');col.appendChild(bar);
+      col.appendChild(el('span','lbl',date.toLocaleDateString('ar-EG',{weekday:'short'})));
+      plot.appendChild(col);
     });
-    var b=el('section','card'),h2=el('h3',null,'آخر التنبيهات');var more2=el('button','link','عرض الكل');more2.type='button';more2.onclick=function(){go('notes')};h2.appendChild(more2);b.appendChild(h2);
-    if(!notes.length)b.appendChild(el('p','hint','مفيش تنبيهات'));
-    notes.slice(0,5).forEach(function(n){noteLine(b,n)});
-    c.appendChild(a);c.appendChild(b);box.appendChild(c);
+    card.appendChild(plot);box.appendChild(card);
+  }
+  function importantItems(){
+    var items=[];
+    GROUPS[1].forEach(function(b){var s=brandStats(b[0]);if(s.waiting)items.push(['high','💬',s.waiting+' في '+b[1]+' مستنيين رد',function(){pick(b[0])}])});
+    GROUPS[1].forEach(function(b){var s=brandStats(b[0]);if(s.paused)items.push(['mid','⏸️','البوت موقوف عند '+s.paused+' في '+b[1],function(){pick(b[0])}])});
+    badFlows().forEach(function(f){items.push(['mid','⚙️',f.name+' متأخر',function(){go('flows')}])});
+    if(todayNotes().length)items.push(['low','🔔',todayNotes().length+' تنبيه النهارده',function(){go('notes')}]);
+    return items;
+  }
+  function pick(key){homeBrand=key;renderPage();var d=$('detail');if(d)d.scrollIntoView({behavior:'smooth',block:'start'})}
+  function renderHome(box){
+    var t=stats?stats.today:{in:0,out:0},w=stats?stats.week:{in:0,out:0};
+    box.appendChild(el('h2',null,'ملخص النهارده'));
+    box.appendChild(el('p','sub',t.in+t.out?'النهارده جت '+t.in+' رسالة واتبعتت '+t.out+'، و'+(stats.activeToday||0)+' محادثة كان فيها نشاط.':'لسه مفيش رسايل النهارده.'));
+    var top=el('div','summary'),left=el('div'),s=el('div','stats');
+    stat(s,t.in,'رسايل جت النهارده',function(){go('messages','all')});
+    stat(s,t.out,'رسايل اتبعتت النهارده',function(){go('messages','all')});
+    stat(s,stats?stats.newToday:0,'محادثات جديدة النهارده',function(){go('messages','all')});
+    stat(s,countOf('need'),'محتاج رد',function(){go('messages','need')},true);
+    left.appendChild(s);
+    left.appendChild(el('p','hint','آخر 7 أيام: '+w.in+' رسالة جت و'+w.out+' اتبعتت. الرسايل القديمة اللي اتنقلت مش محسوبة، لأنها أخدت تاريخ يوم النقل.'));
+    top.appendChild(left);renderChart(top);box.appendChild(top);
+
+    var imp=el('section','card imp');imp.appendChild(el('h3',null,'أهم حاجة دلوقتي'));
+    var items=importantItems();
+    if(!items.length)imp.appendChild(el('p','hint','مفيش حاجة عاجلة دلوقتي 🎉'));
+    items.slice(0,6).forEach(function(x){
+      var b=el('button','item '+x[0]);b.type='button';b.appendChild(el('span',null,x[1]));b.appendChild(el('span','grow',x[2]));b.onclick=x[3];imp.appendChild(b);
+    });
+    box.appendChild(imp);
+
+    box.appendChild(el('h2','mt','اختار الجهة'));box.appendChild(el('p','sub','مرتبة حسب الأهم، اللي عنده حد مستني رد الأول.'));
+    var keys=[];GROUPS.slice(1).forEach(function(g){g.forEach(function(b){keys.push(b[0])})});
+    keys.sort(function(a,b){var x=brandStats(a),y=brandStats(b);return (y.waiting-x.waiting)||((y.todayIn+y.todayOut)-(x.todayIn+x.todayOut))||(y.convs-x.convs)});
+    if(!homeBrand||!brandStats(homeBrand).convs){homeBrand=keys[0]}
+    var g=el('div','sides');
+    keys.forEach(function(k){
+      var st=brandStats(k),c=el('button','side-card');c.type='button';c.setAttribute('aria-pressed',homeBrand===k?'true':'false');
+      var h=el('div','sc-top'),dot=el('i');dot.style.setProperty('--c',BRAND[k].color);h.appendChild(dot);h.appendChild(el('b',null,BRAND[k].label));
+      if(st.waiting)h.appendChild(el('span','state late','مهم'));
+      c.appendChild(h);
+      c.appendChild(el('span','sc-sub',st.convs?st.convs+' محادثة · '+(st.todayIn+st.todayOut)+' رسالة النهارده':'لسه مفيش رسايل'));
+      if(st.waiting)c.appendChild(el('span','sc-need',st.waiting+' مستني رد'));
+      c.onclick=function(){pick(k)};g.appendChild(c);
+    });
+    box.appendChild(g);
+
+    var d=el('section','card');d.id='detail';
+    d.appendChild(el('h3',null,BRAND[homeBrand].label));
+    var list=rows.filter(function(c){return c.brand===homeBrand}).sort(function(a,b){return (needsReply(b)?1:0)-(needsReply(a)?1:0)});
+    if(!list.length)d.appendChild(el('p','hint','مفيش محادثات هنا لسه'));
+    list.slice(0,30).forEach(function(x){
+      var r=el('button','row-conv');r.type='button';r.appendChild(avatar(x,true));
+      var tx=el('span','tx');tx.appendChild(el('span','tt',x.name||x.phone));tx.appendChild(el('span','pv',clean(x.last)));r.appendChild(tx);
+      if(needsReply(x))r.appendChild(el('span','state late','مستني رد'));
+      if(x.paused)r.appendChild(el('span','pill','البوت موقوف'));
+      r.appendChild(el('time',null,when(x.lastAt)));
+      r.onclick=function(){go('messages',homeBrand);open(x.id,false)};d.appendChild(r);
+    });
+    box.appendChild(d);
   }
   function renderNotes(box){
     box.appendChild(el('h2',null,'التنبيهات'));box.appendChild(el('p','sub','تنبيهات البوت والعملاء الجداد في مكان واحد.'));
@@ -395,7 +486,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     return Promise.all([call('list'),call('overview').catch(function(){overviewFailed=true;return null})]).then(function(r){
       var d=r[0];
       rows=d.conversations;total=d.total;
-      if(r[1]){notes=r[1].notifications;flows=r[1].flows;overviewFailed=false}
+      if(r[1]){notes=r[1].notifications;flows=r[1].flows;stats=r[1].analytics;overviewFailed=false}
       $('sync').textContent='آخر تحديث '+clock(new Date());
       renderViews();
       if(view==='messages'){renderSections();renderList();if(current)open(current,true)}else renderPage();
