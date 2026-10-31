@@ -125,6 +125,7 @@ dialog.board::backdrop{background:rgba(10,6,4,.75)}
       <h2 class="first">بياناتك</h2>
       <div class="fields">
         <label class="f">اسمك<input id="cname" type="text" placeholder="مثلًا: أحمد محمود" autocomplete="name"></label>
+        <label class="f">رقم موبايلك<input id="cphone" type="tel" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr"></label>
         <label class="f">عدد الأفراد<input id="guests" type="number" min="10" value="15" inputmode="numeric"></label>
         <label class="f">ميعاد العزومة<input id="date" type="date"></label>
         <label class="f">المناسبة
@@ -330,6 +331,7 @@ function calc(){
   const msg=
 `أهلاً شاهي 🤍 عايز أحجز عزومة
 الاسم: ${name||"—"}
+الموبايل: ${$("cphone").value.trim()||"—"}
 المناسبة: ${$("occasion").value}
 العدد: ${s.guests} فرد
 الميعاد: ${date||"لسه هحدده"}
@@ -346,8 +348,22 @@ $("send").addEventListener("click",e=>{
   const s=state();
   if(!$("cname").value.trim()){e.preventDefault();$("err").textContent="اكتب اسمك الأول علشان نعرف نرد عليك.";$("cname").focus();return}
   if(!s.chosen.length&&!customs.length&&!trays.length){e.preventDefault();$("err").textContent="اختار صنف واحد على الأقل، أو اكتب الطبق اللي بتحبه.";return}
+  const ph=$("cphone").value.replace(/\D/g,"");
+  if(ph.length<10){e.preventDefault();$("err").textContent="اكتب رقم موبايلك علشان نأكد معاك الطلب.";$("cphone").focus();return}
   $("err").textContent="";
+  saveLead(s);
 });
+// save every order in the Shahi admin panel (shahi_leads), then WhatsApp opens as usual
+const SB_URL="https://snrsfpprlynixotjipmo.supabase.co",SB_KEY="sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
+function saveLead(s){
+  const msg=decodeURIComponent(($("send").href.split("?text=")[1]||""));
+  const p={name:$("cname").value.trim(),phone:$("cphone").value.trim(),event_type:$("occasion").value,
+    event_date:$("date").value||null,guests:s.guests||null,area:$("area").selectedOptions[0].text,
+    request:"طلب من صفحة المنيو — الإجمالي المبدئي "+fmt(s.tot)+"\n\n"+msg,allergies:$("notes").value.trim()};
+  try{fetch(SB_URL+"/rest/v1/rpc/shahi_submit_booking",{method:"POST",keepalive:true,
+    headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY,"Content-Type":"application/json"},
+    body:JSON.stringify({p})}).catch(()=>{});}catch(_){}
+}
 document.addEventListener("input",calc);document.addEventListener("change",calc);
 calc();
 </script>
