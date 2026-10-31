@@ -402,7 +402,7 @@ function normPhone(p){
 }
 
 // ========== WHATSAPP INBOX ==========
-const INBOX_API = "https://n8n-hesb.srv2112249.hstgr.cloud/webhook/shahi-team";
+const INBOX_API = "https://jaguarabdallah.app.n8n.cloud/webhook/shahi-team";
 let inboxTimer = null, inboxPhone = null, inboxSeq = 0, inboxRows = [];
 const shortTime = v => { const t = new Date(v); if (isNaN(t)) return ""; const same = t.toDateString() === new Date().toDateString(); return t.toLocaleString("ar-EG", same ? { hour:"numeric", minute:"2-digit" } : { day:"numeric", month:"short", hour:"numeric", minute:"2-digit" }); };
 async function inboxCall(action, extra){
@@ -415,7 +415,7 @@ async function inboxCall(action, extra){
 async function inbox(){
   $("#main").innerHTML = `<div class="stats" id="inboxStats"></div><div class="inbox" id="inboxBox"><div class="conv-list" id="convList"><p class="empty">بيحمّل…</p></div><div class="thread" id="thread"><p class="empty">اختار محادثة من القايمة</p></div></div>`;
   await inboxRefresh();
-  inboxTimer = setInterval(() => { if (!document.hidden) inboxRefresh().catch(console.error); }, 20000);
+  inboxTimer = setInterval(() => { if (!document.hidden) inboxRefresh().catch(console.error); }, 60000);
 }
 async function inboxRefresh(){
   const d = await inboxCall("list");
