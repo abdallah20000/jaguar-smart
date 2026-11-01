@@ -5,3 +5,9 @@
 /Shahi    /shahi/   301
 /Shahi/*  /shahi/   301
 /SHAHI    /shahi/   301
+/cobra          /cobra-egypt/   301
+/cobra/*        /cobra-egypt/   301
+/cobraegypt     /cobra-egypt/   301
+/cobraegypt/*   /cobra-egypt/   301
+/Cobra          /cobra-egypt/   301
+/eclipse        /cobra-egypt/eclipse-2027/   301
