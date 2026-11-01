@@ -100,12 +100,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .views{display:grid;gap:2px;margin-bottom:6px}
 .view{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-radius:10px;padding:9px 10px;color:#fff;cursor:pointer;text-align:start;font-weight:700}
 .view:hover{background:rgba(255,255,255,.07)}
-a.view{text-decoration:none}
 .view[aria-pressed="true"]{background:var(--accent)}
 .view b{margin-inline-start:auto;background:#f59e0b;color:#2a1a00;border-radius:999px;padding:0 8px;font-size:13px;font-weight:800}
 .app.pageview{grid-template-columns:230px minmax(0,1fr)}
 .app.pageview .side,.app.pageview .thread,.app.pageview #sections{display:none!important}
 .page{overflow-y:auto;padding:24px clamp(16px,3vw,36px);min-width:0}
+.control{min-width:0;min-height:0;background:#111}
+.control[hidden]{display:none}
+.control iframe{display:block;width:100%;height:100%;border:0}
 .page h2{margin:0 0 4px;font-size:24px;font-weight:800}
 .page .sub{margin:0 0 18px;color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
@@ -181,6 +183,7 @@ a.view{text-decoration:none}
   .cols,.summary{grid-template-columns:minmax(0,1fr)}
   .tip{inset-inline-start:auto;inset-inline-end:0;transform:none;white-space:normal;width:160px}
   .page{flex:1;padding:16px}
+  .control{flex:1}
   .nav{flex-direction:row;align-items:center;gap:6px;padding:8px 12px;overflow-x:auto;overflow-y:hidden;flex:none;scrollbar-width:none}
   .nav::-webkit-scrollbar{display:none}
   .nav h1,.nav hr,.foot{display:none}
@@ -213,7 +216,6 @@ a.view{text-decoration:none}
   <nav class="nav" aria-label="الأقسام">
     <h1>الداشبورد</h1>
     <div class="views" id="views"></div>
-    <a class="view" href="https://ha.srv2112249.hstgr.cloud/jaguar-control/home">لوحة التحكم</a>
     <hr>
     <div id="sections" style="display:contents"></div>
     <div class="foot">
@@ -230,6 +232,7 @@ a.view{text-decoration:none}
   </aside>
   <main class="thread" id="thread"><div class="welcome"><b>اختار محادثة</b>هتظهر هنا كل الرسايل بتاعتها</div></main>
   <main class="page" id="page" hidden></main>
+  <main class="control" id="control" hidden><iframe id="controlFrame" title="لوحة التحكم" allow="fullscreen; autoplay"></iframe></main>
 </div>
 
 <script>
@@ -242,7 +245,8 @@ a.view{text-decoration:none}
   var BUSINESS={shahi:1,nile:1,jaguar:1};
   var MEDIA=[[/image/i,'📷 صورة'],[/audio|ptt|voice/i,'🎤 ريكورد'],[/video/i,'🎬 فيديو'],[/document|file/i,'📄 ملف'],[/sticker/i,'ستيكر'],[/location/i,'📍 لوكيشن'],[/contact/i,'👤 جهة اتصال'],[/reaction/i,'تفاعل'],[/interactive/i,'زرار'],[/./,'رسالة']];
   var $=function(id){return document.getElementById(id)};
-  var VIEWS=[['home','الرئيسية'],['messages','الرسايل'],['notes','التنبيهات'],['flows','الأتمتة']];
+  var VIEWS=[['home','الرئيسية'],['messages','الرسايل'],['notes','التنبيهات'],['flows','الأتمتة'],['control','لوحة التحكم']];
+  var CONTROL_URL='https://ha.srv2112249.hstgr.cloud/jaguar-control/home';
   var STATE={ok:'شغال',late:'متأخر',none:'لسه ما اشتغلش'};
   var rows=[],total=0,filter='all',current=null,timer=null,seq=0;
   var view='home',notes=[],flows=[],stats=null,homeBrand=null,noteTab='all',overviewFailed=false;
@@ -316,11 +320,15 @@ a.view{text-decoration:none}
     view=v;if(f)filter=f;
     var messages=view==='messages';
     $('app').classList.toggle('pageview',!messages);
-    $('page').hidden=messages;
+    $('app').classList.toggle('controlview',view==='control');
+    $('page').hidden=messages||view==='control';
+    $('control').hidden=view!=='control';
+    if(view==='control'&&!$('controlFrame').src)$('controlFrame').src=CONTROL_URL;
     renderViews();
     if(messages){renderSections();renderList()}else renderPage();
   }
   function renderPage(){
+    if(view==='control')return;
     var box=$('page');box.textContent='';
     if(overviewFailed)box.appendChild(el('p','hint','مقدرناش نجيب آخر التنبيهات. هنجرب تاني في التحديث الجاي.'));
     if(view==='home')renderHome(box);else if(view==='notes')renderNotes(box);else renderFlows(box);
