@@ -1484,9 +1484,16 @@ $("qPdf").onclick = async ()=>{
   try {
     await loadScript(HTML2PDF_URL);
     const el = buildPdf(), filename = `${quote.quote_number}${$("qLang").value==="ar" ? "-AR" : ""}.pdf`;
+    // capture only once the fonts and the logo are ready, or they come out missing
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    await Promise.all([...el.querySelectorAll("img")].map(img => img.complete ? null : new Promise(r => { img.onload = img.onerror = r; })));
+    // phones refuse canvases above ~16.7M pixels and hand back a blank one; shrink the scale for long quotes
+    const scale = Math.min(2, Math.sqrt(14e6 / (el.offsetWidth * Math.max(el.offsetHeight, 1))));
     const blob = await html2pdf().set({
       margin:[16,0,42,0], filename, image:{ type:"jpeg", quality:0.95 },
-      html2canvas:{ scale:2, useCORS:true, backgroundColor:"#ffffff" },
+      // scrollX/Y:0 — otherwise html2canvas shifts the capture by the page's scroll position,
+      // so a scrolled page gives a blank PDF or one whose first page is cut off
+      html2canvas:{ scale, scrollX:0, scrollY:0, useCORS:true, backgroundColor:"#ffffff" },
       jsPDF:{ unit:"pt", format:"a4", orientation:"portrait" }, pagebreak:{ mode:["css","legacy"] }
     }).from(el).toPdf().get("pdf").then(pdf=>{
       const n = pdf.internal.getNumberOfPages(), W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
