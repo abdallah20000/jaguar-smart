@@ -1,0 +1,437 @@
+{
+ "name": "موظف التستنج — فحص السيستم كل يوم",
+ "nodes": [
+  {
+   "name": "أي workflow وقع",
+   "type": "n8n-nodes-base.errorTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "name": "رتّب الخطأ",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ],
+   "parameters": {
+    "jsCode": "const e = $json.execution || {}, w = $json.workflow || {};\nconst msg = (e.error && (e.error.message || e.error.description)) || 'وقع من غير رسالة';\nreturn [{ json: { workflow: w.name || '', workflow_id: String(w.id || ''), node: e.lastNodeExecuted || (e.error && e.error.node && e.error.node.name) || '', message: String(msg).slice(0, 500), execution_id: String(e.id || ''), mode: e.mode || '', at: DateTime.now().setZone('Africa/Cairo').toFormat('yyyy-MM-dd HH:mm') } }];"
+   }
+  },
+  {
+   "name": "سجّل الخطأ",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    440,
+    0
+   ],
+   "parameters": {
+    "resource": "row",
+    "operation": "insert",
+    "dataTableId": {
+     "__rl": true,
+     "mode": "id",
+     "value": "JmcJARH7YkLrh7h1",
+     "cachedResultName": "system_errors"
+    },
+    "columns": {
+     "mappingMode": "autoMapInputData",
+     "value": {}
+    },
+    "options": {}
+   }
+  },
+  {
+   "name": "كل يوم 9:30 الصبح",
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.3,
+   "position": [
+    0,
+    300
+   ],
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "field": "cronExpression",
+       "expression": "30 9 * * *"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "اختبر مفتاح Gemini",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.3,
+   "position": [
+    220,
+    300
+   ],
+   "onError": "continueRegularOutput",
+   "parameters": {
+    "method": "GET",
+    "url": "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "googlePalmApi",
+    "options": {
+     "timeout": 20000
+    }
+   },
+   "credentials": {
+    "googlePalmApi": {
+     "id": "csJwDTDaotEwGH1G",
+     "name": "Google Gemini(PaLM) Api account"
+    }
+   }
+  },
+  {
+   "name": "آخر العمليات",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    440,
+    300
+   ],
+   "executeOnce": true,
+   "alwaysOutputData": true,
+   "parameters": {
+    "resource": "row",
+    "operation": "get",
+    "dataTableId": {
+     "__rl": true,
+     "mode": "id",
+     "value": "TvbUiDjpAcZhT7PC",
+     "cachedResultName": "app_ops"
+    },
+    "returnAll": false,
+    "limit": 200,
+    "orderBy": true,
+    "orderByColumn": "createdAt",
+    "orderByDirection": "DESC"
+   }
+  },
+  {
+   "name": "الأخطاء المتسجلة",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    660,
+    300
+   ],
+   "executeOnce": true,
+   "alwaysOutputData": true,
+   "parameters": {
+    "resource": "row",
+    "operation": "get",
+    "dataTableId": {
+     "__rl": true,
+     "mode": "id",
+     "value": "JmcJARH7YkLrh7h1",
+     "cachedResultName": "system_errors"
+    },
+    "returnAll": false,
+    "limit": 300,
+    "orderBy": true,
+    "orderByColumn": "createdAt",
+    "orderByDirection": "DESC"
+   }
+  },
+  {
+   "name": "افحص كل حاجة",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    880,
+    300
+   ],
+   "parameters": {
+    "jsCode": "// موظف التستنج: بيلف على السيستم كله ويكتب تقرير. أي حاجة حمرا بتتبعتلك على الواتساب كمان\nconst now = DateTime.now().setZone('Africa/Cairo');\nconst today = now.toFormat('yyyy-MM-dd'), wd = now.weekday; // 5 = الجمعة\nconst res = []; // [ok, name, detail]\nconst req = async (o) => { const t = Date.now(); try { const r = await this.helpers.httpRequest({ timeout: 20000, returnFullResponse: true, ignoreHttpStatusErrors: true, ...o }); return { s: r.statusCode, ms: Date.now() - t }; } catch (e) { return { s: 0, ms: Date.now() - t, e: String(e.message || e).slice(0, 120) }; } };\n// 1) المواقع\nconst PAGES = [['الموقع الرئيسي', 'https://jaguarsmart.com/'], ['التطبيق /app', 'https://jaguarsmart.com/app/'], ['CRM جاجوار', 'https://jaguarsmart.com/crm/'], ['متجر الخامات', 'https://jaguarsmart.com/materials/'], ['Tuya Suez', 'https://jaguarsmart.com/tuya-suez/'], ['شاهي', 'https://jaguarsmart.com/shahi/'], ['منيو شاهي', 'https://jaguarsmart.com/shahi/menu/'], ['Nile Digital', 'https://jaguarsmart.com/nile-digital-solution/'], ['Cobra Egypt', 'https://jaguarsmart.com/cobra-egypt/'], ['AIX', 'https://aixegypt.com/']];\nfor (const [n, u] of PAGES) { const r = await req({ method: 'GET', url: u }); res.push([r.s >= 200 && r.s < 400, 'موقع: ' + n, r.s ? r.s + ' · ' + r.ms + 'ms' : 'مش بيفتح ' + (r.e || '')]); }\n// 2) الـ webhooks اللي التطبيق والمواقع بتكلمها (من غير توكن لازم ترفض بأدب، مش تقع)\nfor (const h of ['all-inbox', 'shahi-team', 'nile-team', 'app-ops']) {\n  const r = await req({ method: 'POST', url: 'https://jaguarsmart.com/api/hook/' + h, body: 'action=ping', headers: { 'content-type': 'application/x-www-form-urlencoded' } });\n  res.push([r.s > 0 && r.s < 500, 'API: ' + h, r.s ? String(r.s) : 'مفيش رد ' + (r.e || '')]);\n}\n// 3) قواعد البيانات\nconst sb = await req({ method: 'GET', url: 'https://snrsfpprlynixotjipmo.supabase.co/auth/v1/health', headers: { apikey: 'sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds' } });\nres.push([sb.s === 200, 'Supabase جاجوار', String(sb.s || sb.e)]);\nconst aix = await req({ method: 'GET', url: 'https://xenrnhgxwhujyvtpwmsk.supabase.co/auth/v1/health', headers: { apikey: 'sb_publishable_PWiz7ybQJDngH5Ox3vkx6g_GuCQnQ1R' } });\nres.push([aix.s === 200, 'Supabase AIX', String(aix.s || aix.e)]);\n// 4) مفتاح Gemini (الموظفين كلهم عليه)\nconst gm = $('اختبر مفتاح Gemini').first().json;\nres.push([!!(gm && gm.models && gm.models.length), 'مفتاح Gemini', gm && gm.models ? 'شغال' : 'مش شغال: ' + JSON.stringify(gm && (gm.error || gm)).slice(0, 120)]);\n// 5) الموظفين اشتغلوا النهارده؟\nconst ops = $('آخر العمليات').all().map(i => i.json).filter(r => r && r.id);\nconst has = (agent, d) => ops.some(r => r.agent === agent && r.day === d);\nconst yday = now.minus({ days: 1 }).toFormat('yyyy-MM-dd');\nres.push([has('content', today), 'كاتب المحتوى (بوست النهارده)', has('content', today) ? 'نزل' : 'مانزلش النهارده']);\nif (wd !== 5) res.push([has('leads', today), 'صياد العملاء', has('leads', today) ? 'اشتغل' : 'مااشتغلش النهارده']);\nres.push([has('summary', yday) || ops.length < 3, 'ملخص امبارح بالليل', has('summary', yday) ? 'اتكتب' : 'ماتكتبش']);\n// 6) الأخطاء في آخر 24 ساعة\nconst since = Date.now() - 86400000;\nconst errs = $('الأخطاء المتسجلة').all().map(i => i.json).filter(r => r && r.id && new Date(r.createdAt).getTime() >= since);\nconst byWf = {}; errs.forEach(r => { const k = r.workflow || '?'; (byWf[k] = byWf[k] || []).push(r); });\nconst errLines = Object.entries(byWf).map(([k, v]) => '• ' + k + ': ' + v.length + ' مرة — آخرها في \"' + (v[0].node || '?') + '\": ' + String(v[0].message).slice(0, 120));\nres.push([!errs.length, 'أخطاء آخر 24 ساعة', errs.length ? errs.length + ' خطأ في ' + Object.keys(byWf).length + ' workflow' : 'مفيش']);\nconst bad = res.filter(r => !r[0]);\nlet body = (bad.length ? '🔴 فيه ' + bad.length + ' مشكلة' : '🟢 كله شغال') + ' — فحصت ' + res.length + ' حاجة\\n\\n';\nbody += res.map(r => (r[0] ? '✅ ' : '❌ ') + r[1] + ' — ' + r[2]).join('\\n');\nif (errLines.length) body += '\\n\\nالأخطاء:\\n' + errLines.join('\\n');\nconst alert = '*موظف التستنج — ' + today + '*\\n' + (bad.length ? '🔴 فيه ' + bad.length + ' مشكلة:\\n' + bad.map(r => '❌ ' + r[1] + ' — ' + r[2]).join('\\n') + (errLines.length ? '\\n\\n' + errLines.slice(0, 6).join('\\n') : '') + '\\n\\nالتفاصيل في شاشة العمليات في التطبيق.' : '');\nreturn [{ json: { kind: 'report', business: 'all', agent: 'tester', title: (bad.length ? '🔴 ' : '🟢 ') + 'فحص السيستم — ' + today, body, link: '', status: 'done', review: bad.length ? 'محتاج تدخل' : '', ref_table: 'system_errors', ref_id: '', decided_at: '', day: today, problems: bad.length, alert } }];"
+   },
+   "executeOnce": true
+  },
+  {
+   "name": "تقرير الفحص في التطبيق",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    1100,
+    300
+   ],
+   "parameters": {
+    "resource": "row",
+    "operation": "insert",
+    "dataTableId": {
+     "__rl": true,
+     "mode": "id",
+     "value": "TvbUiDjpAcZhT7PC",
+     "cachedResultName": "app_ops"
+    },
+    "columns": {
+     "mappingMode": "defineBelow",
+     "value": {
+      "kind": "={{ $json.kind }}",
+      "business": "={{ $json.business }}",
+      "agent": "={{ $json.agent }}",
+      "title": "={{ $json.title }}",
+      "body": "={{ $json.body }}",
+      "link": "={{ $json.link }}",
+      "status": "={{ $json.status }}",
+      "review": "={{ $json.review }}",
+      "ref_table": "={{ $json.ref_table }}",
+      "ref_id": "={{ $json.ref_id }}",
+      "decided_at": "={{ $json.decided_at }}",
+      "day": "={{ $json.day }}"
+     },
+     "schema": [
+      {
+       "id": "kind",
+       "displayName": "kind",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "business",
+       "displayName": "business",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "agent",
+       "displayName": "agent",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "title",
+       "displayName": "title",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "body",
+       "displayName": "body",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "link",
+       "displayName": "link",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "status",
+       "displayName": "status",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "review",
+       "displayName": "review",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "ref_table",
+       "displayName": "ref_table",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "ref_id",
+       "displayName": "ref_id",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "decided_at",
+       "displayName": "decided_at",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      },
+      {
+       "id": "day",
+       "displayName": "day",
+       "type": "string",
+       "display": true,
+       "canBeUsedToMatch": true
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "name": "فيه مشكلة؟",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2.2,
+   "position": [
+    1320,
+    300
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "c1",
+       "leftValue": "={{ $('افحص كل حاجة').first().json.problems }}",
+       "operator": {
+        "type": "number",
+        "operation": "gt"
+       },
+       "rightValue": 0
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  "__GREEN__",
+  {
+   "name": "شرح",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -300,
+    -150
+   ],
+   "parameters": {
+    "width": 260,
+    "height": 560,
+    "color": 5,
+    "content": "## موظف التستنج\n**طول اليوم:** أي workflow متوصل بيه يقع، الخطأ بيتسجل هنا في جدول system_errors.\n\n**كل يوم 9:30 الصبح:** يفتح كل المواقع، يختبر الـ APIs اللي التطبيق بيكلمها، Supabase، مفتاح Gemini، يتأكد إن المحتوى وصياد العملاء اشتغلوا، ويعد الأخطاء.\n\nالتقرير بيظهر في شاشة العمليات. ولو فيه مشكلة بيبعتلك واتساب."
+   }
+  }
+ ],
+ "connections": {
+  "أي workflow وقع": {
+   "main": [
+    [
+     {
+      "node": "رتّب الخطأ",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "رتّب الخطأ": {
+   "main": [
+    [
+     {
+      "node": "سجّل الخطأ",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "كل يوم 9:30 الصبح": {
+   "main": [
+    [
+     {
+      "node": "اختبر مفتاح Gemini",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "اختبر مفتاح Gemini": {
+   "main": [
+    [
+     {
+      "node": "آخر العمليات",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "آخر العمليات": {
+   "main": [
+    [
+     {
+      "node": "الأخطاء المتسجلة",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "الأخطاء المتسجلة": {
+   "main": [
+    [
+     {
+      "node": "افحص كل حاجة",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "افحص كل حاجة": {
+   "main": [
+    [
+     {
+      "node": "تقرير الفحص في التطبيق",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "تقرير الفحص في التطبيق": {
+   "main": [
+    [
+     {
+      "node": "فيه مشكلة؟",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "فيه مشكلة؟": {
+   "main": [
+    [
+     {
+      "node": "نبهني على الواتساب",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    []
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Africa/Cairo",
+  "availableInMCP": true
+ }
+}
