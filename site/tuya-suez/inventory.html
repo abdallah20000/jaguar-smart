@@ -199,7 +199,26 @@ tr.row:hover td{background:#fafafa}
 const COMPANY_ID = "tuya-suez", LOGIN_PAGE = "/tuya-suez/crm.html";
 const SUPABASE_URL = "https://snrsfpprlynixotjipmo.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// The owner works in both companies (migration 106). Once he is signed in on these Tuya Suez pages, his
+// database requests carry "x-company: tuya-suez" and the database treats him as Tuya Suez here.
+// Nobody else ever sends the header, and it never goes to sign-in or storage.
+let ACTIVE_CO = null;
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {global:{fetch:(url, opt = {}) => {
+  if(ACTIVE_CO && String(url).startsWith(SUPABASE_URL + "/rest/v1/")){ const hd = new Headers(opt.headers || {}); hd.set("x-company", ACTIVE_CO); opt = {...opt, headers: hd}; }
+  return fetch(url, opt);
+}}});
+// my_company for this page; for the owner it switches to this page's company. If the switch cannot be
+// confirmed it returns his own company, so the page refuses him exactly as before.
+async function companyFor(){
+  const { data: company } = await sb.rpc("my_company");
+  if(!company || company === COMPANY_ID) return company;
+  const { data: list, error } = await sb.rpc("my_companies");
+  if(error || !Array.isArray(list) || !list.includes(COMPANY_ID)) return company;
+  ACTIVE_CO = COMPANY_ID;
+  const r = await sb.rpc("my_company");
+  if(!r.error && r.data === COMPANY_ID) return COMPANY_ID;
+  ACTIVE_CO = null; return company;
+}
 
 const KINDS = {count:"جرد", in:"وارد", out:"صادر"};
 let items = [], user = null, current = null, kind = "count", lowOnly = false;
@@ -218,7 +237,7 @@ async function onSession(session){
   user = session?.user || null;
   if(!user){ location.replace("/tuya-suez/crm.html"); return; }
   const { data: role } = await sb.rpc("my_role");
-  const { data: company } = await sb.rpc("my_company");
+  const company = await companyFor();
   if(company && company !== COMPANY_ID){ $("gateMsg").innerHTML = 'الحساب ده تبع شركة تانية. <a href="' + LOGIN_PAGE + '">ارجع</a>'; return; }
   if(role !== "admin" && role !== "inventory"){
     $("gateMsg").innerHTML = 'الحساب ده مش مسموح له يدخل المخزن. <a href="/tuya-suez/crm.html">ارجع</a>';
