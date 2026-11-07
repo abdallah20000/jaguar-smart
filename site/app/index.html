@@ -301,6 +301,13 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .m-g span{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 .m-g span.wait{font-size:12.5px;color:#FFC48F;font-weight:600}
 .money-l{color:#6EE7A8!important}
+.capital{background:linear-gradient(135deg,rgba(245,154,74,.2),rgba(52,211,153,.10) 55%,rgba(52,211,153,0)),var(--sheen),var(--glass)}
+.m-sub.warn{color:#FFC48F}
+.m-caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:10px}
+.m-cap{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 12px;border-radius:14px;background:rgba(245,154,74,.08);border:1px solid rgba(245,154,74,.25);text-align:start}
+.m-cap b{font-size:12.5px;color:var(--ink-2);font-weight:600}
+.m-cap .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.m-cap small{font-size:11.5px;color:var(--ink-3)}
 /* home: system health + expenses */
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
 .duo .tile{flex-direction:row;align-items:center;min-height:84px}
@@ -785,6 +792,16 @@ const KPI_KIND = {
     if (items === null && moves === null) throw new Error("no access");
     return {items: items ? items.length : null, low: items ? items.filter((x) => x.min_qty != null && +x.quantity <= +x.min_qty).length : null, moves};
   },
+  async value(c){
+    let rows;
+    try { rows = await rest(c, "inventory_items?select=quantity,unit_cost,product:products(dealer_price)"); }
+    catch (e){ if (/^(400|404)$/.test(e.message)) return {setup:true}; throw e; }
+    let value = 0, priced = 0, noCost = 0, items = 0;
+    rows.forEach((r) => { const q = +r.quantity || 0; items++; if (q <= 0) return;
+      const cost = r.unit_cost != null ? +r.unit_cost : r.product && r.product.dealer_price != null ? +r.product.dealer_price : null;
+      if (cost == null) noCost++; else { value += q * cost; priced++; } });
+    return {value, priced, noCost, items};
+  },
   async installs(c){
     const [up, done] = await Promise.all([settle(rest(c, "installations?select=id&status=in.(pending,in_progress)&scheduled_date=gte." + dayStr(new Date()), true)),
       settle(rest(c, "installations?select=id&status=eq.done&scheduled_date=gte." + dayStr(monthStart()), true))]);
@@ -842,6 +859,7 @@ function fillField(e){
   else { b.classList.remove("load"); b.textContent = "—"; sm.textContent = k && k.login ? "ادخل AIX من «الفريق»" : "مش متاح"; }
 }
 function paintKpi(key){
+  if (key.endsWith(":value")) paintAcct();
   if (key.endsWith(":crm") && current.view === "costs" && !COSTS.editing && !COSTS.adding) renderCosts();
   if (key.endsWith(":crm")){ const e = document.getElementById("sales"); if (e){ const n = salesCard(); if (n) e.replaceWith(n); } }
   document.querySelectorAll('[data-kpi="' + key + '"]').forEach((e) => fillLine(e, key));
@@ -980,11 +998,38 @@ function moneyTile(g){
       h("span", {class:"m-tx"}, String(l.text || "")),
       h("time", null, l.at ? dayOf(l.at) + " " + fTime.format(new Date(l.at)) : "")))) : null);
 }
+const CAP_CO = {aix:"aix", jaguar:"jag"};
+function capitalOf(co){
+  const vk = CAP_CO[co] + ":value"; kpiGet(vk);
+  const gs = groupsOf(co).filter((g) => g.balance != null), k = KPI[vk] || {}, v = k.d;
+  const money = gs.length ? gs.reduce((n, g) => n + (+g.balance || 0), 0) : null;
+  const stock = !v ? (k.busy ? "load" : "na") : v.setup ? "setup" : !v.items ? "empty" : "ok";
+  const stockVal = stock === "ok" || stock === "empty" ? (v.value || 0) : null;
+  const notes = [];
+  if (money == null) notes.push(ACCT.d ? "مستني باقي" : ACCT.err ? "الفلوس مش متاحة" : "");
+  if (stock === "empty") notes.push("المخزن فاضي");
+  else if (stock !== "ok" && stock !== "load") notes.push("من غير المخزن");
+  if (stock === "ok" && v.noCost) notes.push("من غير سعر " + fmtN.format(v.noCost) + " صنف");
+  const total = money == null && stockVal == null ? null : (money || 0) + (stockVal || 0);
+  return {money, stock, stockVal, v, total, notes: notes.filter(Boolean), loading: (!ACCT.d && !ACCT.err) || stock === "load"};
+}
+const stockText = (c) => c.stock === "ok" ? exact(c.stockVal) + " ج.م" : c.stock === "empty" ? "المخزن فاضي" : c.stock === "setup" ? "محتاج تحديث المخزن" : c.stock === "load" ? "…" : "مش متاح";
+function capitalCard(co){
+  const c = capitalOf(co);
+  return h("section", {class:"brief glass capital", "data-acct": "cap:" + co},
+    h("div", {class:"eyebrow"}, "رأس المال"),
+    h("div", {class:"m-big"}, c.total == null ? (c.loading ? h("b", {class:"load"}) : "—") : exact(c.total), c.total == null ? null : h("small", null, "ج.م")),
+    c.notes.length ? h("p", {class:"m-sub warn"}, c.notes.join(" · ")) : h("p", {class:"m-sub"}, "الفلوس الموجودة + المخزن بسعر التكلفة"),
+    h("div", {class:"kpis", style:{"grid-template-columns":"1fr 1fr", "margin-top":"12px"}},
+      kpi("الفلوس الموجودة", c.money == null ? (ACCT.d ? "—" : "…") : exact(c.money), null, c.money == null && ACCT.d ? "اكتب «باقي <الرقم>» في الجروب" : "من جروب الحسابات"),
+      kpi("رصيد المخزن", stockText(c), null, c.stock === "ok" ? fmtN.format(c.v.priced) + " صنف بسعر" + (c.v.noCost ? " · " + fmtN.format(c.v.noCost) + " من غير سعر" : "") : c.stock === "setup" ? "اضغط Run على تحديث المخزن" : "بسعر التكلفة")));
+}
 function acctLoading(tag){ return h("section", {class:"card glass money", "data-acct": tag}, h("div", {class:"eyebrow"}, "الفلوس الموجودة"), h("div", {class:"m-big"}, h("b", {class:"load"}))); }
 // tags: "co:<company>" (company page), "g:<key>" (one group), "spaces:<company>" (line on الشركات), "costs" (expenses screen)
 function acctNode(tag){
   const [kind, arg] = tag.split(":");
   if (!ACC || !ACC.owner) return null;
+  if (kind === "cap") return CAP_CO[arg] ? capitalCard(arg) : null;
   if (kind === "g"){ const g = ((ACCT.d && ACCT.d.groups) || []).find((x) => x.key === arg); return g ? moneyTile(g) : null; }
   if (kind === "co"){
     if (!ACCT.d) return ACCT.err ? h("div", {"data-acct": tag, hidden:true}) : acctLoading(tag);
@@ -992,9 +1037,9 @@ function acctNode(tag){
     return gs.length ? h("div", {class:"money-wrap", "data-acct": tag}, gs.map(moneyTile)) : h("div", {"data-acct": tag, hidden:true});
   }
   if (kind === "spaces"){
-    const gs = groupsOf(arg).filter((g) => g.balance != null);
-    if (!gs.length) return h("small", {class:"kv money-l", "data-acct": tag, hidden: !!ACCT.d || null}, ACCT.d ? "" : "");
-    return h("small", {class:"kv money-l", "data-acct": tag}, "💰 " + exact(gs.reduce((n, g) => n + (+g.balance || 0), 0)) + " ج.م موجودين");
+    const c = capitalOf(arg);
+    if (c.total == null) return h("small", {class:"kv money-l", "data-acct": tag}, "");
+    return h("small", {class:"kv money-l", "data-acct": tag}, "💰 رأس المال " + exact(c.total) + " ج.م" + (c.notes.length ? " (" + c.notes.join("، ") + ")" : ""));
   }
   if (kind === "costs"){
     const d = ACCT.d;
@@ -1003,6 +1048,10 @@ function acctNode(tag){
          h("div", {class:"m-groups"}, d.groups.map((g) => h("button", {class:"m-g", type:"button",
              onclick: () => { const sp = g.company === "aix" ? "aix" : "jaguar"; show("space", true, sp); }},
            h("b", null, g.name || g.key), h("span", {class: g.balance == null ? "wait" : ""}, g.balance == null ? "مستني «باقي»" : exact(g.balance))))),
+         h("div", {class:"m-caps"}, Object.keys(CAP_CO).map((co) => { const c = capitalOf(co), sp = SPACES.find((x) => x.id === co);
+           return h("button", {class:"m-cap", type:"button", onclick: () => show("space", true, co)},
+             h("b", null, "رأس مال " + (sp ? sp.name : co)), h("span", {class:"v"}, c.total == null ? "…" : exact(c.total) + " ج.م"),
+             h("small", null, ["فلوس " + (c.money == null ? "—" : exact(c.money)), "مخزن " + stockText(c), ...c.notes.filter((n) => n !== stockText(c))].join(" · "))); })),
          d.rule ? h("p", {class:"note", style:{"margin-top":"10px"}}, String(d.rule)) : null];
     return h("section", {class:"card glass money", "data-acct": tag}, h("div", {class:"eyebrow"}, "الفلوس الموجودة · كل الجروبات"), body);
   }
@@ -1026,7 +1075,8 @@ function renderSpace(id){
   const rows = rowsOf(sp);
   $("#s-space").replaceChildren(...[
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
-    ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? (loadAccounts(), acctNode("co:" + sp.id)) : null,
+    ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? (loadAccounts(), acctNode("cap:" + sp.id)) : null,
+    ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? acctNode("co:" + sp.id) : null,
     spaceBrief(sp),
     rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده.")].filter(Boolean));
 }
