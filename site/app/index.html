@@ -13,7 +13,7 @@
 <link rel="manifest" href="/app/manifest.webmanifest">
 <link rel="icon" href="/app/icon-192.png">
 <link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
@@ -32,6 +32,7 @@
   --f-display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   --blur:blur(28px) saturate(150%);
+  --stroke:var(--line-2);
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -144,6 +145,15 @@ svg{stroke-width:1.75}
 .note{font-size:12.5px;color:var(--ink-3);margin:0}
 @media (max-width:760px){.grantrow{grid-template-columns:1fr 1fr}.grantact{grid-column:1/-1}}
 
+/* AIX team: permission chips */
+.perms{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{position:relative;display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.chip.on{background:rgba(245,154,74,.18);border-color:rgba(245,154,74,.5);color:#FFD2AA}
+.chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.aixlogin{max-width:460px;display:flex;flex-direction:column;gap:12px}
+.aixlogin .btn{align-self:flex-start}
+
 /* page viewer */
 #viewer{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
 #viewer.on{transform:none}
@@ -191,8 +201,15 @@ svg{stroke-width:1.75}
 .glinks button{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
 .out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
 
+/* speed: the wallpaper is a flat colour, so blurring what is behind a card changes nothing on screen
+   but costs a lot on phones. Only the floating bottom bar keeps a (lighter) blur. */
+.glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+.pane{overscroll-behavior:contain}
+.card,.brief{contain:layout style}
+@media (max-width:760px){.rail{-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}}
+
 /* intro */
-#intro{position:fixed;inset:0;z-index:100;background:#F3F2EE;transition:opacity .5s,transform .5s}
+#intro{position:fixed;inset:0;z-index:100;background:#F3F2EE radial-gradient(circle,#CFCBC1 .8px,transparent 1.1px) 1px 1px/18px 18px;transition:opacity .5s,transform .5s}
 #intro.out{opacity:0;transform:scale(1.03);pointer-events:none}
 #intro canvas{position:absolute;inset:0;width:100%;height:100%}
 .it{position:absolute;top:calc(var(--st) + 16px);left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;color:#77736A;font-size:12px}
@@ -333,6 +350,9 @@ const SPACES = [
     {n:"لوحة Nile", u:"/nile-digital-solution/team/", ic:"people", key:"nile-team"}, {n:"الموقع", u:"/nile-digital-solution/", ic:"globe"}]},
   {id:"cobra", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
     {n:"الموقع", u:"/cobra-egypt/", ic:"plane"}, {n:"فورم التخطيط", u:"/cobra-egypt/plan/", ic:"cal"}, {n:"كسوف 2027", u:"/cobra-egypt/eclipse-2027/", ic:"spark"}]},
+  {id:"aix", name:"AIX", desc:"البيت الذكي: CRM والمخزن والتركيبات على aixegypt.com", c:"#2EC4E6", ic:"spark", items:[
+    {n:"CRM", u:"https://aixegypt.com/crm.html", ic:"user", ext:1}, {n:"المخزن", u:"https://aixegypt.com/inventory.html", ic:"box", ext:1},
+    {n:"التركيبات", u:"https://aixegypt.com/installs.html", ic:"tool", ext:1}, {n:"الموقع", u:"https://aixegypt.com/", ic:"globe", ext:1}]},
   {id:"msgs", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
     {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
 ];
@@ -531,10 +551,17 @@ async function loadPeople(quiet){
   renderRail(); if (!quiet && current.view === "team") renderTeam();
 }
 const sel = (id, opts, val) => h("select", {id, class:"sel"}, opts.map(([v, t]) => { const o = h("option", {value: v}, t); if (v === (val || "")) o.selected = true; return o; }));
+let teamTab = "app";
+function teamHead(){
+  return h("div", {class:"phead"}, h("div", null, h("h1", null, "الفريق"), h("p", null, teamTab === "aix" ? "فريق AIX: اختار لكل واحد صلاحياته ودوس «حفظ»." : "اللي عملوا حساب بيظهروا هنا. اختار لكل واحد يفتح إيه ودوس «حفظ».")),
+    h("div", {class:"pacts"},
+      h("div", {class:"seg glass"}, [["app","التطبيق"],["aix","AIX"]].map(([k, t]) => h("button", {type:"button", "aria-pressed": String(teamTab === k), onclick: () => { teamTab = k; renderTeam(); }}, t))),
+      h("button", {class:"act", type:"button", onclick: () => { if (teamTab === "aix"){ aixState = null; renderTeam(); } else { $("#s-team").replaceChildren(teamHead(), h("div", {class:"empty glass card"}, "بيحمّل…")); loadPeople(); } }}, "حدّث")));
+}
 function renderTeam(){
   const box = $("#s-team");
-  const head = h("div", {class:"phead"}, h("div", null, h("h1", null, "الفريق"), h("p", null, "اللي عملوا حساب بيظهروا هنا. اختار لكل واحد يفتح إيه ودوس «حفظ».")),
-    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { box.replaceChildren(head, h("div", {class:"empty glass card"}, "بيحمّل…")); loadPeople(); }}, "حدّث")));
+  const head = teamHead();
+  if (teamTab === "aix"){ renderAix(box, head); return; }
   if (!people){
     box.replaceChildren(head, h("div", {class:"empty glass card"}, peopleErr === "setup" ? "صفحة الفريق محتاجة تحديث صغير في قاعدة البيانات لسه ماتعملش." : peopleErr === "net" ? "مفيش اتصال دلوقتي. دوس «حدّث»." : "بيحمّل…"));
     if (!peopleErr) loadPeople();
@@ -572,6 +599,122 @@ function renderTeam(){
     h("div", {class:"eyebrow", style:{margin:"18px 6px 10px"}}, "الفريق (" + rest.length + ")"),
     ...rest.map(card)].filter(Boolean));
 }
+/* ---------- AIX team (owner only). AIX is its own Supabase project with its own accounts:
+   the owner signs in to it once here (kept under its own storage key), nothing is shared with the app's accounts. ---------- */
+const AIX_URL = "https://xenrnhgxwhujyvtpwmsk.supabase.co", AIX_KEY = "sb_publishable_PWiz7ybQJDngH5Ox3vkx6g_GuCQnQ1R";
+const AIX_PERMS = ["admin","crm","installs","inventory","errands","accounts","reports"];
+const AIX_LABEL = {admin:"مدير", crm:"مبيعات ومتابعة", installs:"تركيبات ومعاينات", inventory:"جرد ومخزن", errands:"مشاوير", accounts:"حسابات", reports:"تقارير"};
+let aix = null, aixState = null;   // aixState: null = not loaded yet; {step: login | notadmin | setup | net | ok, ...}
+function aixClient(){
+  if (!aix && window.supabase) try { aix = window.supabase.createClient(AIX_URL, AIX_KEY, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, storageKey:"cc-aix-auth"}}); } catch {}
+  return aix;
+}
+async function loadAix(){
+  const c = aixClient(); if (!c){ aixState = {step:"net"}; return; }
+  try {
+    const s = await c.auth.getSession(); const u = s && s.data && s.data.session && s.data.session.user;
+    if (!u){ aixState = {step:"login"}; return; }
+    const me = String(u.email || "").toLowerCase();
+    const a = await c.rpc("has_role", {allowed:["admin"]}); if (a.error) throw a.error;
+    if (!a.data){ aixState = {step:"notadmin", me}; return; }
+    const [m, cat] = await Promise.all([c.rpc("aix_members"), c.from("permission_catalog").select("key,label_ar")]);
+    if (m.error){ if (m.error.code === "PGRST202" || /aix_members/.test(m.error.message || "")){ aixState = {step:"setup", me}; return; } throw m.error; }
+    const labels = {...AIX_LABEL}; const extra = [];
+    for (const r of (cat && cat.data) || []){ if (!r.key) continue; if (r.label_ar) labels[r.key] = r.label_ar; if (!AIX_PERMS.includes(r.key)) extra.push(r.key); }
+    aixState = {step:"ok", me, members: m.data || [], labels, keys: [...AIX_PERMS, ...extra]};
+  } catch { aixState = {step:"net"}; }
+}
+function permBox(keys, labels, val){
+  return h("div", {class:"perms", role:"group"}, keys.map(k => {
+    const inp = h("input", {type:"checkbox", value:k}); inp.checked = val.includes(k);
+    const lab = h("label", {class: "chip" + (inp.checked ? " on" : "")}, inp, labels[k] || k);
+    inp.addEventListener("change", () => lab.classList.toggle("on", inp.checked));
+    return lab;
+  }));
+}
+// checked keys in catalog order, so the first one (saved as the member's main role) is the strongest
+const picked = (box, keys) => { const on = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return keys.filter(k => on.has(k)); };
+function aixLogin(){
+  const em = h("input", {id:"aix-email", type:"email", autocomplete:"username", inputmode:"email"});
+  const pw = h("input", {id:"aix-pw", type:"password", autocomplete:"current-password"});
+  const err = h("div", {class:"gerr", role:"alert"}), btn = h("button", {class:"btn", type:"submit"}, "دخول AIX");
+  const f = h("form", {class:"card glass aixlogin", autocomplete:"on"},
+    h("div", {class:"ch"}, h("span", {class:"ci", html: I.spark}), h("div", {style:{"min-width":"0"}}, h("h3", null, "ادخل بحساب AIX"), h("p", {style:{"white-space":"normal"}}, "مرة واحدة بس على الموبايل ده. حساب AIX منفصل عن حساب التطبيق."))),
+    h("div", {class:"fld"}, h("label", {for:"aix-email"}, "إيميل AIX"), em), h("div", {class:"fld"}, h("label", {for:"aix-pw"}, "الباسورد"), pw), err, btn);
+  f.onsubmit = async (e) => {
+    e.preventDefault(); err.textContent = "";
+    const c = aixClient(); if (!c){ err.textContent = "مفيش اتصال دلوقتي."; return; }
+    if (!em.value.trim() || !pw.value){ err.textContent = "اكتب الإيميل والباسورد."; return; }
+    btn.disabled = true; btn.textContent = "لحظة…";
+    try {
+      const r = await c.auth.signInWithPassword({email: em.value.trim(), password: pw.value});
+      if (r.error){ err.textContent = "الإيميل أو الباسورد مش صح."; btn.disabled = false; btn.textContent = "دخول AIX"; return; }
+      pw.value = ""; aixState = null; renderTeam();
+    } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; btn.disabled = false; btn.textContent = "دخول AIX"; }
+  };
+  return f;
+}
+async function aixOut(){ try { if (aix) await aix.auth.signOut(); } catch {} aixState = {step:"login"}; }
+function renderAix(box, head){
+  if (!aixState){
+    box.replaceChildren(head, h("div", {class:"empty glass card"}, "بيحمّل…"));
+    loadAix().then(() => { if (current.view === "team" && teamTab === "aix") renderTeam(); });
+    return;
+  }
+  const st = aixState;
+  if (st.step === "login"){ box.replaceChildren(head, aixLogin()); return; }
+  const out = h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: async () => { await aixOut(); renderTeam(); }}, "خروج من حساب AIX"));
+  if (st.step !== "ok"){
+    box.replaceChildren(...[head, h("div", {class:"empty glass card"}, st.step === "notadmin" ? "الحساب ده مش مدير في AIX. اخرج وادخل بحساب مدير."
+      : st.step === "setup" ? "قايمة فريق AIX محتاجة تحديث صغير في قاعدة بيانات AIX لسه ماتعملش." : "مفيش اتصال دلوقتي. دوس «حدّث»."), st.step === "net" ? null : out].filter(Boolean));
+    return;
+  }
+  const after = async (msg, ok) => { msg.textContent = ok; await loadAix(); if (current.view === "team" && teamTab === "aix") renderTeam(); };
+  const mcard = (x) => {
+    const email = String(x.email || ""), me = email.toLowerCase() === st.me;
+    const eff = [...new Set([x.role, ...(Array.isArray(x.permissions) ? x.permissions : [])].filter(Boolean))];
+    const tag = h("span", {class:"tag"}, eff.map(k => st.labels[k] || k).join(" + ") || "مالوش");
+    const head2 = h("div", {class:"ch"}, h("span", {class:"ci"}, (x.name || email || "?").trim().charAt(0).toUpperCase()),
+      h("div", {style:{"min-width":"0"}}, h("h3", null, x.name || email.split("@")[0]), h("p", {style:{direction:"ltr", "text-align":"right"}}, email)), tag);
+    if (me) return h("section", {class:"card glass person"}, head2, h("p", {class:"note"}, "ده حسابك انت. صلاحياتك مش بتتغيّر من هنا."));
+    const pb = permBox(st.keys, st.labels, eff);
+    const msg = h("span", {class:"smsg"}), save = h("button", {class:"act", type:"button"}, "حفظ");
+    save.onclick = async () => {
+      const sel = picked(pb, st.keys);
+      if (!sel.length && !confirm("تشيل " + (x.name || email) + " من فريق AIX خالص؟")) return;
+      save.disabled = true; msg.textContent = "بيحفظ…";
+      try {
+        const r = sel.length ? await aix.rpc("set_member_permissions", {p_email: email, p_permissions: sel}) : await aix.rpc("aix_remove_member", {p_email: email});
+        if (r.error) throw r.error;
+        await after(msg, "اتحفظ ✓");
+      } catch (e) { msg.textContent = /not allowed/i.test((e && e.message) || "") ? "مش مسموح." : "مقدرناش نحفظ. جرّب تاني."; save.disabled = false; }
+    };
+    return h("section", {class:"card glass person"}, head2, pb, h("div", {class:"grantact", style:{"margin-top":"10px"}}, save, msg));
+  };
+  const addCard = () => {
+    const nm = h("input", {class:"sel", placeholder:"الاسم", autocomplete:"off"});
+    const em = h("input", {class:"sel", type:"email", inputmode:"email", placeholder:"الإيميل", autocomplete:"off", style:{direction:"ltr", "text-align":"left"}});
+    const pb = permBox(st.keys, st.labels, ["crm"]);
+    const msg = h("span", {class:"smsg"}), go = h("button", {class:"act", type:"button"}, "ضيف");
+    go.onclick = async () => {
+      const e = em.value.trim().toLowerCase(), sel = picked(pb, st.keys);
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){ msg.textContent = "اكتب إيميل صحيح."; return; }
+      if (!sel.length){ msg.textContent = "اختار صلاحية واحدة على الأقل."; return; }
+      if (st.members.some(m => String(m.email || "").toLowerCase() === e)){ msg.textContent = "الإيميل ده موجود. عدّل صلاحياته من الكارت بتاعه."; return; }
+      go.disabled = true; msg.textContent = "بيضيف…";
+      try { const r = await aix.rpc("set_member_permissions", {p_email: e, p_permissions: sel, p_name: nm.value.trim() || null}); if (r.error) throw r.error; await after(msg, "اتضاف ✓"); }
+      catch { msg.textContent = "مقدرناش نضيف. جرّب تاني."; go.disabled = false; }
+    };
+    return h("section", {class:"card glass person"},
+      h("div", {class:"ch"}, h("span", {class:"ci", html: I.plus}), h("div", {style:{"min-width":"0"}}, h("h3", null, "ضيف حد لفريق AIX"), h("p", null, "الصلاحية بتتربط بالإيميل ده."))),
+      h("div", {class:"grantrow", style:{"grid-template-columns":"1fr 1fr", "margin-bottom":"8px"}}, nm, em), pb,
+      h("div", {class:"grantact", style:{"margin-top":"10px"}}, go, msg));
+  };
+  const ms = [...st.members].sort((a, b) => (String(a.email).toLowerCase() === st.me ? -1 : 0) - (String(b.email).toLowerCase() === st.me ? -1 : 0));
+  box.replaceChildren(head,
+    h("div", {class:"eyebrow", style:{margin:"4px 6px 10px"}}, "فريق AIX (" + ms.length + ")"),
+    ...ms.map(mcard), addCard(), out);
+}
 const _enter = (u) => { meEmail = (u && u.email) || ""; meUser = u || null; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
 
 /* ---------- install ---------- */
@@ -584,8 +727,9 @@ function paint(){}
 /* ---------- intro: agents build the UI ---------- */
 function intro(){
   const el = $("#intro");
-  if (RM || sessionStorage.getItem("introSeen")){ el.remove(); return Promise.resolve(); }
-  try { sessionStorage.setItem("introSeen", "1"); } catch {}
+  let seen = "1"; try { seen = sessionStorage.getItem("introSeen") || localStorage.getItem("cc.intro"); } catch {}
+  if (RM || seen){ el.remove(); return Promise.resolve(); }
+  try { sessionStorage.setItem("introSeen", "1"); localStorage.setItem("cc.intro", "1"); } catch {}
   return new Promise((resolve) => {
     const cv = $("#ic"), g = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
     cv.width = W*dpr; cv.height = H*dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -602,12 +746,11 @@ function intro(){
     boxes.forEach((b, i) => { b.ag = i % AG.length; b.t0 = 100 + i/boxes.length*(T - per - 150); });
     const ag = AG.map(([n, c], i) => ({n, c, x: W*(.2 + .6*((i*37) % 11)/11), y: H*(.3 + .5*((i*53) % 7)/7)}));
     const ease = (t) => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
-    const t0 = performance.now(); let raf = 0, done = false;
+    const t0 = performance.now(); let raf = 0, done = false, lastBar = "";
     function arrow(x, y, c, n){ g.save(); g.translate(x, y); g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 16); g.lineTo(4.5, 12); g.lineTo(8, 19); g.lineTo(10.5, 18); g.lineTo(7.2, 11.2); g.lineTo(12.5, 11); g.closePath(); g.fillStyle = c; g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 1.4; g.stroke();
       g.font = "600 11px 'IBM Plex Sans Arabic', system-ui, sans-serif"; const tw = g.measureText(n).width; g.beginPath(); if (g.roundRect) g.roundRect(12, 18, tw + 14, 20, 10); else g.rect(12, 18, tw + 14, 20); g.fill(); g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(n, 19 + tw/2, 28.5); g.restore(); }
     function frame(now){
       const t = now - t0; g.clearRect(0, 0, W, H);
-      g.fillStyle = "#CFCBC1"; for (let y = 10; y < H; y += 18) for (let x = 10; x < W; x += 18) g.fillRect(x, y, 1.4, 1.4);
       let dn = 0;
       for (const b of boxes){ if (t < b.t0) continue; const p = Math.min(1, (t - b.t0)/per), e = ease(p), col = AG[b.ag][1], ww = b.w*e, hh = b.h*Math.min(1, e*1.25);
         g.fillStyle = col + "14"; g.fillRect(b.x + b.w - ww, b.y, ww, hh); g.strokeStyle = col; g.lineWidth = 1.2; g.setLineDash(p < 1 ? [4, 3] : []); g.strokeRect(b.x + b.w - ww + .5, b.y + .5, Math.max(0, ww - 1), Math.max(0, hh - 1)); g.setLineDash([]);
@@ -617,7 +760,7 @@ function intro(){
         if (cur){ if (t < cur.t0){ tx = cur.x + cur.w; ty = cur.y; } else { const e = ease(Math.min(1, (t - cur.t0)/per)); tx = cur.x + cur.w - cur.w*e; ty = cur.y + cur.h*Math.min(1, e*1.25); } }
         else { const nx = mine.find(b => b.t0 > t); if (nx){ tx = nx.x + nx.w; ty = nx.y; } }
         a.x += (tx - a.x)*.17; a.y += (ty - a.y)*.17; arrow(a.x, a.y, a.c, a.n); });
-      $("#ibar").textContent = `${AG.length} agents · ${Math.round(147*dn/boxes.length)}/147 layers`;
+      const bt = `${AG.length} agents · ${Math.round(147*dn/boxes.length)}/147 layers`; if (bt !== lastBar){ lastBar = bt; $("#ibar").textContent = bt; }
       if (t > T + 300) finish(); else if (!done) raf = requestAnimationFrame(frame);
     }
     function finish(){ if (done) return; done = true; cancelAnimationFrame(raf); el.classList.add("out"); resolve(); setTimeout(() => el.remove(), 550); }
@@ -630,7 +773,7 @@ let sb = null, who = "";
 try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
 const appEls = [$("#shell")];
 function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
-async function logout(){ ACC = null; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
+async function logout(){ ACC = null; await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
 function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
 const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
 function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
@@ -680,7 +823,12 @@ function enter(user){
   history.replaceState({screen:"home"}, "");
   const q = new URLSearchParams(location.search).get("open");
   const ir = $("#intro"); if (ir) ir.hidden = false;
-  intro().then(() => { show("home", false); const it = q && ALL.find(i => i.key === q); if (it && can(it)) open(it); });
+  intro().then(() => {
+    // each person lands on their own part: someone with a single section goes straight into it (Back returns home)
+    const vis = visible();
+    if (!ACC.owner && vis.length === 1) show("space", true, vis[0].id); else show("home", false);
+    const it = q && ALL.find(i => i.key === q); if (it && can(it)) open(it);
+  });
 }
 // WhatsApp number of our bot, digits only (e.g. 2010xxxxxxx). Empty hides the "open WhatsApp" helper.
 const BOT_WA = "201111126938";
