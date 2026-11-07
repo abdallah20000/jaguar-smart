@@ -131,6 +131,19 @@ svg{stroke-width:1.75}
 .foot{display:flex;justify-content:center;margin-top:18px}
 .out-btn{font-size:12.5px;color:var(--ink-3);padding:6px 14px;border-radius:999px;border:1px solid var(--line-2)}
 
+/* team */
+.person{margin-bottom:12px}
+.person .ci{font-weight:700;font-size:14px}
+.tag.new{background:rgba(245,154,74,.16);border-color:rgba(245,154,74,.4);color:#FFC48F}
+.grantrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
+.grantrow label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--ink-3);min-width:0}
+.sel{appearance:none;width:100%;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--ink);padding:9px 10px;font:inherit;font-size:13px}
+.sel option{background:#2a2420;color:#fff}
+.grantact{display:flex;align-items:center;gap:8px}
+.smsg{font-size:12px;color:var(--ink-3)}
+.note{font-size:12.5px;color:var(--ink-3);margin:0}
+@media (max-width:760px){.grantrow{grid-template-columns:1fr 1fr}.grantact{grid-column:1/-1}}
+
 /* page viewer */
 #viewer{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
 #viewer.on{transform:none}
@@ -172,6 +185,9 @@ svg{stroke-width:1.75}
 .gerr{color:#FFB3B3;font-size:13.5px;min-height:1.2em}
 .gbox .btn{width:100%;padding:13px 18px;font-size:15px}
 .gbox .btn:disabled{opacity:.6}
+.gok{color:#9EF0C4;font-size:13.5px;min-height:0}
+.glinks{display:flex;flex-direction:column;gap:6px;align-items:center}
+.glinks button{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
 .out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
 
 /* intro */
@@ -199,13 +215,26 @@ svg{stroke-width:1.75}
 <section class="gate" id="g-login" hidden>
   <form class="gbox glass" id="login-form" autocomplete="on">
     <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
-    <h1>تسجيل الدخول</h1>
-    <p>للفريق بس. بنفس حسابك اللي بتدخل بيه CRM ولوحة الرسايل.</p>
+    <h1 id="l-title">تسجيل الدخول</h1>
+    <p id="l-sub">للفريق بس. ادخل بإيميلك والباسورد بتاعك.</p>
+    <div class="fld" id="l-name-f" hidden><label for="l-name">اسمك</label><input id="l-name" name="name" autocomplete="name" style="direction:rtl;text-align:right"></div>
     <div class="fld"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email" required></div>
-    <div class="fld"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" required></div>
+    <div class="fld" id="l-pw-f"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" minlength="6"></div>
     <div class="gerr" id="l-err" role="alert"></div>
+    <div class="gok" id="l-ok" role="status"></div>
     <button class="btn" id="l-btn" type="submit">دخول</button>
+    <div class="glinks"><button type="button" id="to-forgot">نسيت الباسورد؟</button><button type="button" id="to-signup">معندكش حساب؟ اعمل حساب</button><button type="button" id="to-login" hidden>عندك حساب؟ ادخل</button></div>
   </form>
+</section>
+<section class="gate" id="g-wait" hidden>
+  <div class="gbox glass">
+    <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
+    <h1>حسابك اتعمل ✓</h1>
+    <p>مستني صاحب الشغل يفتحلك الأقسام بتاعتك. أول ما يوافق، دوس «حدّث».</p>
+    <div class="gerr" id="w-err" role="alert"></div>
+    <button class="btn" id="w-refresh" type="button">حدّث</button>
+    <div class="glinks"><button type="button" id="w-out">خروج</button></div>
+  </div>
 </section>
 
 <section class="gate" id="g-name" hidden>
@@ -239,6 +268,7 @@ svg{stroke-width:1.75}
     <section class="pane" id="s-home"></section>
     <section class="pane" id="s-space" hidden></section>
     <section class="pane" id="s-links" hidden></section>
+    <section class="pane" id="s-team" hidden></section>
   </div>
 </div>
 
@@ -340,14 +370,14 @@ const SHAHI_ROLE = {admin:"أدمن شاهي", sales:"مبيعات شاهي", op
 const COMPANY = {"jaguar":"Jaguar Smart", "tuya-suez":"Tuya Suez"};
 function roleLabel(){ if (!ACC) return ""; if (ACC.owner) return "المالك"; if (ACC.role) return ROLE[ACC.role] || ACC.role; if (ACC.shahi) return SHAHI_ROLE[ACC.shahi.role] || "فريق شاهي"; return ""; }
 function placeLabel(){ if (!ACC) return ""; if (ACC.owner) return "كل البيزنس"; if (ACC.role) return COMPANY[ACC.company] || ""; return ACC.shahi ? "شاهي" : ""; }
-let lastSeen = null;
+let lastSeen = null, meEmail = "";
 
 /* ---------- screens, rail and history (Android back button works) ---------- */
 let current = {view:"home"}, seg = "all", query = "";
 function show(view, push = true, spaceId){
   current = {view, space: spaceId};
-  for (const id of ["home","space","links"]) $("#s-" + id).hidden = id !== view;
-  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome();
+  for (const id of ["home","space","links","team"]) $("#s-" + id).hidden = id !== view;
+  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam();
   renderRail(); renderTop();
   if (push) history.pushState({view, space: spaceId}, "");
   const el = $("#s-" + view); el.scrollTop = 0;
@@ -379,11 +409,12 @@ function renderRail(){
     item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
     ...vis.map(sp => item(sp.id, sp.ic, sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
     h("div", {class:"spacer"}),
+    ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
     item("out", "out", "خروج", () => logout(), false));
 }
 function renderTop(){
   const sp = current.view === "space" && visible().find(s => s.id === current.space);
-  $("#crumb").textContent = sp ? sp.name : "الرئيسية";
+  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : "الرئيسية";
   const nm = who || "حسابي";
   $("#ws").replaceChildren(h("span", {class:"av"}, nm.charAt(0)), h("span", {style:{"min-width":"0"}}, h("b", null, nm), h("small", null, [roleLabel(), placeLabel()].filter(Boolean).join(" · "))), h("span", {html: I.chev}));
   $("#me").firstChild.textContent = nm.charAt(0);
@@ -448,8 +479,57 @@ function renderSpace(id){
       h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel()))),
     rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : h("div", {class:"empty glass card"}, "مفيش صفحة بالاسم ده."));
 }
-function renderLinks(){ renderRail(); renderTop(); }
-const _enter = (u) => { try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
+function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner) loadPeople(true); }
+
+/* ---------- team (owner only): approve sign-ups and choose what each person opens ---------- */
+let people = null, pendingCount = 0, peopleErr = "";
+const hasAccess = (x) => !!x.team_role || (x.shahi_role && x.shahi_active);
+async function loadPeople(quiet){
+  try { const r = await sb.rpc("app_people"); if (r.error) throw r.error; people = r.data || []; peopleErr = ""; }
+  catch (e) { people = null; peopleErr = (e && (e.code === "PGRST202" || /app_people/.test(e.message || ""))) ? "setup" : "net"; }
+  pendingCount = people ? people.filter(x => !hasAccess(x)).length : 0;
+  renderRail(); if (!quiet && current.view === "team") renderTeam();
+}
+const sel = (id, opts, val) => h("select", {id, class:"sel"}, opts.map(([v, t]) => { const o = h("option", {value: v}, t); if (v === (val || "")) o.selected = true; return o; }));
+function renderTeam(){
+  const box = $("#s-team");
+  const head = h("div", {class:"phead"}, h("div", null, h("h1", null, "الفريق"), h("p", null, "اللي عملوا حساب بيظهروا هنا. اختار لكل واحد يفتح إيه ودوس «حفظ».")),
+    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { box.replaceChildren(head, h("div", {class:"empty glass card"}, "بيحمّل…")); loadPeople(); }}, "حدّث")));
+  if (!people){
+    box.replaceChildren(head, h("div", {class:"empty glass card"}, peopleErr === "setup" ? "صفحة الفريق محتاجة تحديث صغير في قاعدة البيانات لسه ماتعملش." : peopleErr === "net" ? "مفيش اتصال دلوقتي. دوس «حدّث»." : "بيحمّل…"));
+    if (!peopleErr) loadPeople();
+    return;
+  }
+  const card = (x) => {
+    const id = x.user_id.replace(/[^a-z0-9]/gi, "").slice(0, 12), me = (x.email || "").toLowerCase() === (meEmail || "").toLowerCase();
+    const msg = h("span", {class:"smsg"});
+    const save = h("button", {class:"act", type:"button"}, "حفظ");
+    save.onclick = async () => {
+      save.disabled = true; msg.textContent = "بيحفظ…";
+      const role = $("#r-" + id).value, company = $("#c-" + id).value, sr = $("#s-" + id).value;
+      try { const r = await sb.rpc("app_set_access", {p_user: x.user_id, p_company: company, p_role: role, p_shahi_role: sr}); if (r.error) throw r.error; msg.textContent = "اتحفظ ✓"; await loadPeople(); }
+      catch (e) { msg.textContent = "مقدرناش نحفظ. جرّب تاني."; save.disabled = false; }
+    };
+    const pending = !hasAccess(x);
+    return h("section", {class:"card glass person"},
+      h("div", {class:"ch"}, h("span", {class:"ci"}, (x.full_name || x.email || "?").trim().charAt(0).toUpperCase()),
+        h("div", {style:{"min-width":"0"}}, h("h3", null, x.full_name || x.email.split("@")[0]), h("p", {style:{direction:"ltr", "text-align":"right"}}, x.email)),
+        pending ? h("span", {class:"tag new"}, "جديد · مستني") : h("span", {class:"tag"}, [x.team_role ? (ROLE[x.team_role] + " · " + (COMPANY[x.team_company] || "")) : "", x.shahi_role && x.shahi_active ? SHAHI_ROLE[x.shahi_role] : ""].filter(Boolean).join(" + ")),
+        !x.confirmed ? h("span", {class:"tag"}, "الإيميل لسه ماتأكدش") : null),
+      me ? h("p", {class:"note"}, "ده حسابك انت.") : h("div", {class:"grantrow"},
+        h("label", null, h("span", null, "الشركة"), sel("c-" + id, [["jaguar","Jaguar Smart"],["tuya-suez","Tuya Suez"]], x.team_company || "jaguar")),
+        h("label", null, h("span", null, "الدور"), sel("r-" + id, [["","مالوش"],["crm","مبيعات (CRM)"],["inventory","مخزن"],["installs","تركيبات"],["admin","أدمن الشركة"]], x.team_role)),
+        h("label", null, h("span", null, "شاهي"), sel("s-" + id, [["","مالوش"],["sales","مبيعات"],["ops","تشغيل"],["chef","شيف"],["admin","أدمن شاهي"]], x.shahi_active ? x.shahi_role : "")),
+        h("div", {class:"grantact"}, save, msg)));
+  };
+  const pend = people.filter(x => !hasAccess(x)), rest = people.filter(hasAccess);
+  box.replaceChildren(head,
+    pend.length ? h("div", {class:"eyebrow", style:{margin:"4px 6px 10px"}}, "مستنيين موافقتك (" + pend.length + ")") : null,
+    ...pend.map(card),
+    h("div", {class:"eyebrow", style:{margin:"18px 6px 10px"}}, "الفريق (" + rest.length + ")"),
+    ...rest.map(card));
+}
+const _enter = (u) => { meEmail = (u && u.email) || ""; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
 
 /* ---------- install ---------- */
 let deferred = null;
@@ -532,7 +612,11 @@ async function admit(user){
     $("#l-err").append(h("button", {type:"button", style:{"text-decoration":"underline", color:"inherit"}, onclick: () => { $("#l-err").textContent = ""; admit(user); }}, "حاول تاني"));
     return;
   }
-  if (!a){ try { await sb.auth.signOut(); } catch {} $("#g-login").hidden = false; $("#l-err").textContent = "الحساب ده مش من الفريق."; return; }
+  if (!a){ $("#g-login").hidden = true; $("#g-wait").hidden = false; $("#w-err").textContent = "";
+    $("#w-refresh").onclick = async () => { $("#w-err").textContent = ""; const b = $("#w-refresh"); b.disabled = true; b.textContent = "بيشوف…"; $("#g-wait").hidden = true; await admit(user); b.disabled = false; b.textContent = "حدّث"; if (!$("#g-wait").hidden) $("#w-err").textContent = "لسه مستني الموافقة."; };
+    $("#w-out").onclick = async () => { try { await sb.auth.signOut(); } catch {} $("#g-wait").hidden = true; $("#g-login").hidden = false; };
+    return; }
+  $("#g-wait").hidden = true;
   ACC = a;
   who = nameOf(user) || (a.shahi && String(a.shahi.full_name || "").trim().split(/\s+/)[0]) || savedName(user);
   if (!who){
@@ -553,19 +637,46 @@ function enter(user){
   const ir = $("#intro"); if (ir) ir.hidden = false;
   intro().then(() => { show("home", false); const it = q && ALL.find(i => i.key === q); if (it && can(it)) open(it); });
 }
+let mode = "login";
+function setMode(m){
+  mode = m; $("#l-err").textContent = ""; $("#l-ok").textContent = "";
+  $("#l-title").textContent = m === "signup" ? "حساب جديد" : m === "forgot" ? "نسيت الباسورد" : "تسجيل الدخول";
+  $("#l-sub").textContent = m === "signup" ? "اعمل حساب بإيميلك. صاحب الشغل هيفتحلك الأقسام بتاعتك." : m === "forgot" ? "اكتب إيميلك وهنبعتلك لينك تعمل بيه باسورد جديد." : "للفريق بس. ادخل بإيميلك والباسورد بتاعك.";
+  $("#l-name-f").hidden = m !== "signup"; $("#l-pw-f").hidden = m === "forgot";
+  $("#l-pw").autocomplete = m === "signup" ? "new-password" : "current-password";
+  $("#l-btn").textContent = m === "signup" ? "اعمل الحساب" : m === "forgot" ? "ابعتلي اللينك" : "دخول";
+  $("#to-signup").hidden = m !== "login"; $("#to-forgot").hidden = m !== "login"; $("#to-login").hidden = m === "login";
+}
+$("#to-signup").onclick = () => setMode("signup"); $("#to-forgot").onclick = () => setMode("forgot"); $("#to-login").onclick = () => setMode("login");
 $("#login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const btn = $("#l-btn"), err = $("#l-err"); err.textContent = "";
+  const btn = $("#l-btn"), err = $("#l-err"), ok = $("#l-ok"); err.textContent = ""; ok.textContent = "";
   if (!sb){ err.textContent = "مفيش اتصال دلوقتي. اتأكد من النت وافتح التطبيق تاني."; return; }
-  btn.disabled = true; btn.textContent = "بيدخل…";
+  const email = $("#l-email").value.trim(), pw = $("#l-pw").value, name = $("#l-name").value.trim();
+  if (!email){ err.textContent = "اكتب الإيميل."; return; }
+  if (mode !== "forgot" && pw.length < 6){ err.textContent = "الباسورد لازم يكون 6 حروف على الأقل."; return; }
+  if (mode === "signup" && !name){ err.textContent = "اكتب اسمك."; return; }
+  const label = btn.textContent; btn.disabled = true; btn.textContent = "لحظة…";
   try {
-    const r = await sb.auth.signInWithPassword({email: $("#l-email").value.trim(), password: $("#l-pw").value});
-    if (r.error || !r.data || !r.data.user){ err.textContent = "الإيميل أو الباسورد مش صح."; return; }
+    if (mode === "forgot"){
+      const r = await sb.auth.resetPasswordForEmail(email, {redirectTo: location.origin + "/app/reset.html"});
+      if (r.error) throw r.error;
+      ok.textContent = "لو الإيميل ده عنده حساب، هيوصله لينك دلوقتي. افتحه واعمل باسورد جديد."; return;
+    }
+    if (mode === "signup"){
+      const r = await sb.auth.signUp({email, password: pw, options: {data: {full_name: name}, emailRedirectTo: location.origin + "/app/"}});
+      if (r.error){ err.textContent = /registered|exists/i.test(r.error.message || "") ? "الإيميل ده عنده حساب بالفعل. ادخل بيه، ولو ناسي الباسورد دوس «نسيت الباسورد؟»." : "مقدرناش نعمل الحساب. جرّب تاني."; return; }
+      try { localStorage.setItem("cc.name." + ((r.data.user && r.data.user.id) || ""), name.split(/\s+/)[0]); } catch {}
+      if (!r.data.session){ setMode("login"); $("#l-email").value = email; ok.textContent = "بعتنالك إيميل تأكيد. افتحه ودوس على اللينك، وبعدين ادخل من هنا."; return; }
+      $("#l-pw").value = ""; entered = false; await admit(r.data.user); return;
+    }
+    const r = await sb.auth.signInWithPassword({email, password: pw});
+    if (r.error || !r.data || !r.data.user){ err.textContent = /confirm/i.test((r.error && r.error.message) || "") ? "لازم تأكد إيميلك الأول من الرسالة اللي وصلتلك." : "الإيميل أو الباسورد مش صح."; return; }
     try { if (window.PasswordCredential && navigator.credentials) await navigator.credentials.store(new PasswordCredential($("#login-form"))); } catch {}
     $("#l-pw").value = "";
     entered = false; await admit(r.data.user);
   } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; }
-  finally { btn.disabled = false; btn.textContent = "دخول"; }
+  finally { btn.disabled = false; btn.textContent = label; }
 });
 
 /* ---------- boot ---------- */

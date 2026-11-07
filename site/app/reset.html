@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1E1A18">
+<title>باسورد جديد · مركز التحكم</title>
+<link rel="icon" href="/app/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{color-scheme:dark;--ink:#F4F1EE;--ink-2:rgba(244,241,238,.66)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#1E1A18;color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif}
+body{min-height:100vh;display:flex;padding:24px 20px}
+form{margin:auto;width:min(400px,100%);border-radius:26px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;text-align:center;background:rgba(40,34,31,.5);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 20px 40px rgba(0,0,0,.3)}
+img{width:72px;height:72px;border-radius:20px;margin:0 auto}
+h1{margin:0;font-family:Alexandria,sans-serif;font-size:22px}
+p{margin:0;color:var(--ink-2);font-size:14px}
+label{display:flex;flex-direction:column;gap:6px;text-align:start;font-size:13px;color:var(--ink-2)}
+input{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:var(--ink);padding:13px 14px;font:inherit;font-size:16px;direction:ltr;text-align:left;outline:none}
+input:focus{border-color:#F59A4A}
+button{border:0;border-radius:999px;padding:13px;font:inherit;font-weight:600;font-size:15px;background:linear-gradient(180deg,#F7AA66,#EE8233);color:#2A1606;cursor:pointer}
+button:disabled{opacity:.5}
+.msg{min-height:1.3em;font-size:13.5px;color:#FFB3B3}.msg.ok{color:#9EF0C4}
+</style>
+</head>
+<body>
+<form id="f">
+  <img src="/app/icon-192.png" alt="" width="72" height="72">
+  <h1>باسورد جديد</h1>
+  <p id="intro">بنجهّز اللينك…</p>
+  <label>الباسورد الجديد (6 حروف على الأقل)<input id="p1" type="password" minlength="6" autocomplete="new-password" required disabled></label>
+  <label>اكتبه تاني<input id="p2" type="password" minlength="6" autocomplete="new-password" required disabled></label>
+  <button id="go" disabled>حفظ الباسورد</button>
+  <div class="msg" id="m" role="alert"></div>
+</form>
+<script>
+const sb = supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds");
+const $ = (id) => document.getElementById(id);
+const ready = () => { $("intro").textContent = "اكتب الباسورد الجديد."; ["p1","p2","go"].forEach(id => $(id).disabled = false); };
+sb.auth.onAuthStateChange((ev, s) => { if (s && (ev === "PASSWORD_RECOVERY" || ev === "SIGNED_IN" || ev === "INITIAL_SESSION")) ready(); });
+setTimeout(async () => { const { data } = await sb.auth.getSession(); if (!data.session) $("intro").textContent = "اللينك ده انتهى أو مش صحيح. اطلب لينك جديد من «نسيت الباسورد؟» في التطبيق."; }, 2500);
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const a = $("p1").value, b = $("p2").value, m = $("m");
+  if (a !== b){ m.className = "msg"; m.textContent = "الباسوردين مش زي بعض."; return; }
+  $("go").disabled = true;
+  const { error } = await sb.auth.updateUser({ password: a });
+  if (error){ m.className = "msg"; m.textContent = "مقدرناش نغيّره. اطلب لينك جديد وجرّب تاني."; $("go").disabled = false; return; }
+  m.className = "msg ok"; m.textContent = "تمام ✓ الباسورد اتغيّر. افتح التطبيق وادخل بيه.";
+  setTimeout(() => location.href = "/app/", 1800);
+});
+</script>
+</body>
+</html>
