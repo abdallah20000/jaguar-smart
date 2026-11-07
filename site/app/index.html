@@ -274,6 +274,26 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .ph-id{display:flex;align-items:center;gap:14px;min-width:0}
 @media (max-width:760px){.rail{background:rgba(20,16,13,.80);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
+/* home: system health + expenses */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.duo .tile{flex-direction:row;align-items:center;min-height:84px}
+.duo .eb{font-size:11.5px;font-weight:600;color:var(--accent)}
+.duo .t-tx b{font-size:15.5px}
+.health.bad{border-color:rgba(248,113,113,.45)}
+@media (max-width:760px){.duo{grid-template-columns:minmax(0,1fr)}}
+/* expenses screen */
+.clist{display:flex;flex-direction:column}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:10px 6px;text-align:start;border-radius:12px}
+.crow + .crow{border-top:1px solid var(--line)}
+@media (hover:hover){button.crow:hover{background:var(--glass-2)}}
+.crow > b{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+.crow .kv{-webkit-line-clamp:3}
+.crow .kv.warn{color:#FFB4A1}
+.crow .wait{font-size:12px;color:#FFC48F;border:1px dashed rgba(245,154,74,.5);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.crow.editing{display:block;background:rgba(255,255,255,.03)}
+.cform{display:flex;flex-direction:column;gap:4px;width:100%}
+.addc{margin-top:10px;align-self:flex-start}
+.ghost{border:1px solid var(--line-2);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--ink-2);background:rgba(255,255,255,.04)}
 /* sales headline on home */
 .sales{background:linear-gradient(135deg,rgba(245,154,74,.24),rgba(245,154,74,0) 60%),var(--sheen),var(--glass)}
 .s-main{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:6px 0 14px;flex-wrap:wrap}
@@ -429,6 +449,7 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
     <section class="pane" id="s-team" hidden></section>
     <section class="pane" id="s-ops" hidden></section>
     <section class="pane" id="s-spaces" hidden></section>
+    <section class="pane" id="s-costs" hidden></section>
   </div>
 </div>
 
@@ -570,7 +591,8 @@ function phoneCard(){
 let current = {view:"home"}, seg = "all", query = "";
 function show(view, push = true, spaceId){
   current = {view, space: spaceId};
-  for (const id of ["home","space","links","team","ops","spaces"]) $("#s-" + id).hidden = id !== view;
+  for (const id of ["home","space","links","team","ops","spaces","costs"]) $("#s-" + id).hidden = id !== view;
+  if (view === "costs") renderCosts();
   if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam(); else if (view === "ops") renderOps(); else if (view === "spaces") renderSpaces();
   renderRail(); renderTop();
   if (push) history.pushState({view, space: spaceId}, "");
@@ -626,7 +648,7 @@ function renderRail(){
   const vis = visible(), comps = companiesOf(vis), direct = comps.length <= 2;
   const sig = vis.map((sp) => sp.id).join(",") + "|" + !!(ACC && ACC.owner) + "|" + pendingCount + "|" + ((typeof OPS !== "undefined" && OPS.stats && OPS.stats.pending) || 0);
   const cur = railKeyFor();
-  const isCur = (k) => k === "home" ? current.view === "home" : k === "team" ? current.view === "team" : k === "ops" ? current.view === "ops" : k === "spaces" ? cur === "spaces" :
+  const isCur = (k) => k === "home" ? current.view === "home" : k === "team" ? current.view === "team" : k === "ops" ? current.view === "ops" : k === "costs" ? current.view === "costs" : k === "spaces" ? cur === "spaces" :
     current.view === "space" && current.space === k;
   if (sig === railSig && $("#rail").childElementCount){
     $("#rail").querySelectorAll(".ri[data-k]").forEach((b) => { if (isCur(b.getAttribute("data-k"))) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
@@ -646,6 +668,7 @@ function renderRail(){
     msgs ? item("msgs", railLogo.msgs || (railLogo.msgs = logoEl(msgs)), msgs.name, () => show("space", true, "msgs"), isCur("msgs"), null, "", "الرسايل") : null,
     h("div", {class:"spacer"}),
     ACC && ACC.owner ? item("ops", "spark", "العمليات", () => show("ops"), isCur("ops"), OPS.stats && OPS.stats.pending ? String(OPS.stats.pending) : null) : null,
+    ACC && ACC.owner ? item("costs", "coin", "المصاريف والحسابات", () => show("costs"), isCur("costs"), null, "d-only", "المصاريف") : null,
     ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), isCur("team"), pendingCount ? String(pendingCount) : null) : null,
     item("out", "out", "خروج", () => logout(), false, null, "d-only")].filter(Boolean));
   requestAnimationFrame(() => moveLens(false));
@@ -653,7 +676,7 @@ function renderRail(){
 addEventListener("resize", () => moveLens(false));
 function renderTop(){
   const sp = current.view === "space" && visible().find(s => s.id === current.space);
-  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : current.view === "ops" ? "العمليات" : current.view === "spaces" ? "الشركات" : "الرئيسية";
+  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : current.view === "ops" ? "العمليات" : current.view === "costs" ? "المصاريف والحسابات" : current.view === "spaces" ? "الشركات" : "الرئيسية";
   const nm = who || "حسابي";
   $("#ws").replaceChildren(h("span", {class:"av"}, nm.charAt(0)), h("span", {style:{"min-width":"0"}}, h("b", null, nm), h("small", null, [roleLabel(), placeLabel()].filter(Boolean).join(" · "))), h("span", {html: I.chev}));
   $("#me").firstChild.textContent = nm.charAt(0);
@@ -792,6 +815,7 @@ function fillField(e){
   else { b.classList.remove("load"); b.textContent = "—"; sm.textContent = k && k.login ? "ادخل AIX من «الفريق»" : "مش متاح"; }
 }
 function paintKpi(key){
+  if (key.endsWith(":crm") && current.view === "costs" && !COSTS.editing && !COSTS.adding) renderCosts();
   if (key.endsWith(":crm")){ const e = document.getElementById("sales"); if (e){ const n = salesCard(); if (n) e.replaceWith(n); } }
   document.querySelectorAll('[data-kpi="' + key + '"]').forEach((e) => fillLine(e, key));
   document.querySelectorAll('[data-kf^="' + key + '|"]').forEach(fillField);
@@ -864,6 +888,7 @@ function renderHome(){
         kpi("دورك", roleLabel() || "—", null, placeLabel()),
         kpi("آخر دخول", rel(lastSeen), null, "على الموبايل ده"))),
     ACC && ACC.owner ? opsBrief() : null,
+    ACC && ACC.owner ? h("div", {class:"duo"}, healthTile(), costsTile()) : null,
     shown.length ? h("div", {class:"cards"}, shown.map(([s, r]) => spaceCard(s, r))) : stateCard(query ? "search" : "grid", query ? "مفيش صفحة بالاسم ده." : "مفيش أقسام متاحة لحسابك."),
     phoneCard(),
     h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
@@ -907,12 +932,12 @@ function renderSpace(id){
     spaceBrief(sp),
     rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده."));
 }
-function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); } }
+function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); loadCosts(); } }
 
 /* ---------- AI operations (owner only). The agents on n8n write what they did into app_ops;
    anything that would go out to a customer waits here as "pending" until the owner approves it. ---------- */
 const OPS_API = "/api/hook/app-ops";
-const AGENT = {content:"كاتب المحتوى", leads:"صياد العملاء", competitors:"متابعة المنافسين", summary:"ملخص اليوم", claude:"Claude", reviewer:"المراجع"};
+const AGENT = {tester:"موظف التستنج", content:"كاتب المحتوى", leads:"صياد العملاء", competitors:"متابعة المنافسين", summary:"ملخص اليوم", claude:"Claude", reviewer:"المراجع"};
 let OPS = {items:null, stats:null, err:"", tab:"pending", openIds:new Set(), busy:new Set(), at:0};
 async function opsCall(params){
   const s = sb && (await sb.auth.getSession()).data.session;
@@ -987,6 +1012,117 @@ function renderOps(){
 // refresh on open, when the app comes back to the screen, and every 15 minutes while it is open
 document.addEventListener("visibilitychange", () => { if (!document.hidden && ACC && ACC.owner && Date.now() - OPS.at > 120000) loadOps(true); });
 setInterval(() => { if (!document.hidden && ACC && ACC.owner) loadOps(true); }, 900000);
+
+/* ---------- system health: the daily tester's latest report (from the same app-ops list) ---------- */
+function lastTest(){ return (OPS.items || []).filter((it) => it.agent === "tester").sort((a, b) => new Date(b.at) - new Date(a.at))[0] || null; }
+function testSummary(it){
+  const lines = String((it.title || "") + "\n" + (it.body || "")).split("\n").map((l) => l.trim()).filter(Boolean);
+  const bad = lines.filter((l) => l.includes("❌"));
+  return {ok: !bad.length, bad: bad.length, line: bad.length ? bad[0].replace(/^[-•*\s]*❌\s*/, "") : "كل الصفحات والـ APIs شغالة"};
+}
+function healthTile(){
+  const it = lastTest(), loading = OPS.items === null && !OPS.err;
+  const t = it && testSummary(it);
+  const head = !it ? (loading ? "بيجيب آخر فحص…" : OPS.err ? "مقدرناش نجيب التقرير" : "مفيش تقرير فحص في آخر 4 أيام")
+    : t.ok ? "🟢 السيستم سليم" : "🔴 فيه " + fmtN.format(t.bad) + (t.bad > 2 && t.bad < 11 ? " مشاكل" : " مشكلة");
+  const when = it && it.at ? fDayShort.format(new Date(it.at)) + " · " + fTime.format(new Date(it.at)) : "";
+  return h("button", {class:"tile glass health" + (t && !t.ok ? " bad" : ""), type:"button", onclick: () => {
+      if (it){ OPS.tab = "reports"; OPS.openIds.add(it.id); show("ops"); setTimeout(() => { const e = document.querySelector("#s-ops .op.open"); if (e) e.scrollIntoView({block:"center"}); }, 60); }
+      else show("ops"); }},
+    h("span", {class:"t-ic", html: I.spark}),
+    h("span", {class:"t-tx"}, h("small", {class:"eb"}, "صحة السيستم"), h("b", null, head), h("small", {class:"kv"}, it ? [when, t.line].filter(Boolean).join(" · ") : "موظف التستنج بيفحص كل يوم 9:30")));
+}
+
+/* ---------- expenses and accounts (owner only): table app_costs, migration 107 ---------- */
+const CUR = {USD:"$", EGP:"ج.م", EUR:"€"}, PER = {month:"شهر", year:"سنة", once:"مرة واحدة"};
+const COS = [["jaguar","jaguar"], ["tuya-suez","tuya"], ["aix","aix"]];
+let COSTS = {rows:null, err:"", editing:null, adding:null, busy:false};
+async function loadCosts(){
+  if (!sb || !ACC || !ACC.owner) return;
+  try { const r = await sb.from("app_costs").select("*").order("created_at"); if (r.error) throw r.error; COSTS.rows = r.data || []; COSTS.err = ""; }
+  catch (e){ COSTS.rows = null; COSTS.err = (e && (e.code === "42P01" || e.code === "PGRST205" || /app_costs/.test(e.message || ""))) ? "setup" : "net"; }
+  if (current.view === "costs") renderCosts(); else if (current.view === "home"){ const t = document.querySelector(".duo .costs"); if (t) t.replaceWith(costsTile()); }
+}
+// monthly total per currency: yearly / 12, one-off left out
+function monthly(rows){
+  const tot = {}; let waiting = 0, once = 0;
+  rows.forEach((r) => { if (r.amount == null){ waiting++; return; } if (r.period === "once"){ once++; return; }
+    tot[r.currency] = (tot[r.currency] || 0) + (+r.amount) / (r.period === "year" ? 12 : 1); });
+  return {tot, waiting, once};
+}
+const amt = (n, c) => new Intl.NumberFormat(L, {maximumFractionDigits: 2}).format(n) + " " + (CUR[c] || c);
+const totText = (tot) => Object.keys(tot).length ? Object.entries(tot).map(([c, n]) => amt(n, c)).join(" + ") : "";
+function costsTile(){
+  const sys = (COSTS.rows || []).filter((r) => !r.company), m = monthly(sys);
+  const head = COSTS.rows === null ? (COSTS.err === "setup" ? "محتاج تحديث 107" : COSTS.err ? "مش متاح دلوقتي" : "بيحمّل…") : totText(m.tot) ? totText(m.tot) + " / شهر" : "لسه مفيش أرقام";
+  return h("button", {class:"tile glass costs", type:"button", onclick: () => show("costs")},
+    h("span", {class:"t-ic", html: I.coin}),
+    h("span", {class:"t-tx"}, h("small", {class:"eb"}, "المصاريف والحسابات"), h("b", null, head),
+      h("small", {class:"kv"}, COSTS.rows ? "اشتراكات السيستم" + (m.waiting ? " · " + fmtN.format(m.waiting) + " مستني الرقم" : "") : "اشتراكات السيستم ودخل كل شركة")));
+}
+function costForm(row, company){
+  const v = row || {name:"", amount:null, currency: company ? "EGP" : "USD", period:"month", source:"", note:""};
+  const nm = h("input", {class:"sel", value: v.name || "", placeholder:"الاسم", autocomplete:"off"});
+  const am = h("input", {class:"sel", value: v.amount == null ? "" : String(v.amount), inputmode:"decimal", placeholder:"المبلغ (فاضي = مستني الرقم)", style:{direction:"ltr", "text-align":"left"}});
+  const cu = sel("cu-" + (v.id || "new"), [["USD","دولار $"],["EGP","جنيه"],["EUR","يورو €"]], v.currency);
+  const pe = sel("pe-" + (v.id || "new"), [["month","كل شهر"],["year","كل سنة"],["once","مرة واحدة"]], v.period);
+  const so = h("input", {class:"sel", value: v.source || "", placeholder:"المصدر (فاتورة، رقم الفاتورة…)", autocomplete:"off"});
+  const no = h("input", {class:"sel", value: v.note || "", placeholder:"ملاحظة", autocomplete:"off"});
+  const msg = h("span", {class:"smsg"}), save = h("button", {class:"act", type:"button"}, row ? "حفظ" : "ضيف");
+  save.onclick = async () => {
+    const a = am.value.trim().replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(",", ".");
+    if (!nm.value.trim()){ msg.textContent = "اكتب الاسم."; return; }
+    if (a && !(+a >= 0)){ msg.textContent = "المبلغ لازم يكون رقم."; return; }
+    const rec = {name: nm.value.trim(), amount: a ? +a : null, currency: cu.value, period: pe.value, source: so.value.trim() || null, note: no.value.trim() || null, company: row ? row.company : (company || null)};
+    save.disabled = true; msg.textContent = "بيحفظ…";
+    try { const r = row ? await sb.from("app_costs").update(rec).eq("id", row.id) : await sb.from("app_costs").insert(rec); if (r.error) throw r.error;
+      COSTS.editing = null; COSTS.adding = null; await loadCosts(); }
+    catch { msg.textContent = "مقدرناش نحفظ. جرّب تاني."; save.disabled = false; }
+  };
+  const del = row ? h("button", {class:"ghost", type:"button", onclick: async () => {
+    if (!confirm("تمسح «" + row.name + "»؟")) return;
+    try { const r = await sb.from("app_costs").delete().eq("id", row.id); if (r.error) throw r.error; COSTS.editing = null; await loadCosts(); } catch { msg.textContent = "مقدرناش نمسح."; } }}, "امسح") : null;
+  const cancel = h("button", {class:"ghost", type:"button", onclick: () => { COSTS.editing = null; COSTS.adding = null; renderCosts(); }}, "إلغاء");
+  return h("div", {class:"cform"}, h("div", {class:"grantrow", style:{"grid-template-columns":"1fr 1fr"}}, nm, am, cu, pe, so, no), h("div", {class:"pfoot"}, save, cancel, del, msg));
+}
+function costRow(r){
+  if (COSTS.editing === r.id) return h("div", {class:"crow editing"}, costForm(r));
+  const val = r.amount == null ? h("span", {class:"wait"}, "مستني الرقم") : h("b", null, amt(+r.amount, r.currency) + (r.period === "once" ? "" : " / " + PER[r.period]));
+  return h("button", {class:"crow", type:"button", onclick: () => { COSTS.editing = r.id; COSTS.adding = null; renderCosts(); }},
+    h("span", {class:"t-tx"}, h("b", null, r.name), (r.source || r.note) ? h("small", {class:"kv" + (/⚠/.test(r.note || "") ? " warn" : "")}, [r.source, r.note].filter(Boolean).join(" · ")) : null), val);
+}
+function renderCosts(){
+  const box = $("#s-costs"); if (!box) return;
+  const head = h("div", {class:"phead"}, h("div", null, h("h1", null, "المصاريف والحسابات"), h("p", null, "الأرقام من الفواتير أو منك بس. اللي لسه ملوش رقم مكتوب عليه «مستني الرقم».")),
+    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { COSTS.rows = null; renderCosts(); loadCosts(); kpiReset(); }}, "حدّث")));
+  if (COSTS.rows === null){
+    box.replaceChildren(head, COSTS.err === "setup" ? stateCard("server", "الشاشة دي محتاجة تحديث 107 في قاعدة البيانات لسه ماتعملش.") : COSTS.err ? stateCard("reload", "مفيش اتصال دلوقتي. دوس «حدّث».") : skeletons());
+    if (!COSTS.err) loadCosts();
+    return;
+  }
+  const sys = COSTS.rows.filter((r) => !r.company), m = monthly(sys);
+  const sysCard = h("section", {class:"card glass"},
+    h("div", {class:"ch"}, h("span", {class:"ci", html: I.server}), h("div", {style:{"min-width":"0"}}, h("h3", null, "اشتراكات السيستم"), h("p", null, "السيرفر، واتساب، الذكاء الاصطناعي، الدومينات")),
+      h("span", {class:"tag"}, totText(m.tot) ? totText(m.tot) + " / شهر" : "لسه مفيش أرقام")),
+    (m.waiting || m.once) ? h("p", {class:"note", style:{"margin-bottom":"10px"}}, [m.waiting ? fmtN.format(m.waiting) + " مستني الرقم، ومش داخلين في الإجمالي" : "", m.once ? "اللي بيتدفع مرة واحدة مش داخل في الإجمالي الشهري" : "", "السنوي متقسوم على 12"].filter(Boolean).join(" · ")) : h("p", {class:"note", style:{"margin-bottom":"10px"}}, "السنوي متقسوم على 12."),
+    h("div", {class:"clist"}, sys.map(costRow)),
+    COSTS.adding === "sys" ? costForm(null, null) : h("button", {class:"ghost addc", type:"button", onclick: () => { COSTS.adding = "sys"; COSTS.editing = null; renderCosts(); }}, "+ ضيف اشتراك"));
+  const coCards = COS.map(([co, kp]) => {
+    const sp = SPACES.find((x) => x.id === (kp === "jaguar" ? "jaguar" : kp)) || {name: co, c: "#888"};
+    const key = (kp === "jaguar" ? "jag" : kp) + ":crm"; kpiGet(key);
+    const k = KPI[key] || {}, d = k.d, rows = COSTS.rows.filter((r) => r.company === co), mm = monthly(rows);
+    const income = k.login ? "ادخل AIX" : d ? money(d.won || 0) : k.busy ? "…" : "—";
+    const incomeSub = d ? "عروض الشهر ده بـ " + money(d.qSum || 0) : k.login ? "من «الفريق» ← AIX" : "";
+    return h("section", {class:"card glass", style:{"--c": sp.c}},
+      h("div", {class:"ch"}, logoEl(sp), h("div", {style:{"min-width":"0"}}, h("h3", null, sp.name), h("p", null, "الشهر ده"))),
+      h("div", {class:"kpis", style:{"grid-template-columns":"1fr 1fr", "margin-bottom":"10px"}},
+        h("div", {class:"kpi"}, h("div", {class:"l"}, "دخل (عروض اتقبلت)"), h("div", {class:"v"}, h("b", null, income)), h("div", {class:"s"}, incomeSub)),
+        h("div", {class:"kpi"}, h("div", {class:"l"}, "مصاريف"), h("div", {class:"v"}, h("b", null, totText(mm.tot) || "مش متسجلة")), h("div", {class:"s"}, rows.length ? fmtN.format(rows.length) + " بند" + (mm.waiting ? " · " + fmtN.format(mm.waiting) + " مستني الرقم" : "") : "مش في الـ CRM، ضيفها هنا"))),
+      rows.length ? h("div", {class:"clist"}, rows.map(costRow)) : null,
+      COSTS.adding === co ? costForm(null, co) : h("button", {class:"ghost addc", type:"button", onclick: () => { COSTS.adding = co; COSTS.editing = null; renderCosts(); }}, "+ ضيف مصروف"));
+  });
+  box.replaceChildren(head, sysCard, sect("الشركات", COS.length), ...coCards);
+}
 
 /* ---------- team (owner only): approve sign-ups and choose what each person opens ---------- */
 let people = null, pendingCount = 0, peopleErr = "";
