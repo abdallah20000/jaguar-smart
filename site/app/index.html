@@ -136,11 +136,20 @@ a{color:inherit;text-decoration:none}
   <form class="gbox glass" id="login-form" autocomplete="on">
     <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
     <h1>تسجيل الدخول</h1>
-    <p>بنفس حسابك اللي بتدخل بيه CRM ولوحة الرسايل.</p>
+    <p>للفريق بس. بنفس حسابك اللي بتدخل بيه CRM ولوحة الرسايل.</p>
     <div class="fld"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email" required></div>
     <div class="fld"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" required></div>
     <div class="gerr" id="l-err" role="alert"></div>
     <button class="btn" id="l-btn" type="submit">دخول</button>
+  </form>
+</section>
+
+<section class="gate" id="g-name" hidden>
+  <form class="gbox glass" id="name-form">
+    <h1>نناديك بإيه؟</h1>
+    <p>الاسم ده بيتحفظ على موبايلك بس.</p>
+    <div class="fld"><label for="n-name">اسمك</label><input id="n-name" name="name" autocomplete="given-name" required style="direction:rtl;text-align:right"></div>
+    <button class="btn" type="submit">تمام</button>
   </form>
 </section>
 
@@ -256,7 +265,7 @@ function renderHome(){
   const date = new Intl.DateTimeFormat("ar-EG-u-nu-latn", {weekday:"long", day:"numeric", month:"long"}).format(new Date());
   const inbox = ALL.find(i => i.key === "inbox");
   $("#home").replaceChildren(
-    h("div", {class:"hello"}, (hr < 12 ? "صباح الخير" : "مساء الخير") + (who ? " يا " + who : "")),
+    h("div", {class:"hello"}, who ? (isAdmin ? "أهلاً مستر " + who : "أهلاً " + who) : (hr < 12 ? "صباح الخير" : "مساء الخير")),
     h("p", {class:"sub"}, date + " · كل شغلك في مكان واحد"),
     h("button", {class:"hero glass", type:"button", onclick:() => open(inbox)}, h("span", {class:"hi", html: I.wa}), h("span", null, h("b", null, "كل الرسايل"), h("span", null, "واتساب Nile وشاهي وJaguar في مكان واحد"))),
     h("div", {class:"h2"}, "أقسامك"),
@@ -358,16 +367,32 @@ function intro(){
 }
 
 /* ---------- auth: same Supabase accounts as the CRM and inbox; the session stays on the phone ---------- */
-let sb = null, who = "";
+let sb = null, who = "", isAdmin = false;
 try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
 const appEls = [$("#s-home"), $(".tabbar")];
 function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
 async function logout(){ try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#home").replaceChildren(); $("#links").replaceChildren(); $("#space").replaceChildren(); $("#g-login").hidden = false; }
-function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
+function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
+const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
+function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
+async function teamRole(){ try { const r = await sb.rpc("my_role"); return r && !r.error ? r.data : null; } catch { return undefined; } }
+async function admit(user){
+  // only team members get in, like the CRM and the team panels
+  const role = await teamRole();
+  if (role === null){ try { await sb.auth.signOut(); } catch {} $("#g-login").hidden = false; $("#l-err").textContent = "الحساب ده مش من الفريق."; return; }
+  isAdmin = role === "admin";
+  who = nameOf(user) || savedName(user);
+  if (!who){
+    $("#g-login").hidden = true; $("#g-name").hidden = false;
+    $("#name-form").onsubmit = (e) => { e.preventDefault(); const n = $("#n-name").value.trim().split(/\s+/)[0]; if (!n) return; try { localStorage.setItem(nameKey(user), n); } catch {} $("#g-name").hidden = true; enter(user); };
+    return;
+  }
+  enter(user);
+}
 let entered = false;
 function enter(user){
   if (entered) return; entered = true;
-  who = nameOf(user);
+  who = who || nameOf(user) || savedName(user);
   $("#g-login").hidden = true; appEls.forEach(e => e.hidden = false);
   renderHome(); renderLinks();
   history.replaceState({screen:"home"}, "");
@@ -385,7 +410,7 @@ $("#login-form").addEventListener("submit", async (e) => {
     if (r.error || !r.data || !r.data.user){ err.textContent = "الإيميل أو الباسورد مش صح."; return; }
     try { if (window.PasswordCredential && navigator.credentials) await navigator.credentials.store(new PasswordCredential($("#login-form"))); } catch {}
     $("#l-pw").value = "";
-    entered = false; enter(r.data.user);
+    entered = false; await admit(r.data.user);
   } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; }
   finally { btn.disabled = false; btn.textContent = "دخول"; }
 });
@@ -407,7 +432,7 @@ if (!standalone){
   $("#g-install").remove();
   (sb ? sb.auth.getSession() : Promise.resolve(null)).then((r) => {
     const u = r && r.data && r.data.session && r.data.session.user;
-    if (u) enter(u); else $("#g-login").hidden = false;
+    if (u) admit(u); else $("#g-login").hidden = false;
   }).catch(() => { $("#g-login").hidden = false; });
   if (sb) sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT" && entered){ entered = false; logout(); } });
 }
