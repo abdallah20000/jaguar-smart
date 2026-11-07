@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>مركز التحكم</title>
-<meta name="theme-color" content="#17130F">
+<meta name="theme-color" content="#14100D">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -24,7 +24,7 @@
   color-scheme:dark;
   --bg:#17130F;
   --ink:#F4F1EE; --ink-2:rgba(244,241,238,.66); --ink-3:rgba(244,241,238,.42);
-  --glass:rgba(30,25,22,.42);
+  --glass:rgba(54,44,37,.54);
   --sheen:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025) 46%,rgba(255,255,255,.015)); --glass-2:rgba(255,255,255,.06); --glass-3:rgba(255,255,255,.10);
   --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15); --hi:rgba(255,255,255,.12);
   --accent:#F59A4A; --accent-2:#E8762A; --accent-ink:#2A1606;
@@ -38,12 +38,12 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;overscroll-behavior:none}
-/* the light behind the glass: one fixed layer of soft colour, painted once (no filters), so cards can be see-through */
-body::before{content:"";position:fixed;inset:0;pointer-events:none;
-  background:radial-gradient(55% 42% at 88% -6%,rgba(245,154,74,.30),transparent 72%),
-    radial-gradient(42% 34% at 4% 26%,rgba(232,118,42,.12),transparent 72%),
-    radial-gradient(52% 40% at 100% 104%,rgba(46,196,230,.10),transparent 72%),
-    radial-gradient(44% 34% at 0% 102%,rgba(181,123,255,.10),transparent 72%)}
+/* the room behind the glass: one fixed picture (a warm living room, already softened in the file, so phones
+   need no filter), dimmed at the top and bottom so text stays readable */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-color:#2a211b;
+  background-image:linear-gradient(180deg,rgba(12,9,7,.66) 0%,rgba(12,9,7,.30) 24%,rgba(12,9,7,.34) 68%,rgba(12,9,7,.70) 100%),url("/app/bg/room-tall.jpg");
+  background-size:cover;background-position:center 30%}
+@media (min-width:761px){body::before{background-image:linear-gradient(180deg,rgba(12,9,7,.62) 0%,rgba(12,9,7,.22) 26%,rgba(12,9,7,.30) 70%,rgba(12,9,7,.62) 100%),url("/app/bg/room-wide.jpg");background-position:center}}
 [hidden]{display:none!important}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 a{color:inherit;text-decoration:none}
@@ -56,7 +56,7 @@ svg{stroke-width:1.75}
 
 /* shell */
 .shell{position:fixed;inset:0;display:flex;gap:14px;padding:calc(var(--st) + 14px) max(14px,env(safe-area-inset-right,0px)) calc(var(--sb) + 14px) max(14px,env(safe-area-inset-left,0px))}
-.rail{flex:none;width:58px;border-radius:30px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;background:var(--sheen),rgba(24,20,17,.55);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hi),0 16px 36px -10px rgba(0,0,0,.6)}
+.rail{flex:none;width:58px;border-radius:30px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;background:var(--sheen),rgba(20,16,13,.72);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hi),0 16px 36px -10px rgba(0,0,0,.6)}
 .logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(160deg,#F7A35C,#E06B22);color:#fff;font-family:var(--f-display);font-weight:700;font-size:17px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px rgba(232,118,42,.35);margin-bottom:10px}
 .ri{position:relative;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);transition:background .18s,color .18s}
 .ri svg{width:18px;height:18px}
@@ -234,7 +234,20 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .top .glass,.rail,.gbox{-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
 .pane{overscroll-behavior:contain}
 .card,.brief{contain:layout style}
-@media (max-width:760px){.rail{background:rgba(24,20,17,.74);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
+/* computers: real frosted glass on the cards too (they have the power for it); phones keep the cheap version */
+@media (hover:hover) and (pointer:fine) and (min-width:1024px){.pane .glass{background:var(--sheen),rgba(54,44,37,.40);-webkit-backdrop-filter:blur(22px) saturate(140%);backdrop-filter:blur(22px) saturate(140%)}}
+/* company logos */
+.lg{width:40px;height:40px;border-radius:12px;overflow:hidden;flex:none;display:grid;place-items:center;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.16),0 6px 14px -4px rgba(0,0,0,.5)}
+.lg img{width:100%;height:100%;object-fit:cover;display:block}
+.lg.mono{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 72%,#fff),var(--c));color:#10181b;font:800 12px/1 var(--f-display);letter-spacing:.02em}
+.lg.mono svg{width:58%;height:58%;color:#fff;stroke-width:2.2}
+.lg.big{width:54px;height:54px;border-radius:16px}
+.lg.xs{width:18px;height:18px;border-radius:5px;box-shadow:none}.lg.xs.mono{font-size:7px}
+.ri .lg{width:28px;height:28px;border-radius:9px;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.ri[aria-current="page"] .lg{box-shadow:0 0 0 2px #1E1A18}
+.seg button{display:inline-flex;align-items:center;gap:6px}
+.ph-id{display:flex;align-items:center;gap:14px;min-width:0}
+@media (max-width:760px){.rail{background:rgba(20,16,13,.80);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
 /* intro */
 #intro{position:fixed;inset:0;z-index:100;background:#F3F2EE radial-gradient(circle,#CFCBC1 .8px,transparent 1.1px) 1px 1px/18px 18px;transition:opacity .5s,transform .5s}
@@ -365,23 +378,23 @@ const I = {
 // in = opens inside the app; ext = opens outside (other sites that block embedding or need their own login)
 // who: owner = Jaguar admin (sees all); jag:/tuya: + role (crm, inventory, installs, any); shahi = Shahi staff
 const SPACES = [
-  {id:"jaguar", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
+  {id:"jaguar", logo:"/app/logos/jaguar.png", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
     {n:"CRM والعروض", u:"/crm/", ic:"user", who:["jag:crm"]}, {n:"المخزن", u:"/crm/inventory.html", ic:"box", who:["jag:inventory"]},
     {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"]}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any","mat"]},
     {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin", who:["jag:any","mat"]}, {n:"الموقع", u:"/", ic:"home", who:["jag:any"]}]},
-  {id:"tuya", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"bolt", items:[
+  {id:"tuya", logo:"/app/logos/tuya.png", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"bolt", items:[
     {n:"CRM", u:"/tuya-suez/crm.html", ic:"user", who:["tuya:crm"]}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box", who:["tuya:inventory"]},
     {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool", who:["tuya:installs"]}, {n:"الموقع", u:"/tuya-suez/", ic:"home", who:["tuya:any"]}]},
-  {id:"shahi", name:"شاهي", desc:"العزومات والكاترينج: المنيو ولوحة الفريق", c:"#F2707A", ic:"plate", items:[
+  {id:"shahi", logo:"/app/logos/shahi.svg", name:"شاهي", desc:"العزومات والكاترينج: المنيو ولوحة الفريق", c:"#F2707A", ic:"plate", items:[
     {n:"لوحة شاهي", u:"/shahi/admin/", ic:"people", key:"shahi-admin", who:["shahi"]}, {n:"المنيو والطلب", u:"/shahi/menu/", ic:"cart", who:["shahi"]}, {n:"الموقع", u:"/shahi/", ic:"plate", who:["shahi"]}]},
-  {id:"nile", name:"Nile Digital", desc:"المواقع والأنظمة: لوحة الفريق ومحادثات العملاء", c:"#3DA5FF", ic:"globe", items:[
+  {id:"nile", logo:"/app/logos/nile.svg", name:"Nile Digital", desc:"المواقع والأنظمة: لوحة الفريق ومحادثات العملاء", c:"#3DA5FF", ic:"globe", items:[
     {n:"لوحة Nile", u:"/nile-digital-solution/team/", ic:"people", key:"nile-team"}, {n:"الموقع", u:"/nile-digital-solution/", ic:"globe"}]},
-  {id:"cobra", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
+  {id:"cobra", logo:"/app/logos/cobra.svg", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
     {n:"الموقع", u:"/cobra-egypt/", ic:"plane"}, {n:"فورم التخطيط", u:"/cobra-egypt/plan/", ic:"cal"}, {n:"كسوف 2027", u:"/cobra-egypt/eclipse-2027/", ic:"spark"}]},
-  {id:"aix", name:"AIX", desc:"البيت الذكي: CRM والمخزن والتركيبات على aixegypt.com", c:"#2EC4E6", ic:"spark", items:[
+  {id:"aix", logo:"/app/logos/aix.png", mono:"AIX", name:"AIX", desc:"البيت الذكي: CRM والمخزن والتركيبات على aixegypt.com", c:"#2EC4E6", ic:"spark", items:[
     {n:"CRM", u:"https://aixegypt.com/crm.html", ic:"user", ext:1}, {n:"المخزن", u:"https://aixegypt.com/inventory.html", ic:"box", ext:1},
     {n:"التركيبات", u:"https://aixegypt.com/installs.html", ic:"tool", ext:1}, {n:"الموقع", u:"https://aixegypt.com/", ic:"globe", ext:1}]},
-  {id:"msgs", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
+  {id:"msgs", glyph:"wa", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
     {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
 ];
 /* access of the signed-in person; items with no "who" are for the owner only */
@@ -486,11 +499,11 @@ addEventListener("popstate", (e) => {
 function renderRail(){
   const vis = visible();
   const item = (key, icon, tip, onclick, curr, badge) => h("button", {class:"ri", type:"button", "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
-    h("span", {html: I[icon] || I.grid}), badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip));
+    typeof icon === "string" ? h("span", {html: I[icon] || I.grid}) : icon, badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip));
   $("#rail").replaceChildren(...[
     h("div", {class:"logo"}, "J"),
     item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
-    ...vis.map(sp => item(sp.id, sp.ic, sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
+    ...vis.map(sp => item(sp.id, logoEl(sp), sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
     h("div", {class:"spacer"}),
     ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
     item("out", "out", "خروج", () => logout(), false)].filter(Boolean));
@@ -512,6 +525,15 @@ setInterval(tick, 30000);
 $("#bell").onclick = () => open(ALL.find(i => i.key === "inbox"));
 $("#q").addEventListener("input", (e) => { query = e.target.value.trim(); if (current.view === "space") renderSpace(current.space); else renderHome(); });
 
+// a company's logo tile; if the file is missing it falls back to a coloured tile with its initials
+function logoEl(sp, extra){
+  const cls = extra ? " " + extra : "";
+  const mono = () => h("span", {class:"lg mono" + cls, style:{"--c": sp.c}, html: sp.glyph ? I[sp.glyph] : null}, sp.glyph ? null : (sp.mono || sp.name.charAt(0)));
+  if (!sp.logo) return mono();
+  const box = h("span", {class:"lg" + cls});
+  box.append(h("img", {src: sp.logo, alt:"", decoding:"async", onerror: () => box.replaceWith(mono())}));
+  return box;
+}
 const plural = (n) => n + (n > 2 && n < 11 ? " صفحات" : n === 2 ? " صفحتين" : n === 1 ? " صفحة" : " صفحة");
 function rowsOf(sp){
   const q = query.toLowerCase();
@@ -519,7 +541,7 @@ function rowsOf(sp){
 }
 function spaceCard(sp, rows){
   return h("section", {class:"card glass", style:{"--c": sp.c}},
-    h("div", {class:"ch"}, h("span", {class:"ci", html: I[sp.ic]}), h("div", {style:{"min-width":"0"}}, h("h3", null, sp.name), h("p", null, sp.desc)), h("span", {class:"tag"}, plural(sp.items.length)), h("span", {class:"cdot"})),
+    h("div", {class:"ch"}, logoEl(sp), h("div", {style:{"min-width":"0"}}, h("h3", null, sp.name), h("p", null, sp.desc)), h("span", {class:"tag"}, plural(sp.items.length)), h("span", {class:"cdot"})),
     h("div", {class:"rows"}, rows.map(it => h("button", {class:"row", type:"button", onclick: () => open(it)},
       h("span", {class:"ri2", html: I[it.ic] || I.globe}), h("b", null, it.n), it.ext ? h("small", null, "بيفتح بره") : null, h("span", {class:"go", html: I.arrow})))));
 }
@@ -535,7 +557,7 @@ function renderHome(){
     h("div", {class:"phead"},
       h("div", null, h("h1", null, greet + " 👋"), h("p", null, fDay.format(new Date()) + " · كل شغلك في مكان واحد")),
       h("div", {class:"pacts"},
-        vis.length > 1 ? h("div", {class:"seg glass"}, [["all","الكل"], ...vis.map(s => [s.id, s.name])].map(([id, nm]) => h("button", {type:"button", "aria-pressed": String(seg === id), onclick: () => { seg = id; renderHome(); }}, nm))) : null,
+        vis.length > 1 ? h("div", {class:"seg glass"}, [["all","الكل"], ...vis.map(s => [s.id, s.name, s])].map(([id, nm, s]) => h("button", {type:"button", "aria-pressed": String(seg === id), onclick: () => { seg = id; renderHome(); }}, s ? logoEl(s, "xs") : null, nm))) : null,
         can(inbox) ? h("button", {class:"act", type:"button", onclick: () => open(inbox)}, h("span", {html: I.wa, style:{display:"inline-flex"}}), "كل الرسايل") : null)),
     h("section", {class:"brief glass"},
       h("div", {class:"eyebrow"}, "نظرة سريعة"),
@@ -558,7 +580,7 @@ function renderSpace(id){
   if (!sp){ show("home", false); return; }
   const rows = rowsOf(sp);
   $("#s-space").replaceChildren(
-    h("div", {class:"phead"}, h("div", null, h("h1", null, sp.name), h("p", null, sp.desc))),
+    h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
     h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "الصفحات"),
       h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel()))),
     rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : stateCard("search", "مفيش صفحة بالاسم ده."));
