@@ -18,6 +18,7 @@
 | شاهي — لوحة الفريق `MswB6BqmwosbtpY8` | زي ما هي | `shahi-team` |
 | Nile — لوحة الفريق `CmHof2EBo9YsnO8i` | زي ما هي | `nile-team` |
 | متابعة WeChat `e2JKBdoVqX7L5qud` | زي ما هي | `wechat-in` |
+| ستوك AIX — تحديث تلقائي من جروب Stock `bVX7IiFwUbTggakv` (8 نوفمبر) | آخر PDF في جروب واتساب «Stock» (`120363408790493271@g.us`) + رسايل «دخل/خرج» اللي بعده ← بيتسعّر من جدول `aix_stock_prices` (`jPW4g5xwveNT6WF2`)، وفلوس AIX بقاعدة «باقي» ← لقطة في `aix_stock_snapshots` (`N2aeFIhPu0Er99dI`) لما يجي جديد بس. `all-inbox` action `accounts` بيرجع `stock` | كل 30 دقيقة + تشغيل يدوي |
 
 - **كل الـ workflows الشغالة `settings.errorWorkflow = lzyVmQ1h2buUrrbA`**. أي workflow جديد لازم ياخد نفس الإعداد ده، عشان التستر يمسكه.
 - لو عدّلت workflow شغال، انشر النسخة بعد ما تعدّل. التستر بيتأكد إن مفيش حاجة واقفة.
