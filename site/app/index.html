@@ -153,6 +153,15 @@ svg{stroke-width:1.75}
 .op .oa{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .op .ghost{padding:7px 14px;border-radius:999px;border:1px solid var(--line-2);font-size:12.5px;color:var(--ink-2)}
 .op .more{font-size:12px;color:var(--ink-3);margin-top:6px}
+/* live numbers under CRM, stock and installs */
+.row .rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row .rt b{flex:none}
+.row .kv{font-size:11.5px;line-height:1.4;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.row .kv.load{width:130px;max-width:70%;height:9px;border-radius:5px;background:rgba(255,255,255,.09);animation:pulse 1.3s ease-in-out infinite;margin-top:2px}
+.row .kv:empty:not(.load){display:none}
+.row .kv.warn{color:#FFC48F}
+.tag.aixin{background:rgba(46,196,230,.16);border-color:rgba(46,196,230,.45);color:#BFF1FF;cursor:pointer}
+.kpi .v b.load{display:inline-block;width:56px;height:20px;border-radius:6px;background:rgba(255,255,255,.09);animation:pulse 1.3s ease-in-out infinite}
 .empty{padding:30px 14px;text-align:center;color:var(--ink-2)}
 .foot{display:flex;justify-content:center;margin-top:18px}
 .out-btn{font-size:12.5px;color:var(--ink-3);padding:6px 14px;border-radius:999px;border:1px solid var(--line-2)}
@@ -404,12 +413,12 @@ const I = {
 // who: owner = Jaguar admin (sees all); jag:/tuya: + role (crm, inventory, installs, any); shahi = Shahi staff
 const SPACES = [
   {id:"jaguar", logo:"/app/logos/jaguar.png", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
-    {n:"CRM والعروض", u:"/crm/", ic:"user", who:["jag:crm"]}, {n:"المخزن", u:"/crm/inventory.html", ic:"box", who:["jag:inventory"]},
-    {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"]}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any","mat"]},
+    {n:"CRM والعروض", u:"/crm/", ic:"user", who:["jag:crm"], kpi:"jag:crm"}, {n:"المخزن", u:"/crm/inventory.html", ic:"box", who:["jag:inventory"], kpi:"jag:stock"},
+    {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"], kpi:"jag:installs"}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any","mat"]},
     {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin", who:["jag:any","mat"]}, {n:"الموقع", u:"/", ic:"home", who:["jag:any"]}]},
   {id:"tuya", logo:"/app/logos/tuya.png", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"bolt", items:[
-    {n:"CRM", u:"/tuya-suez/crm.html", ic:"user", who:["tuya:crm"]}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box", who:["tuya:inventory"]},
-    {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool", who:["tuya:installs"]}, {n:"الموقع", u:"/tuya-suez/", ic:"home", who:["tuya:any"]}]},
+    {n:"CRM", u:"/tuya-suez/crm.html", ic:"user", who:["tuya:crm"], kpi:"tuya:crm"}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box", who:["tuya:inventory"], kpi:"tuya:stock"},
+    {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool", who:["tuya:installs"], kpi:"tuya:installs"}, {n:"الموقع", u:"/tuya-suez/", ic:"home", who:["tuya:any"]}]},
   {id:"shahi", logo:"/app/logos/shahi.svg", name:"شاهي", desc:"العزومات والكاترينج: المنيو ولوحة الفريق", c:"#F2707A", ic:"plate", items:[
     {n:"لوحة شاهي", u:"/shahi/admin/", ic:"people", key:"shahi-admin", who:["shahi"]}, {n:"المنيو والطلب", u:"/shahi/menu/", ic:"cart", who:["shahi"]}, {n:"الموقع", u:"/shahi/", ic:"plate", who:["shahi"]}]},
   {id:"nile", logo:"/app/logos/nile.svg", name:"Nile Digital", desc:"المواقع والأنظمة: لوحة الفريق ومحادثات العملاء", c:"#3DA5FF", ic:"globe", items:[
@@ -417,8 +426,8 @@ const SPACES = [
   {id:"cobra", logo:"/app/logos/cobra.svg", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
     {n:"الموقع", u:"/cobra-egypt/", ic:"plane"}, {n:"فورم التخطيط", u:"/cobra-egypt/plan/", ic:"cal"}, {n:"كسوف 2027", u:"/cobra-egypt/eclipse-2027/", ic:"spark"}]},
   {id:"aix", logo:"/app/logos/aix.png", mono:"AIX", name:"AIX", desc:"البيت الذكي: CRM والمخزن والتركيبات على aixegypt.com", c:"#2EC4E6", ic:"spark", items:[
-    {n:"CRM", u:"https://aixegypt.com/crm.html", ic:"user", ext:1}, {n:"المخزن", u:"https://aixegypt.com/inventory.html", ic:"box", ext:1},
-    {n:"التركيبات", u:"https://aixegypt.com/installs.html", ic:"tool", ext:1}, {n:"الموقع", u:"https://aixegypt.com/", ic:"globe", ext:1}]},
+    {n:"CRM", u:"https://aixegypt.com/crm.html", ic:"user", ext:1, kpi:"aix:crm"}, {n:"المخزن", u:"https://aixegypt.com/inventory.html", ic:"box", ext:1, kpi:"aix:stock"},
+    {n:"التركيبات", u:"https://aixegypt.com/installs.html", ic:"tool", ext:1, kpi:"aix:installs"}, {n:"الموقع", u:"https://aixegypt.com/", ic:"globe", ext:1}]},
   {id:"msgs", glyph:"wa", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
     {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
 ];
@@ -521,14 +530,25 @@ addEventListener("popstate", (e) => {
   const st = e.state || {}; show(st.view || "home", false, st.space);
 });
 
+/* The rail is built once per set of sections and then only its highlight moves: rebuilding it on every
+   screen made new logo images each time, and some phones painted them as blank tiles. */
+const railLogo = {};
+let railSig = "";
 function renderRail(){
   const vis = visible();
-  const item = (key, icon, tip, onclick, curr, badge) => h("button", {class:"ri", type:"button", "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
+  const sig = vis.map((sp) => sp.id).join(",") + "|" + !!(ACC && ACC.owner) + "|" + pendingCount;
+  const isCur = (k) => k === "home" ? current.view === "home" : k === "team" ? current.view === "team" : current.view === "space" && current.space === k;
+  if (sig === railSig && $("#rail").childElementCount){
+    $("#rail").querySelectorAll(".ri[data-k]").forEach((b) => { if (isCur(b.getAttribute("data-k"))) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    return;
+  }
+  railSig = sig;
+  const item = (key, icon, tip, onclick, curr, badge) => h("button", {class:"ri", type:"button", "data-k": key, "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
     typeof icon === "string" ? h("span", {html: I[icon] || I.grid}) : icon, badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip));
   $("#rail").replaceChildren(...[
     h("div", {class:"logo"}, "J"),
     item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
-    ...vis.map(sp => item(sp.id, logoEl(sp), sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
+    ...vis.map(sp => item(sp.id, railLogo[sp.id] || (railLogo[sp.id] = logoEl(sp)), sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
     h("div", {class:"spacer"}),
     ACC && ACC.owner ? item("ops", "spark", "العمليات", () => show("ops"), current.view === "ops", OPS.stats && OPS.stats.pending ? String(OPS.stats.pending) : null) : null,
     ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
@@ -557,7 +577,7 @@ function logoEl(sp, extra){
   const mono = () => h("span", {class:"lg mono" + cls, style:{"--c": sp.c}, html: sp.glyph ? I[sp.glyph] : null}, sp.glyph ? null : (sp.mono || sp.name.charAt(0)));
   if (!sp.logo) return mono();
   const box = h("span", {class:"lg" + cls});
-  box.append(h("img", {src: sp.logo, alt:"", decoding:"async", onerror: () => box.replaceWith(mono())}));
+  box.append(h("img", {src: sp.logo, alt:"", onerror: () => { const m = mono(); box.replaceWith(m); if (railLogo[sp.id] === box) railLogo[sp.id] = m; }}));
   return box;
 }
 const plural = (n) => n + (n > 2 && n < 11 ? " صفحات" : n === 2 ? " صفحتين" : n === 1 ? " صفحة" : " صفحة");
@@ -565,11 +585,136 @@ function rowsOf(sp){
   const q = query.toLowerCase();
   return sp.items.filter(it => !q || it.n.toLowerCase().includes(q) || sp.name.toLowerCase().includes(q));
 }
+/* ---------- live numbers next to CRM, stock and installs ----------
+   Read straight from each company's database with the signed-in session: only counts (HEAD with
+   count=exact) and a few small columns, cached for a minute, filled in after the screen is up.
+   Jaguar and Tuya Suez share one project: the owner reads Tuya with "x-company: tuya-suez" (migration 106),
+   staff read only their own company. AIX uses the owner's AIX sign-in from الفريق ← AIX. */
+const JS_URL = "https://snrsfpprlynixotjipmo.supabase.co", JS_KEY = "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
+const KPI_TTL = 60000, KPI = {};
+const fmtN = new Intl.NumberFormat(L);
+function money(n){ n = +n || 0; if (n >= 1e6) return fmtN.format(Math.round(n/1e5)/10) + " مليون"; if (n >= 1e4) return fmtN.format(Math.round(n/1e3)) + " ألف"; return fmtN.format(Math.round(n)); }
+const pad2 = (n) => String(n).padStart(2, "0");
+const dayStr = (d) => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+const monthStart = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); };
+const tokenOf = async (client) => { const r = await client.auth.getSession(); return r && r.data && r.data.session && r.data.session.access_token; };
+// who answers for a company, for this person: a connection, "login" (AIX not signed in) or null (not theirs)
+async function kpiConn(co){
+  if (co === "aix"){
+    if (!ACC || !ACC.owner) return null;
+    const c = aixClient(); if (!c) return null;
+    const t = await tokenOf(c); return t ? {url: AIX_URL, key: AIX_KEY, token: t} : "login";
+  }
+  if (!sb || !ACC) return null;
+  const t = await tokenOf(sb); if (!t) return null;
+  if (co === "jag") return ACC.owner || ACC.company === "jaguar" ? {url: JS_URL, key: JS_KEY, token: t} : null;
+  if (co === "tuya") return ACC.owner ? {url: JS_URL, key: JS_KEY, token: t, company: "tuya-suez"} : ACC.company === "tuya-suez" ? {url: JS_URL, key: JS_KEY, token: t} : null;
+  return null;
+}
+async function rest(c, path, count){
+  const hd = {apikey: c.key, Authorization: "Bearer " + c.token};
+  if (c.company) hd["x-company"] = c.company;
+  if (count) hd.Prefer = "count=exact";
+  const r = await fetch(c.url + "/rest/v1/" + path, {method: count ? "HEAD" : "GET", headers: hd});
+  if (!r.ok) throw new Error(String(r.status));
+  if (!count) return r.json();
+  const m = /\/(\d+)$/.exec(r.headers.get("content-range") || ""); if (!m) throw new Error("count"); return +m[1];
+}
+const settle = (p) => p.then((v) => v, () => null);
+const WON = /^(accepted|won|approved|confirmed|paid)$/i;
+const KPI_KIND = {
+  async crm(c){
+    const m = encodeURIComponent(monthStart().toISOString());
+    const [fresh, open, q] = await Promise.all([settle(rest(c, "leads?select=id&created_at=gte." + m, true)),
+      settle(rest(c, "leads?select=id&status=not.in.(won,lost)", true)), settle(rest(c, "quotations?select=status,total&created_at=gte." + m))]);
+    if (fresh === null && open === null && q === null) throw new Error("no access");
+    const live = Array.isArray(q) ? q.filter((x) => !/^rejected$/i.test(String(x.status || ""))) : null;
+    return {fresh, open, qCount: live ? live.length : null, qSum: live ? live.reduce((n, x) => n + (+x.total || 0), 0) : null,
+      won: live ? live.filter((x) => WON.test(String(x.status || ""))).reduce((n, x) => n + (+x.total || 0), 0) : null};
+  },
+  async stock(c){
+    const [items, moves] = await Promise.all([settle(rest(c, "inventory_items?select=quantity,min_qty")),
+      settle(rest(c, "inventory_moves?select=id&created_at=gte." + encodeURIComponent(monthStart().toISOString()), true))]);
+    if (items === null && moves === null) throw new Error("no access");
+    return {items: items ? items.length : null, low: items ? items.filter((x) => x.min_qty != null && +x.quantity <= +x.min_qty).length : null, moves};
+  },
+  async installs(c){
+    const [up, done] = await Promise.all([settle(rest(c, "installations?select=id&status=in.(pending,in_progress)&scheduled_date=gte." + dayStr(new Date()), true)),
+      settle(rest(c, "installations?select=id&status=eq.done&scheduled_date=gte." + dayStr(monthStart()), true))]);
+    if (up === null && done === null) throw new Error("no access");
+    return {up, done};
+  }
+};
+function kpiGet(key){
+  let k = KPI[key];
+  if (k && (k.busy || Date.now() - k.at < KPI_TTL)) return k;
+  k = KPI[key] = {at: Date.now(), busy: true, d: k ? k.d : null, err: null, login: false};
+  const [co, kind] = key.split(":");
+  kpiConn(co).then((c) => { if (c === "login"){ k.login = true; k.d = null; return; } if (!c) throw new Error("none"); return KPI_KIND[kind](c).then((d) => { k.d = d; }); })
+    .catch((e) => { k.err = (e && e.message) || "err"; })
+    .then(() => { k.busy = false; k.at = Date.now(); paintKpi(key); });
+  return k;
+}
+function kpiText(key){
+  const k = KPI[key]; if (!k) return "";
+  if (k.login) return "ادخل AIX من «الفريق» علشان تشوف الأرقام";
+  const d = k.d; if (!d) return k.err && k.err !== "none" ? "الأرقام مش متاحة دلوقتي" : "";
+  const kind = key.split(":")[1], n = (x) => fmtN.format(x), out = [];
+  if (kind === "crm"){
+    if (d.qCount != null) out.push(n(d.qCount) + " عرض الشهر ده" + (d.qSum ? " بـ " + money(d.qSum) : ""));
+    if (d.won) out.push("اتقبل " + money(d.won));
+    if (d.fresh != null) out.push(n(d.fresh) + " عميل جديد");
+    if (d.open != null) out.push(n(d.open) + " مفتوح");
+  } else if (kind === "stock"){
+    if (d.items != null) out.push(n(d.items) + " صنف");
+    if (d.low) out.push(n(d.low) + " قرب يخلص");
+    if (d.moves != null) out.push(n(d.moves) + " حركة الشهر ده");
+  } else {
+    if (d.up != null) out.push(n(d.up) + " تركيبة جاية");
+    if (d.done != null) out.push(n(d.done) + " اتعملت الشهر ده");
+  }
+  return out.join(" · ");
+}
+// headline numbers on a company page: [value, small line]
+const KPI_FIELD = {
+  sales: (d) => [d.won != null ? money(d.won) : "—", "اتقبل الشهر ده"],
+  quotes: (d) => [d.qCount != null ? fmtN.format(d.qCount) : "—", d.qSum ? "عروض بـ " + money(d.qSum) : "عروض الشهر ده"],
+  low: (d) => [d.low != null ? fmtN.format(d.low) : "—", d.items === 0 ? "لسه مفيش أصناف" : d.items != null ? "قرب يخلص من " + fmtN.format(d.items) + " صنف" : "أصناف قربت تخلص"],
+  up: (d) => [d.up != null ? fmtN.format(d.up) : "—", "جاية" + (d.done != null ? " · " + fmtN.format(d.done) + " اتعملت الشهر ده" : "")]
+};
+function fillLine(e, key){
+  const k = KPI[key], t = kpiText(key);
+  e.classList.toggle("load", !t && !!(k && k.busy));
+  e.classList.toggle("warn", !!(k && k.d && k.d.low));
+  e.textContent = t;
+}
+function fillField(e){
+  const [key, f] = e.getAttribute("data-kf").split("|"), k = KPI[key], b = e.querySelector("b"), sm = e.querySelector(".s");
+  if (k && k.d){ const [v, sub] = KPI_FIELD[f](k.d); b.classList.remove("load"); b.textContent = v; sm.textContent = sub; }
+  else if (k && k.busy){ b.classList.add("load"); b.textContent = ""; }
+  else { b.classList.remove("load"); b.textContent = "—"; sm.textContent = k && k.login ? "ادخل AIX من «الفريق»" : "مش متاح"; }
+}
+function paintKpi(key){
+  document.querySelectorAll('[data-kpi="' + key + '"]').forEach((e) => fillLine(e, key));
+  document.querySelectorAll('[data-kf^="' + key + '|"]').forEach(fillField);
+  const login = !!(KPI["aix:crm"] && KPI["aix:crm"].login);
+  document.querySelectorAll("[data-aix-login]").forEach((e) => { e.hidden = !login; });
+}
+function kpiLine(key){ kpiGet(key); const e = h("small", {class:"kv", "data-kpi": key}); fillLine(e, key); return e; }
+function kpiField(label, key, f){
+  kpiGet(key);
+  const e = h("div", {class:"kpi", "data-kf": key + "|" + f}, h("div", {class:"l"}, label), h("div", {class:"v"}, h("b", null, "")), h("div", {class:"s"}, ""));
+  fillField(e); return e;
+}
+function kpiReset(prefix){ Object.keys(KPI).forEach((k) => { if (!prefix || k.startsWith(prefix)) delete KPI[k]; }); }
+document.addEventListener("visibilitychange", () => { if (!document.hidden && ACC && (current.view === "home" || current.view === "space")) show(current.view, false, current.space); });
 function spaceCard(sp, rows){
   return h("section", {class:"card glass", style:{"--c": sp.c}},
-    h("div", {class:"ch"}, logoEl(sp), h("div", {style:{"min-width":"0"}}, h("h3", null, sp.name), h("p", null, sp.desc)), h("span", {class:"tag"}, plural(sp.items.length)), h("span", {class:"cdot"})),
+    h("div", {class:"ch"}, logoEl(sp), h("div", {style:{"min-width":"0"}}, h("h3", null, sp.name), h("p", null, sp.desc)),
+      sp.id === "aix" && ACC && ACC.owner ? h("button", {class:"tag aixin", type:"button", "data-aix-login": "", hidden: !(KPI["aix:crm"] && KPI["aix:crm"].login), onclick: () => { teamTab = "aix"; show("team"); }}, "ادخل AIX") : null,
+      h("span", {class:"tag"}, plural(sp.items.length)), h("span", {class:"cdot"})),
     h("div", {class:"rows"}, rows.map(it => h("button", {class:"row", type:"button", onclick: () => open(it)},
-      h("span", {class:"ri2", html: I[it.ic] || I.globe}), h("b", null, it.n), it.ext ? h("small", null, "بيفتح بره") : null, h("span", {class:"go", html: I.arrow})))));
+      h("span", {class:"ri2", html: I[it.ic] || I.globe}), h("span", {class:"rt"}, h("b", null, it.n), it.kpi ? kpiLine(it.kpi) : null), it.ext ? h("small", null, "بيفتح بره") : null, h("span", {class:"go", html: I.arrow})))));
 }
 function renderHome(){
   const vis = visible();
@@ -602,14 +747,23 @@ function renderHome(){
 function kpi(label, value, delta, sub){
   return h("div", {class:"kpi"}, h("div", {class:"l"}, label), h("div", {class:"v"}, h("b", null, value), delta ? h("span", {class:"delta"}, delta) : null), h("div", {class:"s"}, sub || ""));
 }
+function spaceBrief(sp){
+  const keys = sp.items.filter((it) => it.kpi).map((it) => it.kpi), has = (kind) => keys.find((k) => k.endsWith(":" + kind));
+  const boxes = [];
+  if (has("crm")){ boxes.push(kpiField("المبيعات", has("crm"), "sales")); boxes.push(kpiField("عروض الأسعار", has("crm"), "quotes")); }
+  if (has("stock")) boxes.push(kpiField("المخزن", has("stock"), "low"));
+  if (has("installs")) boxes.push(kpiField("التركيبات", has("installs"), "up"));
+  if (!boxes.length) return h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "الصفحات"),
+    h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel())));
+  return h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "شغل الشهر ده"), h("div", {class:"kpis"}, boxes));
+}
 function renderSpace(id){
   const sp = visible().find(s => s.id === id);
   if (!sp){ show("home", false); return; }
   const rows = rowsOf(sp);
   $("#s-space").replaceChildren(
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
-    h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "الصفحات"),
-      h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel()))),
+    spaceBrief(sp),
     rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : stateCard("search", "مفيش صفحة بالاسم ده."));
 }
 function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); } }
@@ -809,12 +963,12 @@ function aixLogin(){
     try {
       const r = await c.auth.signInWithPassword({email: em.value.trim(), password: pw.value});
       if (r.error){ err.textContent = "الإيميل أو الباسورد مش صح."; btn.disabled = false; btn.textContent = "دخول AIX"; return; }
-      pw.value = ""; aixState = null; renderTeam();
+      pw.value = ""; aixState = null; kpiReset("aix:"); renderTeam();
     } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; btn.disabled = false; btn.textContent = "دخول AIX"; }
   };
   return f;
 }
-async function aixOut(){ try { if (aix) await aix.auth.signOut(); } catch {} aixState = {step:"login"}; }
+async function aixOut(){ try { if (aix) await aix.auth.signOut(); } catch {} aixState = {step:"login"}; kpiReset("aix:"); }
 function renderAix(box, head){
   if (!aixState){
     box.replaceChildren(head, skeletons());
@@ -893,7 +1047,7 @@ let sb = null, who = "";
 try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
 const appEls = [$("#shell")];
 function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
-async function logout(){ ACC = null; await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
+async function logout(){ ACC = null; kpiReset(); await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
 function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
 const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
 function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
