@@ -187,6 +187,7 @@ svg{stroke-width:1.75}
 .gbox .btn:disabled{opacity:.6}
 .gok{color:#9EF0C4;font-size:13.5px;min-height:0}
 .glinks{display:flex;flex-direction:column;gap:6px;align-items:center}
+.wa-open{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.14);border:1px solid rgba(37,211,102,.35);color:#9DF5C2;font-weight:600;font-size:13.5px}
 .glinks button{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
 .out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
 
@@ -218,12 +219,15 @@ svg{stroke-width:1.75}
     <h1 id="l-title">تسجيل الدخول</h1>
     <p id="l-sub">للفريق بس. ادخل بإيميلك والباسورد بتاعك.</p>
     <div class="fld" id="l-name-f" hidden><label for="l-name">اسمك</label><input id="l-name" name="name" autocomplete="name" style="direction:rtl;text-align:right"></div>
-    <div class="fld"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email" required></div>
+    <div class="fld" id="l-email-f"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email"></div>
+    <div class="fld" id="l-phone-f" hidden><label for="l-phone">رقم الموبايل</label><input id="l-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx"></div>
+    <div class="fld" id="l-code-f" hidden><label for="l-code">الكود اللي وصلك على واتساب</label><input id="l-code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" style="letter-spacing:.3em;text-align:center"></div>
     <div class="fld" id="l-pw-f"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" minlength="6"></div>
     <div class="gerr" id="l-err" role="alert"></div>
     <div class="gok" id="l-ok" role="status"></div>
     <button class="btn" id="l-btn" type="submit">دخول</button>
-    <div class="glinks"><button type="button" id="to-forgot">نسيت الباسورد؟</button><button type="button" id="to-signup">معندكش حساب؟ اعمل حساب</button><button type="button" id="to-login" hidden>عندك حساب؟ ادخل</button></div>
+    <div class="glinks"><button type="button" id="to-forgot">نسيت الباسورد؟</button><button type="button" id="to-signup">معندكش حساب؟ اعمل حساب</button><button type="button" id="to-phone">دخول بالموبايل وكود واتساب</button><button type="button" id="to-login" hidden>دخول بالإيميل والباسورد</button></div>
+    <a class="wa-open" id="wa-open" href="#" target="_blank" rel="noopener" hidden>افتح واتساب وابعتلنا رسالة</a>
   </form>
 </section>
 <section class="gate" id="g-wait" hidden>
@@ -370,7 +374,36 @@ const SHAHI_ROLE = {admin:"أدمن شاهي", sales:"مبيعات شاهي", op
 const COMPANY = {"jaguar":"Jaguar Smart", "tuya-suez":"Tuya Suez"};
 function roleLabel(){ if (!ACC) return ""; if (ACC.owner) return "المالك"; if (ACC.role) return ROLE[ACC.role] || ACC.role; if (ACC.shahi) return SHAHI_ROLE[ACC.shahi.role] || "فريق شاهي"; return ""; }
 function placeLabel(){ if (!ACC) return ""; if (ACC.owner) return "كل البيزنس"; if (ACC.role) return COMPANY[ACC.company] || ""; return ACC.shahi ? "شاهي" : ""; }
-let lastSeen = null, meEmail = "";
+let lastSeen = null, meEmail = "", meUser = null;
+/* link a phone number so this person can also sign in with a WhatsApp code */
+let phoneStep = "idle", phonePending = "";
+function phoneCard(){
+  if (!meUser) return null;
+  const has = meUser.phone && !phoneStep.startsWith("code");
+  const msg = h("div", {class:"smsg", role:"status"});
+  if (has && phoneStep !== "edit") return h("section", {class:"card glass", style:{"margin-top":"14px"}},
+    h("div", {class:"ch"}, h("span", {class:"ci", html: I.wa}), h("div", {style:{"min-width":"0"}}, h("h3", null, "رقمك مربوط ✓"), h("p", {style:{direction:"ltr","text-align":"right"}}, "+" + String(meUser.phone).replace(/^\+/, ""))),
+      h("button", {class:"tag", type:"button", onclick: () => { phoneStep = "edit"; renderHome(); }}, "غيّره")));
+  const inp = h("input", {class:"sel", id: phoneStep === "code" ? "ph-code" : "ph-num", inputmode: phoneStep === "code" ? "numeric" : "tel", placeholder: phoneStep === "code" ? "الكود" : "01xxxxxxxxx", style:{direction:"ltr","text-align":"center"}});
+  const go = h("button", {class:"act", type:"button"}, phoneStep === "code" ? "تأكيد" : "ابعتلي كود على واتساب");
+  go.onclick = async () => {
+    go.disabled = true; msg.textContent = "لحظة…";
+    try {
+      if (phoneStep !== "code"){
+        const ph = toE164(inp.value); if (!ph){ msg.textContent = "اكتب رقم صحيح."; go.disabled = false; return; }
+        const r = await sb.auth.updateUser({phone: ph}); if (r.error) throw r.error;
+        phonePending = ph; phoneStep = "code"; renderHome(); return;
+      }
+      const r = await sb.auth.verifyOtp({phone: phonePending, token: inp.value.replace(/\D/g, ""), type: "phone_change"});
+      if (r.error) throw r.error;
+      meUser = (r.data && r.data.user) || meUser; phoneStep = "idle"; renderHome();
+    } catch (e){ msg.textContent = phoneStep === "code" ? "الكود مش صح أو خلص وقته." : "مقدرناش نبعت الكود. لو أول مرة، افتح واتساب وابعتلنا أي رسالة وجرّب تاني."; go.disabled = false; }
+  };
+  return h("section", {class:"card glass", style:{"margin-top":"14px"}},
+    h("div", {class:"ch"}, h("span", {class:"ci", html: I.wa}), h("div", {style:{"min-width":"0"}}, h("h3", null, phoneStep === "code" ? "اكتب الكود اللي وصلك" : "اربط رقم موبايلك"), h("p", null, phoneStep === "code" ? "بعتنالك كود على واتساب على " + phonePending : "علشان تقدر تدخل بعد كده بكود على واتساب من غير باسورد."))),
+    h("div", {class:"grantrow", style:{"grid-template-columns":"1fr auto"}}, inp, go), msg,
+    BOT_WA ? h("a", {class:"wa-open", href: "https://wa.me/" + BOT_WA + "?text=" + encodeURIComponent("عايز كود الدخول لمركز التحكم"), target:"_blank", rel:"noopener", style:{"margin-top":"10px"}}, "افتح واتساب") : null);
+}
 
 /* ---------- screens, rail and history (Android back button works) ---------- */
 let current = {view:"home"}, seg = "all", query = "";
@@ -463,6 +496,7 @@ function renderHome(){
         kpi("دورك", roleLabel() || "—", null, placeLabel()),
         kpi("آخر دخول", rel(lastSeen), null, "على الموبايل ده"))),
     shown.length ? h("div", {class:"cards"}, shown.map(([s, r]) => spaceCard(s, r))) : h("div", {class:"empty glass card"}, query ? "مفيش صفحة بالاسم ده." : "مفيش أقسام متاحة لحسابك."),
+    phoneCard(),
     h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
   ].filter(Boolean));
 }
@@ -529,7 +563,7 @@ function renderTeam(){
     h("div", {class:"eyebrow", style:{margin:"18px 6px 10px"}}, "الفريق (" + rest.length + ")"),
     ...rest.map(card));
 }
-const _enter = (u) => { meEmail = (u && u.email) || ""; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
+const _enter = (u) => { meEmail = (u && u.email) || ""; meUser = u || null; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
 
 /* ---------- install ---------- */
 let deferred = null;
@@ -637,22 +671,49 @@ function enter(user){
   const ir = $("#intro"); if (ir) ir.hidden = false;
   intro().then(() => { show("home", false); const it = q && ALL.find(i => i.key === q); if (it && can(it)) open(it); });
 }
+// WhatsApp number of our bot, digits only (e.g. 2010xxxxxxx). Empty hides the "open WhatsApp" helper.
+const BOT_WA = "";
+function toE164(v){ let d = String(v || "").replace(/\D/g, ""); if (d.startsWith("00")) d = d.slice(2); if (d.startsWith("0")) d = "20" + d.slice(1); if (d.length === 10 && d.startsWith("1")) d = "20" + d; return d.length >= 11 ? "+" + d : ""; }
+function waHelper(show){ const a = $("#wa-open"); if (!a) return; const ok = show && BOT_WA; a.hidden = !ok; if (ok) a.href = "https://wa.me/" + BOT_WA + "?text=" + encodeURIComponent("عايز كود الدخول لمركز التحكم"); }
+let otpPhone = "";
 let mode = "login";
 function setMode(m){
   mode = m; $("#l-err").textContent = ""; $("#l-ok").textContent = "";
-  $("#l-title").textContent = m === "signup" ? "حساب جديد" : m === "forgot" ? "نسيت الباسورد" : "تسجيل الدخول";
-  $("#l-sub").textContent = m === "signup" ? "اعمل حساب بإيميلك. صاحب الشغل هيفتحلك الأقسام بتاعتك." : m === "forgot" ? "اكتب إيميلك وهنبعتلك لينك تعمل بيه باسورد جديد." : "للفريق بس. ادخل بإيميلك والباسورد بتاعك.";
-  $("#l-name-f").hidden = m !== "signup"; $("#l-pw-f").hidden = m === "forgot";
+  $("#l-title").textContent = m === "signup" ? "حساب جديد" : m === "forgot" ? "نسيت الباسورد" : m === "phone" || m === "code" ? "دخول بالموبايل" : "تسجيل الدخول";
+  $("#l-sub").textContent = m === "signup" ? "اعمل حساب بإيميلك. صاحب الشغل هيفتحلك الأقسام بتاعتك." : m === "forgot" ? "اكتب إيميلك وهنبعتلك لينك تعمل بيه باسورد جديد."
+    : m === "phone" ? "اكتب رقمك اللي ربطته بحسابك، وهنبعتلك كود على واتساب." : m === "code" ? "اكتب الكود اللي وصلك على واتساب." : "للفريق بس. ادخل بإيميلك والباسورد بتاعك.";
+  $("#l-name-f").hidden = m !== "signup"; $("#l-pw-f").hidden = m === "forgot" || m === "phone" || m === "code";
+  $("#l-email-f").hidden = m === "phone" || m === "code"; $("#l-phone-f").hidden = m !== "phone"; $("#l-code-f").hidden = m !== "code";
+  waHelper(false);
   $("#l-pw").autocomplete = m === "signup" ? "new-password" : "current-password";
-  $("#l-btn").textContent = m === "signup" ? "اعمل الحساب" : m === "forgot" ? "ابعتلي اللينك" : "دخول";
-  $("#to-signup").hidden = m !== "login"; $("#to-forgot").hidden = m !== "login"; $("#to-login").hidden = m === "login";
+  $("#l-btn").textContent = m === "signup" ? "اعمل الحساب" : m === "forgot" ? "ابعتلي اللينك" : m === "phone" ? "ابعتلي الكود على واتساب" : m === "code" ? "دخول" : "دخول";
+  $("#to-signup").hidden = m !== "login"; $("#to-forgot").hidden = m !== "login"; $("#to-phone").hidden = m !== "login"; $("#to-login").hidden = m === "login";
 }
-$("#to-signup").onclick = () => setMode("signup"); $("#to-forgot").onclick = () => setMode("forgot"); $("#to-login").onclick = () => setMode("login");
+$("#to-signup").onclick = () => setMode("signup"); $("#to-forgot").onclick = () => setMode("forgot"); $("#to-login").onclick = () => setMode("login"); $("#to-phone").onclick = () => setMode("phone");
 $("#login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = $("#l-btn"), err = $("#l-err"), ok = $("#l-ok"); err.textContent = ""; ok.textContent = "";
   if (!sb){ err.textContent = "مفيش اتصال دلوقتي. اتأكد من النت وافتح التطبيق تاني."; return; }
   const email = $("#l-email").value.trim(), pw = $("#l-pw").value, name = $("#l-name").value.trim();
+  if (mode === "phone" || mode === "code"){
+    const label = btn.textContent; btn.disabled = true; btn.textContent = "لحظة…";
+    try {
+      if (mode === "phone"){
+        const ph = toE164($("#l-phone").value);
+        if (!ph){ err.textContent = "اكتب رقم موبايل صحيح، مثلاً 01012345678."; return; }
+        const r = await sb.auth.signInWithOtp({phone: ph, options: {shouldCreateUser: false, channel: "sms"}});
+        if (r.error){ err.textContent = "مقدرناش نبعت الكود. اتأكد إن الرقم ده مربوط بحسابك من جوه التطبيق. ولو أول مرة، افتح واتساب وابعتلنا أي رسالة وجرّب تاني."; waHelper(true); return; }
+        otpPhone = ph; setMode("code"); ok.textContent = "بعتنالك كود على واتساب على " + ph + "."; $("#l-code").focus(); return;
+      }
+      const code = $("#l-code").value.replace(/\D/g, "");
+      if (code.length < 4){ err.textContent = "اكتب الكود كامل."; return; }
+      const r = await sb.auth.verifyOtp({phone: otpPhone, token: code, type: "sms"});
+      if (r.error || !r.data || !r.data.user){ err.textContent = "الكود مش صح أو خلص وقته. اطلب كود جديد."; return; }
+      $("#l-code").value = ""; entered = false; await admit(r.data.user);
+    } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; }
+    finally { btn.disabled = false; btn.textContent = label; }
+    return;
+  }
   if (!email){ err.textContent = "اكتب الإيميل."; return; }
   if (mode !== "forgot" && pw.length < 6){ err.textContent = "الباسورد لازم يكون 6 حروف على الأقل."; return; }
   if (mode === "signup" && !name){ err.textContent = "اكتب اسمك."; return; }
