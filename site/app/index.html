@@ -274,6 +274,33 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .ph-id{display:flex;align-items:center;gap:14px;min-width:0}
 @media (max-width:760px){.rail{background:rgba(20,16,13,.80);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
+/* «الفلوس الموجودة» */
+.money{margin-bottom:14px;background:linear-gradient(135deg,rgba(52,211,153,.16),rgba(52,211,153,0) 58%),var(--sheen),var(--glass)}
+.money-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:2px}
+.money-wrap .money{margin-bottom:12px}
+.m-big{display:flex;align-items:baseline;gap:8px;margin:6px 0 4px;font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1.15;font-variant-numeric:tabular-nums}
+.m-big small{font-size:14px;font-weight:600;color:var(--ink-2)}
+.m-big b.load{display:block;width:170px;height:34px;border-radius:10px;background:rgba(255,255,255,.09);animation:pulse 1.3s ease-in-out infinite}
+.m-sub{margin:0;font-size:12.5px;color:var(--ink-2)}
+.m-hint{margin:8px 0 2px;font-size:13.5px;color:#FFC48F}
+.m-pm{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.m-pm span{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
+.m-pm .plus,.m-amt.plus{color:#6EE7A8}.m-pm .plus{background:rgba(52,211,153,.14)}
+.m-pm .minus,.m-amt.minus{color:#FCA5A5}.m-pm .minus{background:rgba(248,113,113,.14)}
+.m-pm .skip{color:var(--ink-3);background:rgba(255,255,255,.05)}
+.m-more{margin-top:12px}
+.m-lines{margin-top:10px;display:flex;flex-direction:column;max-height:340px;overflow-y:auto;overscroll-behavior:contain}
+.m-line{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 2px;border-top:1px solid var(--line);font-size:13px}
+.m-amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.m-amt,.m-pm .plus,.m-pm .minus{direction:ltr;unicode-bidi:isolate}
+.m-tx{color:var(--ink-2);overflow-wrap:anywhere}
+.m-line time{font-size:11px;color:var(--ink-3);white-space:nowrap}
+.m-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
+.m-g{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);text-align:start}
+.m-g b{font-size:13px;font-weight:600;color:var(--ink-2)}
+.m-g span{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.m-g span.wait{font-size:12.5px;color:#FFC48F;font-weight:600}
+.money-l{color:#6EE7A8!important}
 /* home: system health + expenses */
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
 .duo .tile{flex-direction:row;align-items:center;min-height:84px}
@@ -913,24 +940,95 @@ function itemTiles(sp, rows){
     h("span", {class:"t-ic", html: I[it.ic] || I.globe}),
     h("span", {class:"t-tx"}, h("b", null, it.n), it.kpi ? kpiLine(it.kpi) : h("small", {class:"kv"}, it.ext ? "بيفتح بره" : "جوه التطبيق")))));
 }
+/* ---------- «الفلوس الموجودة» (owner only): balances from the WhatsApp accounts groups ----------
+   all-inbox action 'accounts': last «باقي <n>» in each group, plus every number marked +, minus the
+   others (images and voice notes not counted). Cached 60 s; tiles marked data-acct repaint when it arrives. */
+const ACCT = {d:null, at:0, busy:false, err:"", open:new Set()};
+const exact = (n) => new Intl.NumberFormat(L, {maximumFractionDigits:2}).format(+n || 0);
+function loadAccounts(force){
+  if (!ACC || !ACC.owner || ACCT.busy || (!force && ACCT.d && Date.now() - ACCT.at < KPI_TTL)) return;
+  ACCT.busy = true;
+  (async () => {
+    const s = sb && (await sb.auth.getSession()).data.session; if (!s) throw new Error("login");
+    const r = await fetch("/api/hook/all-inbox", {method:"POST", body:new URLSearchParams({action:"accounts", token:s.access_token})});
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !Array.isArray(j.groups)) throw new Error("net");
+    ACCT.d = j; ACCT.err = "";
+  })().catch((e) => { ACCT.err = e.message || "net"; }).then(() => { ACCT.busy = false; ACCT.at = Date.now(); paintAcct(); });
+}
+function paintAcct(){ document.querySelectorAll("[data-acct]").forEach((e) => { const n = acctNode(e.getAttribute("data-acct")); if (n) e.replaceWith(n); else e.remove(); }); }
+const groupsOf = (company) => ((ACCT.d && ACCT.d.groups) || []).filter((g) => g.company === company);
+const dayOf = (d) => { const t = new Date(d); return isNaN(t) ? "" : fDayShort.format(t); };
+// one group: big balance, since which «باقي», +/− since then, recent lines on demand
+function moneyTile(g){
+  const k = "acct-" + g.key, isOpen = ACCT.open.has(g.key);
+  if (g.balance == null) return h("section", {class:"card glass money", "data-acct": "g:" + g.key},
+    h("div", {class:"eyebrow"}, "الفلوس الموجودة · " + (g.name || g.key)),
+    h("p", {class:"m-hint"}, "اكتب \"باقي <الرقم>\" في الجروب مرة واحدة، وبعدها الحساب هيمشي لوحده."));
+  const lines = Array.isArray(g.lines) ? g.lines.slice().reverse() : [];
+  return h("section", {class:"card glass money", "data-acct": "g:" + g.key},
+    h("div", {class:"eyebrow"}, "الفلوس الموجودة · " + (g.name || g.key)),
+    h("div", {class:"m-big"}, exact(g.balance), h("small", null, "ج.م")),
+    h("p", {class:"m-sub"}, ["من آخر باقي " + exact(g.base) + (g.baseAt ? " يوم " + dayOf(g.baseAt) : ""), g.lastAt ? "آخر رسالة " + dayOf(g.lastAt) + " " + fTime.format(new Date(g.lastAt)) : ""].filter(Boolean).join(" · ")),
+    h("div", {class:"m-pm"},
+      h("span", {class:"plus"}, "+ " + exact(g.plus)), h("span", {class:"minus"}, "− " + exact(g.minus)),
+      g.skipped ? h("span", {class:"skip"}, fmtN.format(g.skipped) + " صورة/ريكورد مش محسوبين") : null),
+    lines.length ? h("button", {class:"ghost m-more", type:"button", "aria-expanded": String(isOpen), "aria-controls": k,
+      onclick: () => { isOpen ? ACCT.open.delete(g.key) : ACCT.open.add(g.key); paintAcct(); }}, isOpen ? "اقفل الحركة" : "آخر الحركة (" + fmtN.format(lines.length) + ")") : null,
+    isOpen ? h("div", {class:"m-lines", id: k}, lines.map((l) => h("div", {class:"m-line"},
+      h("span", {class:"m-amt " + (l.amount > 0 ? "plus" : l.amount < 0 ? "minus" : "")}, l.amount == null ? "" : (l.amount > 0 ? "+" : "−") + exact(Math.abs(l.amount))),
+      h("span", {class:"m-tx"}, String(l.text || "")),
+      h("time", null, l.at ? dayOf(l.at) + " " + fTime.format(new Date(l.at)) : "")))) : null);
+}
+function acctLoading(tag){ return h("section", {class:"card glass money", "data-acct": tag}, h("div", {class:"eyebrow"}, "الفلوس الموجودة"), h("div", {class:"m-big"}, h("b", {class:"load"}))); }
+// tags: "co:<company>" (company page), "g:<key>" (one group), "spaces:<company>" (line on الشركات), "costs" (expenses screen)
+function acctNode(tag){
+  const [kind, arg] = tag.split(":");
+  if (!ACC || !ACC.owner) return null;
+  if (kind === "g"){ const g = ((ACCT.d && ACCT.d.groups) || []).find((x) => x.key === arg); return g ? moneyTile(g) : null; }
+  if (kind === "co"){
+    if (!ACCT.d) return ACCT.err ? h("div", {"data-acct": tag, hidden:true}) : acctLoading(tag);
+    const gs = groupsOf(arg).filter((g) => arg !== "jaguar" || g.key !== "omar" || g.balance != null);
+    return gs.length ? h("div", {class:"money-wrap", "data-acct": tag}, gs.map(moneyTile)) : h("div", {"data-acct": tag, hidden:true});
+  }
+  if (kind === "spaces"){
+    const gs = groupsOf(arg).filter((g) => g.balance != null);
+    if (!gs.length) return h("small", {class:"kv money-l", "data-acct": tag, hidden: !!ACCT.d || null}, ACCT.d ? "" : "");
+    return h("small", {class:"kv money-l", "data-acct": tag}, "💰 " + exact(gs.reduce((n, g) => n + (+g.balance || 0), 0)) + " ج.م موجودين");
+  }
+  if (kind === "costs"){
+    const d = ACCT.d;
+    const body = !d ? (ACCT.err ? h("p", {class:"note"}, "مقدرناش نجيب الحسابات دلوقتي.") : h("div", {class:"m-big"}, h("b", {class:"load"})))
+      : [h("div", {class:"m-big"}, exact(d.total), h("small", null, "ج.م")),
+         h("div", {class:"m-groups"}, d.groups.map((g) => h("button", {class:"m-g", type:"button",
+             onclick: () => { const sp = g.company === "aix" ? "aix" : "jaguar"; show("space", true, sp); }},
+           h("b", null, g.name || g.key), h("span", {class: g.balance == null ? "wait" : ""}, g.balance == null ? "مستني «باقي»" : exact(g.balance))))),
+         d.rule ? h("p", {class:"note", style:{"margin-top":"10px"}}, String(d.rule)) : null];
+    return h("section", {class:"card glass money", "data-acct": tag}, h("div", {class:"eyebrow"}, "الفلوس الموجودة · كل الجروبات"), body);
+  }
+  return null;
+}
 function renderSpaces(){
   const comps = companiesOf(visible());
+  loadAccounts();
   $("#s-spaces").replaceChildren(
     h("div", {class:"phead"}, h("div", null, h("h1", null, "الشركات"), h("p", null, "اختار شركة تشوف شغلها وصفحاتها."))),
     comps.length ? h("div", {class:"tiles"}, comps.map((sp) => {
       const crm = sp.items.find((it) => it.kpi && it.kpi.endsWith(":crm"));
       return h("button", {class:"tile glass co", type:"button", style:{"--c": sp.c}, onclick: () => show("space", true, sp.id)},
-        logoEl(sp, "big"), h("span", {class:"t-tx"}, h("b", null, sp.name), crm ? kpiLine(crm.kpi) : h("small", {class:"kv"}, plural(sp.items.length))));
+        logoEl(sp, "big"), h("span", {class:"t-tx"}, h("b", null, sp.name), crm ? kpiLine(crm.kpi) : h("small", {class:"kv"}, plural(sp.items.length)),
+          ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? acctNode("spaces:" + sp.id) : null));
     })) : stateCard("grid", "مفيش شركات متاحة لحسابك."));
 }
 function renderSpace(id){
   const sp = visible().find(s => s.id === id);
   if (!sp){ show("home", false); return; }
   const rows = rowsOf(sp);
-  $("#s-space").replaceChildren(
+  $("#s-space").replaceChildren(...[
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
+    ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? (loadAccounts(), acctNode("co:" + sp.id)) : null,
     spaceBrief(sp),
-    rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده."));
+    rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده.")].filter(Boolean));
 }
 function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); loadCosts(); } }
 
@@ -1094,7 +1192,7 @@ function costRow(r){
 function renderCosts(){
   const box = $("#s-costs"); if (!box) return;
   const head = h("div", {class:"phead"}, h("div", null, h("h1", null, "المصاريف والحسابات"), h("p", null, "الأرقام من الفواتير أو منك بس. اللي لسه ملوش رقم مكتوب عليه «مستني الرقم».")),
-    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { COSTS.rows = null; renderCosts(); loadCosts(); kpiReset(); }}, "حدّث")));
+    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { COSTS.rows = null; renderCosts(); loadCosts(); kpiReset(); loadAccounts(true); }}, "حدّث")));
   if (COSTS.rows === null){
     box.replaceChildren(head, COSTS.err === "setup" ? stateCard("server", "الشاشة دي محتاجة تحديث 107 في قاعدة البيانات لسه ماتعملش.") : COSTS.err ? stateCard("reload", "مفيش اتصال دلوقتي. دوس «حدّث».") : skeletons());
     if (!COSTS.err) loadCosts();
@@ -1121,7 +1219,8 @@ function renderCosts(){
       rows.length ? h("div", {class:"clist"}, rows.map(costRow)) : null,
       COSTS.adding === co ? costForm(null, co) : h("button", {class:"ghost addc", type:"button", onclick: () => { COSTS.adding = co; COSTS.editing = null; renderCosts(); }}, "+ ضيف مصروف"));
   });
-  box.replaceChildren(head, sysCard, sect("الشركات", COS.length), ...coCards);
+  loadAccounts();
+  box.replaceChildren(head, acctNode("costs"), sysCard, sect("الشركات", COS.length), ...coCards);
 }
 
 /* ---------- team (owner only): approve sign-ups and choose what each person opens ---------- */
@@ -1324,7 +1423,7 @@ let sb = null, who = "";
 try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
 const appEls = [$("#shell")];
 function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
-async function logout(){ ACC = null; kpiReset(); await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
+async function logout(){ ACC = null; kpiReset(); ACCT.d = null; ACCT.at = 0; ACCT.open.clear(); await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
 function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
 const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
 function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
