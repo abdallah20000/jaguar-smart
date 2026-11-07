@@ -171,6 +171,19 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .row-conv .tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-conv .pv{color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-conv time{font-size:12px;color:var(--faint);white-space:nowrap;flex:none}
+/* history by day */
+.col{cursor:pointer}
+.col[aria-current="true"]{background:var(--active)}
+.col[aria-current="true"] .bar{background:#0b5f58}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.chips input[type=date]{width:auto;min-height:34px;padding:4px 10px;border-radius:999px;background:var(--surface)}
+.prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin:2px 0 10px}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.row-conv .cnt{font-size:12px;color:var(--faint);white-space:nowrap}
+.row-conv .brand{font-size:12px}
+.pill.new{background:var(--accent-soft);color:var(--accent)}
+.today .row-conv:first-of-type{border-top:0}
+.dayline.hl{background:#fde68a;color:#78350f}
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 14px;cursor:pointer;font-weight:700;color:var(--muted)}
 .tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -245,7 +258,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   var BUSINESS={shahi:1,nile:1,jaguar:1};
   var MEDIA=[[/image/i,'📷 صورة'],[/audio|ptt|voice/i,'🎤 ريكورد'],[/video/i,'🎬 فيديو'],[/document|file/i,'📄 ملف'],[/sticker/i,'ستيكر'],[/location/i,'📍 لوكيشن'],[/contact/i,'👤 جهة اتصال'],[/reaction/i,'تفاعل'],[/interactive/i,'زرار'],[/./,'رسالة']];
   var $=function(id){return document.getElementById(id)};
-  var VIEWS=[['home','الرئيسية'],['messages','الرسايل'],['notes','التنبيهات'],['flows','الأتمتة'],['control','لوحة التحكم']];
+  var VIEWS=[['home','الرئيسية'],['messages','الرسايل'],['history','الأيام'],['notes','التنبيهات'],['flows','الأتمتة'],['control','لوحة التحكم']];
   var CONTROL_URL='https://ha.srv2112249.hstgr.cloud/jaguar-control/home';
   var STATE={ok:'شغال',late:'متأخر',none:'لسه ما اشتغلش'};
   var rows=[],total=0,filter='all',current=null,timer=null,seq=0;
@@ -331,7 +344,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     if(view==='control')return;
     var box=$('page');box.textContent='';
     if(overviewFailed)box.appendChild(el('p','hint','مقدرناش نجيب آخر التنبيهات. هنجرب تاني في التحديث الجاي.'));
-    if(view==='home')renderHome(box);else if(view==='notes')renderNotes(box);else renderFlows(box);
+    if(view==='home')renderHome(box);else if(view==='history')renderHistory(box);else if(view==='notes')renderNotes(box);else renderFlows(box);
   }
   function stat(box,n,label,go2,warn){
     var b=el('button','stat'+(warn&&n?' warn':''));b.type='button';b.appendChild(el('b',null,n));b.appendChild(el('span',null,label));b.onclick=go2;box.appendChild(b);
@@ -345,11 +358,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   /* home reads top to bottom: summary, what matters, pick a side, then its conversations */
   function brandStats(key){return (stats&&stats.brands&&stats.brands[key])||{convs:0,todayIn:0,todayOut:0,week:0,waiting:0,paused:0,lastAt:''}}
   function renderChart(box){
-    var card=el('section','card chart');card.appendChild(el('h3',null,'الرسايل في آخر 7 أيام'));
+    var card=el('section','card chart'),hd=el('h3',null,'الرسايل في آخر 7 أيام');
+    var all=el('button','link','كل الأيام');all.type='button';all.onclick=function(){openDay(histDay||ymd(new Date()))};hd.appendChild(all);
+    card.appendChild(hd);
     var days=stats?stats.days:[],max=1;days.forEach(function(d){max=Math.max(max,d.in+d.out)});
-    var plot=el('div','plot');plot.setAttribute('role','img');plot.setAttribute('aria-label','عدد الرسايل في كل يوم من آخر 7 أيام');
+    var plot=el('div','plot');plot.setAttribute('aria-label','عدد الرسايل في كل يوم من آخر 7 أيام. دوس على يوم تشوف رسايله');
     days.forEach(function(d){
-      var n=d.in+d.out,col=el('div','col');col.tabIndex=0;
+      var n=d.in+d.out,col=el('div','col');col.tabIndex=0;col.setAttribute('role','button');
+      if(view==='history'&&histDay===d.d)col.setAttribute('aria-current','true');
+      col.onclick=function(){openDay(d.d)};col.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openDay(d.d)}};
       var date=new Date(d.d+'T12:00:00');
       var tip=el('div','tip',date.toLocaleDateString('ar-EG',{weekday:'long'})+': '+n+' رسالة، '+d.in+' جت و'+d.out+' اتبعتت');
       col.appendChild(tip);
@@ -381,6 +398,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     left.appendChild(s);
     left.appendChild(el('p','hint','آخر 7 أيام: '+w.in+' رسالة جت و'+w.out+' اتبعتت. الرسايل القديمة اللي اتنقلت مش محسوبة، لأنها أخدت تاريخ يوم النقل.'));
     top.appendChild(left);renderChart(top);box.appendChild(top);
+    renderToday(box);
 
     var imp=el('section','card imp');imp.appendChild(el('h3',null,'أهم حاجة دلوقتي'));
     var items=importantItems();
@@ -440,6 +458,126 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       c.appendChild(t);c.appendChild(el('p',null,f.desc));c.appendChild(el('small',null,f.lastAt?'آخر نشاط: '+dayName(f.lastAt)+' '+clock(f.lastAt):'مفيش نشاط مسجل'));g.appendChild(c);
     });
     box.appendChild(g);
+  }
+
+  /* ---------- history by day ----------
+     The server gives the last message of each chat (list) and whole chats (thread). A chat was active on
+     a day only if its last message is on that day or later, so only those chats are read, four at a time,
+     and each chat is kept until its last message changes. If the workflow gets a 'day' action later,
+     set DAY_ACTION to true and the page asks the server instead (same shape, see dayFromServer). */
+  var DAY_ACTION=false;
+  var threads={},days={},rowsVer=0,histDay=null,histFilter='all';
+  function pad(n){return (n<10?'0':'')+n}
+  function ymd(d){var t=new Date(d);return isNaN(t)?'':t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate())}
+  function startOf(key){var p=key.split('-');return new Date(+p[0],+p[1]-1,+p[2]).getTime()}
+  function getThread(c){
+    var h=threads[c.id];if(h&&h.lastAt===c.lastAt)return Promise.resolve(h.t);
+    return call('thread',{id:c.id}).then(function(t){threads[c.id]={lastAt:c.lastAt,t:t};return t});
+  }
+  function summarize(c,t,s,e){
+    var all=t.messages||[],ms=[],first=Infinity;
+    all.forEach(function(m){var x=new Date(m.at).getTime();if(x<first)first=x;if(x>=s&&x<e)ms.push(m)});
+    if(!ms.length)return null;
+    ms.sort(function(a,b){return new Date(a.at)-new Date(b.at)});
+    var inN=0,lastIn=null;ms.forEach(function(m){if(m.dir==='in'){inN++;lastIn=m}});
+    var last=ms[ms.length-1];
+    return {c:c,inN:inN,outN:ms.length-inN,isNew:first>=s&&first<e,waiting:!!BUSINESS[c.brand]&&last.dir==='in',last:last,lastIn:lastIn,at:last.at};
+  }
+  function dayFromServer(key){
+    return call('day',{date:key}).then(function(j){
+      if(!j||!Array.isArray(j.conversations))throw new Error('no day');
+      var by={};rows.forEach(function(c){by[c.id]=c});
+      return j.conversations.map(function(x){var c=by[x.id]||fixBrand({id:x.id,name:x.name,phone:x.phone,brand:x.brand});
+        return {c:c,inN:x.in||0,outN:x.out||0,isNew:!!x.isNew,waiting:!!x.waiting,last:{text:x.last,dir:x.lastDir,at:x.lastAt},lastIn:x.lastIn?{text:x.lastIn,dir:'in',at:x.lastInAt}:null,at:x.lastAt}});
+    });
+  }
+  // fills days[key] = {ver, loading, done, n, items}; repaints the page when done
+  function ensureDay(key){
+    var st=days[key];if(st&&(st.loading||st.ver===rowsVer))return st;
+    var s=startOf(key),e=s+864e5,cand=rows.filter(function(c){return new Date(c.lastAt).getTime()>=s});
+    st=days[key]={ver:rowsVer,loading:true,done:0,n:cand.length,items:st?st.items:null};
+    var finish=function(items){
+      items.sort(function(a,b){return new Date(b.at)-new Date(a.at)});
+      st.items=items;st.loading=false;
+      if((view==='home'&&key===ymd(new Date()))||(view==='history'&&histDay===key))renderPage();
+    };
+    var client=function(){
+      var out=[],i=0;
+      var tick=function(){st.done++;var b=document.getElementById('prog-'+key);if(b)b.style.width=Math.round(st.done/Math.max(1,st.n)*100)+'%'};
+      var worker=function(){if(i>=cand.length)return Promise.resolve();var c=cand[i++];
+        return getThread(c).then(function(t){var x=summarize(c,t,s,e);if(x)out.push(x)}).catch(function(){}).then(function(){tick();return worker()})};
+      return Promise.all([worker(),worker(),worker(),worker()]).then(function(){return out});
+    };
+    (DAY_ACTION?dayFromServer(key).catch(client):client()).then(finish);
+    return st;
+  }
+  function openDay(key){histDay=key;histFilter='all';go('history')}
+  function dayTotals(key,items){
+    var d=(stats&&stats.days||[]).filter(function(x){return x.d===key})[0],sum=function(f){return items.reduce(function(n,x){return n+f(x)},0)};
+    return {in:d?d.in:sum(function(x){return x.inN}),out:d?d.out:sum(function(x){return x.outN}),
+      fresh:sum(function(x){return x.isNew?1:0}),waiting:key===ymd(new Date())?countOf('need'):sum(function(x){return x.waiting?1:0})};
+  }
+  function dayRow(x,key,incoming){
+    var c=x.c,m=incoming&&x.lastIn?x.lastIn:x.last;
+    var r=el('button','row-conv');r.type='button';r.appendChild(avatar(c,true));
+    var tx=el('span','tx'),tt=el('span','tt',c.name||c.phone);tx.appendChild(tt);
+    var br=el('span','brand',(BRAND[c.brand]||{}).label||'');br.style.setProperty('--c',(BRAND[c.brand]||{}).color||'');tx.appendChild(br);
+    tx.appendChild(el('span','pv',(m.dir==='out'?'↩ ':'')+clean(m.text,m.type)));r.appendChild(tx);
+    if(x.isNew)r.appendChild(el('span','pill new','جديد'));
+    if(x.waiting)r.appendChild(el('span','state late','مستني رد'));
+    if(!incoming)r.appendChild(el('span','cnt',x.inN+' جت · '+x.outN+' اتبعتت'));
+    r.appendChild(el('time',null,clock(m.at)));
+    r.onclick=function(){go('messages','all');open(c.id,false,key)};
+    return r;
+  }
+  function progress(box,st,key){
+    if(!st.loading)return;
+    box.appendChild(el('p','hint','بيقرا المحادثات… '+st.done+' من '+st.n));
+    var b=el('div','prog'),i=el('i');i.id='prog-'+key;i.style.width=Math.round(st.done/Math.max(1,st.n)*100)+'%';b.appendChild(i);box.appendChild(b);
+  }
+  // home: the latest incoming messages today, each opens its chat at today
+  function renderToday(box){
+    var key=ymd(new Date()),st=ensureDay(key),card=el('section','card today');
+    var hd=el('h3',null,'رسايل النهارده'),more=el('button','link','كل رسايل النهارده');more.type='button';more.onclick=function(){openDay(key)};hd.appendChild(more);
+    card.appendChild(hd);
+    var items=(st.items||[]).filter(function(x){return x.lastIn}).sort(function(a,b){return new Date(b.lastIn.at)-new Date(a.lastIn.at)});
+    if(!st.items)progress(card,st,key);
+    else if(!items.length)card.appendChild(el('p','hint','لسه محدش بعت حاجة النهارده.'));
+    items.slice(0,12).forEach(function(x){card.appendChild(dayRow(x,key,true))});
+    box.appendChild(card);
+  }
+  function renderHistory(box){
+    var today=ymd(new Date());if(!histDay)histDay=today;
+    var y=new Date();y.setDate(y.getDate()-1);var yest=ymd(y);
+    box.appendChild(el('h2',null,'الأيام'));
+    box.appendChild(el('p','sub','اختار يوم تشوف حصل فيه إيه: كام رسالة، مين كلّمنا، ومين فضل مستني رد.'));
+    var ch=el('div','chips'),seen={};
+    var chip=function(key,label){if(seen[key])return;seen[key]=1;var b=el('button','tab',label);b.type='button';b.setAttribute('aria-pressed',histDay===key?'true':'false');b.onclick=function(){openDay(key)};ch.appendChild(b)};
+    chip(today,'النهارده');chip(yest,'امبارح');
+    (stats&&stats.days||[]).slice().reverse().forEach(function(d){chip(d.d,new Date(d.d+'T12:00:00').toLocaleDateString('ar-EG',{weekday:'long',day:'numeric'}))});
+    var pick=el('input');pick.type='date';pick.max=today;var m=new Date();m.setDate(m.getDate()-30);pick.min=ymd(m);pick.value=histDay;pick.setAttribute('aria-label','اختار تاريخ');
+    pick.onchange=function(){if(pick.value)openDay(pick.value)};ch.appendChild(pick);
+    box.appendChild(ch);
+    var top=el('div','summary'),left=el('div');
+    var st=ensureDay(histDay),items=st.items||[],t=dayTotals(histDay,items);
+    left.appendChild(el('h2',null,dayName(histDay+'T12:00:00')));
+    var s=el('div','stats');
+    stat(s,t.in,'رسايل جت',function(){histFilter='all';renderPage()});
+    stat(s,t.out,'رسايل اتبعتت',function(){histFilter='all';renderPage()});
+    stat(s,st.items?t.fresh:'…','محادثات جديدة',function(){histFilter='new';renderPage()});
+    stat(s,st.items||histDay===today?t.waiting:'…',histDay===today?'محتاج رد دلوقتي':'فضلوا مستنيين رد',function(){histFilter='waiting';renderPage()},true);
+    left.appendChild(s);
+    left.appendChild(el('p','hint','الرسايل القديمة اللي اتنقلت أخدت تاريخ يوم النقل، فممكن تلاقيها في اليوم ده مش في يومها الحقيقي.'));
+    top.appendChild(left);renderChart(top);box.appendChild(top);
+    var card=el('section','card');
+    var list=items.filter(function(x){return histFilter==='new'?x.isNew:histFilter==='waiting'?x.waiting:true});
+    var hd=el('h3',null,(histFilter==='new'?'المحادثات الجديدة':histFilter==='waiting'?'اللي فضلوا مستنيين رد':'المحادثات اللي كان فيها كلام')+(st.items?' ('+list.length+')':''));
+    if(histFilter!=='all'){var a=el('button','link','عرض الكل');a.type='button';a.onclick=function(){histFilter='all';renderPage()};hd.appendChild(a)}
+    card.appendChild(hd);
+    progress(card,st,histDay);
+    if(st.items&&!list.length)card.appendChild(el('p','hint','مفيش محادثات هنا في اليوم ده.'));
+    list.forEach(function(x){card.appendChild(dayRow(x,histDay,false))});
+    box.appendChild(card);
   }
 
   /* sections */
@@ -515,6 +653,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       }
       var c=todo[i];
       call('thread',{id:c.id}).then(function(t){
+        threads[c.id]={lastAt:c.lastAt,t:t};
         var text=(t.messages||[]).map(function(m){return m.text||m.message||''}).join(' ');
         brandOf[c.id]=NILE_AD_RE.test(text)?'nile':SHAHI_RE.test(text)?'shahi':'jaguar';
       }).catch(function(){}).then(function(){next(i+1)});
@@ -523,7 +662,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   function refresh(){
     return Promise.all([call('list'),call('overview').catch(function(){overviewFailed=true;return null})]).then(function(r){
       var d=r[0];
-      rows=d.conversations.map(fixBrand);total=d.total;
+      rows=d.conversations.map(fixBrand);total=d.total;rowsVer++;
       if(r[1]){notes=r[1].notifications;flows=r[1].flows;stats=r[1].analytics;overviewFailed=false}
       $('sync').textContent='آخر تحديث '+clock(new Date());
       renderViews();
@@ -534,23 +673,29 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   $('q').addEventListener('input',renderList);
 
   /* chat */
-  function open(id,quiet){
+  var openDayKey=null;
+  function open(id,quiet,dayKeyToShow){
     var mine=++seq;current=id;$('app').classList.add('open');
-    if(!quiet)renderList();
+    if(!quiet){renderList();openDayKey=dayKeyToShow||null}
     return call('thread',{id:id}).then(function(t){
       if(mine!==seq)return;
+      var c=rows.filter(function(r){return r.id===id})[0];if(c)threads[id]={lastAt:c.lastAt,t:t};
       var keep=$('reply')?$('reply').value:'',old=$('msgs');
       var atEnd=!old||old.scrollHeight-old.scrollTop-old.clientHeight<60;
+      var keepTop=quiet&&old?old.scrollTop:null;
       renderThread(t);
       if(quiet&&keep&&$('reply'))$('reply').value=keep;
-      var m=$('msgs');if(atEnd||!quiet)m.scrollTop=m.scrollHeight;
+      var m=$('msgs'),line=openDayKey&&m.querySelector('.dayline[data-day="'+openDayKey+'"]');
+      if(line&&!quiet){line.classList.add('hl');m.scrollTop=Math.max(0,line.offsetTop-m.offsetTop-8)}
+      else if(line&&keepTop!==null&&!atEnd){line.classList.add('hl');m.scrollTop=keepTop}
+      else if(atEnd||!quiet)m.scrollTop=m.scrollHeight;
     }).catch(function(x){if(!quiet){var box=$('thread');box.textContent='';box.appendChild(el('p','empty',x.message))}});
   }
   function renderThread(t){
     var box=$('thread');box.textContent='';
     var h=el('div','th');
     var back=el('button','btn ghost back','رجوع');back.type='button';
-    back.onclick=function(){current=null;seq++;$('app').classList.remove('open');renderList()};
+    back.onclick=function(){current=null;openDayKey=null;seq++;$('app').classList.remove('open');renderList()};
     h.appendChild(back);h.appendChild(avatar(t,true));
     var who=el('div','who');who.appendChild(el('h2',null,t.name||t.phone));
     var sub=el('small',null,(BRAND[t.brand]||{}).label||'');
@@ -566,7 +711,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     var m=el('div','msgs');m.id='msgs';var day='';
     t.messages.forEach(function(x){
       var k=dayKey(x.at);
-      if(k!==day){day=k;m.appendChild(el('div','dayline',dayName(x.at)))}
+      if(k!==day){day=k;var dl=el('div','dayline',dayName(x.at));dl.setAttribute('data-day',ymd(x.at));m.appendChild(dl)}
       var b=el('div','m'+(x.dir==='in'?'':' out'));
       if(x.sender)b.appendChild(el('span','sender',x.sender));
       if(isMedia(x.text))b.appendChild(el('span','media',clean(x.text,x.type)));
