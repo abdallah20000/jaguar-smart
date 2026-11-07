@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>مركز التحكم</title>
-<meta name="theme-color" content="#1E1A18">
+<meta name="theme-color" content="#17130F">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,35 +22,41 @@
    page head with segmented control + orange action, wide briefing card, then glass cards. RTL. */
 :root{
   color-scheme:dark;
-  --bg:#1E1A18;
+  --bg:#17130F;
   --ink:#F4F1EE; --ink-2:rgba(244,241,238,.66); --ink-3:rgba(244,241,238,.42);
-  --glass:rgba(40,34,31,.42); --glass-2:rgba(255,255,255,.06); --glass-3:rgba(255,255,255,.10);
-  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
+  --glass:rgba(30,25,22,.42);
+  --sheen:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025) 46%,rgba(255,255,255,.015)); --glass-2:rgba(255,255,255,.06); --glass-3:rgba(255,255,255,.10);
+  --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15); --hi:rgba(255,255,255,.12);
   --accent:#F59A4A; --accent-2:#E8762A; --accent-ink:#2A1606;
   --up:#6EE7A8; --up-bg:rgba(52,211,153,.14);
   --dot:#F0603A;
   --f-display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
-  --blur:blur(28px) saturate(150%);
+  --blur:blur(24px) saturate(160%);
   --stroke:var(--line-2);
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;overscroll-behavior:none}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(90% 60% at 60% 0%,rgba(255,180,120,.07),transparent 60%),radial-gradient(70% 50% at 0% 100%,rgba(255,255,255,.03),transparent 60%)}
+/* the light behind the glass: one fixed layer of soft colour, painted once (no filters), so cards can be see-through */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(55% 42% at 88% -6%,rgba(245,154,74,.30),transparent 72%),
+    radial-gradient(42% 34% at 4% 26%,rgba(232,118,42,.12),transparent 72%),
+    radial-gradient(52% 40% at 100% 104%,rgba(46,196,230,.10),transparent 72%),
+    radial-gradient(44% 34% at 0% 102%,rgba(181,123,255,.10),transparent 72%)}
 [hidden]{display:none!important}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 a{color:inherit;text-decoration:none}
 input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
 #wall{display:none}
-.glass{background:var(--glass);border:1px solid var(--line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 18px 40px rgba(0,0,0,.28)}
+.glass{background:var(--sheen),var(--glass);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hi),0 12px 30px -12px rgba(0,0,0,.55)}
 .pill{border-radius:999px}
 svg{stroke-width:1.75}
 
 /* shell */
 .shell{position:fixed;inset:0;display:flex;gap:14px;padding:calc(var(--st) + 14px) max(14px,env(safe-area-inset-right,0px)) calc(var(--sb) + 14px) max(14px,env(safe-area-inset-left,0px))}
-.rail{flex:none;width:58px;border-radius:30px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;background:rgba(22,19,17,.62);border:1px solid var(--line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 40px rgba(0,0,0,.35)}
+.rail{flex:none;width:58px;border-radius:30px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;background:var(--sheen),rgba(24,20,17,.55);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hi),0 16px 36px -10px rgba(0,0,0,.6)}
 .logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(160deg,#F7A35C,#E06B22);color:#fff;font-family:var(--f-display);font-weight:700;font-size:17px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px rgba(232,118,42,.35);margin-bottom:10px}
 .ri{position:relative;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);transition:background .18s,color .18s}
 .ri svg{width:18px;height:18px}
@@ -89,18 +95,18 @@ svg{stroke-width:1.75}
 
 .pane{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 2px 24px;scrollbar-width:none}
 .pane::-webkit-scrollbar{display:none}
-.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 4px 16px}
-.phead h1{margin:0;font-family:var(--f-display);font-weight:600;font-size:24px;line-height:1.25}
-.phead p{margin:3px 0 0;color:var(--ink-3);font-size:12.5px}
+.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;margin:8px 4px 18px}
+.phead h1{margin:0;font-family:var(--f-display);font-weight:600;font-size:26px;line-height:1.25}
+.phead p{margin:4px 0 0;color:var(--ink-2);font-size:13px}
 .pacts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .seg{display:flex;gap:2px;padding:3px;border-radius:999px;overflow-x:auto;max-width:100%;scrollbar-width:none}
 .seg::-webkit-scrollbar{display:none}
 .seg button{padding:5px 12px;border-radius:999px;font-size:12px;color:var(--ink-2);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:#ECE7E2;color:#1E1A18;font-weight:600}
 
-.brief{border-radius:22px;padding:18px 20px;margin-bottom:14px}
-.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--accent);text-transform:uppercase}
-.brief h2{margin:4px 0 14px;font-family:var(--f-display);font-weight:600;font-size:16px}
+.brief{border-radius:24px;padding:18px 20px;margin-bottom:16px;background:linear-gradient(135deg,rgba(245,154,74,.16),rgba(245,154,74,0) 55%),var(--sheen),var(--glass)}
+.eyebrow{font-size:12px;font-weight:600;color:var(--accent)}
+.brief h2{margin:2px 0 16px;font-family:var(--f-display);font-weight:600;font-size:17px}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .kpi{min-width:0;padding-inline-start:14px;border-inline-start:1px solid var(--line)}
 .kpi:first-child{padding-inline-start:0;border:0}
@@ -110,14 +116,17 @@ svg{stroke-width:1.75}
 .delta{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--up-bg);color:var(--up);white-space:nowrap}
 .kpi .s{font-size:11px;color:var(--ink-3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.card{border-radius:22px;padding:16px;min-width:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start}
+.card{border-radius:22px;padding:16px;min-width:0;transition:border-color .2s}
+@media (hover:hover){.card:hover{border-color:var(--line-2)}}
 .ch{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .ci{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--glass-2);border:1px solid var(--line-2);flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.card[style*="--c"] .ci{background:color-mix(in srgb,var(--c) 16%,transparent);border-color:color-mix(in srgb,var(--c) 38%,transparent);color:color-mix(in srgb,var(--c) 55%,#fff)}
 .ci svg{width:17px;height:17px}
-.ch h3{margin:0;font-size:14.5px;font-weight:600}
-.ch p{margin:0;font-size:11.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ch .tag{margin-inline-start:auto;font-size:10.5px;color:var(--ink-2);padding:2px 8px;border-radius:999px;border:1px solid var(--line-2);white-space:nowrap}
+.ch h3{margin:0;font-size:15px;font-weight:600;line-height:1.35}
+.ch p{margin:1px 0 0;font-size:12px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch .tag{margin-inline-start:auto;font-size:11px;color:var(--ink-2);padding:3px 9px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.04);white-space:nowrap;flex:none}
+.person .ch .tag{flex:0 1 auto;max-width:48%;overflow:hidden;text-overflow:ellipsis}
 .cdot{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);flex:none}
 .rows{display:flex;flex-direction:column}
 .row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:12px;text-align:start;width:100%}
@@ -128,26 +137,42 @@ svg{stroke-width:1.75}
 .row b{flex:1;min-width:0;font-weight:500;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row small{font-size:10.5px;color:var(--ink-3)}
 .row .go{width:14px;height:14px;color:var(--ink-3);transform:scaleX(-1)}
-.empty{padding:30px 10px;text-align:center;color:var(--ink-3)}
+.empty{padding:30px 14px;text-align:center;color:var(--ink-2)}
 .foot{display:flex;justify-content:center;margin-top:18px}
 .out-btn{font-size:12.5px;color:var(--ink-3);padding:6px 14px;border-radius:999px;border:1px solid var(--line-2)}
 
 /* team */
 .person{margin-bottom:12px}
+.person .ch{margin-bottom:12px}
+.pfoot{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.pfoot .smsg{flex:1;min-width:0}
+.sect{display:flex;align-items:center;gap:8px;margin:20px 6px 10px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.sect:first-of-type{margin-top:2px}
+.sect b{min-width:20px;height:20px;padding:0 6px;border-radius:10px;display:grid;place-items:center;font-size:11px;background:rgba(255,255,255,.08);color:var(--ink)}
+.sect.hot{color:#FFC48F}.sect.hot b{background:var(--accent);color:var(--accent-ink)}
+/* empty, error and loading states */
+.state{display:flex;flex-direction:column;align-items:center;gap:12px;padding:34px 18px;text-align:center}
+.state .ci{width:46px;height:46px}.state .ci svg{width:20px;height:20px}
+.state p{margin:0;max-width:34ch;color:var(--ink-2);font-size:13.5px}
+.skel{height:96px;border-radius:22px;margin-bottom:12px;background:rgba(255,255,255,.035);border:1px solid var(--line);animation:pulse 1.3s ease-in-out infinite}
+.skel:nth-child(3){animation-delay:.15s}.skel:nth-child(4){animation-delay:.3s}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
 .person .ci{font-weight:700;font-size:14px}
 .tag.new{background:rgba(245,154,74,.16);border-color:rgba(245,154,74,.4);color:#FFC48F}
-.grantrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:10px;align-items:end}
+.grantrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px;align-items:end}
 .grantrow label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--ink-3);min-width:0}
-.sel{appearance:none;width:100%;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--ink);padding:9px 10px;font:inherit;font-size:13px}
+.sel{appearance:none;width:100%;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--ink);padding:10px 12px;font:inherit;font-size:13.5px;min-height:42px}
+select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b8b0a8' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat left 10px center/14px,rgba(255,255,255,.05);padding-left:30px}
+.sel:focus{outline:none;border-color:var(--accent)}
 .sel option{background:#2a2420;color:#fff}
-.grantact{display:flex;align-items:center;gap:8px}
 .smsg{font-size:12px;color:var(--ink-3)}
-.note{font-size:12.5px;color:var(--ink-3);margin:0}
-@media (max-width:760px){.grantrow{grid-template-columns:1fr 1fr}.grantact{grid-column:1/-1}}
+.note{font-size:12.5px;color:var(--ink-3);margin:0;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.035)}
+@media (max-width:760px){.grantrow{grid-template-columns:1fr 1fr}}
 
 /* AIX team: permission chips */
-.perms{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.chip{position:relative;display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.perms{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex;align-items:center;min-height:36px;padding:7px 13px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none}
 .chip input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .chip.on{background:rgba(245,154,74,.18);border-color:rgba(245,154,74,.5);color:#FFD2AA}
 .chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
@@ -179,7 +204,9 @@ svg{stroke-width:1.75}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}
   .kpi:nth-child(3){padding-inline-start:0;border:0}
   .cards{grid-template-columns:minmax(0,1fr)}
-  .phead h1{font-size:21px}
+  .phead h1{font-size:22px}
+  .brief{padding:16px}
+  .card{padding:14px}
 }
 /* gates: install page (browser) and login (inside the app) */
 .gate{position:fixed;inset:0;z-index:50;display:flex;padding:calc(var(--st) + 24px) 20px calc(var(--sb) + 24px);overflow-y:auto}
@@ -201,12 +228,13 @@ svg{stroke-width:1.75}
 .glinks button{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
 .out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
 
-/* speed: the wallpaper is a flat colour, so blurring what is behind a card changes nothing on screen
-   but costs a lot on phones. Only the floating bottom bar keeps a (lighter) blur. */
-.glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* speed: real blur only on layers that never scroll (top bar, side rail, sign-in boxes): they are painted
+   once. Cards in the scrolling list are see-through glass without a filter. The phone bottom bar floats over
+   the list, so it gets a small blur only. */
+.top .glass,.rail,.gbox{-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
 .pane{overscroll-behavior:contain}
 .card,.brief{contain:layout style}
-@media (max-width:760px){.rail{-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}}
+@media (max-width:760px){.rail{background:rgba(24,20,17,.74);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
 /* intro */
 #intro{position:fixed;inset:0;z-index:100;background:#F3F2EE radial-gradient(circle,#CFCBC1 .8px,transparent 1.1px) 1px 1px/18px 18px;transition:opacity .5s,transform .5s}
@@ -517,7 +545,7 @@ function renderHome(){
         kpi("الصفحات", String(pages), "جاهزة", "تفتح جوه التطبيق"),
         kpi("دورك", roleLabel() || "—", null, placeLabel()),
         kpi("آخر دخول", rel(lastSeen), null, "على الموبايل ده"))),
-    shown.length ? h("div", {class:"cards"}, shown.map(([s, r]) => spaceCard(s, r))) : h("div", {class:"empty glass card"}, query ? "مفيش صفحة بالاسم ده." : "مفيش أقسام متاحة لحسابك."),
+    shown.length ? h("div", {class:"cards"}, shown.map(([s, r]) => spaceCard(s, r))) : stateCard(query ? "search" : "grid", query ? "مفيش صفحة بالاسم ده." : "مفيش أقسام متاحة لحسابك."),
     phoneCard(),
     h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
   ].filter(Boolean));
@@ -533,7 +561,7 @@ function renderSpace(id){
     h("div", {class:"phead"}, h("div", null, h("h1", null, sp.name), h("p", null, sp.desc))),
     h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "الصفحات"),
       h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel()))),
-    rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : h("div", {class:"empty glass card"}, "مفيش صفحة بالاسم ده."));
+    rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : stateCard("search", "مفيش صفحة بالاسم ده."));
 }
 function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner) loadPeople(true); }
 
@@ -550,20 +578,24 @@ async function loadPeople(quiet){
   pendingCount = people ? people.filter(x => !hasAccess(x)).length : 0;
   renderRail(); if (!quiet && current.view === "team") renderTeam();
 }
+const sect = (t, n, hot) => h("div", {class: "sect" + (hot ? " hot" : "")}, h("span", null, t), h("b", null, String(n)));
+const skeletons = () => h("div", {"aria-busy":"true", "aria-label":"بيحمّل"}, h("div", {class:"skel"}), h("div", {class:"skel"}), h("div", {class:"skel"}));
+const stateCard = (icon, text, ...more) => h("section", {class:"card glass state", role:"status"}, h("span", {class:"ci", html: I[icon] || I.spark}), h("p", null, text), ...more);
 const sel = (id, opts, val) => h("select", {id, class:"sel"}, opts.map(([v, t]) => { const o = h("option", {value: v}, t); if (v === (val || "")) o.selected = true; return o; }));
 let teamTab = "app";
 function teamHead(){
   return h("div", {class:"phead"}, h("div", null, h("h1", null, "الفريق"), h("p", null, teamTab === "aix" ? "فريق AIX: اختار لكل واحد صلاحياته ودوس «حفظ»." : "اللي عملوا حساب بيظهروا هنا. اختار لكل واحد يفتح إيه ودوس «حفظ».")),
     h("div", {class:"pacts"},
       h("div", {class:"seg glass"}, [["app","التطبيق"],["aix","AIX"]].map(([k, t]) => h("button", {type:"button", "aria-pressed": String(teamTab === k), onclick: () => { teamTab = k; renderTeam(); }}, t))),
-      h("button", {class:"act", type:"button", onclick: () => { if (teamTab === "aix"){ aixState = null; renderTeam(); } else { $("#s-team").replaceChildren(teamHead(), h("div", {class:"empty glass card"}, "بيحمّل…")); loadPeople(); } }}, "حدّث")));
+      h("button", {class:"act", type:"button", onclick: () => { if (teamTab === "aix"){ aixState = null; renderTeam(); } else { $("#s-team").replaceChildren(teamHead(), skeletons()); loadPeople(); } }}, "حدّث")));
 }
 function renderTeam(){
   const box = $("#s-team");
   const head = teamHead();
   if (teamTab === "aix"){ renderAix(box, head); return; }
   if (!people){
-    box.replaceChildren(head, h("div", {class:"empty glass card"}, peopleErr === "setup" ? "صفحة الفريق محتاجة تحديث صغير في قاعدة البيانات لسه ماتعملش." : peopleErr === "net" ? "مفيش اتصال دلوقتي. دوس «حدّث»." : "بيحمّل…"));
+    box.replaceChildren(head, peopleErr === "setup" ? stateCard("server", "صفحة الفريق محتاجة تحديث صغير في قاعدة البيانات لسه ماتعملش.")
+      : peopleErr === "net" ? stateCard("reload", "مفيش اتصال دلوقتي. دوس «حدّث».") : skeletons());
     if (!peopleErr) loadPeople();
     return;
   }
@@ -585,18 +617,18 @@ function renderTeam(){
         h("div", {style:{"min-width":"0"}}, h("h3", null, x.full_name || x.email.split("@")[0]), h("p", {style:{direction:"ltr", "text-align":"right"}}, x.email)),
         pending ? h("span", {class:"tag new"}, "جديد · مستني") : h("span", {class:"tag"}, [x.team_role ? (ROLE[x.team_role] + " · " + (COMPANY[x.team_company] || "")) : "", x.shahi_role && x.shahi_active ? SHAHI_ROLE[x.shahi_role] : "", matOf(x) ? "مواد البناء: " + MAT_ROLE[matOf(x)] + (x.mat_role === matOf(x) ? "" : " (لما يدخل المتجر)") : ""].filter(Boolean).join(" + ")),
         !x.confirmed ? h("span", {class:"tag"}, "الإيميل لسه ماتأكدش") : null),
-      me ? h("p", {class:"note"}, "ده حسابك انت.") : h("div", {class:"grantrow"},
+      me ? h("p", {class:"note"}, "ده حسابك انت. صلاحياتك مش بتتغيّر من هنا.") : [h("div", {class:"grantrow"},
         h("label", null, h("span", null, "الشركة"), sel("c-" + id, [["jaguar","Jaguar Smart"],["tuya-suez","Tuya Suez"]], x.team_company || "jaguar")),
         h("label", null, h("span", null, "الدور"), sel("r-" + id, [["","مالوش"],["crm","مبيعات (CRM)"],["inventory","مخزن"],["installs","تركيبات"],["admin","أدمن الشركة"]], x.team_role)),
         h("label", null, h("span", null, "شاهي"), sel("s-" + id, [["","مالوش"],["sales","مبيعات"],["ops","تشغيل"],["chef","شيف"],["admin","أدمن شاهي"]], x.shahi_active ? x.shahi_role : "")),
         matOK ? h("label", null, h("span", null, "مواد البناء"), sel("m-" + id, [["","مالوش"],["staff","موظف"],["admin","أدمن"]], matOf(x))) : null,
-        h("div", {class:"grantact"}, save, msg)));
+), h("div", {class:"pfoot"}, save, msg)]);
   };
   const pend = people.filter(x => !hasAccess(x)), rest = people.filter(hasAccess);
   box.replaceChildren(...[head,
-    pend.length ? h("div", {class:"eyebrow", style:{margin:"4px 6px 10px"}}, "مستنيين موافقتك (" + pend.length + ")") : null,
+    pend.length ? sect("مستنيين موافقتك", pend.length, true) : null,
     ...pend.map(card),
-    h("div", {class:"eyebrow", style:{margin:"18px 6px 10px"}}, "الفريق (" + rest.length + ")"),
+    sect("الفريق", rest.length),
     ...rest.map(card)].filter(Boolean));
 }
 /* ---------- AIX team (owner only). AIX is its own Supabase project with its own accounts:
@@ -657,7 +689,7 @@ function aixLogin(){
 async function aixOut(){ try { if (aix) await aix.auth.signOut(); } catch {} aixState = {step:"login"}; }
 function renderAix(box, head){
   if (!aixState){
-    box.replaceChildren(head, h("div", {class:"empty glass card"}, "بيحمّل…"));
+    box.replaceChildren(head, skeletons());
     loadAix().then(() => { if (current.view === "team" && teamTab === "aix") renderTeam(); });
     return;
   }
@@ -665,8 +697,8 @@ function renderAix(box, head){
   if (st.step === "login"){ box.replaceChildren(head, aixLogin()); return; }
   const out = h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: async () => { await aixOut(); renderTeam(); }}, "خروج من حساب AIX"));
   if (st.step !== "ok"){
-    box.replaceChildren(...[head, h("div", {class:"empty glass card"}, st.step === "notadmin" ? "الحساب ده مش مدير في AIX. اخرج وادخل بحساب مدير."
-      : st.step === "setup" ? "قايمة فريق AIX محتاجة تحديث صغير في قاعدة بيانات AIX لسه ماتعملش." : "مفيش اتصال دلوقتي. دوس «حدّث»."), st.step === "net" ? null : out].filter(Boolean));
+    box.replaceChildren(...[head, st.step === "notadmin" ? stateCard("user", "الحساب ده مش مدير في AIX. اخرج وادخل بحساب مدير.")
+      : st.step === "setup" ? stateCard("server", "قايمة فريق AIX محتاجة تحديث صغير في قاعدة بيانات AIX لسه ماتعملش.") : stateCard("reload", "مفيش اتصال دلوقتي. دوس «حدّث»."), st.step === "net" ? null : out].filter(Boolean));
     return;
   }
   const after = async (msg, ok) => { msg.textContent = ok; await loadAix(); if (current.view === "team" && teamTab === "aix") renderTeam(); };
@@ -689,7 +721,7 @@ function renderAix(box, head){
         await after(msg, "اتحفظ ✓");
       } catch (e) { msg.textContent = /not allowed/i.test((e && e.message) || "") ? "مش مسموح." : "مقدرناش نحفظ. جرّب تاني."; save.disabled = false; }
     };
-    return h("section", {class:"card glass person"}, head2, pb, h("div", {class:"grantact", style:{"margin-top":"10px"}}, save, msg));
+    return h("section", {class:"card glass person"}, head2, pb, h("div", {class:"pfoot"}, save, msg));
   };
   const addCard = () => {
     const nm = h("input", {class:"sel", placeholder:"الاسم", autocomplete:"off"});
@@ -707,12 +739,12 @@ function renderAix(box, head){
     };
     return h("section", {class:"card glass person"},
       h("div", {class:"ch"}, h("span", {class:"ci", html: I.plus}), h("div", {style:{"min-width":"0"}}, h("h3", null, "ضيف حد لفريق AIX"), h("p", null, "الصلاحية بتتربط بالإيميل ده."))),
-      h("div", {class:"grantrow", style:{"grid-template-columns":"1fr 1fr", "margin-bottom":"8px"}}, nm, em), pb,
-      h("div", {class:"grantact", style:{"margin-top":"10px"}}, go, msg));
+      h("div", {class:"grantrow", style:{"grid-template-columns":"1fr 1fr", "margin-bottom":"12px"}}, nm, em), pb,
+      h("div", {class:"pfoot"}, go, msg));
   };
   const ms = [...st.members].sort((a, b) => (String(a.email).toLowerCase() === st.me ? -1 : 0) - (String(b.email).toLowerCase() === st.me ? -1 : 0));
   box.replaceChildren(head,
-    h("div", {class:"eyebrow", style:{margin:"4px 6px 10px"}}, "فريق AIX (" + ms.length + ")"),
+    sect("فريق AIX", ms.length),
     ...ms.map(mcard), addCard(), out);
 }
 const _enter = (u) => { meEmail = (u && u.email) || ""; meUser = u || null; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };

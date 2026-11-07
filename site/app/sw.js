@@ -1,6 +1,6 @@
 // Control center app shell. Pages and data come fresh from the network, but a slow network never
 // blocks opening: after 2.5 s the last saved copy is shown. The pinned Supabase library is kept offline.
-const CACHE = 'cc-app-v11';
+const CACHE = 'cc-app-v12';
 const SHELL = ['/app/', '/app/manifest.webmanifest', '/app/icon-192.png', '/app/icon-512.png'];
 const LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
 
