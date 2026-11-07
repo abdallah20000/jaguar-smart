@@ -303,6 +303,19 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .money-l{color:#6EE7A8!important}
 .capital{background:linear-gradient(135deg,rgba(245,154,74,.2),rgba(52,211,153,.10) 55%,rgba(52,211,153,0)),var(--sheen),var(--glass)}
 .m-sub.warn{color:#FFC48F}
+.trend{margin-bottom:14px}
+.t-verdict{margin:6px 0 10px;font-size:17px;font-weight:700}
+.t-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dl{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);min-width:0}
+.dl b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:end}
+.dl small{font-size:11px;color:var(--ink-3)}
+.dl.up b{color:#6EE7A8}.dl.down b{color:#FCA5A5}
+.t-chart{margin:12px 0 6px;direction:ltr}
+.t-chart.up{color:#6EE7A8}.t-chart.down{color:#FCA5A5}
+.spark svg{display:block;width:100%;height:64px}
+.t-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:4px}
+.t-note{white-space:pre-wrap;font:12px/1.6 var(--f-body);color:var(--ink-2);background:rgba(0,0,0,.18);border-radius:12px;padding:10px 12px;margin:10px 0 0;max-height:260px;overflow:auto}
+@media (max-width:760px){.t-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.t-row .dl:last-child{grid-column:1/-1}}
 .m-caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:10px}
 .m-cap{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 12px;border-radius:14px;background:rgba(245,154,74,.08);border:1px solid rgba(245,154,74,.25);text-align:start}
 .m-cap b{font-size:12.5px;color:var(--ink-2);font-weight:600}
@@ -1000,9 +1013,21 @@ function moneyTile(g){
 }
 const CAP_CO = {aix:"aix", jaguar:"jag"};
 function capitalOf(co){
-  const vk = CAP_CO[co] + ":value"; kpiGet(vk);
-  const gs = groupsOf(co).filter((g) => g.balance != null), k = KPI[vk] || {}, v = k.d;
+  const gs = groupsOf(co).filter((g) => g.balance != null);
   const money = gs.length ? gs.reduce((n, g) => n + (+g.balance || 0), 0) : null;
+  if (co === "aix"){
+    // AIX: stock from the «Stock» WhatsApp group PDFs (n8n bVX7IiFwUbTggakv), capital_now from the server
+    const st = ACCT.d && ACCT.d.stock, L0 = st && st.latest;
+    const notes = [];
+    if (money == null) notes.push(ACCT.d ? "مستني باقي" : ACCT.err ? "الفلوس مش متاحة" : "");
+    if (ACCT.d && !L0) notes.push("مستني أول PDF للمخزن");
+    if (L0 && L0.unpriced) notes.push("من غير سعر " + fmtN.format(L0.unpriced) + " قطعة");
+    const stockVal = L0 ? +L0.value || 0 : null;
+    const total = st && st.capital_now != null ? +st.capital_now : money == null && stockVal == null ? null : (money || 0) + (stockVal || 0);
+    return {money, stock: !ACCT.d ? "load" : L0 ? "pdf" : "na", stockVal, pdf: L0, total, notes: notes.filter(Boolean), loading: !ACCT.d && !ACCT.err};
+  }
+  const vk = CAP_CO[co] + ":value"; kpiGet(vk);
+  const k = KPI[vk] || {}, v = k.d;
   const stock = !v ? (k.busy ? "load" : "na") : v.setup ? "setup" : !v.items ? "empty" : "ok";
   const stockVal = stock === "ok" || stock === "empty" ? (v.value || 0) : null;
   const notes = [];
@@ -1013,7 +1038,47 @@ function capitalOf(co){
   const total = money == null && stockVal == null ? null : (money || 0) + (stockVal || 0);
   return {money, stock, stockVal, v, total, notes: notes.filter(Boolean), loading: (!ACCT.d && !ACCT.err) || stock === "load"};
 }
-const stockText = (c) => c.stock === "ok" ? exact(c.stockVal) + " ج.م" : c.stock === "empty" ? "المخزن فاضي" : c.stock === "setup" ? "محتاج تحديث المخزن" : c.stock === "load" ? "…" : "مش متاح";
+const stockText = (c) => c.stock === "pdf" ? exact(c.stockVal) + " ج.م" : c.stock === "ok" ? exact(c.stockVal) + " ج.م" : c.stock === "empty" ? "المخزن فاضي" : c.stock === "setup" ? "محتاج تحديث المخزن" : c.stock === "load" ? "…" : "مش متاح";
+function sparkline(vals){
+  const w = 300, hh = 64, pad = 6, lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+  const pts = vals.map((v, i) => [pad + i * (w - 2 * pad) / Math.max(1, vals.length - 1), hh - pad - (v - lo) / span * (hh - 2 * pad)]);
+  const svg = '<svg viewBox="0 0 ' + w + ' ' + hh + '" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" points="' +
+    pts.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ") + '"/>' + pts.map((p, i) => '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (i === pts.length - 1 ? 4 : 2.4) + '" fill="currentColor"/>').join("") + "</svg>";
+  return h("div", {class:"spark", html: svg});
+}
+function delta(n, label){
+  const up = n > 0, z = !n;
+  return h("div", {class:"dl " + (z ? "" : up ? "up" : "down")}, h("b", null, z ? "0" : (up ? "+" : "−") + exact(Math.abs(n))), h("small", null, label));
+}
+function trendCard(){
+  const st = ACCT.d && ACCT.d.stock, hist = (st && st.history) || [];
+  const tag = "trend:aix";
+  if (!ACCT.d) return ACCT.err ? h("div", {"data-acct": tag, hidden:true}) : acctLoading(tag);
+  if (!st || !hist.length) return h("section", {class:"card glass trend", "data-acct": tag}, h("div", {class:"eyebrow"}, "بنكسب ولا لأ"),
+    h("p", {class:"m-hint"}, "لسه مفيش لقطة للمخزن. هتتعمل لوحدها أول ما ينزل PDF في جروب Stock."));
+  const last = hist[hist.length - 1], first = hist[0], isOpen = ACCT.open.has("trend-note");
+  const note = last && last.note ? h("div", null,
+    h("button", {class:"ghost m-more", type:"button", "aria-expanded": String(isOpen), onclick: () => { isOpen ? ACCT.open.delete("trend-note") : ACCT.open.add("trend-note"); paintAcct(); }}, isOpen ? "اقفل التفاصيل" : "تفاصيل آخر لقطة"),
+    isOpen ? h("pre", {class:"t-note"}, String(last.note)) : null) : null;
+  if (hist.length < 2) return h("section", {class:"card glass trend", "data-acct": tag},
+    h("div", {class:"eyebrow"}, "بنكسب ولا لأ"),
+    h("p", {class:"m-sub"}, "رأس المال دلوقتي"),
+    h("div", {class:"m-big"}, exact(st.capital_now != null ? st.capital_now : last.capital), h("small", null, "ج.م")),
+    h("p", {class:"m-hint"}, "محتاج لقطة تانية علشان نقارن — هتتعمل لوحدها لما ينزل PDF جديد."),
+    h("p", {class:"m-sub"}, "أول لقطة: " + (last.file || "") + (last.day ? " · " + last.day : "") + " · رأس المال " + exact(last.capital)), note);
+  const prev = hist[hist.length - 2];
+  const dPrev = st.since_prev && st.since_prev.capital != null ? +st.since_prev.capital : (+last.capital || 0) - (+prev.capital || 0);
+  const dStock = st.since_prev && st.since_prev.stock != null ? +st.since_prev.stock : (+last.value || 0) - (+prev.value || 0);
+  const dFirst = (+last.capital || 0) - (+first.capital || 0);
+  const verdict = dPrev > 0 ? "🟢 بنكسب من آخر لقطة" : dPrev < 0 ? "🔴 رأس المال نزل من آخر لقطة" : "زي ما هو من آخر لقطة";
+  return h("section", {class:"card glass trend", "data-acct": tag},
+    h("div", {class:"eyebrow"}, "بنكسب ولا لأ"),
+    h("h3", {class:"t-verdict"}, verdict),
+    h("div", {class:"t-row"}, delta(dPrev, "رأس المال من آخر لقطة"), delta(dStock, "المخزن من آخر لقطة"), delta(dFirst, "من أول لقطة (" + (first.day || "") + ")")),
+    h("div", {class:"t-chart " + (dFirst >= 0 ? "up" : "down")}, sparkline(hist.map((x) => +x.capital || 0)),
+      h("div", {class:"t-ax"}, h("span", null, first.day || ""), h("span", null, hist.length === 2 ? "لقطتين" : fmtN.format(hist.length) + (hist.length <= 10 ? " لقطات" : " لقطة")), h("span", null, last.day || ""))),
+    h("p", {class:"m-sub"}, "آخر لقطة: " + (last.file || "") + " · " + fmtN.format(last.pieces || 0) + " قطعة · مخزن " + exact(last.value) + " · فلوس " + exact(last.cash)), note);
+}
 function capitalCard(co){
   const c = capitalOf(co);
   return h("section", {class:"brief glass capital", "data-acct": "cap:" + co},
@@ -1022,7 +1087,7 @@ function capitalCard(co){
     c.notes.length ? h("p", {class:"m-sub warn"}, c.notes.join(" · ")) : h("p", {class:"m-sub"}, "الفلوس الموجودة + المخزن بسعر التكلفة"),
     h("div", {class:"kpis", style:{"grid-template-columns":"1fr 1fr", "margin-top":"12px"}},
       kpi("الفلوس الموجودة", c.money == null ? (ACCT.d ? "—" : "…") : exact(c.money), null, c.money == null && ACCT.d ? "اكتب «باقي <الرقم>» في الجروب" : "من جروب الحسابات"),
-      kpi("رصيد المخزن", stockText(c), null, c.stock === "ok" ? fmtN.format(c.v.priced) + " صنف بسعر" + (c.v.noCost ? " · " + fmtN.format(c.v.noCost) + " من غير سعر" : "") : c.stock === "setup" ? "اضغط Run على تحديث المخزن" : "بسعر التكلفة")));
+      kpi("رصيد المخزن", stockText(c), null, c.stock === "pdf" ? [fmtN.format(c.pdf.pieces || 0) + " قطعة", c.pdf.unpriced ? fmtN.format(c.pdf.unpriced) + " من غير سعر" : "", "من PDF " + (c.pdf.file || "") + (c.pdf.day ? " " + c.pdf.day : "")].filter(Boolean).join(" · ") : c.stock === "ok" ? fmtN.format(c.v.priced) + " صنف بسعر" + (c.v.noCost ? " · " + fmtN.format(c.v.noCost) + " من غير سعر" : "") : c.stock === "setup" ? "اضغط Run على تحديث المخزن" : "بسعر التكلفة")));
 }
 function acctLoading(tag){ return h("section", {class:"card glass money", "data-acct": tag}, h("div", {class:"eyebrow"}, "الفلوس الموجودة"), h("div", {class:"m-big"}, h("b", {class:"load"}))); }
 // tags: "co:<company>" (company page), "g:<key>" (one group), "spaces:<company>" (line on الشركات), "costs" (expenses screen)
@@ -1030,6 +1095,7 @@ function acctNode(tag){
   const [kind, arg] = tag.split(":");
   if (!ACC || !ACC.owner) return null;
   if (kind === "cap") return CAP_CO[arg] ? capitalCard(arg) : null;
+  if (kind === "trend") return trendCard();
   if (kind === "g"){ const g = ((ACCT.d && ACCT.d.groups) || []).find((x) => x.key === arg); return g ? moneyTile(g) : null; }
   if (kind === "co"){
     if (!ACCT.d) return ACCT.err ? h("div", {"data-acct": tag, hidden:true}) : acctLoading(tag);
@@ -1076,6 +1142,7 @@ function renderSpace(id){
   $("#s-space").replaceChildren(...[
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
     ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? (loadAccounts(), acctNode("cap:" + sp.id)) : null,
+    ACC && ACC.owner && sp.id === "aix" ? acctNode("trend:aix") : null,
     ACC && ACC.owner && (sp.id === "aix" || sp.id === "jaguar") ? acctNode("co:" + sp.id) : null,
     spaceBrief(sp),
     rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده.")].filter(Boolean));
