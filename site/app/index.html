@@ -2,17 +2,488 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>مركز التحكم</title>
+<meta name="theme-color" content="#2A2320">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مركز التحكم">
 <meta name="robots" content="noindex">
-<title>الصفحة مش موجودة</title>
-<style>html,body{margin:0;height:100%;background:#111;color:#999;font:15px/1.6 system-ui,sans-serif}body{display:grid;place-items:center}</style>
+<link rel="manifest" href="/app/manifest.webmanifest">
+<link rel="icon" href="/app/icon-192.png">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#2A2320; --ink:#fff; --ink-2:rgba(255,255,255,.74); --ink-3:rgba(255,255,255,.52);
+  --glass:rgba(22,20,30,.42); --glass-2:rgba(255,255,255,.10); --glass-hi:rgba(255,255,255,.18);
+  --stroke:rgba(255,255,255,.16); --accent:#FF7A1A; --accent-ink:#1A0E05;
+  --f-display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --blur:blur(24px) saturate(165%);
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;overscroll-behavior:none}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
+#wall{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.dim{position:fixed;inset:0;z-index:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.05) 40%,rgba(0,0,0,.35))}
+.glass{background:var(--glass);border:1px solid var(--stroke);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 32px rgba(0,0,0,.22)}
+
+/* screens */
+.screen{position:fixed;inset:0;z-index:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--st) + 18px) max(16px,env(safe-area-inset-right,0px)) calc(var(--sb) + 100px) max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:900px;margin:0 auto}
+.hello{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.2;margin:6px 0 2px;text-shadow:0 2px 18px rgba(0,0,0,.25)}
+.sub{color:var(--ink-2);font-size:14px;margin:0 0 18px}
+.h2{font-family:var(--f-display);font-weight:600;font-size:17px;margin:24px 4px 12px}
+.hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:24px;width:100%;text-align:start}
+.hero .hi{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(140deg,#2BD86F,#128C4A);border:1px solid rgba(255,255,255,.3);flex:none}
+.hero b{display:block;font-size:17px;font-weight:600}
+.hero span{font-size:13px;color:var(--ink-2)}
+.hero svg{width:26px;height:26px}
+.spaces{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:700px){.spaces{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sp{border-radius:22px;overflow:hidden;text-align:start;display:flex;flex-direction:column;transition:transform .15s}
+.sp:active{transform:scale(.97)}
+.sp .top{margin:7px;border-radius:16px;height:74px;padding:10px;display:flex;align-items:flex-start;justify-content:space-between;background:linear-gradient(140deg,color-mix(in srgb,var(--c) 80%,transparent),color-mix(in srgb,var(--c) 40%,transparent));border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.gi{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35)}
+.gi svg{width:19px;height:19px}
+.sp .cnt{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:rgba(0,0,0,.22)}
+.sp .bd{padding:2px 12px 12px}
+.sp h3{margin:0;font-size:15px;font-weight:600}
+.sp p{margin:2px 0 0;font-size:12px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}
+@media (min-width:700px){.apps{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.ap{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:6px 2px;border-radius:16px}
+.ap:active{background:var(--glass-2)}
+.ap .ai{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(140deg,color-mix(in srgb,var(--c) 92%,transparent),color-mix(in srgb,var(--c) 55%,transparent));border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.28)}
+.ap .ai svg{width:28px;height:28px}
+.ap b{font-size:12.5px;font-weight:500;line-height:1.3}
+.ap .ext{font-size:10.5px;color:var(--ink-3)}
+.card{border-radius:22px;padding:16px}
+.note{font-size:12.5px;color:var(--ink-3);margin-top:8px}
+.btn{border-radius:999px;padding:10px 18px;font-weight:600;font-size:14px;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--glass-hi);color:var(--ink)}
+.install{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+
+/* page viewer */
+#viewer{position:fixed;inset:0;z-index:20;background:#111;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+#viewer.on{transform:none}
+.vbar{display:flex;align-items:center;gap:10px;padding:calc(var(--st) + 8px) 12px 8px;background:rgba(28,22,36,.92);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-bottom:1px solid var(--stroke)}
+.vbar b{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--glass-2);flex:none}
+.ib svg{width:20px;height:20px}
+#frame{flex:1;width:100%;border:0;background:#fff}
+.vload{position:absolute;top:calc(var(--st) + 56px);left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:50% 100%;animation:ld 1s linear infinite}
+@keyframes ld{from{background-position:-50% 0}to{background-position:150% 0}}
+
+/* tab bar */
+.tabbar{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 12px);display:flex;gap:2px;padding:6px;border-radius:999px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 14px;border-radius:999px;font-size:11px;color:var(--ink-2);min-width:70px}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{background:var(--glass-hi);color:var(--ink)}
+
+/* gates: install page (browser) and login (inside the app) */
+.gate{position:fixed;inset:0;z-index:50;display:flex;padding:calc(var(--st) + 24px) 20px calc(var(--sb) + 24px);overflow-y:auto}
+.gbox{width:min(420px,100%);min-width:0;margin:auto;border-radius:28px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.gbox .logo{width:84px;height:84px;margin:0 auto 4px;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.gbox h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:24px}
+.gbox p{margin:0;color:var(--ink-2);font-size:14.5px}
+.steps{text-align:start;margin:4px 0 0;padding-inline-start:20px;color:var(--ink-2);font-size:14px;display:flex;flex-direction:column;gap:6px}
+.fld{display:flex;flex-direction:column;gap:6px;text-align:start}
+.fld label{font-size:13px;color:var(--ink-2)}
+.fld input{width:100%;min-width:0;border-radius:14px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--ink);padding:13px 14px;font:inherit;font-size:16px;outline:none;direction:ltr;text-align:left}
+.fld input:focus{border-color:var(--accent)}
+.gerr{color:#FFB3B3;font-size:13.5px;min-height:1.2em}
+.gbox .btn{width:100%;padding:13px 18px;font-size:15px}
+.gbox .btn:disabled{opacity:.6}
+.out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
+
+/* intro */
+#intro{position:fixed;inset:0;z-index:100;background:#F3F2EE;transition:opacity .5s,transform .5s}
+#intro.out{opacity:0;transform:scale(1.03);pointer-events:none}
+#intro canvas{position:absolute;inset:0;width:100%;height:100%}
+.it{position:absolute;top:calc(var(--st) + 16px);left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;color:#77736A;font-size:12px}
+.it b{font-family:var(--f-display);font-size:15px;color:#1B1A17}
+.skip{border:1px solid #D7D3C9;background:#fff;border-radius:999px;padding:6px 14px;font-size:12.5px;color:#4B4840}
+.ibar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 22px);background:#141414;color:#EDEDED;border-radius:999px;padding:7px 14px;font:11.5px ui-monospace,Menlo,monospace;direction:ltr;white-space:nowrap}
+.reveal .rv{animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}}
+@media (prefers-reduced-motion: reduce){.reveal .rv{animation:none}#viewer{transition:none}}
+/* ===== solid colour + liquid glass, white line icons ===== */
+:root{--glass:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));--glass-2:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.14);--stroke:rgba(255,255,255,.13);--lens:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05),0 10px 30px rgba(0,0,0,.28);--dotbad:#E8532F}
+html,body{background:var(--bg)}
+#wall,.dim{display:none}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 70% at 50% -10%,rgba(255,255,255,.07),transparent 60%)}
+.glass,.sp,.card{background:var(--glass)!important;border-color:var(--stroke)!important;box-shadow:var(--lens)!important}
+svg{stroke-width:1.75}
+.hero .hi,.gi,.ap .ai{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.16)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)!important;color:#fff}
+.hero .hi{border-radius:50%}
+.gi{border-radius:50%}
+.sp .top{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02))!important;border:1px solid rgba(255,255,255,.12)!important;position:relative}
+.sp .top::after{content:"";position:absolute;bottom:10px;inset-inline-start:12px;width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c)}
+.sp .cnt{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.ap .ai{border-radius:20px}
+.tabbar{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05))!important}
+.tab[aria-current="page"]{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));box-shadow:inset 0 1px 1px rgba(255,255,255,.35)}
+.btn{background:linear-gradient(180deg,#FF8A55,#E5531F);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.fld input{background:rgba(255,255,255,.05)}
+.vbar{background:rgba(42,35,32,.92)}
+</style>
 </head>
 <body>
-<p>الصفحة دي مش موجودة.</p>
+<canvas id="wall" aria-hidden="true"></canvas><div class="dim" aria-hidden="true"></div>
+
+<section class="gate" id="g-install" hidden>
+  <div class="gbox glass">
+    <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
+    <h1>نزّل التطبيق</h1>
+    <p>التطبيق ده بيتسطّب على الموبايل ويفتح بالشاشة كلها. الدخول بالإيميل والباسورد من جوه التطبيق.</p>
+    <button class="btn" id="g-install-btn" type="button" hidden>سطّب التطبيق</button>
+    <ol class="steps" id="g-steps"></ol>
+  </div>
+</section>
+<section class="gate" id="g-login" hidden>
+  <form class="gbox glass" id="login-form" autocomplete="on">
+    <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
+    <h1>تسجيل الدخول</h1>
+    <p>للفريق بس. بنفس حسابك اللي بتدخل بيه CRM ولوحة الرسايل.</p>
+    <div class="fld"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email" required></div>
+    <div class="fld"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" required></div>
+    <div class="gerr" id="l-err" role="alert"></div>
+    <button class="btn" id="l-btn" type="submit">دخول</button>
+  </form>
+</section>
+
+<section class="gate" id="g-name" hidden>
+  <form class="gbox glass" id="name-form">
+    <h1>نناديك بإيه؟</h1>
+    <p>الاسم ده بيتحفظ على موبايلك بس.</p>
+    <div class="fld"><label for="n-name">اسمك</label><input id="n-name" name="name" autocomplete="given-name" required style="direction:rtl;text-align:right"></div>
+    <button class="btn" type="submit">تمام</button>
+  </form>
+</section>
+
+<div id="intro" aria-hidden="true" hidden><canvas id="ic"></canvas>
+  <div class="it"><span><b>مركز التحكم</b> · الوكلاء بيبنوا الواجهة</span><button class="skip" id="skip" type="button">تخطي</button></div>
+  <div class="ibar" id="ibar">0 agents · 0/147 layers</div>
+</div>
+
+<main class="screen" id="s-home"><div class="wrap" id="home"></div></main>
+<main class="screen" id="s-links" hidden><div class="wrap" id="links"></div></main>
+<main class="screen" id="s-space" hidden><div class="wrap" id="space"></div></main>
+
+<section id="viewer" aria-label="صفحة">
+  <div class="vbar"><button class="ib" id="vback" type="button" aria-label="رجوع"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button><b id="vtitle"></b><button class="ib" id="vreload" type="button" aria-label="تحديث"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div>
+  <div class="vload" id="vload"></div>
+  <iframe id="frame" title="صفحة" allow="clipboard-write; camera; microphone; geolocation"></iframe>
+</section>
+
+<nav class="tabbar glass" aria-label="التنقل">
+  <button class="tab" data-tab="home" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</button>
+  <button class="tab" data-tab="inbox" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></svg>الرسايل</button>
+  <button class="tab" data-tab="links" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>كل حاجة</button>
+</nav>
+
 <script>
-// remove any installed copy of the old app from this phone
-if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {});
-if (window.caches) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(() => {});
+(() => {
+"use strict";
+const $ = (s) => document.querySelector(s);
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function h(tag, props, ...kids){
+  const e = document.createElement(tag);
+  if (props) for (const k in props){ const v = props[k]; if (v == null || v === false) continue;
+    if (k === "class") e.className = v; else if (k === "html") e.innerHTML = v;
+    else if (k === "style" && typeof v === "object"){ for (const sk in v) e.style.setProperty(sk, v[sk]); }
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v); }
+  for (const c of kids.flat(Infinity)){ if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return e;
+}
+const P = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const I = {
+  home: P('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>'),
+  user: P('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  people: P('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2a5 5 0 0 1 5.5 5"/>'),
+  box: P('<path d="M3 8 12 3l9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>'),
+  tool: P('<path d="M14.5 6.5a4 4 0 0 0-5.3 5.2L4 17v3h3l5.3-5.2a4 4 0 0 0 5.2-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/>'),
+  cart: P('<path d="M3 4h2l2.2 11h10.6L20 7H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>'),
+  coin: P('<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>'),
+  plate: P('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/>'),
+  globe: P('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>'),
+  plane: P('<path d="M2 13.5 21 6l-4.5 13-4-5-5 3 1-5z"/>'),
+  cal: P('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
+  spark: P('<path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>'),
+  wa: P('<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2z" fill="currentColor" stroke="none"/>'),
+  mail: P('<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/>'),
+  flow: P('<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H14a4 4 0 0 1 0 8h-4a4 4 0 0 0 0 8"/>'),
+  server: P('<rect x="3.5" y="4" width="17" height="7" rx="2"/><rect x="3.5" y="13" width="17" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>'),
+  chat: P('<path d="M4 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H9l-4 3v-3.5A3 3 0 0 1 4 13z"/>'),
+  bolt: P('<path d="M13 3 5 14h6l-1 7 8-11h-6z"/>')
+};
+// in = opens inside the app; ext = opens outside (other sites that block embedding or need their own login)
+// who: owner = Jaguar admin (sees all); jag:/tuya: + role (crm, inventory, installs, any); shahi = Shahi staff
+const SPACES = [
+  {id:"jaguar", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
+    {n:"CRM والعروض", u:"/crm/", ic:"user", who:["jag:crm"]}, {n:"المخزن", u:"/crm/inventory.html", ic:"box", who:["jag:inventory"]},
+    {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"]}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any"]},
+    {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin", who:["jag:any"]}, {n:"الموقع", u:"/", ic:"home", who:["jag:any"]}]},
+  {id:"tuya", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"home", items:[
+    {n:"CRM", u:"/tuya-suez/crm.html", ic:"user", who:["tuya:crm"]}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box", who:["tuya:inventory"]},
+    {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool", who:["tuya:installs"]}, {n:"الموقع", u:"/tuya-suez/", ic:"home", who:["tuya:any"]}]},
+  {id:"shahi", name:"شاهي", desc:"العزومات والكاترينج: المنيو ولوحة الفريق", c:"#F2707A", ic:"plate", items:[
+    {n:"لوحة شاهي", u:"/shahi/admin/", ic:"people", key:"shahi-admin", who:["shahi"]}, {n:"المنيو والطلب", u:"/shahi/menu/", ic:"cart", who:["shahi"]}, {n:"الموقع", u:"/shahi/", ic:"plate", who:["shahi"]}]},
+  {id:"nile", name:"Nile Digital", desc:"المواقع والأنظمة: لوحة الفريق ومحادثات العملاء", c:"#3DA5FF", ic:"globe", items:[
+    {n:"لوحة Nile", u:"/nile-digital-solution/team/", ic:"people", key:"nile-team"}, {n:"الموقع", u:"/nile-digital-solution/", ic:"globe"}]},
+  {id:"cobra", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
+    {n:"الموقع", u:"/cobra-egypt/", ic:"plane"}, {n:"فورم التخطيط", u:"/cobra-egypt/plan/", ic:"cal"}, {n:"كسوف 2027", u:"/cobra-egypt/eclipse-2027/", ic:"spark"}]},
+  {id:"msgs", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
+    {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
+];
+/* access of the signed-in person; items with no "who" are for the owner only */
+let ACC = null;
+function can(it){
+  if (!ACC) return false;
+  if (ACC.owner) return true;
+  return (it.who || []).some(t => {
+    if (t === "shahi") return !!ACC.shahi;
+    const [co, need] = t.split(":"); const company = co === "jag" ? "jaguar" : "tuya-suez";
+    if (!ACC.role || ACC.company !== company) return false;
+    return need === "any" || ACC.role === "admin" || ACC.role === need;
+  });
+}
+const visible = () => SPACES.map(sp => ({...sp, items: sp.items.filter(can)})).filter(sp => sp.items.length);
+const ALL = SPACES.flatMap(s => s.items.map(i => ({...i, c:s.c, sp:s.name})));
+
+/* ---------- screens & history (Android back button works) ---------- */
+let screen = "home";
+function show(name, push = true){
+  screen = name;
+  for (const id of ["home","links","space"]) $("#s-" + id).hidden = id !== name;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.tab === name ? "page" : "false"));
+  if (push) history.pushState({screen:name}, "");
+  const el = $("#s-" + name); el.scrollTop = 0; reveal(el);
+}
+function reveal(el){ if (RM) return; el.classList.remove("reveal"); void el.offsetWidth; el.classList.add("reveal"); [...el.querySelectorAll(".sp,.ap,.hero,.card")].forEach((x, i) => { x.classList.add("rv"); x.style.animationDelay = Math.min(i*35, 500) + "ms"; }); }
+function open(item){
+  if (!item || !can(item)) return;
+  if (item.ext){ window.open(item.u, "_blank", "noopener"); return; }
+  $("#vtitle").textContent = item.n;
+  $("#vload").hidden = false;
+  $("#frame").src = item.u;
+  $("#viewer").classList.add("on");
+  history.pushState({viewer:item.u}, "");
+}
+function closeViewer(){ $("#viewer").classList.remove("on"); setTimeout(() => { if (!$("#viewer").classList.contains("on")) $("#frame").src = "about:blank"; }, 320); }
+$("#frame").addEventListener("load", () => { $("#vload").hidden = true; try { const d = $("#frame").contentDocument; if (d && d.title) $("#vtitle").textContent = d.title.split(/[|·—]/)[0].trim() || $("#vtitle").textContent; } catch {} });
+$("#vback").onclick = () => history.back();
+$("#vreload").onclick = () => { $("#vload").hidden = false; try { $("#frame").contentWindow.location.reload(); } catch { $("#frame").src = $("#frame").src; } };
+addEventListener("popstate", (e) => {
+  if ($("#viewer").classList.contains("on")){ closeViewer(); return; }
+  const st = e.state || {}; show(st.screen || "home", false);
+});
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  if ($("#viewer").classList.contains("on")) closeViewer();
+  if (t.dataset.tab === "inbox") open(ALL.find(i => i.key === "inbox")); else show(t.dataset.tab);
+});
+
+/* ---------- views ---------- */
+function appTile(it){ return h("a", {class:"ap", href: it.u, style:{"--c": it.c}, onclick:(e) => { e.preventDefault(); open(it); }}, h("span", {class:"ai", html: I[it.ic] || I.globe}), h("b", null, it.n), it.ext ? h("span", {class:"ext"}, "بيفتح بره ↗") : null); }
+function renderHome(){
+  const hr = new Date().getHours();
+  const date = new Intl.DateTimeFormat("ar-EG-u-nu-latn", {weekday:"long", day:"numeric", month:"long"}).format(new Date());
+  const vis = visible(), mine = vis.flatMap(sp => sp.items.map(it => ({...it, c: sp.c})));
+  const inbox = ALL.find(i => i.key === "inbox");
+  const order = ["inbox","nile-team","shahi-admin"];
+  const rank = (k) => { const i = order.indexOf(k); return i < 0 ? 99 : i; };
+  const top = mine.filter(i => !i.ext).map((it, n) => ({it, n})).sort((a, b) => rank(a.it.key) - rank(b.it.key) || a.n - b.n).map(x => x.it).slice(0, 6);
+  document.querySelector('.tab[data-tab="inbox"]').hidden = !can(inbox);
+  $("#home").replaceChildren(...[
+    h("div", {class:"hello"}, who ? (ACC && ACC.owner ? "أهلاً مستر " + who : "أهلاً " + who) : (hr < 12 ? "صباح الخير" : "مساء الخير")),
+    h("p", {class:"sub"}, date),
+    can(inbox) ? h("button", {class:"hero glass", type:"button", onclick:() => open(inbox)}, h("span", {class:"hi", html: I.wa}), h("span", null, h("b", null, "كل الرسايل"), h("span", null, "واتساب Nile وشاهي وJaguar في مكان واحد"))) : null,
+    vis.length > 1 ? h("div", {class:"h2"}, "أقسامك") : null,
+    vis.length > 1 ? h("div", {class:"spaces"}, vis.map(sp => h("button", {class:"sp glass", type:"button", style:{"--c": sp.c}, onclick:() => openSpace(sp)},
+      h("div", {class:"top"}, h("span", {class:"gi", html: I[sp.ic]}), h("span", {class:"cnt"}, sp.items.length + (sp.items.length > 2 ? " حاجات" : sp.items.length === 2 ? " حاجتين" : " حاجة"))),
+      h("div", {class:"bd"}, h("h3", null, sp.name), h("p", null, sp.desc))))) : null,
+    h("div", {class:"h2"}, vis.length > 1 ? "الأكتر استخدام" : (vis[0] ? vis[0].name : "")),
+    h("div", {class:"apps"}, (vis.length > 1 ? top : mine).map(appTile)),
+    h("div", {style:{"text-align":"center"}}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
+  ].filter(Boolean));
+}
+function openSpace(sp){
+  $("#space").replaceChildren(
+    h("div", {class:"hello"}, sp.name), h("p", {class:"sub"}, sp.desc),
+    h("div", {class:"apps"}, sp.items.map(it => appTile({...it, c: sp.c}))));
+  show("space");
+}
+function renderLinks(){
+  $("#links").replaceChildren(h("div", {class:"hello"}, "كل حاجة"), h("p", {class:"sub"}, "كل المواقع ولوحات التحكم"),
+    ...visible().flatMap(sp => [h("div", {class:"h2"}, sp.name), h("div", {class:"apps"}, sp.items.map(it => appTile({...it, c: sp.c})))]));
+}
+
+/* ---------- install ---------- */
+let deferred = null;
+const standalone = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone;
+addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
+addEventListener("appinstalled", () => { deferred = null; });
+function installCard(){
+  if (standalone) return null;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const btn = deferred ? h("button", {class:"btn", type:"button", onclick: async () => { deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; renderHome(); }}, "سطّب التطبيق") : null;
+  const how = ios ? "في Safari: زرار المشاركة ← Add to Home Screen" : deferred ? "هيتسطّب على الموبايل زي أي تطبيق" : "من قايمة Chrome (⋮) اختار «Install app» أو «Add to Home screen»";
+  return h("div", {class:"card glass install"}, h("div", null, h("b", null, "سطّب مركز التحكم على موبايلك"), h("div", {class:"note"}, how)), btn);
+}
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("/app/sw.js", {scope:"/app/"}).catch(() => {}));
+
+/* ---------- painted scene ---------- */
+function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function ridge(g, W, H, base, amp, color, seed, f){ const r = rng(seed), ph = [r()*6, r()*6, r()*6]; g.beginPath(); g.moveTo(0, H + 10);
+  for (let x = 0; x <= W + 6; x += 6) g.lineTo(x, base - amp*(.55*Math.sin(x/W*f*6.28 + ph[0]) + .3*Math.sin(x/W*f*2.3*6.28 + ph[1]) + .15*Math.sin(x/W*f*5.1*6.28 + ph[2])));
+  g.lineTo(W + 6, H + 10); g.closePath(); g.fillStyle = color; g.fill(); }
+function paint(){ const c = $("#wall"); c.width = 1; c.height = 1; const g = c.getContext("2d"); g.fillStyle = "#2A2320"; g.fillRect(0, 0, 1, 1); }
+let rz = 0; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(paint, 150); });
+
+/* ---------- intro: agents build the UI ---------- */
+function intro(){
+  const el = $("#intro");
+  if (RM || sessionStorage.getItem("introSeen")){ el.remove(); return Promise.resolve(); }
+  try { sessionStorage.setItem("introSeen", "1"); } catch {}
+  return new Promise((resolve) => {
+    const cv = $("#ic"), g = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const AG = [["Jaguar","#FF7A1A"],["Nile","#2F8FFF"],["واتساب","#1FBF5B"],["شاهي","#E8467C"],["Cobra","#9B5CF6"],["Tuya","#FF6B35"],["n8n","#EA4B71"],["Gmail","#E5453A"]];
+    const m = 16, top = 70, cw = W - 2*m, boxes = [];
+    const add = (x, y, w, hh, l) => { if (w > 12 && hh > 12) boxes.push({x, y, w, h: hh, l}); };
+    add(m + cw*.35, top, cw*.65, 40, "Header · title");
+    add(m, top + 56, cw, 74, "Hero · inbox");
+    const tw = (cw - 12)/2;
+    for (let i = 0; i < 6; i++) add(m + cw - (i % 2 + 1)*tw - (i % 2)*12, top + 146 + Math.floor(i/2)*126, tw, 112, `Space ${Math.round(tw)}×112`);
+    const yA = top + 146 + 3*126;
+    for (let i = 0; i < 3; i++) add(m + cw - (i + 1)*(cw - 24)/3 - i*12, yA, (cw - 24)/3, Math.min(90, H - yA - 90), "App 62×62");
+    const T = 2900, per = 480;
+    boxes.forEach((b, i) => { b.ag = i % AG.length; b.t0 = 100 + i/boxes.length*(T - per - 150); });
+    const ag = AG.map(([n, c], i) => ({n, c, x: W*(.2 + .6*((i*37) % 11)/11), y: H*(.3 + .5*((i*53) % 7)/7)}));
+    const ease = (t) => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+    const t0 = performance.now(); let raf = 0, done = false;
+    function arrow(x, y, c, n){ g.save(); g.translate(x, y); g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 16); g.lineTo(4.5, 12); g.lineTo(8, 19); g.lineTo(10.5, 18); g.lineTo(7.2, 11.2); g.lineTo(12.5, 11); g.closePath(); g.fillStyle = c; g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 1.4; g.stroke();
+      g.font = "600 11px 'IBM Plex Sans Arabic', system-ui, sans-serif"; const tw = g.measureText(n).width; g.beginPath(); if (g.roundRect) g.roundRect(12, 18, tw + 14, 20, 10); else g.rect(12, 18, tw + 14, 20); g.fill(); g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(n, 19 + tw/2, 28.5); g.restore(); }
+    function frame(now){
+      const t = now - t0; g.clearRect(0, 0, W, H);
+      g.fillStyle = "#CFCBC1"; for (let y = 10; y < H; y += 18) for (let x = 10; x < W; x += 18) g.fillRect(x, y, 1.4, 1.4);
+      let dn = 0;
+      for (const b of boxes){ if (t < b.t0) continue; const p = Math.min(1, (t - b.t0)/per), e = ease(p), col = AG[b.ag][1], ww = b.w*e, hh = b.h*Math.min(1, e*1.25);
+        g.fillStyle = col + "14"; g.fillRect(b.x + b.w - ww, b.y, ww, hh); g.strokeStyle = col; g.lineWidth = 1.2; g.setLineDash(p < 1 ? [4, 3] : []); g.strokeRect(b.x + b.w - ww + .5, b.y + .5, Math.max(0, ww - 1), Math.max(0, hh - 1)); g.setLineDash([]);
+        if (p > .55){ g.font = "500 9.5px ui-monospace, Menlo, monospace"; g.textAlign = "left"; g.textBaseline = "middle"; const lw = g.measureText(b.l).width + 10; g.fillStyle = col; g.fillRect(b.x + b.w - lw, b.y - 14, lw, 13); g.fillStyle = "#fff"; g.fillText(b.l, b.x + b.w - lw + 5, b.y - 7); }
+        if (p >= 1) dn++; }
+      ag.forEach((a, i) => { const mine = boxes.filter(b => b.ag === i); const cur = mine.find(b => t >= b.t0 - 240 && t < b.t0 + per); let tx = a.x, ty = a.y;
+        if (cur){ if (t < cur.t0){ tx = cur.x + cur.w; ty = cur.y; } else { const e = ease(Math.min(1, (t - cur.t0)/per)); tx = cur.x + cur.w - cur.w*e; ty = cur.y + cur.h*Math.min(1, e*1.25); } }
+        else { const nx = mine.find(b => b.t0 > t); if (nx){ tx = nx.x + nx.w; ty = nx.y; } }
+        a.x += (tx - a.x)*.17; a.y += (ty - a.y)*.17; arrow(a.x, a.y, a.c, a.n); });
+      $("#ibar").textContent = `${AG.length} agents · ${Math.round(147*dn/boxes.length)}/147 layers`;
+      if (t > T + 300) finish(); else if (!done) raf = requestAnimationFrame(frame);
+    }
+    function finish(){ if (done) return; done = true; cancelAnimationFrame(raf); el.classList.add("out"); resolve(); setTimeout(() => el.remove(), 550); }
+    $("#skip").onclick = finish; raf = requestAnimationFrame(frame);
+  });
+}
+
+/* ---------- auth: same Supabase accounts as the CRM and inbox; the session stays on the phone ---------- */
+let sb = null, who = "";
+try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
+const appEls = [$("#s-home"), $(".tabbar")];
+function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
+async function logout(){ ACC = null; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#home").replaceChildren(); $("#links").replaceChildren(); $("#space").replaceChildren(); $("#g-login").hidden = false; }
+function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
+const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
+function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
+// each answer: a value, null (not allowed / not a member) or undefined (could not check: network)
+const denied = (r) => r && r.error && (r.error.code === "PGRST301" || r.error.code === "42501" || r.status === 401 || r.status === 403);
+async function ask(fn){ try { const r = await fn(); if (!r) return undefined; if (r.error) return denied(r) ? null : undefined; return r.data ?? null; } catch { return undefined; } }
+async function access(user){
+  const [role, company, shahi] = await Promise.all([
+    ask(() => sb.rpc("my_role")), ask(() => sb.rpc("my_company")),
+    ask(() => sb.from("shahi_staff").select("full_name,role,active").eq("user_id", user.id).maybeSingle())
+  ]);
+  if ([role, company, shahi].some(v => v === undefined)) return undefined;
+  const st = shahi && shahi.active !== false ? shahi : null;
+  if (!role && !st) return null;
+  return {role: role || null, company: company || null, shahi: st, owner: role === "admin" && company === "jaguar"};
+}
+async function admit(user){
+  // only team members get in, and each one sees only their own part
+  const a = await access(user);
+  if (a === undefined){
+    $("#g-login").hidden = false; $("#l-err").textContent = "مفيش اتصال دلوقتي، فمقدرناش نتأكد من حسابك. ";
+    $("#l-err").append(h("button", {type:"button", style:{"text-decoration":"underline", color:"inherit"}, onclick: () => { $("#l-err").textContent = ""; admit(user); }}, "حاول تاني"));
+    return;
+  }
+  if (!a){ try { await sb.auth.signOut(); } catch {} $("#g-login").hidden = false; $("#l-err").textContent = "الحساب ده مش من الفريق."; return; }
+  ACC = a;
+  who = nameOf(user) || (a.shahi && String(a.shahi.full_name || "").trim().split(/\s+/)[0]) || savedName(user);
+  if (!who){
+    $("#g-login").hidden = true; $("#g-name").hidden = false;
+    $("#name-form").onsubmit = (e) => { e.preventDefault(); const n = $("#n-name").value.trim().split(/\s+/)[0]; if (!n) return; try { localStorage.setItem(nameKey(user), n); } catch {} $("#g-name").hidden = true; enter(user); };
+    return;
+  }
+  enter(user);
+}
+let entered = false;
+function enter(user){
+  if (entered) return; entered = true;
+  who = who || nameOf(user) || savedName(user);
+  $("#g-login").hidden = true; appEls.forEach(e => e.hidden = false);
+  renderHome(); renderLinks();
+  history.replaceState({screen:"home"}, "");
+  const q = new URLSearchParams(location.search).get("open");
+  const ir = $("#intro"); if (ir) ir.hidden = false;
+  intro().then(() => { show("home", false); const it = q && ALL.find(i => i.key === q); if (it && can(it)) open(it); });
+}
+$("#login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#l-btn"), err = $("#l-err"); err.textContent = "";
+  if (!sb){ err.textContent = "مفيش اتصال دلوقتي. اتأكد من النت وافتح التطبيق تاني."; return; }
+  btn.disabled = true; btn.textContent = "بيدخل…";
+  try {
+    const r = await sb.auth.signInWithPassword({email: $("#l-email").value.trim(), password: $("#l-pw").value});
+    if (r.error || !r.data || !r.data.user){ err.textContent = "الإيميل أو الباسورد مش صح."; return; }
+    try { if (window.PasswordCredential && navigator.credentials) await navigator.credentials.store(new PasswordCredential($("#login-form"))); } catch {}
+    $("#l-pw").value = "";
+    entered = false; await admit(r.data.user);
+  } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; }
+  finally { btn.disabled = false; btn.textContent = "دخول"; }
+});
+
+/* ---------- boot ---------- */
+paint(); lockUI();
+if (!standalone){
+  // visited in a browser: show the install page only
+  const ir = $("#intro"); if (ir) ir.remove();
+  $("#g-install").hidden = false;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const steps = ios ? ["افتح الصفحة دي في Safari.", "دوس زرار المشاركة (المربع اللي فيه سهم).", "اختار «Add to Home Screen» وبعدين «Add».", "افتح «مركز التحكم» من الشاشة الرئيسية وادخل بإيميلك."]
+    : ["افتح الصفحة دي في Chrome.", "دوس «سطّب التطبيق»، أو من القايمة ⋮ اختار «Install app».", "افتح «مركز التحكم» من قايمة التطبيقات وادخل بإيميلك."];
+  $("#g-steps").replaceChildren(...steps.map(t => h("li", null, t)));
+  const showBtn = () => { $("#g-install-btn").hidden = !deferred; };
+  addEventListener("beforeinstallprompt", () => setTimeout(showBtn)); showBtn();
+  $("#g-install-btn").onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; showBtn(); };
+} else {
+  $("#g-install").remove();
+  (sb ? sb.auth.getSession() : Promise.resolve(null)).then((r) => {
+    const u = r && r.data && r.data.session && r.data.session.user;
+    if (u) admit(u); else $("#g-login").hidden = false;
+  }).catch(() => { $("#g-login").hidden = false; });
+  if (sb) sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT" && entered){ entered = false; logout(); } });
+}
+
+})();
 </script>
 </body>
 </html>
