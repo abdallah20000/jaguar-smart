@@ -1,7 +1,9 @@
 // Same-origin relay to the n8n webhooks on the VPS. Some Egyptian mobile networks cannot
 // resolve *.srv2112249.hstgr.cloud, so pages call /api/hook/<name> on jaguarsmart.com instead.
 const N8N = 'https://n8n-hesb.srv2112249.hstgr.cloud/webhook/';
-const ALLOWED = new Set(['all-inbox', 'nile-lead', 'nile-team', 'shahi-team']);
+const ALLOWED = new Set(['all-inbox', 'nile-lead', 'nile-team', 'shahi-team', 'app-ops']);
+// the AI-operations API (app-ops) lives on the n8n Cloud instance, not the VPS
+const BASE = { 'app-ops': 'https://jaguarabdallah.app.n8n.cloud/webhook/' };
 
 export async function onRequest({ request, params }) {
   const name = params.name;
@@ -12,7 +14,7 @@ export async function onRequest({ request, params }) {
   const type = request.headers.get('content-type');
   if (type) headers.set('content-type', type);
 
-  const res = await fetch(N8N + name, { method: 'POST', headers, body: await request.arrayBuffer() });
+  const res = await fetch((BASE[name] || N8N) + name, { method: 'POST', headers, body: await request.arrayBuffer() });
   return new Response(res.body, {
     status: res.status,
     headers: {

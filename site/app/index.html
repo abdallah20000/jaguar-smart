@@ -137,6 +137,22 @@ svg{stroke-width:1.75}
 .row b{flex:1;min-width:0;font-weight:500;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row small{font-size:10.5px;color:var(--ink-3)}
 .row .go{width:14px;height:14px;color:var(--ink-3);transform:scaleX(-1)}
+/* AI operations: what the agents did and what waits for the owner's approval */
+.ops-list{display:flex;flex-direction:column;gap:12px}
+.op{border-radius:20px;padding:14px 16px}
+.op.pending{border-color:rgba(245,154,74,.45)}
+.op .oh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.op .oh b{font-size:14px;font-weight:600;flex:1;min-width:0}
+.op .chip{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+.op .chip.wait{border-color:rgba(245,154,74,.55);color:#F7AA66}
+.op .chip.ok{border-color:rgba(61,200,120,.5);color:#6FD99A}
+.op .chip.no{border-color:rgba(242,112,122,.5);color:#F2939B}
+.op pre{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:13px;line-height:1.7;color:var(--ink-2);margin:10px 0 0;max-height:5.1em;overflow:hidden}
+.op.open pre{max-height:none}
+.op .rv{font-size:12px;margin-top:8px;color:var(--ink-3)}
+.op .oa{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.op .ghost{padding:7px 14px;border-radius:999px;border:1px solid var(--line-2);font-size:12.5px;color:var(--ink-2)}
+.op .more{font-size:12px;color:var(--ink-3);margin-top:6px}
 .empty{padding:30px 14px;text-align:center;color:var(--ink-2)}
 .foot{display:flex;justify-content:center;margin-top:18px}
 .out-btn{font-size:12.5px;color:var(--ink-3);padding:6px 14px;border-radius:999px;border:1px solid var(--line-2)}
@@ -339,6 +355,7 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
     <section class="pane" id="s-space" hidden></section>
     <section class="pane" id="s-links" hidden></section>
     <section class="pane" id="s-team" hidden></section>
+    <section class="pane" id="s-ops" hidden></section>
   </div>
 </div>
 
@@ -480,8 +497,8 @@ function phoneCard(){
 let current = {view:"home"}, seg = "all", query = "";
 function show(view, push = true, spaceId){
   current = {view, space: spaceId};
-  for (const id of ["home","space","links","team"]) $("#s-" + id).hidden = id !== view;
-  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam();
+  for (const id of ["home","space","links","team","ops"]) $("#s-" + id).hidden = id !== view;
+  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam(); else if (view === "ops") renderOps();
   renderRail(); renderTop();
   if (push) history.pushState({view, space: spaceId}, "");
   const el = $("#s-" + view); el.scrollTop = 0;
@@ -513,12 +530,13 @@ function renderRail(){
     item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
     ...vis.map(sp => item(sp.id, logoEl(sp), sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
     h("div", {class:"spacer"}),
+    ACC && ACC.owner ? item("ops", "spark", "العمليات", () => show("ops"), current.view === "ops", OPS.stats && OPS.stats.pending ? String(OPS.stats.pending) : null) : null,
     ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
     item("out", "out", "خروج", () => logout(), false)].filter(Boolean));
 }
 function renderTop(){
   const sp = current.view === "space" && visible().find(s => s.id === current.space);
-  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : "الرئيسية";
+  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : current.view === "ops" ? "العمليات" : "الرئيسية";
   const nm = who || "حسابي";
   $("#ws").replaceChildren(h("span", {class:"av"}, nm.charAt(0)), h("span", {style:{"min-width":"0"}}, h("b", null, nm), h("small", null, [roleLabel(), placeLabel()].filter(Boolean).join(" · "))), h("span", {html: I.chev}));
   $("#me").firstChild.textContent = nm.charAt(0);
@@ -575,6 +593,7 @@ function renderHome(){
         kpi("الصفحات", String(pages), "جاهزة", "تفتح جوه التطبيق"),
         kpi("دورك", roleLabel() || "—", null, placeLabel()),
         kpi("آخر دخول", rel(lastSeen), null, "على الموبايل ده"))),
+    ACC && ACC.owner ? opsBrief() : null,
     shown.length ? h("div", {class:"cards"}, shown.map(([s, r]) => spaceCard(s, r))) : stateCard(query ? "search" : "grid", query ? "مفيش صفحة بالاسم ده." : "مفيش أقسام متاحة لحسابك."),
     phoneCard(),
     h("div", {class:"foot"}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
@@ -593,7 +612,86 @@ function renderSpace(id){
       h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel()))),
     rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : stateCard("search", "مفيش صفحة بالاسم ده."));
 }
-function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner) loadPeople(true); }
+function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); } }
+
+/* ---------- AI operations (owner only). The agents on n8n write what they did into app_ops;
+   anything that would go out to a customer waits here as "pending" until the owner approves it. ---------- */
+const OPS_API = "/api/hook/app-ops";
+const AGENT = {content:"كاتب المحتوى", leads:"صياد العملاء", competitors:"متابعة المنافسين", summary:"ملخص اليوم", claude:"Claude", reviewer:"المراجع"};
+let OPS = {items:null, stats:null, err:"", tab:"pending", openIds:new Set(), busy:new Set(), at:0};
+async function opsCall(params){
+  const s = sb && (await sb.auth.getSession()).data.session;
+  if (!s) throw new Error("سجّل دخولك تاني");
+  const r = await fetch(OPS_API, {method:"POST", body:new URLSearchParams(Object.assign({token:s.access_token}, params))});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "مقدرناش نوصل للعمليات دلوقتي");
+  return j;
+}
+async function loadOps(quiet){
+  if (!ACC || !ACC.owner) return;
+  if (!quiet){ OPS.err = ""; if (current.view === "ops") renderOps(); }
+  try { const j = await opsCall({action:"list"}); OPS.items = j.items || []; OPS.stats = j.stats || {}; OPS.err = ""; OPS.at = Date.now(); }
+  catch (e){ OPS.err = e.message; if (!OPS.items) OPS.items = null; }
+  if (current.view === "ops") renderOps(); else if (current.view === "home") renderHome();
+  renderRail();
+}
+async function decide(it, decision){
+  if (OPS.busy.has(it.id)) return;
+  // a lead message opens WhatsApp with the text ready; the owner presses send himself
+  if (decision === "approved" && it.link) window.open(it.link, "_blank", "noopener");
+  OPS.busy.add(it.id); renderOps();
+  try { await opsCall({action:"decide", id:String(it.id), decision}); it.status = decision; it.decided_at = "دلوقتي";
+    if (OPS.stats) OPS.stats.pending = Math.max(0, (OPS.stats.pending || 1) - 1); }
+  catch (e){ OPS.err = e.message; }
+  OPS.busy.delete(it.id); renderOps(); renderRail();
+}
+function opsBrief(){
+  const st = OPS.stats;
+  return h("section", {class:"brief glass", style:{cursor:"pointer"}, onclick: () => show("ops")},
+    h("div", {class:"eyebrow"}, "موظفين الـ AI"),
+    h("h2", null, !st ? (OPS.err ? "مقدرناش نجيب العمليات دلوقتي" : "بيجيب اللي اتعمل النهارده…") : st.pending ? "فيه " + st.pending + " حاجة مستنية موافقتك" : "مفيش حاجة مستنياك ✓"),
+    h("div", {class:"kpis"},
+      kpi("مستني موافقتك", st ? String(st.pending || 0) : "—", null, "دوس علشان تراجع"),
+      kpi("عمليات النهارده", st ? String(st.today || 0) : "—", null, "محتوى، عملاء، تقارير"),
+      kpi("وافقت النهارده", st ? String(st.approved_today || 0) : "—", null, ""),
+      kpi("آخر تحديث", OPS.at ? rel(OPS.at) : "—", null, "")));
+}
+function opItem(it){
+  const open = OPS.openIds.has(it.id), pend = it.status === "pending", busy = OPS.busy.has(it.id);
+  const chip = pend ? h("span", {class:"chip wait"}, "مستني موافقتك") : it.status === "approved" ? h("span", {class:"chip ok"}, "وافقت ✓") : it.status === "rejected" ? h("span", {class:"chip no"}, "رفضت") : h("span", {class:"chip"}, "تم");
+  const when = it.at ? fTime.format(new Date(it.at)) + " · " + fDayShort.format(new Date(it.at)) : "";
+  const long = String(it.body || "").length > 160 || String(it.body || "").split("\n").length > 3;
+  return h("section", {class:"op glass" + (pend ? " pending" : "") + (open ? " open" : "")},
+    h("div", {class:"oh"}, h("b", null, it.title || "عملية"), chip),
+    h("div", {class:"smsg", style:{"margin-top":"4px"}}, [AGENT[it.agent] || it.agent, it.business && it.business !== "all" ? (SPACES.find(s => s.id === it.business) || {}).name || it.business : null, when].filter(Boolean).join(" · ")),
+    it.body ? h("pre", null, it.body) : null,
+    long ? h("button", {class:"more", type:"button", onclick: () => { open ? OPS.openIds.delete(it.id) : OPS.openIds.add(it.id); renderOps(); }}, open ? "أقل" : "اقرا الكل") : null,
+    it.review ? h("div", {class:"rv"}, it.review) : null,
+    pend ? h("div", {class:"oa"},
+      h("button", {class:"act", type:"button", disabled: busy || null, onclick: () => decide(it, "approved")}, it.link ? "موافق وافتح واتساب" : "موافق"),
+      h("button", {class:"ghost", type:"button", disabled: busy || null, onclick: () => decide(it, "rejected")}, "ارفض"),
+      it.body ? h("button", {class:"ghost", type:"button", onclick: () => { try { navigator.clipboard.writeText(it.body); } catch {} }}, "انسخ") : null) : null);
+}
+function renderOps(){
+  const box = $("#s-ops"); if (!box) return;
+  const items = OPS.items || [];
+  const tabs = [["pending","مستني موافقتك"], ["today","النهارده"], ["reports","التقارير"], ["all","الكل"]];
+  const today = new Date().toLocaleDateString("en-CA", {timeZone:"Africa/Cairo"});
+  const list = items.filter(it => OPS.tab === "pending" ? it.status === "pending" : OPS.tab === "today" ? it.day === today : OPS.tab === "reports" ? it.kind === "report" : true);
+  box.replaceChildren(
+    h("div", {class:"phead"},
+      h("div", null, h("h1", null, "العمليات"), h("p", null, "اللي عمله موظفين الـ AI، واللي محتاج موافقتك قبل ما يطلع لأي حد")),
+      h("div", {class:"pacts"},
+        h("div", {class:"seg glass"}, tabs.map(([id, nm]) => h("button", {type:"button", "aria-pressed": String(OPS.tab === id), onclick: () => { OPS.tab = id; renderOps(); }}, nm + (id === "pending" && OPS.stats && OPS.stats.pending ? " (" + OPS.stats.pending + ")" : "")))),
+        h("button", {class:"act", type:"button", onclick: () => loadOps()}, "حدّث"))),
+    opsBrief(),
+    OPS.err ? h("p", {class:"smsg", role:"alert", style:{margin:"0 0 12px"}}, OPS.err) : null,
+    OPS.items === null && !OPS.err ? skeletons() :
+      list.length ? h("div", {class:"ops-list"}, list.map(opItem)) : stateCard("spark", OPS.tab === "pending" ? "مفيش حاجة مستنية موافقتك دلوقتي." : "مفيش عمليات هنا لسه."));
+}
+// refresh on open, when the app comes back to the screen, and every 15 minutes while it is open
+document.addEventListener("visibilitychange", () => { if (!document.hidden && ACC && ACC.owner && Date.now() - OPS.at > 120000) loadOps(true); });
+setInterval(() => { if (!document.hidden && ACC && ACC.owner) loadOps(true); }, 900000);
 
 /* ---------- team (owner only): approve sign-ups and choose what each person opens ---------- */
 let people = null, pendingCount = 0, peopleErr = "";
