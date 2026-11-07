@@ -11,7 +11,7 @@
 |---|---|---|
 | واتساب البيزنس (Meta) `YvJSgjmvZxs3VKiA` | وكيل واتساب Jaguar + الرد اليدوي + كود الدخول | WhatsApp trigger, `jaguar-inbox-reply`, `app-otp-1b08231160f5186138f77da1` |
 | واتساب رقمك الشخصي (Green) `Umnpc2YC6MnBAK6j` | السجل الرقمي + جروبات الحسابات + ملخص جروب Tuya + تنبيهات Claude. (8 نوفمبر) أي رسالة جروب (`@g.us`) من الـ Green trigger بتتبعت نسخة منها لـ `http://localhost:5678/webhook/accounting-groups` عن طريق «جروب؟ (للحسابات)» ← «ابعت لمتابعة الحسابات»، لأن Green API ليه webhook واحد بس | Green trigger, `accounting-groups`, `claude-alert`, cron 23:30 |
-| API التطبيق والمواقع `kElWgVoeQ07IDVAF` | اللوحة الموحدة + العمليات + منيو شاهي + ليدز Nile | `all-inbox`, `app-ops`, `shahi-asset`, `shahi-asset-upload`, `nile-lead` |
+| API التطبيق والمواقع `kElWgVoeQ07IDVAF` | اللوحة الموحدة + العمليات + منيو شاهي + ليدز Nile. (8 نوفمبر) action جديد `accounts` في `all-inbox` للمالك بس: «الفلوس الموجودة» من جروبات الحسابات (آخر «باقي» + اللي عليه + − أي رقم تاني). المالكين في «التحقق من الدخول»: abdallah.shahi@jaguarsmart.com وallabdallah@jaguar.com وabdallahsad35@gmail.com | `all-inbox`, `app-ops`, `shahi-asset`, `shahi-asset-upload`, `nile-lead` |
 | موظفين الـ AI — Jaguar `4Ze3S9hmIEklk3kP` | المحتوى + صياد العملاء + المنافسين + ملخص الليل | سبت 10، كل يوم 8، 8:15 (ماعدا الجمعة)، حد 11، 21:00، فورم `jaguar-leads` |
 | موظف التستنج `lzyVmQ1h2buUrrbA` | Error Trigger + فحص يومي | 9:30 الصبح |
 | أدوات يدوية `fOgihnyjcLuoR1Of` | تفريغ يوتيوب + تصنيف الأرقام | فورمات |
