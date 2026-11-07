@@ -135,7 +135,7 @@ svg{stroke-width:1.75}
 .person{margin-bottom:12px}
 .person .ci{font-weight:700;font-size:14px}
 .tag.new{background:rgba(245,154,74,.16);border-color:rgba(245,154,74,.4);color:#FFC48F}
-.grantrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
+.grantrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:10px;align-items:end}
 .grantrow label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--ink-3);min-width:0}
 .sel{appearance:none;width:100%;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--ink);padding:9px 10px;font:inherit;font-size:13px}
 .sel option{background:#2a2420;color:#fff}
@@ -322,8 +322,8 @@ const I = {
 const SPACES = [
   {id:"jaguar", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
     {n:"CRM والعروض", u:"/crm/", ic:"user", who:["jag:crm"]}, {n:"المخزن", u:"/crm/inventory.html", ic:"box", who:["jag:inventory"]},
-    {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"]}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any"]},
-    {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin", who:["jag:any"]}, {n:"الموقع", u:"/", ic:"home", who:["jag:any"]}]},
+    {n:"التركيبات", u:"/crm/installs.html", ic:"tool", who:["jag:installs"]}, {n:"متجر الخامات", u:"/materials/", ic:"cart", who:["jag:any","mat"]},
+    {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin", who:["jag:any","mat"]}, {n:"الموقع", u:"/", ic:"home", who:["jag:any"]}]},
   {id:"tuya", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"bolt", items:[
     {n:"CRM", u:"/tuya-suez/crm.html", ic:"user", who:["tuya:crm"]}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box", who:["tuya:inventory"]},
     {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool", who:["tuya:installs"]}, {n:"الموقع", u:"/tuya-suez/", ic:"home", who:["tuya:any"]}]},
@@ -343,6 +343,7 @@ function can(it){
   if (ACC.owner) return true;
   return (it.who || []).some(t => {
     if (t === "shahi") return !!ACC.shahi;
+    if (t === "mat") return ACC.mat === "staff" || ACC.mat === "admin";
     const [co, need] = t.split(":"); const company = co === "jag" ? "jaguar" : "tuya-suez";
     if (!ACC.role || ACC.company !== company) return false;
     return need === "any" || ACC.role === "admin" || ACC.role === need;
@@ -371,9 +372,10 @@ function rel(d){ if (!d) return "أول مرة"; const s = (d - Date.now())/1000
   if (a < 60) return "دلوقتي"; if (a < 3600) return rtf.format(Math.round(s/60), "minute"); if (a < 86400) return rtf.format(Math.round(s/3600), "hour"); return rtf.format(Math.round(s/86400), "day"); }
 const ROLE = {admin:"أدمن", crm:"مبيعات", inventory:"مخزن", installs:"تركيبات"};
 const SHAHI_ROLE = {admin:"أدمن شاهي", sales:"مبيعات شاهي", ops:"تشغيل شاهي", chef:"شيف شاهي"};
+const MAT_ROLE = {staff:"موظف", admin:"أدمن"};
 const COMPANY = {"jaguar":"Jaguar Smart", "tuya-suez":"Tuya Suez"};
-function roleLabel(){ if (!ACC) return ""; if (ACC.owner) return "المالك"; if (ACC.role) return ROLE[ACC.role] || ACC.role; if (ACC.shahi) return SHAHI_ROLE[ACC.shahi.role] || "فريق شاهي"; return ""; }
-function placeLabel(){ if (!ACC) return ""; if (ACC.owner) return "كل البيزنس"; if (ACC.role) return COMPANY[ACC.company] || ""; return ACC.shahi ? "شاهي" : ""; }
+function roleLabel(){ if (!ACC) return ""; if (ACC.owner) return "المالك"; if (ACC.role) return ROLE[ACC.role] || ACC.role; if (ACC.shahi) return SHAHI_ROLE[ACC.shahi.role] || "فريق شاهي"; if (ACC.mat) return MAT_ROLE[ACC.mat]; return ""; }
+function placeLabel(){ if (!ACC) return ""; if (ACC.owner) return "كل البيزنس"; if (ACC.role) return COMPANY[ACC.company] || ""; return ACC.shahi ? "شاهي" : ACC.mat ? "مواد البناء" : ""; }
 let lastSeen = null, meEmail = "", meUser = null;
 /* link a phone number so this person can also sign in with a WhatsApp code */
 let phoneStep = "idle", phonePending = "";
@@ -437,13 +439,13 @@ function renderRail(){
   const vis = visible();
   const item = (key, icon, tip, onclick, curr, badge) => h("button", {class:"ri", type:"button", "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
     h("span", {html: I[icon] || I.grid}), badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip));
-  $("#rail").replaceChildren(
+  $("#rail").replaceChildren(...[
     h("div", {class:"logo"}, "J"),
     item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
     ...vis.map(sp => item(sp.id, sp.ic, sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
     h("div", {class:"spacer"}),
     ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
-    item("out", "out", "خروج", () => logout(), false));
+    item("out", "out", "خروج", () => logout(), false)].filter(Boolean));
 }
 function renderTop(){
   const sp = current.view === "space" && visible().find(s => s.id === current.space);
@@ -517,9 +519,13 @@ function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner) loadPeo
 
 /* ---------- team (owner only): approve sign-ups and choose what each person opens ---------- */
 let people = null, pendingCount = 0, peopleErr = "";
-const hasAccess = (x) => !!x.team_role || (x.shahi_role && x.shahi_active);
+let matOK = false;
+const matOf = (x) => (x.mat_role === "staff" || x.mat_role === "admin") ? x.mat_role : (x.invite_role || "");
+const hasAccess = (x) => !!x.team_role || (x.shahi_role && x.shahi_active) || !!matOf(x);
 async function loadPeople(quiet){
-  try { const r = await sb.rpc("app_people"); if (r.error) throw r.error; people = r.data || []; peopleErr = ""; }
+  try { const r = await sb.rpc("app_people"); if (r.error) throw r.error; people = r.data || []; peopleErr = "";
+    try { const m = await sb.rpc("app_mat_access"); if (m.error) throw m.error; const by = Object.fromEntries((m.data || []).map(z => [z.user_id, z])); people.forEach(x => { const z = by[x.user_id] || {}; x.mat_role = z.mat_role || null; x.invite_role = z.invite_role || null; }); matOK = true; }
+    catch { matOK = false; } }
   catch (e) { people = null; peopleErr = (e && (e.code === "PGRST202" || /app_people/.test(e.message || ""))) ? "setup" : "net"; }
   pendingCount = people ? people.filter(x => !hasAccess(x)).length : 0;
   renderRail(); if (!quiet && current.view === "team") renderTeam();
@@ -540,28 +546,31 @@ function renderTeam(){
     const save = h("button", {class:"act", type:"button"}, "حفظ");
     save.onclick = async () => {
       save.disabled = true; msg.textContent = "بيحفظ…";
-      const role = $("#r-" + id).value, company = $("#c-" + id).value, sr = $("#s-" + id).value;
-      try { const r = await sb.rpc("app_set_access", {p_user: x.user_id, p_company: company, p_role: role, p_shahi_role: sr}); if (r.error) throw r.error; msg.textContent = "اتحفظ ✓"; await loadPeople(); }
+      const role = $("#r-" + id).value, company = $("#c-" + id).value, sr = $("#s-" + id).value, mr = matOK ? $("#m-" + id).value : null;
+      try { const r = await sb.rpc("app_set_access", {p_user: x.user_id, p_company: company, p_role: role, p_shahi_role: sr}); if (r.error) throw r.error;
+        if (mr !== null && mr !== matOf(x)){ const r2 = await sb.rpc("app_set_mat_access", {p_user: x.user_id, p_role: mr}); if (r2.error) throw r2.error; }
+        msg.textContent = "اتحفظ ✓"; await loadPeople(); }
       catch (e) { msg.textContent = "مقدرناش نحفظ. جرّب تاني."; save.disabled = false; }
     };
     const pending = !hasAccess(x);
     return h("section", {class:"card glass person"},
       h("div", {class:"ch"}, h("span", {class:"ci"}, (x.full_name || x.email || "?").trim().charAt(0).toUpperCase()),
         h("div", {style:{"min-width":"0"}}, h("h3", null, x.full_name || x.email.split("@")[0]), h("p", {style:{direction:"ltr", "text-align":"right"}}, x.email)),
-        pending ? h("span", {class:"tag new"}, "جديد · مستني") : h("span", {class:"tag"}, [x.team_role ? (ROLE[x.team_role] + " · " + (COMPANY[x.team_company] || "")) : "", x.shahi_role && x.shahi_active ? SHAHI_ROLE[x.shahi_role] : ""].filter(Boolean).join(" + ")),
+        pending ? h("span", {class:"tag new"}, "جديد · مستني") : h("span", {class:"tag"}, [x.team_role ? (ROLE[x.team_role] + " · " + (COMPANY[x.team_company] || "")) : "", x.shahi_role && x.shahi_active ? SHAHI_ROLE[x.shahi_role] : "", matOf(x) ? "مواد البناء: " + MAT_ROLE[matOf(x)] + (x.mat_role === matOf(x) ? "" : " (لما يدخل المتجر)") : ""].filter(Boolean).join(" + ")),
         !x.confirmed ? h("span", {class:"tag"}, "الإيميل لسه ماتأكدش") : null),
       me ? h("p", {class:"note"}, "ده حسابك انت.") : h("div", {class:"grantrow"},
         h("label", null, h("span", null, "الشركة"), sel("c-" + id, [["jaguar","Jaguar Smart"],["tuya-suez","Tuya Suez"]], x.team_company || "jaguar")),
         h("label", null, h("span", null, "الدور"), sel("r-" + id, [["","مالوش"],["crm","مبيعات (CRM)"],["inventory","مخزن"],["installs","تركيبات"],["admin","أدمن الشركة"]], x.team_role)),
         h("label", null, h("span", null, "شاهي"), sel("s-" + id, [["","مالوش"],["sales","مبيعات"],["ops","تشغيل"],["chef","شيف"],["admin","أدمن شاهي"]], x.shahi_active ? x.shahi_role : "")),
+        matOK ? h("label", null, h("span", null, "مواد البناء"), sel("m-" + id, [["","مالوش"],["staff","موظف"],["admin","أدمن"]], matOf(x))) : null,
         h("div", {class:"grantact"}, save, msg)));
   };
   const pend = people.filter(x => !hasAccess(x)), rest = people.filter(hasAccess);
-  box.replaceChildren(head,
+  box.replaceChildren(...[head,
     pend.length ? h("div", {class:"eyebrow", style:{margin:"4px 6px 10px"}}, "مستنيين موافقتك (" + pend.length + ")") : null,
     ...pend.map(card),
     h("div", {class:"eyebrow", style:{margin:"18px 6px 10px"}}, "الفريق (" + rest.length + ")"),
-    ...rest.map(card));
+    ...rest.map(card)].filter(Boolean));
 }
 const _enter = (u) => { meEmail = (u && u.email) || ""; meUser = u || null; try { const t = Number(localStorage.getItem("cc.last") || 0); lastSeen = t ? new Date(t) : null; localStorage.setItem("cc.last", String(Date.now())); } catch {} };
 
@@ -629,14 +638,16 @@ function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } ca
 const denied = (r) => r && r.error && (r.error.code === "PGRST301" || r.error.code === "42501" || r.status === 401 || r.status === 403);
 async function ask(fn){ try { const r = await fn(); if (!r) return undefined; if (r.error) return denied(r) ? null : undefined; return r.data ?? null; } catch { return undefined; } }
 async function access(user){
-  const [role, company, shahi] = await Promise.all([
+  const [role, company, shahi, mat] = await Promise.all([
     ask(() => sb.rpc("my_role")), ask(() => sb.rpc("my_company")),
-    ask(() => sb.from("shahi_staff").select("full_name,role,active").eq("user_id", user.id).maybeSingle())
+    ask(() => sb.from("shahi_staff").select("full_name,role,active").eq("user_id", user.id).maybeSingle()),
+    ask(() => sb.rpc("mat_role"))
   ]);
-  if ([role, company, shahi].some(v => v === undefined)) return undefined;
+  if ([role, company, shahi, mat].some(v => v === undefined)) return undefined;
   const st = shahi && shahi.active !== false ? shahi : null;
-  if (!role && !st) return null;
-  return {role: role || null, company: company || null, shahi: st, owner: role === "admin" && company === "jaguar"};
+  const m = mat === "staff" || mat === "admin" ? mat : null;
+  if (!role && !st && !m) return null;
+  return {role: role || null, company: company || null, shahi: st, mat: m, owner: role === "admin" && company === "jaguar"};
 }
 async function admit(user){
   // only team members get in, and each one sees only their own part
