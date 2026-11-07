@@ -1,5 +1,5 @@
 // Control center app shell: opens instantly and offline; pages and data always come fresh from the network.
-const CACHE = 'cc-app-v5';
+const CACHE = 'cc-app-v6';
 const SHELL = ['/app/', '/app/manifest.webmanifest', '/app/icon-192.png', '/app/icon-512.png'];
 
 self.addEventListener('install', (e) => {
