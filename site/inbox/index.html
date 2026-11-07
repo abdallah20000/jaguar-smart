@@ -492,10 +492,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       box.appendChild(b);
     });
   }
+  /* The server files some Shahi chats under Jaguar, so a chat that ever showed Shahi text stays Shahi */
+  var SHAHI_RE=/شاهي|shahi|عزوم|كاترينج|catering/i,shahiIds={};
+  try{shahiIds=JSON.parse(localStorage.getItem('shahiIds')||'{}')}catch(e){}
+  function fixBrand(c){
+    if(c.brand==='jaguar'&&!shahiIds[c.id]&&SHAHI_RE.test(c.last||'')){shahiIds[c.id]=1;try{localStorage.setItem('shahiIds',JSON.stringify(shahiIds))}catch(e){}}
+    if(c.brand==='jaguar'&&shahiIds[c.id])c.brand='shahi';
+    return c;
+  }
   function refresh(){
     return Promise.all([call('list'),call('overview').catch(function(){overviewFailed=true;return null})]).then(function(r){
       var d=r[0];
-      rows=d.conversations;total=d.total;
+      rows=d.conversations.map(fixBrand);total=d.total;
       if(r[1]){notes=r[1].notifications;flows=r[1].flows;stats=r[1].analytics;overviewFailed=false}
       $('sync').textContent='آخر تحديث '+clock(new Date());
       renderViews();
