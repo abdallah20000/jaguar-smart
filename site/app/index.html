@@ -274,6 +274,22 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .ph-id{display:flex;align-items:center;gap:14px;min-width:0}
 @media (max-width:760px){.rail{background:rgba(20,16,13,.80);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
+/* sales headline on home */
+.sales{background:linear-gradient(135deg,rgba(245,154,74,.24),rgba(245,154,74,0) 60%),var(--sheen),var(--glass)}
+.s-main{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:6px 0 14px;flex-wrap:wrap}
+.s-big{display:flex;flex-direction:column;gap:2px;min-width:0}
+.s-big b{font-family:var(--f-display);font-weight:700;font-size:38px;line-height:1.1;font-variant-numeric:tabular-nums}
+.s-big b.load{display:block;width:150px;height:36px;border-radius:10px;background:rgba(255,255,255,.09);animation:pulse 1.3s ease-in-out infinite}
+.s-big small,.s-side small{font-size:12px;color:var(--ink-2)}
+.s-side{display:flex;gap:18px}
+.s-side > div{display:flex;flex-direction:column;align-items:flex-start;padding-inline-start:14px;border-inline-start:1px solid var(--line)}
+.s-side b{font-family:var(--f-display);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums}
+.s-cos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.s-co{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line);text-align:start;min-width:0}
+.s-co .lg{width:32px;height:32px;border-radius:10px}
+.s-co .t-tx b{font-size:13.5px}
+.s-co.login .kv{color:#BFF1FF}
+@media (hover:hover){.s-co:hover{border-color:var(--line-2)}}
 /* Apple Home-style tiles */
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .tiles.wide{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
@@ -776,10 +792,37 @@ function fillField(e){
   else { b.classList.remove("load"); b.textContent = "—"; sm.textContent = k && k.login ? "ادخل AIX من «الفريق»" : "مش متاح"; }
 }
 function paintKpi(key){
+  if (key.endsWith(":crm")){ const e = document.getElementById("sales"); if (e){ const n = salesCard(); if (n) e.replaceWith(n); } }
   document.querySelectorAll('[data-kpi="' + key + '"]').forEach((e) => fillLine(e, key));
   document.querySelectorAll('[data-kf^="' + key + '|"]').forEach(fillField);
   const login = !!(KPI["aix:crm"] && KPI["aix:crm"].login);
   document.querySelectorAll("[data-aix-login]").forEach((e) => { e.hidden = !login; });
+}
+/* home: this month's sales across every company the person can see (owner: Jaguar + Tuya + AIX).
+   Quotes value is the headline (it is what is being sold now); accepted value and new leads come under it. */
+function salesCard(){
+  const parts = visible().map((sp) => [sp, sp.items.find((it) => it.kpi && it.kpi.endsWith(":crm"))]).filter(([, it]) => it).map(([sp, it]) => [sp, it.kpi]);
+  if (!parts.length) return null;
+  parts.forEach(([, key]) => kpiGet(key));
+  const ks = parts.map(([, key]) => KPI[key] || {}), got = ks.filter((k) => k.d), busy = ks.some((k) => k.busy && !k.d);
+  const sum = (f) => got.reduce((n, k) => n + (+f(k.d) || 0), 0);
+  const quotes = sum((d) => d.qSum), qn = sum((d) => d.qCount), won = sum((d) => d.won), leads = sum((d) => d.fresh);
+  const big = !got.length && busy ? h("b", {class:"load"}) : h("b", null, money(quotes));
+  const month = new Intl.DateTimeFormat(L, {month:"long"}).format(new Date());
+  return h("section", {class:"brief glass sales", id:"sales"},
+    h("div", {class:"eyebrow"}, "المبيعات · " + month),
+    h("div", {class:"s-main"}, h("div", {class:"s-big"}, big, h("small", null, "قيمة عروض الأسعار الشهر ده" + (got.length ? " · " + fmtN.format(qn) + " عرض" : ""))),
+      h("div", {class:"s-side"},
+        h("div", null, h("b", null, got.length ? money(won) : "—"), h("small", null, "اتقبل")),
+        h("div", null, h("b", null, got.length ? fmtN.format(leads) : "—"), h("small", null, "عميل جديد")))),
+    h("div", {class:"s-cos"}, parts.map(([sp, key]) => {
+      const k = KPI[key] || {}, d = k.d;
+      const val = k.login ? "ادخل AIX" : d ? money(d.qSum) : k.busy ? "" : "—";
+      const sub = d ? fmtN.format(d.qCount || 0) + " عرض" + (d.won ? " · اتقبل " + money(d.won) : "") : k.login ? "من «الفريق»" : "";
+      return h("button", {class:"s-co" + (k.login ? " login" : ""), type:"button", style:{"--c": sp.c},
+          onclick: () => { if (k.login){ teamTab = "aix"; show("team"); } else show("space", true, sp.id); }},
+        logoEl(sp), h("span", {class:"t-tx"}, h("b", null, SHORT[sp.id] || sp.name), h("small", {class:"kv" + (!val && k.busy ? " load" : "")}, val ? val + (sub ? " · " + sub : "") : "")));
+    })));
 }
 function kpiLine(key){ kpiGet(key); const e = h("small", {class:"kv", "data-kpi": key}); fillLine(e, key); return e; }
 function kpiField(label, key, f){
@@ -811,6 +854,7 @@ function renderHome(){
       h("div", {class:"pacts"},
         vis.length > 1 ? h("div", {class:"seg glass"}, [["all","الكل"], ...vis.map(s => [s.id, s.name, s])].map(([id, nm, s]) => h("button", {type:"button", "aria-pressed": String(seg === id), onclick: () => { seg = id; renderHome(); }}, s ? logoEl(s, "xs") : null, nm))) : null,
         can(inbox) ? h("button", {class:"act", type:"button", onclick: () => open(inbox)}, h("span", {html: I.wa, style:{display:"inline-flex"}}), "كل الرسايل") : null)),
+    salesCard(),
     h("section", {class:"brief glass"},
       h("div", {class:"eyebrow"}, "نظرة سريعة"),
       h("h2", null, "حسابك والأماكن اللي تقدر تفتحها"),
