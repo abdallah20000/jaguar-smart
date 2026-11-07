@@ -13,6 +13,7 @@
 <link rel="manifest" href="/app/manifest.webmanifest">
 <link rel="icon" href="/app/icon-192.png">
 <link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
@@ -90,6 +91,22 @@ a{color:inherit;text-decoration:none}
 .tab svg{width:22px;height:22px}
 .tab[aria-current="page"]{background:var(--glass-hi);color:var(--ink)}
 
+/* gates: install page (browser) and login (inside the app) */
+.gate{position:fixed;inset:0;z-index:50;display:flex;padding:calc(var(--st) + 24px) 20px calc(var(--sb) + 24px);overflow-y:auto}
+.gbox{width:min(420px,100%);min-width:0;margin:auto;border-radius:28px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.gbox .logo{width:84px;height:84px;margin:0 auto 4px;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.gbox h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:24px}
+.gbox p{margin:0;color:var(--ink-2);font-size:14.5px}
+.steps{text-align:start;margin:4px 0 0;padding-inline-start:20px;color:var(--ink-2);font-size:14px;display:flex;flex-direction:column;gap:6px}
+.fld{display:flex;flex-direction:column;gap:6px;text-align:start}
+.fld label{font-size:13px;color:var(--ink-2)}
+.fld input{width:100%;min-width:0;border-radius:14px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--ink);padding:13px 14px;font:inherit;font-size:16px;outline:none;direction:ltr;text-align:left}
+.fld input:focus{border-color:var(--accent)}
+.gerr{color:#FFB3B3;font-size:13.5px;min-height:1.2em}
+.gbox .btn{width:100%;padding:13px 18px;font-size:15px}
+.gbox .btn:disabled{opacity:.6}
+.out-btn{font-size:13px;color:var(--ink-3);padding:6px 12px;border-radius:999px;border:1px solid var(--stroke);margin-top:22px}
+
 /* intro */
 #intro{position:fixed;inset:0;z-index:100;background:#F3F2EE;transition:opacity .5s,transform .5s}
 #intro.out{opacity:0;transform:scale(1.03);pointer-events:none}
@@ -106,7 +123,28 @@ a{color:inherit;text-decoration:none}
 <body>
 <canvas id="wall" aria-hidden="true"></canvas><div class="dim" aria-hidden="true"></div>
 
-<div id="intro" aria-hidden="true"><canvas id="ic"></canvas>
+<section class="gate" id="g-install" hidden>
+  <div class="gbox glass">
+    <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
+    <h1>نزّل التطبيق</h1>
+    <p>التطبيق ده بيتسطّب على الموبايل ويفتح بالشاشة كلها. الدخول بالإيميل والباسورد من جوه التطبيق.</p>
+    <button class="btn" id="g-install-btn" type="button" hidden>سطّب التطبيق</button>
+    <ol class="steps" id="g-steps"></ol>
+  </div>
+</section>
+<section class="gate" id="g-login" hidden>
+  <form class="gbox glass" id="login-form" autocomplete="on">
+    <img class="logo" src="/app/icon-192.png" alt="" width="84" height="84">
+    <h1>تسجيل الدخول</h1>
+    <p>بنفس حسابك اللي بتدخل بيه CRM ولوحة الرسايل.</p>
+    <div class="fld"><label for="l-email">الإيميل</label><input id="l-email" name="email" type="email" autocomplete="username" inputmode="email" required></div>
+    <div class="fld"><label for="l-pw">الباسورد</label><input id="l-pw" name="password" type="password" autocomplete="current-password" required></div>
+    <div class="gerr" id="l-err" role="alert"></div>
+    <button class="btn" id="l-btn" type="submit">دخول</button>
+  </form>
+</section>
+
+<div id="intro" aria-hidden="true" hidden><canvas id="ic"></canvas>
   <div class="it"><span><b>مركز التحكم</b> · الوكلاء بيبنوا الواجهة</span><button class="skip" id="skip" type="button">تخطي</button></div>
   <div class="ibar" id="ibar">0 agents · 0/147 layers</div>
 </div>
@@ -166,8 +204,7 @@ const I = {
 const SPACES = [
   {id:"jaguar", name:"Jaguar Smart", desc:"المقاولات والسمارت هوم: CRM، المخزن، التركيبات، والخامات", c:"#FF8A3D", ic:"home", items:[
     {n:"الموقع", u:"/", ic:"home"}, {n:"CRM والعروض", u:"/crm/", ic:"user"}, {n:"المخزن", u:"/crm/inventory.html", ic:"box"},
-    {n:"التركيبات", u:"/crm/installs.html", ic:"tool"}, {n:"متجر الخامات", u:"/materials/", ic:"cart"}, {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin"},
-    {n:"التحكم في البيت", u:"https://ha.srv2112249.hstgr.cloud/jaguar-control/home", ic:"home", ext:1}]},
+    {n:"التركيبات", u:"/crm/installs.html", ic:"tool"}, {n:"متجر الخامات", u:"/materials/", ic:"cart"}, {n:"أسعار الحديد والأسمنت", u:"/materials/prices/", ic:"coin"}]},
   {id:"tuya", name:"Tuya Suez", desc:"البيت الذكي في السويس: CRM والمخزن والتركيبات", c:"#FF6B35", ic:"home", items:[
     {n:"الموقع", u:"/tuya-suez/", ic:"home"}, {n:"CRM", u:"/tuya-suez/crm.html", ic:"user"}, {n:"المخزن", u:"/tuya-suez/inventory.html", ic:"box"}, {n:"التركيبات", u:"/tuya-suez/installs.html", ic:"tool"}]},
   {id:"shahi", name:"شاهي", desc:"العزومات والكاترينج: المنيو ولوحة الفريق", c:"#F2707A", ic:"plate", items:[
@@ -177,11 +214,7 @@ const SPACES = [
   {id:"cobra", name:"Cobra Egypt", desc:"رحلات خاصة للأجانب: الموقع والفورم", c:"#B57BFF", ic:"plane", items:[
     {n:"الموقع", u:"/cobra-egypt/", ic:"plane"}, {n:"فورم التخطيط", u:"/cobra-egypt/plan/", ic:"cal"}, {n:"كسوف 2027", u:"/cobra-egypt/eclipse-2027/", ic:"spark"}]},
   {id:"msgs", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
-    {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]},
-  {id:"sys", name:"الأنظمة", desc:"n8n والسيرفر ونشر الموقع وClaude", c:"#EA4B71", ic:"flow", items:[
-    {n:"n8n", u:"https://n8n-hesb.srv2112249.hstgr.cloud/", ic:"flow", ext:1}, {n:"Hostinger", u:"https://hpanel.hostinger.com/", ic:"server", ext:1},
-    {n:"Supabase", u:"https://supabase.com/dashboard/projects", ic:"server", ext:1}, {n:"Claude", u:"https://claude.ai/", ic:"spark", ext:1},
-    {n:"مركز التحكم في Claude", u:"https://claude.ai/artifact/7vdHP3u9zmdysxQR9w6NCh", ic:"bolt", ext:1}]}
+    {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
 ];
 const ALL = SPACES.flatMap(s => s.items.map(i => ({...i, c:s.c, sp:s.name})));
 
@@ -223,16 +256,16 @@ function renderHome(){
   const date = new Intl.DateTimeFormat("ar-EG-u-nu-latn", {weekday:"long", day:"numeric", month:"long"}).format(new Date());
   const inbox = ALL.find(i => i.key === "inbox");
   $("#home").replaceChildren(
-    h("div", {class:"hello"}, hr < 12 ? "صباح الخير يا عبدالله" : "مساء الخير يا عبدالله"),
+    h("div", {class:"hello"}, (hr < 12 ? "صباح الخير" : "مساء الخير") + (who ? " يا " + who : "")),
     h("p", {class:"sub"}, date + " · كل شغلك في مكان واحد"),
-    installCard(),
     h("button", {class:"hero glass", type:"button", onclick:() => open(inbox)}, h("span", {class:"hi", html: I.wa}), h("span", null, h("b", null, "كل الرسايل"), h("span", null, "واتساب Nile وشاهي وJaguar في مكان واحد"))),
     h("div", {class:"h2"}, "أقسامك"),
     h("div", {class:"spaces"}, SPACES.map(sp => h("button", {class:"sp glass", type:"button", style:{"--c": sp.c}, onclick:() => openSpace(sp)},
       h("div", {class:"top"}, h("span", {class:"gi", html: I[sp.ic]}), h("span", {class:"cnt"}, sp.items.length + " حاجات")),
       h("div", {class:"bd"}, h("h3", null, sp.name), h("p", null, sp.desc))))),
     h("div", {class:"h2"}, "الأكتر استخدام"),
-    h("div", {class:"apps"}, ["inbox","nile-team","shahi-admin"].map(k => appTile(ALL.find(i => i.key === k))).concat(appTile(ALL.find(i => i.u === "/crm/")), appTile(ALL.find(i => i.u === "/tuya-suez/crm.html")), appTile(ALL.find(i => i.n === "n8n"))))
+    h("div", {class:"apps"}, ["inbox","nile-team","shahi-admin"].map(k => appTile(ALL.find(i => i.key === k))).concat(appTile(ALL.find(i => i.u === "/crm/")), appTile(ALL.find(i => i.u === "/tuya-suez/crm.html")), appTile(ALL.find(i => i.u === "/materials/prices/")))),
+    h("div", {style:{"text-align":"center"}}, h("button", {class:"out-btn", type:"button", onclick: () => logout()}, "خروج من الحساب"))
   );
 }
 function openSpace(sp){
@@ -249,8 +282,8 @@ function renderLinks(){
 /* ---------- install ---------- */
 let deferred = null;
 const standalone = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone;
-addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; renderHome(); });
-addEventListener("appinstalled", () => { deferred = null; renderHome(); });
+addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
+addEventListener("appinstalled", () => { deferred = null; });
 function installCard(){
   if (standalone) return null;
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -324,14 +357,61 @@ function intro(){
   });
 }
 
-/* ---------- boot ---------- */
-paint(); renderHome(); renderLinks();
-history.replaceState({screen:"home"}, "");
-const q = new URLSearchParams(location.search).get("open");
-intro().then(() => {
-  show("home", false);
-  const it = q && ALL.find(i => i.key === q); if (it) open(it);
+/* ---------- auth: same Supabase accounts as the CRM and inbox; the session stays on the phone ---------- */
+let sb = null, who = "";
+try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
+const appEls = [$("#s-home"), $(".tabbar")];
+function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
+async function logout(){ try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#home").replaceChildren(); $("#links").replaceChildren(); $("#space").replaceChildren(); $("#g-login").hidden = false; }
+function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
+let entered = false;
+function enter(user){
+  if (entered) return; entered = true;
+  who = nameOf(user);
+  $("#g-login").hidden = true; appEls.forEach(e => e.hidden = false);
+  renderHome(); renderLinks();
+  history.replaceState({screen:"home"}, "");
+  const q = new URLSearchParams(location.search).get("open");
+  const ir = $("#intro"); if (ir) ir.hidden = false;
+  intro().then(() => { show("home", false); const it = q && ALL.find(i => i.key === q); if (it) open(it); });
+}
+$("#login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#l-btn"), err = $("#l-err"); err.textContent = "";
+  if (!sb){ err.textContent = "مفيش اتصال دلوقتي. اتأكد من النت وافتح التطبيق تاني."; return; }
+  btn.disabled = true; btn.textContent = "بيدخل…";
+  try {
+    const r = await sb.auth.signInWithPassword({email: $("#l-email").value.trim(), password: $("#l-pw").value});
+    if (r.error || !r.data || !r.data.user){ err.textContent = "الإيميل أو الباسورد مش صح."; return; }
+    try { if (window.PasswordCredential && navigator.credentials) await navigator.credentials.store(new PasswordCredential($("#login-form"))); } catch {}
+    $("#l-pw").value = "";
+    entered = false; enter(r.data.user);
+  } catch { err.textContent = "مفيش اتصال دلوقتي. جرّب تاني."; }
+  finally { btn.disabled = false; btn.textContent = "دخول"; }
 });
+
+/* ---------- boot ---------- */
+paint(); lockUI();
+if (!standalone){
+  // visited in a browser: show the install page only
+  const ir = $("#intro"); if (ir) ir.remove();
+  $("#g-install").hidden = false;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const steps = ios ? ["افتح الصفحة دي في Safari.", "دوس زرار المشاركة (المربع اللي فيه سهم).", "اختار «Add to Home Screen» وبعدين «Add».", "افتح «مركز التحكم» من الشاشة الرئيسية وادخل بإيميلك."]
+    : ["افتح الصفحة دي في Chrome.", "دوس «سطّب التطبيق»، أو من القايمة ⋮ اختار «Install app».", "افتح «مركز التحكم» من قايمة التطبيقات وادخل بإيميلك."];
+  $("#g-steps").replaceChildren(...steps.map(t => h("li", null, t)));
+  const showBtn = () => { $("#g-install-btn").hidden = !deferred; };
+  addEventListener("beforeinstallprompt", () => setTimeout(showBtn)); showBtn();
+  $("#g-install-btn").onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; showBtn(); };
+} else {
+  $("#g-install").remove();
+  (sb ? sb.auth.getSession() : Promise.resolve(null)).then((r) => {
+    const u = r && r.data && r.data.session && r.data.session.user;
+    if (u) enter(u); else $("#g-login").hidden = false;
+  }).catch(() => { $("#g-login").hidden = false; });
+  if (sb) sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT" && entered){ entered = false; logout(); } });
+}
+
 })();
 </script>
 </body>
