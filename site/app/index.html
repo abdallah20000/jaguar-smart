@@ -375,11 +375,21 @@ async function logout(){ try { if (sb) await sb.auth.signOut(); } catch {} lockU
 function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
 const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
 function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
-async function teamRole(){ try { const r = await sb.rpc("my_role"); return r && !r.error ? r.data : null; } catch { return undefined; } }
+async function teamRole(){
+  // null = not a team member; undefined = could not check (network); a string = the role
+  try { const r = await sb.rpc("my_role"); if (!r) return undefined; if (r.error) return (r.error.code === "PGRST301" || r.error.code === "42501" || r.status === 401 || r.status === 403) ? null : undefined; return r.data || null; }
+  catch { return undefined; }
+}
 async function admit(user){
   // only team members get in, like the CRM and the team panels
   const role = await teamRole();
-  if (role === null){ try { await sb.auth.signOut(); } catch {} $("#g-login").hidden = false; $("#l-err").textContent = "الحساب ده مش من الفريق."; return; }
+  if (role === undefined){
+    // could not confirm membership (no network): stay locked, keep the saved login, offer a retry
+    $("#g-login").hidden = false; $("#l-err").textContent = "مفيش اتصال دلوقتي، فمقدرناش نتأكد من حسابك. ";
+    $("#l-err").append(h("button", {type:"button", style:{"text-decoration":"underline", color:"inherit"}, onclick: () => { $("#l-err").textContent = ""; admit(user); }}, "حاول تاني"));
+    return;
+  }
+  if (!role){ try { await sb.auth.signOut(); } catch {} $("#g-login").hidden = false; $("#l-err").textContent = "الحساب ده مش من الفريق."; return; }
   isAdmin = role === "admin";
   who = nameOf(user) || savedName(user);
   if (!who){
