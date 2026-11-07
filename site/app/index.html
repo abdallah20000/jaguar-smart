@@ -274,6 +274,53 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .ph-id{display:flex;align-items:center;gap:14px;min-width:0}
 @media (max-width:760px){.rail{background:rgba(20,16,13,.80);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}}
 
+/* Apple Home-style tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.tiles.wide{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:14px;border-radius:24px;text-align:start;min-width:0;min-height:118px;transition:transform .18s ease,border-color .2s}
+.tile:active{transform:scale(.97)}
+@media (hover:hover){.tile:hover{border-color:var(--line-2)}}
+.tiles.wide .tile{flex-direction:row;align-items:center;min-height:74px;padding:12px 14px}
+.t-ic{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--c,#fff) 18%,rgba(255,255,255,.06));border:1px solid color-mix(in srgb,var(--c,#fff) 36%,transparent);color:color-mix(in srgb,var(--c,#fff) 60%,#fff)}
+.t-ic svg{width:19px;height:19px}
+.t-tx{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%}
+.t-tx b{font-size:15px;font-weight:600;line-height:1.3}
+.t-tx .kv{font-size:12px;line-height:1.4;color:var(--ink-2);font-variant-numeric:tabular-nums;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.t-tx .kv.load{width:110px;max-width:80%;height:9px;border-radius:5px;background:rgba(255,255,255,.09);animation:pulse 1.3s ease-in-out infinite;margin-top:3px}
+.t-tx .kv.warn{color:#FFC48F}
+.t-tx .kv:empty:not(.load){display:none}
+/* switching screens: a short fade and lift */
+.pane.swap > *{animation:swap .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes swap{from{opacity:0;transform:translateY(8px)}}
+/* the bar: desktop rail vs phone tab bar */
+.ri .lbl,.rail .lens,.ri.m-only{display:none}
+@media (max-width:760px){
+  .shell{padding-bottom:calc(var(--sb) + 96px)}
+  .rail{left:16px;right:16px;transform:none;width:auto;max-width:520px;margin:0 auto;overflow:visible;padding:6px;gap:0;height:66px;align-items:stretch;border-radius:34px;
+    background:var(--sheen),rgba(30,25,21,.62);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 40px -12px rgba(0,0,0,.65)}
+  .ri.d-only{display:none}.ri.m-only{display:flex}
+  .ri{flex:1;min-width:0;width:auto;height:auto;border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);position:relative;z-index:1;background:none}
+  .ri:hover{background:none}
+  .ri[aria-current="page"]{background:none;box-shadow:none;color:var(--accent)}
+  .ri .ic svg{width:22px;height:22px;display:block}
+  .ri .lg{width:24px;height:24px;border-radius:7px}
+  .ri[aria-current="page"] .lg{box-shadow:0 0 0 1.5px var(--accent)}
+  .ri .lbl{display:block;font-size:10.5px;font-weight:600;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ri .b{top:4px;left:auto;right:calc(50% - 20px)}
+  .rail .lens{display:block;position:absolute;top:6px;bottom:6px;left:0;width:0;border-radius:28px;z-index:0;pointer-events:none;opacity:0;
+    background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+    transition:transform .46s cubic-bezier(.32,1.45,.5,1),width .46s cubic-bezier(.32,1.45,.5,1),opacity .2s}
+  .rail .lens.still{transition:none}
+  .rail .lens.moving{animation:lens .46s ease-out}
+  .tiles.wide{grid-template-columns:minmax(0,1fr)}
+}
+/* while the lens travels it swells into a bright glass drop, then settles (like Apple's Liquid Glass) */
+@keyframes lens{
+  0%{scale:1 1;background:rgba(255,255,255,.12)}
+  35%{scale:1.16 1.22;background:radial-gradient(120% 90% at 50% 20%,rgba(255,255,255,.30),rgba(255,255,255,.06) 60%);border-color:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -8px 16px rgba(245,154,74,.18),0 10px 26px -8px rgba(0,0,0,.6)}
+  100%{scale:1 1}
+}
+@media (prefers-reduced-motion:reduce){.pane.swap > *,.rail .lens.moving{animation:none}.rail .lens{transition:none}}
 /* opening: the app icon on glass over the room while the account is checked, then the app rises in */
 #splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(12,9,7,.38);transition:opacity .45s ease}
 #splash.out{opacity:0;pointer-events:none}
@@ -365,6 +412,7 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
     <section class="pane" id="s-links" hidden></section>
     <section class="pane" id="s-team" hidden></section>
     <section class="pane" id="s-ops" hidden></section>
+    <section class="pane" id="s-spaces" hidden></section>
   </div>
 </div>
 
@@ -506,11 +554,12 @@ function phoneCard(){
 let current = {view:"home"}, seg = "all", query = "";
 function show(view, push = true, spaceId){
   current = {view, space: spaceId};
-  for (const id of ["home","space","links","team","ops"]) $("#s-" + id).hidden = id !== view;
-  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam(); else if (view === "ops") renderOps();
+  for (const id of ["home","space","links","team","ops","spaces"]) $("#s-" + id).hidden = id !== view;
+  if (view === "space") renderSpace(spaceId); else if (view === "home") renderHome(); else if (view === "team") renderTeam(); else if (view === "ops") renderOps(); else if (view === "spaces") renderSpaces();
   renderRail(); renderTop();
   if (push) history.pushState({view, space: spaceId}, "");
   const el = $("#s-" + view); el.scrollTop = 0;
+  if (!RM){ el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); }
 }
 function open(item){
   if (!item || !can(item)) return;
@@ -534,29 +583,61 @@ addEventListener("popstate", (e) => {
    screen made new logo images each time, and some phones painted them as blank tiles. */
 const railLogo = {};
 let railSig = "";
+/* On phones the bar works like Apple Home's: a few tabs with a name under each icon and a glass lens that
+   slides to the chosen tab (it swells while it moves, then settles). With more than two companies they
+   live behind one «الشركات» tab; on computers the side rail still lists every company. */
+const SHORT = {jaguar:"Jaguar", tuya:"Tuya", shahi:"شاهي", nile:"Nile", cobra:"Cobra", aix:"AIX", msgs:"الرسايل"};
+const companiesOf = (vis) => vis.filter((sp) => sp.id !== "msgs");
+function railKeyFor(){
+  if (current.view !== "space") return current.view;
+  const direct = companiesOf(visible()).length <= 2;
+  return current.space === "msgs" || direct ? current.space : "spaces";
+}
+function moveLens(animate){
+  const rail = $("#rail"), lens = rail.querySelector(".lens"), b = rail.querySelector(".ri[aria-current='page']:not(.d-only)") ;
+  if (!lens) return;
+  if (!b || !b.offsetWidth){ lens.style.opacity = "0"; return; }
+  const x = b.offsetLeft, w = b.offsetWidth;
+  lens.style.opacity = "1";
+  if (animate && !RM && lens.dataset.x && lens.dataset.x !== String(x)){
+    lens.classList.remove("moving"); void lens.offsetWidth; lens.classList.add("moving");
+    clearTimeout(lens._t); lens._t = setTimeout(() => lens.classList.remove("moving"), 460);
+  } else if (!animate) lens.classList.add("still");
+  lens.style.width = w + "px"; lens.style.transform = "translateX(" + x + "px)"; lens.dataset.x = String(x);
+  if (!animate) requestAnimationFrame(() => lens.classList.remove("still"));
+}
 function renderRail(){
-  const vis = visible();
-  const sig = vis.map((sp) => sp.id).join(",") + "|" + !!(ACC && ACC.owner) + "|" + pendingCount;
-  const isCur = (k) => k === "home" ? current.view === "home" : k === "team" ? current.view === "team" : current.view === "space" && current.space === k;
+  const vis = visible(), comps = companiesOf(vis), direct = comps.length <= 2;
+  const sig = vis.map((sp) => sp.id).join(",") + "|" + !!(ACC && ACC.owner) + "|" + pendingCount + "|" + ((typeof OPS !== "undefined" && OPS.stats && OPS.stats.pending) || 0);
+  const cur = railKeyFor();
+  const isCur = (k) => k === "home" ? current.view === "home" : k === "team" ? current.view === "team" : k === "ops" ? current.view === "ops" : k === "spaces" ? cur === "spaces" :
+    current.view === "space" && current.space === k;
   if (sig === railSig && $("#rail").childElementCount){
     $("#rail").querySelectorAll(".ri[data-k]").forEach((b) => { if (isCur(b.getAttribute("data-k"))) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    moveLens(true);
     return;
   }
   railSig = sig;
-  const item = (key, icon, tip, onclick, curr, badge) => h("button", {class:"ri", type:"button", "data-k": key, "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
-    typeof icon === "string" ? h("span", {html: I[icon] || I.grid}) : icon, badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip));
+  const item = (key, icon, tip, onclick, curr, badge, cls, label) => h("button", {class:"ri" + (cls ? " " + cls : ""), type:"button", "data-k": key, "aria-label": tip, "aria-current": curr ? "page" : null, onclick},
+    typeof icon === "string" ? h("span", {class:"ic", html: I[icon] || I.grid}) : icon, badge ? h("span", {class:"b"}, badge) : null, h("span", {class:"tip"}, tip), h("span", {class:"lbl"}, label || tip));
+  const msgs = vis.find((sp) => sp.id === "msgs");
   $("#rail").replaceChildren(...[
+    h("span", {class:"lens", "aria-hidden":"true"}),
     h("div", {class:"logo"}, "J"),
-    item("home", "grid", "الرئيسية", () => show("home"), current.view === "home"),
-    ...vis.map(sp => item(sp.id, railLogo[sp.id] || (railLogo[sp.id] = logoEl(sp)), sp.name, () => show("space", true, sp.id), current.view === "space" && current.space === sp.id)),
+    item("home", "home", "الرئيسية", () => show("home"), isCur("home")),
+    ...comps.map((sp) => item(sp.id, railLogo[sp.id] || (railLogo[sp.id] = logoEl(sp)), sp.name, () => show("space", true, sp.id), isCur(sp.id), null, direct ? "" : "d-only", SHORT[sp.id] || sp.name)),
+    !direct ? item("spaces", "grid", "الشركات", () => show("spaces"), isCur("spaces"), null, "m-only") : null,
+    msgs ? item("msgs", railLogo.msgs || (railLogo.msgs = logoEl(msgs)), msgs.name, () => show("space", true, "msgs"), isCur("msgs"), null, "", "الرسايل") : null,
     h("div", {class:"spacer"}),
-    ACC && ACC.owner ? item("ops", "spark", "العمليات", () => show("ops"), current.view === "ops", OPS.stats && OPS.stats.pending ? String(OPS.stats.pending) : null) : null,
-    ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), current.view === "team", pendingCount ? String(pendingCount) : null) : null,
-    item("out", "out", "خروج", () => logout(), false)].filter(Boolean));
+    ACC && ACC.owner ? item("ops", "spark", "العمليات", () => show("ops"), isCur("ops"), OPS.stats && OPS.stats.pending ? String(OPS.stats.pending) : null) : null,
+    ACC && ACC.owner ? item("team", "people", "الفريق", () => show("team"), isCur("team"), pendingCount ? String(pendingCount) : null) : null,
+    item("out", "out", "خروج", () => logout(), false, null, "d-only")].filter(Boolean));
+  requestAnimationFrame(() => moveLens(false));
 }
+addEventListener("resize", () => moveLens(false));
 function renderTop(){
   const sp = current.view === "space" && visible().find(s => s.id === current.space);
-  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : current.view === "ops" ? "العمليات" : "الرئيسية";
+  $("#crumb").textContent = sp ? sp.name : current.view === "team" ? "الفريق" : current.view === "ops" ? "العمليات" : current.view === "spaces" ? "الشركات" : "الرئيسية";
   const nm = who || "حسابي";
   $("#ws").replaceChildren(h("span", {class:"av"}, nm.charAt(0)), h("span", {style:{"min-width":"0"}}, h("b", null, nm), h("small", null, [roleLabel(), placeLabel()].filter(Boolean).join(" · "))), h("span", {html: I.chev}));
   $("#me").firstChild.textContent = nm.charAt(0);
@@ -757,6 +838,22 @@ function spaceBrief(sp){
     h("div", {class:"kpis"}, kpi("الصفحات", String(sp.items.length), "مفتوحة ليك", ""), kpi("دورك", roleLabel() || "—", null, placeLabel())));
   return h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, sp.name), h("h2", null, "شغل الشهر ده"), h("div", {class:"kpis"}, boxes));
 }
+// one glass tile per page of a company, like the accessories in Apple Home
+function itemTiles(sp, rows){
+  return h("div", {class:"tiles wide", style:{"--c": sp.c}}, rows.map((it) => h("button", {class:"tile glass", type:"button", onclick: () => open(it)},
+    h("span", {class:"t-ic", html: I[it.ic] || I.globe}),
+    h("span", {class:"t-tx"}, h("b", null, it.n), it.kpi ? kpiLine(it.kpi) : h("small", {class:"kv"}, it.ext ? "بيفتح بره" : "جوه التطبيق")))));
+}
+function renderSpaces(){
+  const comps = companiesOf(visible());
+  $("#s-spaces").replaceChildren(
+    h("div", {class:"phead"}, h("div", null, h("h1", null, "الشركات"), h("p", null, "اختار شركة تشوف شغلها وصفحاتها."))),
+    comps.length ? h("div", {class:"tiles"}, comps.map((sp) => {
+      const crm = sp.items.find((it) => it.kpi && it.kpi.endsWith(":crm"));
+      return h("button", {class:"tile glass co", type:"button", style:{"--c": sp.c}, onclick: () => show("space", true, sp.id)},
+        logoEl(sp, "big"), h("span", {class:"t-tx"}, h("b", null, sp.name), crm ? kpiLine(crm.kpi) : h("small", {class:"kv"}, plural(sp.items.length))));
+    })) : stateCard("grid", "مفيش شركات متاحة لحسابك."));
+}
 function renderSpace(id){
   const sp = visible().find(s => s.id === id);
   if (!sp){ show("home", false); return; }
@@ -764,7 +861,7 @@ function renderSpace(id){
   $("#s-space").replaceChildren(
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
     spaceBrief(sp),
-    rows.length ? h("div", {class:"cards"}, spaceCard(sp, rows)) : stateCard("search", "مفيش صفحة بالاسم ده."));
+    rows.length ? itemTiles(sp, rows) : stateCard("search", "مفيش صفحة بالاسم ده."));
 }
 function renderLinks(){ renderRail(); renderTop(); if (ACC && ACC.owner){ loadPeople(true); loadOps(true); } }
 
