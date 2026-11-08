@@ -321,6 +321,25 @@ select.sel{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 .m-cap b{font-size:12.5px;color:var(--ink-2);font-weight:600}
 .m-cap .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
 .m-cap small{font-size:11.5px;color:var(--ink-3)}
+/* Nile Dragon */
+.nd-line{margin:-6px 4px 16px;font-size:15px;color:var(--ink-2)}
+.nd-line b{color:var(--ink);font-size:17px;font-variant-numeric:tabular-nums}
+.nd-money{grid-template-columns:repeat(5,minmax(0,1fr))}
+.nd-sec{margin-bottom:14px}
+.nd-sec .ch .ghost{margin-inline-start:auto;flex:none}
+.nd-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
+.nd-t{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.nd-t th{font-weight:600;font-size:11.5px;color:var(--ink-3);text-align:start;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.nd-t td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.nd-t td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.nd-t tbody tr{cursor:pointer}
+@media (hover:hover){.nd-t tbody tr:hover td{background:var(--glass-2)}}
+.nd-t tr.on td{background:rgba(245,154,74,.12)}
+.nd-form{margin:10px 0 4px;padding:12px;border-radius:14px;background:rgba(255,255,255,.035)}
+.nd-bool{flex-direction:row!important;align-items:center;gap:8px!important;align-self:center}
+.nd-bool input{width:20px;height:20px;accent-color:var(--accent)}
+@media (max-width:760px){.nd-money{grid-template-columns:repeat(2,minmax(0,1fr))}.nd-two{grid-template-columns:minmax(0,1fr)}}
 /* home: system health + expenses */
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
 .duo .tile{flex-direction:row;align-items:center;min-height:84px}
@@ -560,6 +579,8 @@ const SPACES = [
   {id:"aix", logo:"/app/logos/aix.png", mono:"AIX", name:"AIX", desc:"البيت الذكي: CRM والمخزن والتركيبات على aixegypt.com", c:"#2EC4E6", ic:"spark", items:[
     {n:"CRM", u:"https://aixegypt.com/crm.html", ic:"user", ext:1, kpi:"aix:crm"}, {n:"المخزن", u:"https://aixegypt.com/inventory.html", ic:"box", ext:1, kpi:"aix:stock"},
     {n:"التركيبات", u:"https://aixegypt.com/installs.html", ic:"tool", ext:1, kpi:"aix:installs"}, {n:"الموقع", u:"https://aixegypt.com/", ic:"globe", ext:1}]},
+  {id:"nd", mono:"ND", name:"Nile Dragon", desc:"نايل دراجون: الاستيراد من الصين لمصر، الطلبيات والفلوس والشحن", c:"#E5484D", ic:"plane", items:[
+    {n:"الطلبيات والفلوس", ic:"box", nd:1}]},
   {id:"msgs", glyph:"wa", name:"الرسايل", desc:"واتساب كل البيزنس، والإيميل والتقويم", c:"#25D366", ic:"wa", items:[
     {n:"كل الرسايل", u:"/inbox/", ic:"wa", key:"inbox"}, {n:"Gmail", u:"https://mail.google.com/", ic:"mail", ext:1}, {n:"التقويم", u:"https://calendar.google.com/", ic:"cal", ext:1}, {n:"Meta Business", u:"https://business.facebook.com/", ic:"chat", ext:1}]}
 ];
@@ -648,6 +669,7 @@ function show(view, push = true, spaceId){
 }
 function open(item){
   if (!item || !can(item)) return;
+  if (item.nd){ show("space", true, "nd"); return; }
   if (item.ext){ window.open(item.u, "_blank", "noopener"); return; }
   $("#vtitle").textContent = item.n;
   $("#vload").hidden = false;
@@ -671,7 +693,7 @@ let railSig = "";
 /* On phones the bar works like Apple Home's: a few tabs with a name under each icon and a glass lens that
    slides to the chosen tab (it swells while it moves, then settles). With more than two companies they
    live behind one «الشركات» tab; on computers the side rail still lists every company. */
-const SHORT = {jaguar:"Jaguar", tuya:"Tuya", shahi:"شاهي", nile:"Nile", cobra:"Cobra", aix:"AIX", msgs:"الرسايل"};
+const SHORT = {nd:"Dragon", jaguar:"Jaguar", tuya:"Tuya", shahi:"شاهي", nile:"Nile", cobra:"Cobra", aix:"AIX", msgs:"الرسايل"};
 const companiesOf = (vis) => vis.filter((sp) => sp.id !== "msgs");
 function railKeyFor(){
   if (current.view !== "space") return current.view;
@@ -1123,6 +1145,166 @@ function acctNode(tag){
   }
   return null;
 }
+/* ---------- Nile Dragon (owner only): China → Egypt imports, tables nd_* (migration 109) ----------
+   Every pound figure comes from the database (amount_egp / total_egp are worked out there); anything that
+   needs a missing price or rate stays empty and says «مستني الأسعار». */
+const ND_T = ["nd_suppliers","nd_orders","nd_order_items","nd_payments","nd_shipments","nd_clients"];
+const ND_ORDER_ST = ["مستني الأسعار","اتطلبت","اتدفعت","في الشحن","وصلت","اتقفلت"];
+let ND = {d:null, err:"", at:0, busy:false, form:null};
+async function loadND(force){
+  if (!sb || !ACC || !ACC.owner || ND.busy || (!force && ND.d && Date.now() - ND.at < KPI_TTL)) return;
+  ND.busy = true;
+  try {
+    const rs = await Promise.all(ND_T.map((t) => sb.from(t).select("*").order("created_at")));
+    const bad = rs.find((r) => r.error); if (bad) throw bad.error;
+    ND.d = {}; ND_T.forEach((t, i) => { ND.d[t.slice(3)] = rs[i].data || []; }); ND.err = "";
+  } catch (e){ ND.d = null; ND.err = (e && (e.code === "42P01" || e.code === "PGRST205" || /nd_/.test(e.message || ""))) ? "setup" : "net"; }
+  ND.busy = false; ND.at = Date.now();
+  if (current.view === "space" && current.space === "nd") renderND();
+}
+const nz = (v) => v != null && v !== "" && isFinite(+v);
+function ndCalc(d){
+  const sum = (rows, k) => rows.reduce((n, r) => n + (nz(r[k]) ? +r[k] : 0), 0);
+  const sup = Object.fromEntries(d.suppliers.map((x) => [x.id, x.name]));
+  const orders = d.orders.map((o) => {
+    const its = d.order_items.filter((i) => i.order_id === o.id), pieces = sum(its, "ordered"), received = sum(its, "received");
+    const priced = its.length > 0 && its.every((i) => nz(i.unit_price)), rate = nz(o.rate_to_egp) ? +o.rate_to_egp : o.currency === "EGP" ? 1 : null;
+    const goods = priced && rate ? its.reduce((n, i) => n + (+i.ordered) * (+i.unit_price), 0) * rate : null;
+    const pays = d.payments.filter((p) => p.order_id === o.id && p.direction === "خرج"), ships = d.shipments.filter((x) => x.order_id === o.id);
+    const paid = sum(pays, "amount_egp"), shipping = sum(ships, "total_egp");
+    const gaps = pays.filter((p) => !nz(p.amount_egp)).length + ships.filter((x) => !nz(x.total_egp)).length;
+    const landed = goods == null ? null : goods + shipping;
+    return {o, its, supplier: sup[o.supplier_id] || "—", pieces, received, remaining: pieces - received, paid, shipping, goods,
+      owed: goods == null ? null : goods - paid, landed, perPiece: landed == null || !pieces ? null : landed / pieces, gaps, open: o.status !== "اتقفلت"};
+  });
+  const op = orders.filter((x) => x.open);
+  const pin = d.payments.filter((p) => p.direction === "دخل"), pout = d.payments.filter((p) => p.direction === "خرج");
+  const inE = sum(pin, "amount_egp"), outE = sum(pout, "amount_egp");
+  return {orders, open: op.length, pieces: op.reduce((n, x) => n + x.pieces, 0), received: op.reduce((n, x) => n + x.received, 0),
+    remaining: op.reduce((n, x) => n + x.remaining, 0), inE, outE, balance: inE - outE,
+    owed: op.some((x) => x.owed == null) ? null : op.reduce((n, x) => n + x.owed, 0), shipping: sum(d.shipments, "total_egp"),
+    noRate: d.payments.filter((p) => !nz(p.amount_egp)).length + d.shipments.filter((x) => !nz(x.total_egp)).length, sup};
+}
+const egp = (n) => n == null ? "—" : exact(n) + " ج.م";
+// one generic add / edit form for any nd_ table
+function ndForm(table, row, fields, extra){
+  const v = Object.assign({}, extra || {}, row || {}), inputs = {};
+  const box = h("div", {class:"cform nd-form"});
+  const grid = h("div", {class:"grantrow", style:{"grid-template-columns":"1fr 1fr"}});
+  fields.forEach((f) => {
+    let el;
+    if (f.type === "select") el = sel("nd-" + table + "-" + f.k, f.options, v[f.k] == null ? "" : String(v[f.k]));
+    else if (f.type === "bool"){ el = h("input", {type:"checkbox"}); el.checked = !!v[f.k]; }
+    else el = h("input", {class:"sel", type: f.type === "date" ? "date" : "text", inputmode: f.type === "num" || f.type === "int" ? "decimal" : null, value: v[f.k] == null ? "" : String(v[f.k]), placeholder: f.ph || "", autocomplete:"off",
+      style: f.type === "num" || f.type === "int" || f.type === "date" ? {direction:"ltr", "text-align":"left"} : null});
+    inputs[f.k] = el;
+    grid.append(h("label", {class: f.type === "bool" ? "nd-bool" : null}, h("span", null, f.label), el));
+  });
+  const msg = h("span", {class:"smsg"}), save = h("button", {class:"act", type:"button"}, row ? "حفظ" : "ضيف");
+  save.onclick = async () => {
+    const rec = Object.assign({}, extra || {});
+    for (const f of fields){
+      const el = inputs[f.k];
+      if (f.type === "bool"){ rec[f.k] = el.checked; continue; }
+      let x = String(el.value || "").trim().replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/,/g, "");
+      if (f.type === "num" || f.type === "int"){
+        if (x === ""){ if (f.req){ msg.textContent = "اكتب " + f.label + "."; return; } rec[f.k] = null; continue; }
+        if (!(+x >= 0) || (f.type === "int" && !Number.isInteger(+x))){ msg.textContent = f.label + " لازم يكون رقم."; return; }
+        rec[f.k] = +x;
+      } else {
+        if (!x && f.req){ msg.textContent = "اكتب " + f.label + "."; return; }
+        rec[f.k] = x || null;
+      }
+    }
+    save.disabled = true; msg.textContent = "بيحفظ…";
+    try { const r = row ? await sb.from(table).update(rec).eq("id", row.id) : await sb.from(table).insert(rec); if (r.error) throw r.error;
+      ND.form = null; await loadND(true); }
+    catch { msg.textContent = "مقدرناش نحفظ. اتأكد من القيم وجرّب تاني."; save.disabled = false; }
+  };
+  const del = row ? h("button", {class:"ghost", type:"button", onclick: async () => {
+    if (!confirm("تمسح السطر ده؟")) return;
+    try { const r = await sb.from(table).delete().eq("id", row.id); if (r.error) throw r.error; ND.form = null; await loadND(true); } catch { msg.textContent = "مقدرناش نمسح."; } }}, "امسح") : null;
+  box.append(grid, h("div", {class:"pfoot"}, save, h("button", {class:"ghost", type:"button", onclick: () => { ND.form = null; renderND(); }}, "إلغاء"), del, msg));
+  return box;
+}
+const ndOpen = (key) => ND.form === key;
+const ndToggle = (key) => { ND.form = ND.form === key ? null : key; renderND(); };
+// a table that scrolls sideways on phones; each row opens its edit form under the table
+function ndTable(cols, rows, keyOf, formFor){
+  const t = h("table", {class:"nd-t"}, h("thead", null, h("tr", null, cols.map((c) => h("th", null, c[0])))),
+    h("tbody", null, rows.map((r) => h("tr", {class: ndOpen(keyOf(r)) ? "on" : null, tabindex: formFor ? "0" : null, onclick: formFor ? () => ndToggle(keyOf(r)) : null,
+      onkeydown: formFor ? (e) => { if (e.key === "Enter") ndToggle(keyOf(r)); } : null}, cols.map((c) => h("td", {class: c[2] || null}, c[1](r)))))));
+  const open = formFor && rows.find((r) => ndOpen(keyOf(r)));
+  return [h("div", {class:"tw"}, t), open ? formFor(open) : null];
+}
+function ndSection(title, note, addKey, addForm, body, emptyText, count){
+  return h("section", {class:"card glass nd-sec"},
+    h("div", {class:"ch"}, h("div", {style:{"min-width":"0"}}, h("h3", null, title), note ? h("p", {style:{"white-space":"normal"}}, note) : null),
+      addForm ? h("button", {class:"ghost", type:"button", onclick: () => ndToggle(addKey)}, ndOpen(addKey) ? "إلغاء" : "+ ضيف") : null),
+    ndOpen(addKey) ? addForm() : null,
+    count ? body : h("p", {class:"note"}, emptyText));
+}
+function renderND(sp){
+  sp = sp || SPACES.find((x) => x.id === "nd");
+  const box = $("#s-space");
+  const head = h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, "نايل دراجون"), h("p", {class:"nd-lead"}, "Nile Dragon · الاستيراد من الصين لمصر"))),
+    h("div", {class:"pacts"}, h("button", {class:"act", type:"button", onclick: () => { ND.d = null; renderND(); loadND(true); }}, "حدّث")));
+  if (!ND.d){
+    box.replaceChildren(head, ND.err === "setup" ? stateCard("server", "الشاشة دي محتاجة تحديث 109 في قاعدة البيانات لسه ماتعملش.") : ND.err ? stateCard("reload", "مفيش اتصال دلوقتي. دوس «حدّث».") : skeletons());
+    if (!ND.err) loadND();
+    return;
+  }
+  const d = ND.d, c = ndCalc(d), n = (x) => fmtN.format(x);
+  const supOpts = [["","—"], ...d.suppliers.map((x) => [x.id, x.name])], ordOpts = [["","—"], ...d.orders.map((o) => [o.id, o.code])];
+  const ordCode = Object.fromEntries(d.orders.map((o) => [o.id, o.code]));
+  const cur = [["USD","دولار"],["CNY","يوان"],["EGP","جنيه"]];
+  const lead = h("p", {class:"nd-line"}, "عندك ", h("b", null, n(c.open)), " طلبية مفتوحة فيها ", h("b", null, n(c.pieces)), " قطعة، لسه ما وصلش منها ", h("b", null, n(c.remaining)), ".");
+  const goods = h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, "البضاعة"),
+    h("div", {class:"kpis"}, kpi("طلبيات مفتوحة", n(c.open), null, ""), kpi("قطع مطلوبة", n(c.pieces), null, ""), kpi("وصل", n(c.received), null, ""), kpi("لسه ما وصلش", n(c.remaining), null, "")));
+  const money = h("section", {class:"brief glass"}, h("div", {class:"eyebrow"}, "الفلوس، بالجنيه"),
+    h("div", {class:"kpis nd-money"}, kpi("فلوس دخلت", exact(c.inE), null, "من عملاء الشحن"), kpi("فلوس خرجت", exact(c.outE), null, "للموردين والشحن"),
+      kpi("الرصيد", exact(c.balance), null, "دخل ناقص خرج"), kpi("باقي للموردين", c.owed == null ? "مستني الأسعار" : exact(c.owed), null, c.owed == null ? "لسه مفيش أسعار أو سعر صرف" : "تمن البضاعة ناقص المدفوع"),
+      kpi("مصاريف الشحن", exact(c.shipping), null, "نولون وجمارك وغيره")),
+    c.noRate ? h("p", {class:"m-sub warn", style:{"margin-top":"8px"}}, n(c.noRate) + " سطر من غير سعر صرف ومش داخلين في الإجمالي") : null);
+  const orderFields = [{k:"code", label:"رقم الطلبية", req:1, ph:"ND-002"}, {k:"supplier_id", label:"المورد", type:"select", options: supOpts}, {k:"opened", label:"اتفتحت يوم", type:"date"},
+    {k:"status", label:"الحالة", type:"select", options: ND_ORDER_ST.map((x) => [x, x])}, {k:"currency", label:"العملة", type:"select", options: [["","—"], ...cur]}, {k:"rate_to_egp", label:"سعر الصرف للجنيه", type:"num"}, {k:"note", label:"ملاحظة"}];
+  const ordersSec = ndSection("الطلبيات", "كل طلبية من مورد: اتطلب كام، وصل كام، ودفعنا كام. التكلفة الواصلة = تمن البضاعة + الشحن والجمارك.", "add:order",
+    () => ndForm("nd_orders", null, orderFields, {status:"مستني الأسعار", opened: new Date().toLocaleDateString("en-CA")}),
+    ndTable([["رقم", (x) => x.o.code], ["المورد", (x) => x.supplier], ["الحالة", (x) => x.o.status], ["مطلوب", (x) => n(x.pieces), "n"], ["وصل", (x) => n(x.received), "n"], ["باقي", (x) => n(x.remaining), "n"],
+      ["مدفوع", (x) => exact(x.paid), "n"], ["شحن", (x) => exact(x.shipping), "n"], ["تكلفة واصلة", (x) => x.landed == null ? "مستني الأسعار" : exact(x.landed), "n"], ["للقطعة", (x) => x.perPiece == null ? "—" : exact(x.perPiece), "n"]],
+      c.orders, (x) => "order:" + x.o.id, (x) => ndForm("nd_orders", x.o, orderFields)), "لسه مفيش طلبيات.", c.orders.length);
+  const itemFields = [{k:"item", label:"الصنف", req:1}, {k:"ordered", label:"مطلوب", type:"int", req:1}, {k:"received", label:"وصل", type:"int"}, {k:"unit_price", label:"سعر القطعة (بعملة الطلبية)", type:"num"}, {k:"sent_to_supplier", label:"الكمية اتبعتت للمورد", type:"bool"}];
+  const itemSecs = c.orders.map((x) => ndSection("أصناف طلبية " + x.o.code, [x.supplier, x.o.currency ? "الأسعار بالـ" + ({USD:"دولار", CNY:"يوان", EGP:"جنيه"}[x.o.currency]) : "", x.o.note].filter(Boolean).join(" · "), "add:item:" + x.o.id,
+    () => ndForm("nd_order_items", null, itemFields, {order_id: x.o.id, received: 0}),
+    ndTable([["الصنف", (i) => i.item], ["مطلوب", (i) => n(i.ordered), "n"], ["وصل", (i) => n(i.received), "n"], ["باقي", (i) => n(i.ordered - i.received), "n"],
+      ["سعر القطعة", (i) => nz(i.unit_price) ? exact(i.unit_price) : "مستني السعر", "n"], ["الكمية للمورد", (i) => i.sent_to_supplier ? "✓ اتبعتت" : "لسه"]],
+      x.its, (i) => "item:" + i.id, (i) => ndForm("nd_order_items", i, itemFields)), "لسه مفيش أصناف.", x.its.length));
+  const payFields = [{k:"paid_on", label:"التاريخ", type:"date"}, {k:"direction", label:"نوع", type:"select", options: [["خرج","خرج (دفعنا)"],["دخل","دخل (اتدفعلنا)"]]}, {k:"party", label:"لمين / من مين", req:1},
+    {k:"order_id", label:"الطلبية", type:"select", options: ordOpts}, {k:"amount", label:"المبلغ", type:"num", req:1}, {k:"currency", label:"العملة", type:"select", options: cur}, {k:"rate_to_egp", label:"سعر الصرف (فاضي للجنيه)", type:"num"}, {k:"note", label:"ملاحظة"}];
+  const paySec = ndSection("المدفوعات", "كل فلوس دخلت أو خرجت: لمين، كام، بأي عملة، وكام بالجنيه.", "add:pay",
+    () => ndForm("nd_payments", null, payFields, {direction:"خرج", currency:"USD", paid_on: new Date().toLocaleDateString("en-CA")}),
+    ndTable([["التاريخ", (p) => p.paid_on || ""], ["لمين / من مين", (p) => p.party], ["نوع", (p) => p.direction], ["طلبية", (p) => ordCode[p.order_id] || "—"], ["المبلغ", (p) => exact(p.amount) + " " + (CUR[p.currency] || p.currency), "n"], ["بالجنيه", (p) => nz(p.amount_egp) ? exact(p.amount_egp) : "مستني سعر الصرف", "n"]],
+      d.payments, (p) => "pay:" + p.id, (p) => ndForm("nd_payments", p, payFields)), "لسه مفيش ولا دفعة متسجلة. أول ما تدفع لمورد أو لآيا، دوس «+ ضيف».", d.payments.length);
+  const shipFields = [{k:"shipment", label:"اسم الشحنة", req:1}, {k:"order_id", label:"الطلبية", type:"select", options: ordOpts}, {k:"carrier", label:"الشاحن"}, {k:"route", label:"الخط", ph:"جوي FedEx / بحري…"},
+    {k:"weight_kg", label:"الوزن كجم", type:"num"}, {k:"price_per_kg", label:"سعر الكيلو", type:"num"}, {k:"currency", label:"عملة النولون", type:"select", options: cur}, {k:"rate_to_egp", label:"سعر الصرف", type:"num"},
+    {k:"customs_egp", label:"جمارك بالجنيه", type:"num"}, {k:"other_egp", label:"مصاريف تانية بالجنيه", type:"num"}, {k:"status", label:"الحالة", type:"select", options: ["لسه","في الطريق","في الجمارك","وصلت"].map((x) => [x, x])}];
+  const shipSec = ndSection("الشحنات", "لكل شحنة: الخط، الوزن، سعر الكيلو، الجمارك، والإجمالي بالجنيه.", "add:ship",
+    () => ndForm("nd_shipments", null, shipFields, {currency:"USD", status:"لسه"}),
+    ndTable([["شحنة", (x) => x.shipment], ["طلبية", (x) => ordCode[x.order_id] || "—"], ["الخط", (x) => [x.carrier, x.route].filter(Boolean).join(" · ") || "—"], ["وزن كجم", (x) => nz(x.weight_kg) ? exact(x.weight_kg) : "—", "n"],
+      ["سعر الكيلو", (x) => nz(x.price_per_kg) ? exact(x.price_per_kg) + " " + (CUR[x.currency] || x.currency) : "—", "n"], ["جمارك", (x) => nz(x.customs_egp) ? exact(x.customs_egp) : "—", "n"], ["الإجمالي", (x) => nz(x.total_egp) ? exact(x.total_egp) : "مستني سعر الصرف", "n"], ["الحالة", (x) => x.status]],
+      d.shipments, (x) => "ship:" + x.id, (x) => ndForm("nd_shipments", x, shipFields)), "لسه مفيش شحنة. المعروف من بني: مفيش بحري لمصر، وفيدكس جوي من 5 لـ 8 أيام.", d.shipments.length);
+  const supFields = [{k:"name", label:"الاسم", req:1}, {k:"role", label:"الدور", type:"select", options: [["بضاعة","بضاعة"],["شحن","شحن"]]}, {k:"products", label:"بيورّد"}, {k:"wechat_id", label:"WeChat"}, {k:"notes", label:"ملاحظات"}];
+  const supSec = ndSection("الموردين", "", "add:sup", () => ndForm("nd_suppliers", null, supFields, {role:"بضاعة"}),
+    ndTable([["الاسم", (x) => x.name], ["الدور", (x) => x.role], ["بيورّد", (x) => x.products || "—"], ["ملاحظات", (x) => x.notes || ""]], d.suppliers, (x) => "sup:" + x.id, (x) => ndForm("nd_suppliers", x, supFields)), "لسه مفيش موردين.", d.suppliers.length);
+  const cliFields = [{k:"client", label:"العميل", req:1}, {k:"goods", label:"البضاعة"}, {k:"weight_kg", label:"الوزن كجم", type:"num"}, {k:"charge_egp", label:"عليه بالجنيه", type:"num"}, {k:"paid_egp", label:"دفع بالجنيه", type:"num"},
+    {k:"status", label:"الحالة", type:"select", options: ["لسه","في الطريق","وصلت","اتسلّمت"].map((x) => [x, x])}];
+  const cliSec = ndSection("عملاء الشحن", "الناس اللي بنشحنلهم بضاعتهم: شحنوا إيه، وعليهم كام، ودفعوا كام.", "add:cli", () => ndForm("nd_clients", null, cliFields, {status:"لسه"}),
+    ndTable([["العميل", (x) => x.client], ["البضاعة", (x) => x.goods || "—"], ["وزن كجم", (x) => nz(x.weight_kg) ? exact(x.weight_kg) : "—", "n"], ["عليه", (x) => nz(x.charge_egp) ? exact(x.charge_egp) : "—", "n"],
+      ["دفع", (x) => nz(x.paid_egp) ? exact(x.paid_egp) : "—", "n"], ["الحالة", (x) => x.status]], d.clients, (x) => "cli:" + x.id, (x) => ndForm("nd_clients", x, cliFields)), "لسه مفيش عملاء شحن متسجلين.", d.clients.length);
+  const y = box.parentElement ? box.scrollTop : 0;
+  box.replaceChildren(head, lead, goods, money, ordersSec, ...itemSecs, h("div", {class:"nd-two"}, paySec, shipSec), h("div", {class:"nd-two"}, supSec, cliSec));
+  box.scrollTop = y;
+}
 function renderSpaces(){
   const comps = companiesOf(visible());
   loadAccounts();
@@ -1138,6 +1320,7 @@ function renderSpaces(){
 function renderSpace(id){
   const sp = visible().find(s => s.id === id);
   if (!sp){ show("home", false); return; }
+  if (id === "nd"){ renderND(sp); return; }
   const rows = rowsOf(sp);
   $("#s-space").replaceChildren(...[
     h("div", {class:"phead"}, h("div", {class:"ph-id"}, logoEl(sp, "big"), h("div", {style:{"min-width":"0"}}, h("h1", null, sp.name), h("p", null, sp.desc)))),
@@ -1540,7 +1723,7 @@ let sb = null, who = "";
 try { sb = window.supabase.createClient("https://snrsfpprlynixotjipmo.supabase.co", "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds", {auth:{persistSession:true, autoRefreshToken:true}}); } catch {}
 const appEls = [$("#shell")];
 function lockUI(){ appEls.forEach(e => e.hidden = true); $("#s-links").hidden = true; $("#s-space").hidden = true; if ($("#viewer").classList.contains("on")) closeViewer(); }
-async function logout(){ ACC = null; kpiReset(); ACCT.d = null; ACCT.at = 0; ACCT.open.clear(); await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
+async function logout(){ ACC = null; ND.d = null; ND.form = null; kpiReset(); ACCT.d = null; ACCT.at = 0; ACCT.open.clear(); await aixOut(); aixState = null; teamTab = "app"; try { if (sb) await sb.auth.signOut(); } catch {} lockUI(); $("#s-home").replaceChildren(); $("#s-space").replaceChildren(); $("#g-login").hidden = false; }
 function nameOf(u){ const m = (u && u.user_metadata) || {}; const n = String(m.full_name || m.name || m.display_name || "").trim(); return n ? n.split(/\s+/)[0] : ""; }
 const nameKey = (u) => "cc.name." + (u && (u.id || u.email) || "");
 function savedName(u){ try { return localStorage.getItem(nameKey(u)) || ""; } catch { return ""; } }
