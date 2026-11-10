@@ -4,4 +4,5 @@ Disallow: /shahi/admin/
 Disallow: /tuya-suez/crm.html
 Disallow: /tuya-suez/inventory.html
 Disallow: /tuya-suez/installs.html
+Disallow: /doublet/
 Sitemap: https://jaguarsmart.com/sitemap.xml
