@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Double T Home — تطبيق البيت</title>
+<meta property="og:title" content="Double T Home — تطبيق البيت">
+<meta property="og:site_name" content="Double T">
+<meta property="og:description" content="البيت والكاميرات والأمان من موبايلك.">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1b18;--mut:#6f6a61;--gold:#a8824a;--ok:#2f9e63;--warn:#c9871f;--bad:#cf4a40;--glass:rgba(255,255,255,.5);--on:rgba(255,255,255,.92);--edge:rgba(255,255,255,.7)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Cairo,sans-serif;color:var(--ink);line-height:1.5;background:#e9e3d8}
+.app{max-width:440px;margin:0 auto;min-height:100vh;padding-bottom:110px;background:url(img/bg.jpg) center/cover fixed}
+.g{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--edge);box-shadow:0 8px 28px rgba(60,45,20,.10)}
+.demo{font-size:11px;text-align:center;padding:6px 12px;color:#4b463d;background:rgba(255,255,255,.5)}
+header{padding:20px 20px 0;display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:700;letter-spacing:.08em;font-size:13px}.brand span{color:var(--gold);font-size:18px}
+h1{font-size:30px;font-weight:700;padding:6px 20px 0}
+.sub{color:var(--mut);font-size:13.5px;padding:0 20px 12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 20px 4px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border-radius:22px;padding:7px 14px;font-size:12.5px;font-weight:600}
+h2{font-size:15px;font-weight:700;padding:20px 20px 10px;display:flex;justify-content:space-between}
+h2 small{font-size:12px;color:var(--gold);font-weight:600}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
+.tile{border-radius:24px;padding:14px;min-height:104px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:.2s;user-select:none;opacity:.86}
+.tile:active{transform:scale(.96)}
+.tile .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:rgba(0,0,0,.07);transition:.2s}
+.tile b{font-size:14px;display:block}.tile small{font-size:12px;color:var(--mut);font-weight:600}
+.tile.on{background:var(--on);opacity:1}
+.tile.on .ic{background:#f6c453}
+.tile.on.cool .ic{background:#8fd0ff}.tile.on.lock .ic{background:#9be3b4}.tile.on.sh .ic{background:#d9c3a0}
+.scenes{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
+.scene{border-radius:20px;padding:12px 14px;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:.2s}
+.scene.act{background:var(--ink);color:#fff}
+.card{border-radius:24px;margin:0 20px 12px;padding:16px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.t{font-weight:700;font-size:14.5px}.m{color:var(--mut);font-size:12.5px}
+.tag{font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;background:rgba(255,255,255,.75);white-space:nowrap}
+.tag.ok{color:var(--ok)}.tag.w{color:var(--warn)}.tag.b{color:var(--bad)}
+.cam{border-radius:24px;margin:0 20px 12px;overflow:hidden;position:relative;aspect-ratio:16/9;background-size:cover;background-position:center}
+.cam .top{position:absolute;top:10px;right:10px;left:10px;display:flex;justify-content:space-between}
+.cam .lbl{border-radius:14px;padding:3px 10px;font-size:12px;font-weight:700;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.live{color:var(--bad)}.live:before{content:"● "}
+.cam .ai{position:absolute;bottom:10px;right:10px;left:10px;border-radius:14px;padding:6px 12px;font-size:12px;font-weight:600;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.cams2{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 12px}.cams2 .cam{margin:0;border-radius:20px}
+.arm{border-radius:28px;margin:0 20px;padding:22px;text-align:center}
+.shield{width:92px;height:92px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:40px;background:rgba(47,158,99,.16);transition:.3s}
+.arm.off .shield{background:rgba(0,0,0,.07)}
+.arm h3{font-size:20px}.arm p{color:var(--mut);font-size:13px;margin-bottom:14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:rgba(255,255,255,.55);border-radius:18px;padding:5px}
+.seg button{font-family:inherit;font-weight:700;font-size:13px;border:0;border-radius:14px;padding:9px 4px;background:none;color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff}
+.log div{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:13px}
+.log div:last-child{border:0}.log time{color:var(--mut);font-size:12px;flex:none;width:52px}
+.ask{display:flex;gap:8px;margin-top:10px}
+.ask input{flex:1;font-family:inherit;font-size:14px;border-radius:16px;border:1px solid var(--edge);background:rgba(255,255,255,.7);padding:10px 14px}
+.ask button{font-family:inherit;font-weight:700;border:0;border-radius:16px;background:var(--ink);color:#fff;padding:0 16px;cursor:pointer}
+.qs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.qs span{font-size:12.5px;font-weight:600;border-radius:16px;padding:6px 12px;background:rgba(255,255,255,.7);cursor:pointer}
+.ans{margin-top:12px;font-size:14px;white-space:pre-line;min-height:22px}
+.page{display:none;animation:in .35s ease}.page.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:408px;border-radius:30px;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;background:rgba(255,255,255,.7)}
+nav button{font-family:inherit;background:none;border:0;color:var(--mut);padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;border-radius:24px}
+nav button.on{background:var(--ink);color:#fff}nav button b{display:block;font-size:17px;font-weight:400;line-height:1.2}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="demo">Double T Home · نسخة تجربة · الأجهزة والكاميرات هنا محاكاة، مش متوصلة ببيت حقيقي</div>
+<header><div class="brand"><span>T</span> DOUBLE T HOME</div><span class="tag ok" id="armtag">الأمان مفعّل</span></header>
+
+<div class="page on" id="p-home">
+  <h1>بيتي</h1>
+  <p class="sub" id="sum">3 أجهزة شغالة · البيت مقفول</p>
+  <div class="chips">
+    <div class="chip g">🌡️ جوه 24°</div><div class="chip g">💧 رطوبة 45%</div><div class="chip g">⚡ استهلاك النهارده طبيعي</div>
+  </div>
+  <h2>مشاهد</h2>
+  <div class="scenes">
+    <div class="scene g" onclick="scene(this,'home')">🏡 وصلت البيت</div>
+    <div class="scene g" onclick="scene(this,'out')">🚗 خارج</div>
+    <div class="scene g" onclick="scene(this,'movie')">🎬 سينما</div>
+    <div class="scene g" onclick="scene(this,'sleep')">🌙 نوم</div>
+  </div>
+  <h2>الريسبشن</h2>
+  <div class="tiles">
+    <div class="tile g on" data-d="l1" onclick="tg(this)"><div class="ic">💡</div><div><b>الإضاءة الرئيسية</b><small></small></div></div>
+    <div class="tile g" data-d="l2" onclick="tg(this)"><div class="ic">✨</div><div><b>إضاءة مخفية</b><small></small></div></div>
+    <div class="tile g cool on" data-d="ac" onclick="tg(this)"><div class="ic">❄️</div><div><b>التكييف</b><small></small></div></div>
+    <div class="tile g sh" data-d="cu" onclick="tg(this)"><div class="ic">🪟</div><div><b>الستاير</b><small></small></div></div>
+  </div>
+  <h2>المدخل والجنينة</h2>
+  <div class="tiles">
+    <div class="tile g lock on" data-d="lk" onclick="tg(this)"><div class="ic">🔒</div><div><b>باب البيت</b><small></small></div></div>
+    <div class="tile g" data-d="gt" onclick="tg(this)"><div class="ic">🚪</div><div><b>بوابة الجراج</b><small></small></div></div>
+    <div class="tile g" data-d="gd" onclick="tg(this)"><div class="ic">🌿</div><div><b>إضاءة الجنينة</b><small></small></div></div>
+    <div class="tile g" data-d="pl" onclick="tg(this)"><div class="ic">🏊</div><div><b>فلتر البيسين</b><small></small></div></div>
+  </div>
+</div>
+
+<div class="page" id="p-cam">
+  <h1>الكاميرات</h1>
+  <p class="sub">4 كاميرات · الـ AI بيقولك شاف إيه.</p>
+  <div class="cam" style="background-image:url(img/c1.jpg)"><div class="top"><span class="lbl">المدخل</span><span class="lbl live">مباشر</span></div><div class="ai">🧠 آخر حركة: مندوب توصيل عند الباب · 6:42 م</div></div>
+  <div class="cams2">
+    <div class="cam" style="background-image:url(img/c2.jpg)"><div class="top"><span class="lbl">البيسين</span></div></div>
+    <div class="cam" style="background-image:url(img/c3.jpg)"><div class="top"><span class="lbl">الواجهة</span></div></div>
+    <div class="cam" style="background-image:url(img/c4.jpg)"><div class="top"><span class="lbl">التراس</span></div></div>
+    <div class="cam g" style="display:grid;place-items:center;font-weight:700;color:var(--mut);font-size:13px">+ كاميرا</div>
+  </div>
+  <h2>اسأل الكاميرات</h2>
+  <div class="card g">
+    <p class="m">بدل ما تقلّب في ساعات تسجيل، اسأل بالكلام.</p>
+    <div class="qs"><span onclick="ask('مين جه النهارده؟')">مين جه النهارده؟</span><span onclick="ask('حد قرّب من البيسين؟')">حد قرّب من البيسين؟</span><span onclick="ask('العربية ركنت إمتى؟')">العربية ركنت إمتى؟</span></div>
+    <div class="ask"><input id="q" placeholder="اكتب سؤالك…"><button onclick="ask(document.getElementById('q').value)">اسأل</button></div>
+    <p class="ans" id="ans"></p>
+  </div>
+</div>
+
+<div class="page" id="p-sec">
+  <h1>الأمان</h1>
+  <p class="sub">حالة البيت في لمحة.</p>
+  <div class="arm g" id="arm">
+    <div class="shield" id="shield">🛡️</div>
+    <h3 id="armt">مفعّل · خارج البيت</h3>
+    <p id="armp">كل الحساسات والكاميرات بتراقب.</p>
+    <div class="seg"><button onclick="arm(this,0)">متوقف</button><button onclick="arm(this,1)">في البيت</button><button class="on" onclick="arm(this,2)">خارج</button></div>
+  </div>
+  <h2>الحساسات</h2>
+  <div class="card g"><div class="row"><span class="t">🚪 باب البيت</span><span class="tag ok">مقفول</span></div></div>
+  <div class="card g"><div class="row"><span class="t">🪟 شبابيك الدور الأرضي</span><span class="tag ok">مقفولة</span></div></div>
+  <div class="card g"><div class="row"><span class="t">🔥 حساس الدخان والغاز</span><span class="tag ok">سليم</span></div></div>
+  <div class="card g"><div class="row"><span class="t">💧 حساس تسريب المية</span><span class="tag ok">سليم</span></div></div>
+  <div class="card g"><div class="row"><span class="t">🏃 حساس حركة الجنينة</span><span class="tag w">حركة 6:42 م</span></div></div>
+  <h2>سجل النهارده</h2>
+  <div class="card g log">
+    <div><time>6:42 م</time><span>حركة عند المدخل · الـ AI: مندوب توصيل</span></div>
+    <div><time>4:10 م</time><span>الباب اتفتح بالبصمة · فرد من الأسرة</span></div>
+    <div><time>9:05 ص</time><span>وضع «خارج» اتفعّل أوتوماتيك</span></div>
+    <div><time>2:30 ص</time><span>قطة في الجنينة · من غير إنذار</span></div>
+  </div>
+</div>
+
+<div class="page" id="p-ai">
+  <h1>المساعد</h1>
+  <p class="sub">البيت بيفهمك وبيتصرف.</p>
+  <div class="card g"><div class="t">🧠 بيتعلم روتينك</div><p class="m">بيشغّل السخان قبل ما تصحى، وبيطفي التكييف لما البيت يفضى.</p></div>
+  <div class="card g"><div class="t">📸 كاميرات بتفهم</div><p class="m">بتفرّق بين مندوب، وضيف، وقطة. الإنذار للحاجة المهمة بس.</p></div>
+  <div class="card g"><div class="t">⚡ توفير كهربا</div><p class="m">تقرير أسبوعي باللي اتوفّر، واقتراحات تقلل الفاتورة.</p></div>
+  <div class="card g"><div class="t">🗣️ تحكم بالصوت وبالواتساب</div><p class="m">«اقفل البيت» برسالة أو بكلمة.</p></div>
+  <div class="card g"><div class="t">🏗️ بيتركّب مع التشطيب</div><p class="m">Double T بتأسّس السمارت هوم وإنت بتشطّب، فكل حاجة مخفية وجاهزة يوم الاستلام.</p></div>
+</div>
+
+<nav class="g">
+  <button class="on" onclick="go('home',this)"><b>⌂</b>البيت</button>
+  <button onclick="go('cam',this)"><b>◉</b>الكاميرات</button>
+  <button onclick="go('sec',this)"><b>⛨</b>الأمان</button>
+  <button onclick="go('ai',this)"><b>✦</b>المساعد</button>
+</nav>
+</div>
+<script>
+const L={l1:['شغالة · 80%','مطفية'],l2:['شغالة · دافي','مطفية'],ac:['شغال · 23°','مطفي'],cu:['مفتوحة','مقفولة'],lk:['مقفول','مفتوح'],gt:['مفتوحة','مقفولة'],gd:['شغالة','مطفية'],pl:['شغال','واقف']};
+function paint(){let n=0;document.querySelectorAll('.tile').forEach(t=>{const on=t.classList.contains('on');t.querySelector('small').textContent=L[t.dataset.d][on?0:1];if(on&&t.dataset.d!='lk')n++});
+ const lk=document.querySelector('[data-d=lk]').classList.contains('on');document.querySelector('[data-d=lk] .ic').textContent=lk?'🔒':'🔓';
+ document.getElementById('sum').textContent=n+' أجهزة شغالة · البيت '+(lk?'مقفول':'مفتوح')}
+function tg(t){t.classList.toggle('on');document.querySelectorAll('.scene').forEach(s=>s.classList.remove('act'));paint()}
+function set(d,on){document.querySelector('[data-d='+d+']').classList.toggle('on',on)}
+const S={home:{l1:1,l2:1,ac:1,cu:0,lk:0,gt:1,gd:1,pl:0},out:{l1:0,l2:0,ac:0,cu:0,lk:1,gt:0,gd:0,pl:0},movie:{l1:0,l2:1,ac:1,cu:0,lk:1,gt:0,gd:0,pl:0},sleep:{l1:0,l2:0,ac:1,cu:0,lk:1,gt:0,gd:1,pl:0}};
+function scene(el,k){document.querySelectorAll('.scene').forEach(s=>s.classList.remove('act'));el.classList.add('act');for(const d in S[k])set(d,!!S[k][d]);paint()}
+function go(p,b){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));document.getElementById('p-'+p).classList.add('on');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');window.scrollTo(0,0)}
+const A=[['مفعّل · خارج البيت','كل الحساسات والكاميرات بتراقب.','الأمان مفعّل','ok'],['مفعّل · في البيت','الأبواب والشبابيك بس، من غير حساسات الحركة.','الأمان مفعّل','ok'],['متوقف','الإنذار واقف. الكاميرات لسه بتسجّل.','الأمان متوقف','w']];
+function arm(b,m){b.parentNode.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');const a=A[m==2?0:m==1?1:2];
+ document.getElementById('armt').textContent=a[0];document.getElementById('armp').textContent=a[1];document.getElementById('arm').classList.toggle('off',m==0);document.getElementById('shield').textContent=m==0?'🔓':'🛡️';
+ const t=document.getElementById('armtag');t.textContent=a[2];t.className='tag '+a[3]}
+const Q={'مين جه النهارده؟':'3 زيارات النهارده:\n• 6:42 م مندوب توصيل عند المدخل\n• 4:10 م فرد من الأسرة دخل بالبصمة\n• 11:20 ص عامل الجنينة','حد قرّب من البيسين؟':'لأ، مفيش أي حركة عند البيسين من الصبح.','العربية ركنت إمتى؟':'العربية دخلت الجراج 4:08 م، والبوابة اتقفلت بعدها أوتوماتيك.'};
+function ask(q){if(!q)return;document.getElementById('ans').textContent='🧠 '+(Q[q]||'في النسخة الحقيقية المساعد بيدوّر في تسجيلات الكاميرات ويرد عليك. جرّب سؤال من الأسئلة الجاهزة فوق.')}
+paint();
+</script>
+</body>
+</html>
