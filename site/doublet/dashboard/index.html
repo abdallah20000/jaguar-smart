@@ -10,130 +10,156 @@
 <meta property="og:description" content="شغل الشركة كله على موبايلك.">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e0e0d;--card:#191917;--line:#2a2926;--txt:#f0ece4;--mut:#9a958a;--gold:#b89255;--ok:#4caf7a;--warn:#e0a03a;--bad:#d9584f}
+:root{--ink:#1d1b18;--mut:#6f6a61;--gold:#a8824a;--ok:#2f9e63;--warn:#c9871f;--bad:#cf4a40;--glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.78);--edge:rgba(255,255,255,.7)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Cairo,sans-serif;background:#050505;color:var(--txt);line-height:1.6}
-.app{max-width:440px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:84px;position:relative}
-.demo{background:#000;color:#aaa;font-size:11.5px;text-align:center;padding:6px 10px}
-header{padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center}
-.brand{font-weight:700;letter-spacing:.06em}.brand span{color:var(--gold)}
-.date{color:var(--mut);font-size:12px}
-h1{font-size:21px;padding:4px 18px 2px}
-.sub{color:var(--mut);font-size:13px;padding:0 18px 12px}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
-.kpi b{display:block;font-size:26px;line-height:1.2}
-.kpi small{color:var(--mut);font-size:12px}
-.kpi i{font-style:normal;font-size:11px;color:var(--ok)}
-.kpi i.w{color:var(--warn)}
-h2{font-size:15px;padding:22px 18px 10px;display:flex;justify-content:space-between;align-items:center}
-h2 small{color:var(--mut);font-weight:400;font-size:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:0 18px 10px;padding:14px}
+body{font-family:Cairo,sans-serif;color:var(--ink);line-height:1.55;background:#e9e3d8}
+.app{max-width:440px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:110px;background:url(img/bg.jpg) center/cover fixed}
+.g{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--edge);box-shadow:0 8px 28px rgba(60,45,20,.10)}
+.demo{font-size:11px;text-align:center;padding:6px 12px;color:#4b463d;background:rgba(255,255,255,.5)}
+header{padding:20px 20px 4px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:700;letter-spacing:.08em;font-size:13px}.brand span{color:var(--gold);font-size:18px}
+.me{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--gold)}
+h1{font-size:30px;font-weight:700;padding:6px 20px 0;letter-spacing:-.01em}
+.sub{color:var(--mut);font-size:13.5px;padding:0 20px 14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 20px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border-radius:22px;padding:7px 14px;font-size:12.5px;font-weight:600;display:flex;gap:6px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}.dot.w{background:var(--warn)}.dot.b{background:var(--bad)}.dot.g{background:var(--gold)}
+h2{font-size:15px;font-weight:700;padding:20px 20px 10px;display:flex;justify-content:space-between;align-items:center}
+h2 small{font-weight:600;font-size:12px;color:var(--gold)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
+.tile{border-radius:24px;padding:16px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s}
+.tile:active{transform:scale(.97)}
+.tile .ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:rgba(168,130,74,.16)}
+.tile.on{background:var(--glass2)}
+.tile b{font-size:28px;line-height:1.1;display:block}
+.tile small{color:var(--mut);font-size:12.5px;font-weight:600}
+.tile i{font-style:normal;font-size:11.5px;color:var(--ok);font-weight:600}.tile i.w{color:var(--warn)}
+.card{border-radius:24px;margin:0 20px 12px;padding:16px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.t{font-weight:600;font-size:14.5px}
-.m{color:var(--mut);font-size:12.5px}
-.tag{font-size:11px;border-radius:20px;padding:2px 10px;white-space:nowrap}
-.tag.ok{background:rgba(76,175,122,.15);color:var(--ok)}
-.tag.w{background:rgba(224,160,58,.15);color:var(--warn)}
-.tag.b{background:rgba(217,88,79,.15);color:var(--bad)}
-.tag.g{background:rgba(184,146,85,.15);color:var(--gold)}
-.bar{height:6px;background:#2a2926;border-radius:4px;margin-top:10px;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--gold)}
+.t{font-weight:700;font-size:14.5px}.m{color:var(--mut);font-size:12.5px}
+.tag{font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap;background:rgba(255,255,255,.7)}
+.tag.ok{color:var(--ok)}.tag.w{color:var(--warn)}.tag.b{color:var(--bad)}.tag.g{color:var(--gold)}
 .acts{display:flex;gap:8px;margin-top:12px}
-.acts button{flex:1;font-family:inherit;font-size:13.5px;font-weight:600;border-radius:12px;padding:9px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer}
-.acts button.y{background:var(--gold);border-color:var(--gold);color:#17120a}
-.done{color:var(--ok);font-size:13px;margin-top:10px}
-.who{display:flex;align-items:center;gap:10px}
-.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:#2a2926;color:var(--gold);flex:none}
-.av.ai{background:rgba(184,146,85,.18)}
-.page{display:none}.page.on{display:block}
-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:#131311;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}
-nav button{font-family:inherit;background:none;border:0;color:var(--mut);padding:12px 4px 14px;font-size:12.5px;cursor:pointer}
-nav button.on{color:var(--gold);font-weight:700}
-nav button b{display:block;font-size:18px;font-weight:400}
-.brief{white-space:pre-line;font-size:14px}
+.acts button{flex:1;font-family:inherit;font-size:13.5px;font-weight:700;border-radius:16px;padding:10px;border:1px solid var(--edge);background:rgba(255,255,255,.6);color:var(--ink);cursor:pointer}
+.acts button.y{background:var(--ink);border-color:var(--ink);color:#fff}
+.done{color:var(--ok);font-size:13px;font-weight:700;margin-top:10px}
+.proj{border-radius:24px;margin:0 20px 12px;overflow:hidden;padding:0}
+.proj .ph{height:120px;background-size:cover;background-position:center;position:relative}
+.proj .ph .tag{position:absolute;top:12px;right:12px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.proj .in{padding:14px 16px 16px}
+.bar{height:7px;background:rgba(0,0,0,.08);border-radius:5px;margin-top:10px;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#c9a66b,#8f6a35)}
+.pct{font-size:12px;font-weight:700;color:var(--gold)}
+.who{display:flex;align-items:center;gap:12px}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:rgba(255,255,255,.75);color:var(--gold);flex:none}
+.av.ai{background:var(--ink);color:#e7c88f}
+.funnel div{border-radius:14px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;font-weight:700;font-size:14px;background:rgba(255,255,255,.62)}
+.funnel div:nth-child(2){margin-inline:16px}.funnel div:nth-child(3){margin-inline:32px}.funnel div:nth-child(4){margin-inline:48px;background:var(--ink);color:#fff}
+.week{display:flex;align-items:flex-end;gap:8px;height:90px;margin-top:8px}
+.week div{flex:1;border-radius:8px 8px 4px 4px;background:rgba(168,130,74,.35);position:relative}
+.week div.on{background:linear-gradient(180deg,#c9a66b,#8f6a35)}
+.week span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--mut)}
+.brief{white-space:pre-line;font-size:13.5px}
+.page{display:none;animation:in .35s ease}.page.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:408px;border-radius:30px;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;background:rgba(255,255,255,.7)}
+nav button{font-family:inherit;background:none;border:0;color:var(--mut);padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;border-radius:24px}
+nav button.on{background:var(--ink);color:#fff}
+nav button b{display:block;font-size:17px;font-weight:400;line-height:1.2}
 </style>
 </head>
 <body>
 <div class="app">
 <div class="demo">Double T · نسخة تجربة · كل الأرقام والأسماء هنا أمثلة توضيحية، مش بيانات حقيقية</div>
-<header><div class="brand"><span>T</span> DOUBLE T</div><div class="date">لوحة المالك</div></header>
+<header><div class="brand"><span>T</span> DOUBLE T</div><div class="me g">T</div></header>
 
 <div class="page on" id="p-home">
-  <h1>صباح الخير 👋</h1>
-  <p class="sub">ده شغل الشركة النهارده في دقيقتين.</p>
-  <div class="kpis">
-    <div class="kpi"><b>12</b><small>استفسار جديد</small><br><i>المساعد رد عليهم كلهم</i></div>
-    <div class="kpi"><b>4</b><small>معاينات اتحجزت</small><br><i>بكره وبعده</i></div>
-    <div class="kpi"><b>3</b><small>عروض مستنية رد العميل</small><br><i class="w">واحد متأخر 5 أيام</i></div>
-    <div class="kpi"><b>5</b><small>طلبات من الشوب</small><br><i>2 اتسلموا</i></div>
+  <h1>صباح الخير</h1>
+  <p class="sub">شغل الشركة النهارده في دقيقتين.</p>
+  <div class="chips">
+    <div class="chip g"><span class="dot"></span>المساعد شغال</div>
+    <div class="chip g"><span class="dot w"></span>مشروع متأخر</div>
+    <div class="chip g"><span class="dot g"></span>3 موافقات</div>
+    <div class="chip g"><span class="dot b"></span>تقرير ناقص</div>
+  </div>
+  <h2>النهارده</h2>
+  <div class="tiles">
+    <div class="tile g on"><div class="ic">💬</div><div><b>12</b><small>استفسار جديد</small><br><i>اترد عليهم كلهم</i></div></div>
+    <div class="tile g"><div class="ic">📅</div><div><b>4</b><small>معاينات اتحجزت</small><br><i>بكره وبعده</i></div></div>
+    <div class="tile g"><div class="ic">📄</div><div><b>3</b><small>عروض مستنية رد</small><br><i class="w">واحد متأخر 5 أيام</i></div></div>
+    <div class="tile g on"><div class="ic">🛍️</div><div><b>5</b><small>طلبات الشوب</small><br><i>2 اتسلموا</i></div></div>
   </div>
 
   <h2>مستني موافقتك <small id="cnt">3</small></h2>
-  <div class="card" data-ap>
+  <div class="card g" data-ap>
     <div class="row"><span class="t">عرض سعر · تشطيب فيلا 400 م</span><span class="tag g">مبيعات</span></div>
     <p class="m">المساعد جهّز العرض بعد المعاينة، والمهندس راجعه.</p>
     <div class="acts"><button class="y" onclick="ap(this,'اتبعت للعميل ✓')">وافق وابعت</button><button onclick="ap(this,'رجع للتعديل')">عدّل</button></div>
   </div>
-  <div class="card" data-ap>
-    <div class="row"><span class="t">رسالة متابعة لعميل سكت 5 أيام</span><span class="tag w">متابعة</span></div>
+  <div class="card g" data-ap>
+    <div class="row"><span class="t">متابعة عميل سكت 5 أيام</span><span class="tag w">متابعة</span></div>
     <p class="m">«مساء الخير يا فندم، حابين نطمن لو فيه أي استفسار على العرض…»</p>
     <div class="acts"><button class="y" onclick="ap(this,'اتبعتت ✓')">ابعت</button><button onclick="ap(this,'اتلغت')">الغي</button></div>
   </div>
-  <div class="card" data-ap>
+  <div class="card g" data-ap>
     <div class="row"><span class="t">ريل قبل/بعد · فيلا البيسين</span><span class="tag g">محتوى</span></div>
     <p class="m">الكابشن والهاشتاجات جاهزين. النشر 7 بالليل.</p>
     <div class="acts"><button class="y" onclick="ap(this,'اتجدول 7 م ✓')">انشر</button><button onclick="ap(this,'اتأجل')">أجّل</button></div>
   </div>
 
   <h2>تقرير الصبح</h2>
-  <div class="card brief">• 12 استفسار: 7 تشطيب، 3 سمارت هوم، 2 برجولات
+  <div class="card g brief">• 12 استفسار: 7 تشطيب، 3 سمارت هوم، 2 برجولات
 • أكتر مصدر: ريل «قبل وبعد» على إنستجرام
-• مشروع واحد متأخر عن الجدول (شوف المشاريع)
+• مشروع واحد متأخر عن الجدول
 • دفعة مستحقة من عميل بكره</div>
 </div>
 
 <div class="page" id="p-proj">
   <h1>المشاريع</h1>
   <p class="sub">كل مشروع واقف فين، من غير ما تكلّم حد.</p>
-  <div class="card"><div class="row"><span class="t">فيلا · الشيخ زايد</span><span class="tag ok">ماشي في ميعاده</span></div><p class="m">التشطيب · آخر تحديث من الموقع: النهارده 11 ص، ومعاه 6 صور</p><div class="bar"><span style="width:62%"></span></div></div>
-  <div class="card"><div class="row"><span class="t">فيلا · الساحل</span><span class="tag w">متأخر 4 أيام</span></div><p class="m">السمارت هوم · مستنيين توريد شاشات. المشتريات متابعة.</p><div class="bar"><span style="width:81%"></span></div></div>
-  <div class="card"><div class="row"><span class="t">دوبلكس · التجمع</span><span class="tag ok">ماشي في ميعاده</span></div><p class="m">الهيكل · صب السقف الأسبوع الجاي</p><div class="bar"><span style="width:34%"></span></div></div>
-  <div class="card"><div class="row"><span class="t">برجولة وآوتدور · أكتوبر</span><span class="tag g">تسليم بكره</span></div><p class="m">فاضل التنضيف والتصوير</p><div class="bar"><span style="width:96%"></span></div></div>
+  <div class="proj g"><div class="ph" style="background-image:url(img/p1.jpg)"><span class="tag ok">في ميعاده</span></div><div class="in"><div class="row"><span class="t">فيلا · الشيخ زايد</span><span class="pct">62%</span></div><p class="m">التشطيب · تحديث الموقع النهارده 11 ص، ومعاه 6 صور</p><div class="bar"><span style="width:62%"></span></div></div></div>
+  <div class="proj g"><div class="ph" style="background-image:url(img/p2.jpg)"><span class="tag w">متأخر 4 أيام</span></div><div class="in"><div class="row"><span class="t">فيلا · الساحل</span><span class="pct">81%</span></div><p class="m">السمارت هوم · مستنيين توريد شاشات</p><div class="bar"><span style="width:81%"></span></div></div></div>
+  <div class="proj g"><div class="ph" style="background-image:url(img/p3.jpg)"><span class="tag ok">في ميعاده</span></div><div class="in"><div class="row"><span class="t">دوبلكس · التجمع</span><span class="pct">34%</span></div><p class="m">الهيكل · صب السقف الأسبوع الجاي</p><div class="bar"><span style="width:34%"></span></div></div></div>
+  <div class="proj g"><div class="ph" style="background-image:url(img/p4.jpg)"><span class="tag g">تسليم بكره</span></div><div class="in"><div class="row"><span class="t">برجولة وآوتدور · أكتوبر</span><span class="pct">96%</span></div><p class="m">فاضل التنضيف والتصوير</p><div class="bar"><span style="width:96%"></span></div></div></div>
 </div>
 
 <div class="page" id="p-team">
   <h1>الفريق</h1>
-  <p class="sub">مين شغال على إيه دلوقتي: الناس والموظفين الـ AI.</p>
-  <h2>موظفين AI</h2>
-  <div class="card"><div class="who"><div class="av ai">AI</div><div><div class="t">مساعد الواتساب والإنستجرام</div><div class="m">رد على 12 عميل النهارده · حجز 4 معاينات</div></div></div></div>
-  <div class="card"><div class="who"><div class="av ai">AI</div><div><div class="t">متابع العروض</div><div class="m">3 عروض مفتوحة · جهّز رسالة متابعة واحدة</div></div></div></div>
-  <div class="card"><div class="who"><div class="av ai">AI</div><div><div class="t">كاتب المحتوى</div><div class="m">ريل واحد جاهز للموافقة · خطة الأسبوع مكتوبة</div></div></div></div>
-  <div class="card"><div class="who"><div class="av ai">AI</div><div><div class="t">كاتب تقرير الصبح</div><div class="m">التقرير وصل 9:00 ص</div></div></div></div>
+  <p class="sub">مين شغال على إيه دلوقتي.</p>
+  <h2>موظفين AI <small>شغالين 24 ساعة</small></h2>
+  <div class="card g"><div class="who"><div class="av ai">AI</div><div><div class="t">مساعد الواتساب والإنستجرام</div><div class="m">رد على 12 عميل · حجز 4 معاينات</div></div></div></div>
+  <div class="card g"><div class="who"><div class="av ai">AI</div><div><div class="t">متابع العروض</div><div class="m">3 عروض مفتوحة · جهّز رسالة متابعة</div></div></div></div>
+  <div class="card g"><div class="who"><div class="av ai">AI</div><div><div class="t">كاتب المحتوى</div><div class="m">ريل جاهز للموافقة · خطة الأسبوع مكتوبة</div></div></div></div>
+  <div class="card g"><div class="who"><div class="av ai">AI</div><div><div class="t">كاتب تقرير الصبح</div><div class="m">التقرير وصل 9:00 ص</div></div></div></div>
   <h2>الفريق</h2>
-  <div class="card"><div class="row"><div class="who"><div class="av">م</div><div><div class="t">مهندس الموقع · زايد</div><div class="m">بعت تقرير اليوم و6 صور</div></div></div><span class="tag ok">تم</span></div></div>
-  <div class="card"><div class="row"><div class="who"><div class="av">م</div><div><div class="t">مهندس الموقع · الساحل</div><div class="m">لسه ما بعتش تقرير النهارده</div></div></div><span class="tag b">ناقص</span></div></div>
-  <div class="card"><div class="row"><div class="who"><div class="av">س</div><div><div class="t">المبيعات</div><div class="m">معاينتين بكره · عرض واحد تحت التجهيز</div></div></div><span class="tag g">شغال</span></div></div>
-  <div class="card"><div class="row"><div class="who"><div class="av">ش</div><div><div class="t">المشتريات</div><div class="m">متابعة توريد الشاشات</div></div></div><span class="tag w">مستني مورد</span></div></div>
+  <div class="card g"><div class="row"><div class="who"><div class="av">م</div><div><div class="t">مهندس الموقع · زايد</div><div class="m">بعت تقرير اليوم و6 صور</div></div></div><span class="tag ok">تم</span></div></div>
+  <div class="card g"><div class="row"><div class="who"><div class="av">م</div><div><div class="t">مهندس الموقع · الساحل</div><div class="m">لسه ما بعتش تقرير النهارده</div></div></div><span class="tag b">ناقص</span></div></div>
+  <div class="card g"><div class="row"><div class="who"><div class="av">س</div><div><div class="t">المبيعات</div><div class="m">معاينتين بكره · عرض تحت التجهيز</div></div></div><span class="tag g">شغال</span></div></div>
+  <div class="card g"><div class="row"><div class="who"><div class="av">ش</div><div><div class="t">المشتريات</div><div class="m">متابعة توريد الشاشات</div></div></div><span class="tag w">مستني مورد</span></div></div>
 </div>
 
 <div class="page" id="p-sales">
   <h1>العملاء</h1>
   <p class="sub">كل استفسار جه منين ووصل لفين.</p>
-  <div class="kpis">
-    <div class="kpi"><b>12</b><small>استفسار</small></div>
-    <div class="kpi"><b>4</b><small>معاينة</small></div>
-    <div class="kpi"><b>3</b><small>عرض سعر</small></div>
-    <div class="kpi"><b>1</b><small>عقد</small></div>
+  <div class="card g funnel">
+    <div><span>استفسار</span><span>12</span></div>
+    <div><span>معاينة</span><span>4</span></div>
+    <div><span>عرض سعر</span><span>3</span></div>
+    <div><span>عقد</span><span>1</span></div>
   </div>
+  <h2>استفسارات الأسبوع</h2>
+  <div class="card g" style="padding-bottom:34px"><div class="week">
+    <div style="height:40%"><span>س</span></div><div style="height:55%"><span>ح</span></div><div style="height:35%"><span>ن</span></div><div style="height:70%"><span>ث</span></div><div style="height:60%"><span>ر</span></div><div style="height:85%"><span>خ</span></div><div class="on" style="height:100%"><span>ج</span></div>
+  </div></div>
   <h2>آخر الاستفسارات</h2>
-  <div class="card"><div class="row"><span class="t">تشطيب فيلا 400 م · زايد</span><span class="tag ok">معاينة بكره</span></div><p class="m">من إنستجرام · المساعد رد في أقل من دقيقة</p></div>
-  <div class="card"><div class="row"><span class="t">سمارت هوم · شقة مسكونة</span><span class="tag g">عرض بيتجهز</span></div><p class="m">من الموقع</p></div>
-  <div class="card"><div class="row"><span class="t">مراية Arch · الشوب</span><span class="tag ok">اتباعت</span></div><p class="m">من واتساب</p></div>
-  <div class="card"><div class="row"><span class="t">بناء فيلا · أرض في الساحل</span><span class="tag w">مستني رد العميل</span></div><p class="m">من إنستجرام · متابعة أوتوماتيك بعد 3 أيام</p></div>
+  <div class="card g"><div class="row"><span class="t">تشطيب فيلا 400 م · زايد</span><span class="tag ok">معاينة بكره</span></div><p class="m">من إنستجرام · اترد عليه في أقل من دقيقة</p></div>
+  <div class="card g"><div class="row"><span class="t">سمارت هوم · شقة مسكونة</span><span class="tag g">عرض بيتجهز</span></div><p class="m">من الموقع</p></div>
+  <div class="card g"><div class="row"><span class="t">مراية Arch · الشوب</span><span class="tag ok">اتباعت</span></div><p class="m">من واتساب</p></div>
+  <div class="card g"><div class="row"><span class="t">بناء فيلا · أرض في الساحل</span><span class="tag w">مستني رد العميل</span></div><p class="m">من إنستجرام · متابعة أوتوماتيك بعد 3 أيام</p></div>
 </div>
 
-<nav>
+<nav class="g">
   <button class="on" onclick="go('home',this)"><b>⌂</b>النهارده</button>
   <button onclick="go('proj',this)"><b>▦</b>المشاريع</button>
   <button onclick="go('team',this)"><b>☺</b>الفريق</button>
