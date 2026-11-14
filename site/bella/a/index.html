@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bella Charity Foundation — Draft A (Garden)</title>
+<meta name="description" content="Bella Charity Foundation — a personal initiative visiting children's homes to play, celebrate and bring gifts.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>:root{--bg:#fdfaf1;--bg2:#f3f5e6;--ink:#1f2a1f;--muted:#5f6b5c;--brand:#2f6b3a;--brand2:#1d4626;--accent:#e8b324;--card:#fff;--line:#e3e8d2;--onbrand:#fff;--radius:26px;--fh:'Fraunces',serif;--fb:'Nunito Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;width:100%;height:100%;object-fit:cover}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+h1,h2,h3,.serif{font-family:var(--fh);line-height:1.12;letter-spacing:-.01em}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;font-weight:700;font-size:15px;transition:.2s}
+.btn-p{background:var(--brand);color:var(--onbrand)}.btn-p:hover{background:var(--brand2)}
+.btn-o{border:1.5px solid currentColor}.btn-o:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:70px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.logo{width:42px;height:42px;flex:none}
+.nav ul{display:flex;gap:28px;list-style:none;font-weight:600;font-size:15px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+@media(max-width:860px){.nav ul{display:none}.nav .btn{padding:10px 16px;font-size:14px}}
+section{padding:96px 0}
+.kicker{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin-bottom:14px}
+.sec-head{max-width:640px;margin:0 auto 52px;text-align:center}
+.sec-head h2{font-size:clamp(30px,4vw,46px)}.sec-head p{color:var(--muted);margin-top:12px}
+.note-pill{display:inline-flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--line);padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-grid .img{aspect-ratio:4/5;border-radius:var(--radius);overflow:hidden}
+.about-grid h2{font-size:clamp(30px,4vw,46px);margin-bottom:18px}
+.about-grid p{color:var(--muted);margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s}
+.card:hover{transform:translateY(-6px)}
+.card .img{aspect-ratio:4/3}
+.card .body{padding:24px}
+.card h3{font-size:24px;margin-bottom:6px}.card p{color:var(--muted);font-size:15.5px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gallery a{aspect-ratio:1/1;overflow:hidden;border-radius:calc(var(--radius)/3);position:relative}
+.gallery img{transition:transform .5s}.gallery a:hover img{transform:scale(1.06)}
+.band{background:var(--brand);color:var(--onbrand);text-align:center;padding:90px 0}
+.band blockquote{font-family:var(--fh);font-size:clamp(26px,3.6vw,42px);max-width:880px;margin:0 auto;line-height:1.3}
+.band cite{display:block;margin-top:18px;font-style:normal;opacity:.8;font-size:15px;letter-spacing:.1em;text-transform:uppercase}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step{padding:30px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line)}
+.step b{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--brand);color:var(--onbrand);margin-bottom:14px}
+.step h3{font-size:22px;margin-bottom:6px}.step p{color:var(--muted);font-size:15.5px}
+.contact{border-radius:calc(var(--radius)*1.4);padding:64px 30px;text-align:center;background:var(--bg2);border:1px solid var(--line)}
+.contact h2{font-size:clamp(28px,3.8vw,44px)}.contact p{color:var(--muted);max-width:520px;margin:12px auto 28px}
+footer{padding:36px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+.draft{position:fixed;bottom:14px;right:14px;background:#111;color:#fff;font-size:12px;padding:7px 13px;border-radius:999px;opacity:.85;z-index:30}
+@media(max-width:900px){.about-grid,.cards,.steps{grid-template-columns:1fr}.about-grid{gap:32px}section{padding:72px 0}}
+.hero{padding:80px 0 100px;background:radial-gradient(800px 480px at 90% -10%,#f7e6a8 0,transparent 60%),radial-gradient(700px 500px at 0% 110%,#dfe9cf 0,transparent 60%),var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(38px,5.4vw,68px);color:var(--brand2)}.hero h1 em{font-style:italic;color:var(--brand)}
+.lead{font-size:19px;color:var(--muted);margin:22px 0 32px;max-width:540px}.cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-art{position:relative}.arch{aspect-ratio:4/5;border-radius:999px 999px var(--radius) var(--radius);overflow:hidden;box-shadow:0 40px 70px -30px rgba(29,70,38,.5);border:8px solid #fff}
+.chip{position:absolute;background:#fff;border-radius:16px;padding:12px 16px;font-weight:800;font-size:14px;box-shadow:0 14px 30px -12px rgba(0,0,0,.25);display:flex;gap:8px;align-items:center}
+.chip .logo{width:30px;height:30px}.c1{top:12%;left:-24px}.c2{bottom:10%;right:-18px}
+.about{background:var(--card)}.moments{background:var(--bg2)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero-art{max-width:380px;margin:10px auto 0;width:100%}.c1{left:-6px}.c2{right:-6px}}.logo{display:inline-block;border-radius:50%;background:#f8f5ea url(../img/b12.jpg) center/178% no-repeat;box-shadow:0 0 0 1px rgba(0,0,0,.06)}</style></head>
+<body>
+<header><div class="wrap nav">
+<a href="#top" class="brand"><span class="logo" role="img" aria-label="Bella Charity Foundation"></span><span>Bella Charity<small>Foundation</small></span></a>
+<ul><li><a href="#about">About</a></li><li><a href="#what">What we do</a></li><li><a href="#moments">Moments</a></li><li><a href="#join">Get involved</a></li></ul>
+<a class="btn btn-p" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">Follow on Instagram</a></div></header>
+<main id="top">
+<section class="hero"><div class="wrap hero-grid">
+<div><span class="kicker">A personal initiative · Dr. Belkais</span>
+<h1>The most beautiful thing you can see is a <em>child's smile.</em></h1>
+<p class="lead">We visit children's homes to play, celebrate and bring gifts — because kindness isn't in the decorations or the feast. It's in the heart.</p>
+<div class="cta"><a class="btn btn-p" href="#moments">See our visits</a><a class="btn btn-o" href="#about">Our story</a></div></div>
+<div class="hero-art"><div class="arch"><img src="../img/b01.webp" alt="Smiling children"></div>
+<div class="chip c1">🎁 A gift for every child</div><div class="chip c2"><span class="logo"></span>Bella Charity</div></div>
+</div></section>
+<section class="about" id="about"><div class="wrap about-grid">
+<div class="img"><img loading="lazy" src="../img/b05.webp" alt="Children at a care home"></div>
+<div><span class="kicker">Our story</span><h2>A personal initiative, born from love.</h2>
+<p>Bella Charity Foundation was started by Dr. Belkais with one simple idea: go to the children, sit with them, and give them a day full of play, laughter and gifts.</p>
+<p>Their purity and kindness are what bring us joy. Every visit reminds us that the smallest gesture can change a whole day — and sometimes a whole life.</p>
+<span class="note-pill">🤍 We are a personal initiative and do not accept donations.</span></div></div></section>
+<section id="what"><div class="wrap">
+<div class="sec-head"><span class="kicker">What we do</span><h2>Days they'll remember</h2><p>Regular visits to children's homes — each one with its own spark.</p></div>
+<div class="cards">
+<div class="card"><div class="img"><img loading="lazy" src="../img/b02.webp" alt=""></div><div class="body"><h3>Home visits</h3><p>We spend the day at children's care homes — listening, playing and simply being there.</p></div></div>
+<div class="card"><div class="img"><img loading="lazy" src="../img/b10.jpg" alt=""></div><div class="body"><h3>Celebrations</h3><p>Eid, Christmas and every season in between — with decorations, music and cake.</p></div></div>
+<div class="card"><div class="img"><img loading="lazy" src="../img/b03.webp" alt=""></div><div class="body"><h3>Gifts &amp; surprises</h3><p>A gift chosen for every child, so each one knows someone was thinking of them.</p></div></div>
+</div></div></section>
+<section class="moments" id="moments"><div class="wrap">
+<div class="sec-head"><span class="kicker">@bellacharityfoundation</span><h2>Moments from our visits</h2><p>A few of the beautiful days we've shared with the children.</p></div>
+<div class="gallery"><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b04.webp" alt="Moment from a visit"></a><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b07.webp" alt="Moment from a visit"></a><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b08.webp" alt="Moment from a visit"></a><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b09.jpg" alt="Moment from a visit"></a><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b11.webp" alt="Moment from a visit"></a><a href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener"><img loading="lazy" src="../img/b02.webp" alt="Moment from a visit"></a></div>
+<p style="text-align:center;margin-top:26px"><a class="btn btn-o" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">See more on Instagram</a></p>
+</div></section>
+<section class="band"><div class="wrap"><blockquote>“Charity is the heart of humanity — a small act of kindness can change a life forever.”</blockquote><cite>Bella Charity Foundation</cite></div></section>
+<section id="join"><div class="wrap">
+<div class="sec-head"><span class="kicker">Get involved</span><h2>We don't need money. We need hearts.</h2><p>Share your time, your skills or an idea for our next visit.</p></div>
+<div class="steps">
+<div class="step"><b>1</b><h3>Follow along</h3><p>Every visit is shared on our Instagram as it happens.</p></div>
+<div class="step"><b>2</b><h3>Send us a message</h3><p>Tell us how you'd like to help — time, effort or an idea.</p></div>
+<div class="step"><b>3</b><h3>Join a visit</h3><p>Come with us next time and spend the day with the children.</p></div>
+</div></div></section>
+<section style="padding-top:0"><div class="wrap"><div class="contact">
+<span class="logo" style="width:84px;height:84px;margin:0 auto 18px;display:block"></span>
+<h2>Let's stay in touch</h2><p>The quickest way to reach us is Instagram. Send us a message and we'll get back to you.</p>
+<a class="btn btn-p" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">@bellacharityfoundation</a></div></div></section>
+</main>
+<footer>© 2026 Bella Charity Foundation · A personal initiative · We do not accept donations</footer>
+<div class="draft">Draft</div></body></html>
