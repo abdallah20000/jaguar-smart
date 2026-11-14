@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bella Charity Foundation — بيلا الخيرية</title>
+<meta name="description" content="مبادرة فردية بتزور دور الأطفال وبتحتفل معاهم وبتجيبلهم هدايا. Charity is the heart of humanity.">
+<meta property="og:title" content="Bella Charity Foundation">
+<meta property="og:description" content="Charity is the heart of humanity — a small act of kindness can change a life forever.">
+<meta name="theme-color" content="#7a1f3d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wine:#7a1f3d; --wine-2:#5c1530; --rose:#e8a5b4; --blush:#fbe9ec;
+  --cream:#fffaf6; --ink:#2b1a20; --muted:#7d6670; --gold:#c9a25e;
+  --radius:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Tajawal',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.8;font-size:17px}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.en{font-family:'Playfair Display',serif;direction:ltr;unicode-bidi:isolate}
+
+/* nav */
+header{position:sticky;top:0;z-index:20;background:rgba(255,250,246,.88);backdrop-filter:blur(10px);border-bottom:1px solid #f1dfe3}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--wine)}
+.brand .mark{width:38px;height:38px;border-radius:50%;background:var(--wine);display:grid;place-items:center;color:#fff;font-size:18px}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:12px;line-height:1.1}
+.nav ul{display:flex;gap:26px;list-style:none;font-weight:500;color:var(--muted)}
+.nav ul a:hover{color:var(--wine)}
+.ig-btn{display:inline-flex;align-items:center;gap:8px;background:var(--wine);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;font-size:15px}
+.ig-btn:hover{background:var(--wine-2)}
+@media(max-width:820px){.nav ul{display:none}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding:90px 0 110px;background:
+  radial-gradient(900px 500px at 85% -10%,#f6cfd8 0,transparent 60%),
+  radial-gradient(700px 500px at 0% 110%,#f9e3d3 0,transparent 60%),var(--cream)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center}
+.eyebrow{display:inline-block;background:var(--blush);color:var(--wine);font-weight:700;font-size:14px;padding:6px 14px;border-radius:999px;margin-bottom:18px}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.25;font-weight:800;color:var(--wine-2)}
+.hero h1 span{color:var(--wine);background:linear-gradient(transparent 62%,#f6cfd8 62%)}
+.hero p.lead{margin:22px 0 30px;font-size:19px;color:var(--muted);max-width:560px}
+.quote-en{font-size:20px;font-style:italic;color:var(--wine);margin-bottom:28px;max-width:560px;text-align:left}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--wine);color:var(--wine);padding:10px 20px;border-radius:999px;font-weight:700}
+.btn-ghost:hover{background:var(--wine);color:#fff}
+.hero-card{position:relative;aspect-ratio:4/5;border-radius:36px;background:linear-gradient(160deg,#8d2a4c,#5c1530);box-shadow:0 30px 60px -20px rgba(92,21,48,.45);display:grid;place-items:center;color:#fff;text-align:center;padding:30px}
+.hero-card .big-heart{font-size:110px;line-height:1;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
+.hero-card h3{font-size:26px;margin-top:10px}
+.hero-card p{opacity:.85;font-size:15px}
+.badge{position:absolute;background:#fff;color:var(--ink);border-radius:18px;padding:12px 16px;box-shadow:0 12px 30px -10px rgba(0,0,0,.2);font-size:14px;font-weight:700;display:flex;gap:10px;align-items:center}
+.badge.b1{top:30px;left:-30px}.badge.b2{bottom:40px;right:-24px}
+.badge i{font-style:normal;font-size:22px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero-card{max-width:380px;margin:0 auto;width:100%}.badge.b1{left:-8px}.badge.b2{right:-8px}}
+
+/* sections */
+section{padding:90px 0}
+.sec-head{text-align:center;max-width:640px;margin:0 auto 50px}
+.sec-head h2{font-size:clamp(28px,3.6vw,40px);color:var(--wine-2);font-weight:800}
+.sec-head p{color:var(--muted);margin-top:10px}
+
+/* about */
+.about{background:#fff}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.about-text h2{font-size:clamp(28px,3.6vw,40px);color:var(--wine-2);margin-bottom:16px}
+.about-text p{color:var(--muted);margin-bottom:14px}
+.note{border-right:4px solid var(--wine);background:var(--blush);padding:16px 18px;border-radius:12px;color:var(--wine-2);font-weight:700;margin-top:20px}
+.values{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.value{background:var(--cream);border:1px solid #f1dfe3;border-radius:var(--radius);padding:24px}
+.value i{font-style:normal;font-size:30px}
+.value h4{color:var(--wine);margin:8px 0 4px;font-size:18px}
+.value p{color:var(--muted);font-size:15px}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+
+/* what we do */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:#fff;border-radius:var(--radius);padding:32px 26px;box-shadow:0 14px 40px -24px rgba(92,21,48,.35);transition:transform .25s}
+.card:hover{transform:translateY(-6px)}
+.card .ic{width:60px;height:60px;border-radius:18px;background:var(--blush);display:grid;place-items:center;font-size:28px;margin-bottom:16px}
+.card h3{color:var(--wine-2);font-size:21px;margin-bottom:6px}
+.card p{color:var(--muted);font-size:15.5px}
+@media(max-width:900px){.cards{grid-template-columns:1fr}}
+
+/* moments */
+.moments{background:linear-gradient(180deg,var(--cream),#fff)}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:180px;gap:14px}
+.ph{border-radius:20px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;color:#fff;font-weight:700;font-size:15px}
+.ph::before{content:attr(data-emoji);position:absolute;inset:0;display:grid;place-items:center;font-size:56px;opacity:.9}
+.ph span{position:relative;background:rgba(0,0,0,.22);padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px)}
+.ph.tall{grid-row:span 2}.ph.wide{grid-column:span 2}
+.g1{background:linear-gradient(150deg,#b23a5e,#7a1f3d)}.g2{background:linear-gradient(150deg,#e8a5b4,#c56b84)}
+.g3{background:linear-gradient(150deg,#c9a25e,#9b7638)}.g4{background:linear-gradient(150deg,#3f6e5a,#29493b)}
+.g5{background:linear-gradient(150deg,#d97b5f,#a8523c)}.g6{background:linear-gradient(150deg,#5c1530,#2b0a17)}
+.gal-note{text-align:center;color:var(--muted);font-size:14px;margin-top:16px}
+@media(max-width:820px){.gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px}}
+
+/* quote band */
+.band{background:var(--wine);color:#fff;text-align:center;padding:80px 0}
+.band blockquote{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,3vw,34px);max-width:820px;margin:0 auto;direction:ltr}
+.band .ar{margin-top:18px;opacity:.85;font-size:19px}
+
+/* join */
+.join-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step{text-align:center;padding:30px 20px;border-radius:var(--radius);background:#fff;border:1px dashed #e7c3cc}
+.step b{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--wine);color:#fff;font-size:18px;margin-bottom:12px}
+.step h4{color:var(--wine-2);font-size:19px}
+.step p{color:var(--muted);font-size:15px}
+@media(max-width:900px){.join-grid{grid-template-columns:1fr}}
+
+/* contact */
+.contact{background:var(--blush);border-radius:36px;padding:56px 30px;text-align:center}
+.contact h2{color:var(--wine-2);font-size:clamp(26px,3.4vw,38px)}
+.contact p{color:var(--muted);margin:10px auto 26px;max-width:520px}
+
+footer{padding:34px 0;text-align:center;color:var(--muted);font-size:14px}
+.draft{position:fixed;bottom:14px;left:14px;background:var(--ink);color:#fff;font-size:12px;padding:6px 12px;border-radius:999px;opacity:.8;z-index:30}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand"><span class="mark">♥</span><span>Bella Charity<small>مؤسسة بيلا الخيرية</small></span></a>
+    <ul>
+      <li><a href="#about">مين إحنا</a></li>
+      <li><a href="#what">بنعمل إيه</a></li>
+      <li><a href="#moments">لحظاتنا</a></li>
+      <li><a href="#join">شاركنا</a></li>
+    </ul>
+    <a class="ig-btn" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">تابعينا على إنستجرام</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">مبادرة فردية · بقيادة د. بلقيس</span>
+        <h1>ابتسامة طفل<br>هي <span>أجمل ما تشوفه العين</span></h1>
+        <p class="quote-en en">“Charity is the heart of humanity — a small act of kindness can change a life forever.”</p>
+        <p class="lead">بنزور دور الأطفال، ونلعب معاهم، ونجيبلهم هدايا، ونحتفل معاهم بالأعياد. لأن الخير مش في الزينة ولا في الموائد، الخير في القلوب.</p>
+        <div class="cta">
+          <a class="ig-btn" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">شوفي زياراتنا</a>
+          <a class="btn-ghost" href="#about">اعرفي أكتر</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div>
+          <div class="big-heart">❤️</div>
+          <h3>Bella Charity</h3>
+          <p>قلوب صغيرة… وفرحة كبيرة</p>
+        </div>
+        <div class="badge b1"><i>🎁</i>هدايا لكل طفل</div>
+        <div class="badge b2"><i>🎄</i>احتفالات الأعياد</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="wrap about-grid">
+      <div class="about-text">
+        <h2>مين إحنا</h2>
+        <p>Bella Charity Foundation مبادرة فردية بدأتها د. بلقيس من حب حقيقي للأطفال. فكرتنا بسيطة: نروح لحد الأطفال في دور الرعاية، ونقضي معاهم يوم مختلف مليان لعب وضحك وهدايا.</p>
+        <p>نقاء قلوبهم ولطفهم هما اللي بيدّونا البهجة، وكل زيارة بتعلّمنا إن الحاجة الصغيرة ممكن تغيّر يوم كامل… وأحياناً حياة.</p>
+        <div class="note">الجمعية فردية، ومبنقبلش تبرعات مالية.</div>
+      </div>
+      <div class="values">
+        <div class="value"><i>🤍</i><h4>حب من غير مقابل</h4><p>بنروح عشان الأطفال وبس.</p></div>
+        <div class="value"><i>😊</i><h4>الفرحة أولاً</h4><p>لعب وضحك ووقت حلو مع بعض.</p></div>
+        <div class="value"><i>🎁</i><h4>هدية لكل طفل</h4><p>ماحدش بيرجع إيده فاضية.</p></div>
+        <div class="value"><i>🌙</i><h4>كل المناسبات</h4><p>رمضان والعيد والكريسماس.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>بنعمل إيه</h2>
+        <p>زيارات منتظمة لدور الأطفال، وكل زيارة ليها طعمها.</p>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="ic">🏠</div><h3>زيارة الدار</h3><p>بنزور دور رعاية الأطفال ونقضي معاهم اليوم، نسمعهم ونلعب معاهم.</p></div>
+        <div class="card"><div class="ic">🎉</div><h3>احتفالات الأعياد</h3><p>بنحتفل معاهم بالعيد والكريسماس وكل مناسبة، بزينة وأغاني وكيكة.</p></div>
+        <div class="card"><div class="ic">🎁</div><h3>هدايا ومفاجآت</h3><p>بنختار لكل طفل هدية تفرّحه، عشان يحس إن فيه حد فاكره.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="moments" id="moments">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>من لحظاتنا</h2>
+        <p>شوية من الأيام الحلوة اللي عشناها مع الأطفال.</p>
+      </div>
+      <div class="gallery">
+        <div class="ph g1 tall" data-emoji="🎄"><span>كريسماس 2025</span></div>
+        <div class="ph g2" data-emoji="😊"><span>ضحكة</span></div>
+        <div class="ph g3" data-emoji="🎁"><span>الهدايا</span></div>
+        <div class="ph g4 tall" data-emoji="🌙"><span>العيد</span></div>
+        <div class="ph g5 wide" data-emoji="🤍"><span>يوم في الدار</span></div>
+        <div class="ph g6" data-emoji="⛄"><span>Merry Christmas</span></div>
+        <div class="ph g2" data-emoji="❤️"><span>I love them</span></div>
+      </div>
+      <p class="gal-note">الصور الحقيقية من إنستجرام هتتحط هنا في النسخة الجاية.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <blockquote>“Charity is the heart of humanity.”</blockquote>
+      <p class="ar">العيد مش في الزينة ولا الموائد… العيد في القلوب اللي لسه بتنبض حب ووفاء.</p>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>عايزة تشاركينا؟</h2>
+        <p>مش محتاجين فلوس، محتاجين قلوب. شاركينا وقتك أو فكرة لزيارة.</p>
+      </div>
+      <div class="join-grid">
+        <div class="step"><b>1</b><h4>تابعينا</h4><p>كل زيارة بننزلها على إنستجرام أول بأول.</p></div>
+        <div class="step"><b>2</b><h4>ابعتيلنا رسالة</h4><p>قوليلنا عايزة تشاركي إزاي، وقت ولا مجهود ولا فكرة.</p></div>
+        <div class="step"><b>3</b><h4>تعالي معانا</h4><p>انضمي لزيارتنا الجاية وعيشي اليوم مع الأطفال.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="contact">
+        <h2>خلّينا نفضل على تواصل</h2>
+        <p>أسرع طريقة توصلي لينا بيها هي إنستجرام. ابعتيلنا رسالة وهنرد عليكي.</p>
+        <a class="ig-btn" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">@bellacharityfoundation</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 Bella Charity Foundation · مبادرة فردية · مبنقبلش تبرعات</footer>
+<div class="draft">نسخة مبدئية</div>
+</body>
+</html>
