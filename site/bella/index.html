@@ -8,14 +8,14 @@
 <meta name="description" content="مبادرة فردية بتزور دور الأطفال وبتحتفل معاهم وبتجيبلهم هدايا. Charity is the heart of humanity.">
 <meta property="og:title" content="Bella Charity Foundation">
 <meta property="og:description" content="Charity is the heart of humanity — a small act of kindness can change a life forever.">
-<meta name="theme-color" content="#7a1f3d">
+<meta name="theme-color" content="#2f6b3a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --wine:#7a1f3d; --wine-2:#5c1530; --rose:#e8a5b4; --blush:#fbe9ec;
-  --cream:#fffaf6; --ink:#2b1a20; --muted:#7d6670; --gold:#c9a25e;
+  --wine:#2f6b3a; --wine-2:#1d4626; --rose:#f2c94c; --blush:#f1f4e4;
+  --cream:#fdfaf1; --ink:#1f2a1f; --muted:#5f6b5c; --gold:#e8b324; --red:#a8321f;
   --radius:22px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26,7 +26,9 @@ a{color:inherit;text-decoration:none}
 .en{font-family:'Playfair Display',serif;direction:ltr;unicode-bidi:isolate}
 
 /* nav */
-header{position:sticky;top:0;z-index:20;background:rgba(255,250,246,.88);backdrop-filter:blur(10px);border-bottom:1px solid #f1dfe3}
+header{position:sticky;top:0;z-index:20;background:rgba(253,250,241,.9);backdrop-filter:blur(10px);border-bottom:1px solid #e6e9d6}
+.logo{width:44px;height:44px;flex:none}
+.logo-xl{width:150px;height:150px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25))}
 .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--wine)}
 .brand .mark{width:38px;height:38px;border-radius:50%;background:var(--wine);display:grid;place-items:center;color:#fff;font-size:18px}
@@ -39,18 +41,18 @@ header{position:sticky;top:0;z-index:20;background:rgba(255,250,246,.88);backdro
 
 /* hero */
 .hero{position:relative;overflow:hidden;padding:90px 0 110px;background:
-  radial-gradient(900px 500px at 85% -10%,#f6cfd8 0,transparent 60%),
-  radial-gradient(700px 500px at 0% 110%,#f9e3d3 0,transparent 60%),var(--cream)}
+  radial-gradient(900px 500px at 85% -10%,#f7e6a8 0,transparent 60%),
+  radial-gradient(700px 500px at 0% 110%,#dfe9cf 0,transparent 60%),var(--cream)}
 .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center}
 .eyebrow{display:inline-block;background:var(--blush);color:var(--wine);font-weight:700;font-size:14px;padding:6px 14px;border-radius:999px;margin-bottom:18px}
 .hero h1{font-size:clamp(34px,5vw,58px);line-height:1.25;font-weight:800;color:var(--wine-2)}
-.hero h1 span{color:var(--wine);background:linear-gradient(transparent 62%,#f6cfd8 62%)}
+.hero h1 span{color:var(--wine);background:linear-gradient(transparent 62%,#f7e3a0 62%)}
 .hero p.lead{margin:22px 0 30px;font-size:19px;color:var(--muted);max-width:560px}
 .quote-en{font-size:20px;font-style:italic;color:var(--wine);margin-bottom:28px;max-width:560px;text-align:left}
 .cta{display:flex;gap:14px;flex-wrap:wrap}
 .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--wine);color:var(--wine);padding:10px 20px;border-radius:999px;font-weight:700}
 .btn-ghost:hover{background:var(--wine);color:#fff}
-.hero-card{position:relative;aspect-ratio:4/5;border-radius:36px;background:linear-gradient(160deg,#8d2a4c,#5c1530);box-shadow:0 30px 60px -20px rgba(92,21,48,.45);display:grid;place-items:center;color:#fff;text-align:center;padding:30px}
+.hero-card{position:relative;aspect-ratio:4/5;border-radius:36px;background:linear-gradient(160deg,#3a7d45,#1d4626);box-shadow:0 30px 60px -20px rgba(29,70,38,.45);display:grid;place-items:center;color:#fff;text-align:center;padding:30px}
 .hero-card .big-heart{font-size:110px;line-height:1;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
 .hero-card h3{font-size:26px;margin-top:10px}
 .hero-card p{opacity:.85;font-size:15px}
@@ -72,7 +74,7 @@ section{padding:90px 0}
 .about-text p{color:var(--muted);margin-bottom:14px}
 .note{border-right:4px solid var(--wine);background:var(--blush);padding:16px 18px;border-radius:12px;color:var(--wine-2);font-weight:700;margin-top:20px}
 .values{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.value{background:var(--cream);border:1px solid #f1dfe3;border-radius:var(--radius);padding:24px}
+.value{background:var(--cream);border:1px solid #e6e9d6;border-radius:var(--radius);padding:24px}
 .value i{font-style:normal;font-size:30px}
 .value h4{color:var(--wine);margin:8px 0 4px;font-size:18px}
 .value p{color:var(--muted);font-size:15px}
@@ -80,7 +82,7 @@ section{padding:90px 0}
 
 /* what we do */
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.card{background:#fff;border-radius:var(--radius);padding:32px 26px;box-shadow:0 14px 40px -24px rgba(92,21,48,.35);transition:transform .25s}
+.card{background:#fff;border-radius:var(--radius);padding:32px 26px;box-shadow:0 14px 40px -24px rgba(29,70,38,.35);transition:transform .25s}
 .card:hover{transform:translateY(-6px)}
 .card .ic{width:60px;height:60px;border-radius:18px;background:var(--blush);display:grid;place-items:center;font-size:28px;margin-bottom:16px}
 .card h3{color:var(--wine-2);font-size:21px;margin-bottom:6px}
@@ -89,25 +91,29 @@ section{padding:90px 0}
 
 /* moments */
 .moments{background:linear-gradient(180deg,var(--cream),#fff)}
-.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:180px;gap:14px}
-.ph{border-radius:20px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;color:#fff;font-weight:700;font-size:15px}
+.ig-profile{display:flex;align-items:center;gap:18px;max-width:640px;margin:0 auto 26px;padding:18px 20px;background:#fff;border-radius:22px;border:1px solid #e6e9d6}
+.ig-profile .logo{width:72px;height:72px}
+.ig-profile b{display:block;font-size:18px;color:var(--ink);direction:ltr;text-align:right}
+.ig-profile p{color:var(--muted);font-size:14px;line-height:1.6}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:640px;margin:0 auto}
+.ph{aspect-ratio:1/1;border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;color:#fff;font-weight:700;font-size:15px}
 .ph::before{content:attr(data-emoji);position:absolute;inset:0;display:grid;place-items:center;font-size:56px;opacity:.9}
 .ph span{position:relative;background:rgba(0,0,0,.22);padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px)}
-.ph.tall{grid-row:span 2}.ph.wide{grid-column:span 2}
-.g1{background:linear-gradient(150deg,#b23a5e,#7a1f3d)}.g2{background:linear-gradient(150deg,#e8a5b4,#c56b84)}
-.g3{background:linear-gradient(150deg,#c9a25e,#9b7638)}.g4{background:linear-gradient(150deg,#3f6e5a,#29493b)}
-.g5{background:linear-gradient(150deg,#d97b5f,#a8523c)}.g6{background:linear-gradient(150deg,#5c1530,#2b0a17)}
+.ph::before{font-size:44px}
+.ph span{font-size:12px}
+.g1{background:linear-gradient(150deg,#c0452c,#8a2414)}.g2{background:linear-gradient(150deg,#f2c94c,#d49a17)}
+.g3{background:linear-gradient(150deg,#3a7d45,#1d4626)}.g4{background:linear-gradient(150deg,#2a2a2a,#111)}
+.g5{background:linear-gradient(150deg,#e2a37a,#b5683f)}.g6{background:linear-gradient(150deg,#9b2c1a,#5e160b)}
 .gal-note{text-align:center;color:var(--muted);font-size:14px;margin-top:16px}
-@media(max-width:820px){.gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px}}
 
 /* quote band */
-.band{background:var(--wine);color:#fff;text-align:center;padding:80px 0}
+.band{background:linear-gradient(135deg,var(--wine-2),var(--wine));color:#fff;text-align:center;padding:80px 0}
 .band blockquote{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,3vw,34px);max-width:820px;margin:0 auto;direction:ltr}
 .band .ar{margin-top:18px;opacity:.85;font-size:19px}
 
 /* join */
 .join-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.step{text-align:center;padding:30px 20px;border-radius:var(--radius);background:#fff;border:1px dashed #e7c3cc}
+.step{text-align:center;padding:30px 20px;border-radius:var(--radius);background:#fff;border:1px dashed #cfd9b8}
 .step b{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--wine);color:#fff;font-size:18px;margin-bottom:12px}
 .step h4{color:var(--wine-2);font-size:19px}
 .step p{color:var(--muted);font-size:15px}
@@ -123,10 +129,23 @@ footer{padding:34px 0;text-align:center;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="bella-logo" viewBox="0 0 120 120">
+    <defs><path id="ring" d="M60,60 m-41,0 a41,41 0 1,1 82,0 a41,41 0 1,1 -82,0"/></defs>
+    <circle cx="60" cy="60" r="58" fill="#fdf8ea"/>
+    <circle cx="60" cy="60" r="56" fill="none" stroke="#e6e0c6" stroke-width="1.5"/>
+    <text font-family="Tajawal, sans-serif" font-size="11.5" font-weight="800" fill="#2f6b3a" letter-spacing="1.6">
+      <textPath href="#ring" startOffset="2%">BELLA CHARITY • FOUNDATION •</textPath>
+    </text>
+    <path d="M60 70c-8-6-15-11-15-18 0-5 4-8 8-8 3 0 5 2 7 4 2-2 4-4 7-4 4 0 8 3 8 8 0 7-7 12-15 18z" fill="#f2c230"/>
+    <path d="M36 62c3 9 10 16 24 19-2 3-5 5-9 5-10 0-18-8-21-20l6-4z" fill="#3a7d45"/>
+    <path d="M84 62c-3 9-10 16-24 19 2 3 5 5 9 5 10 0 18-8 21-20l-6-4z" fill="#3a7d45"/>
+  </symbol>
+</svg>
 
 <header>
   <div class="wrap nav">
-    <a href="#top" class="brand"><span class="mark">♥</span><span>Bella Charity<small>مؤسسة بيلا الخيرية</small></span></a>
+    <a href="#top" class="brand"><svg class="logo" role="img" aria-label="Bella Charity Foundation"><use href="#bella-logo"/></svg><span>Bella Charity<small>مؤسسة بيلا الخيرية</small></span></a>
     <ul>
       <li><a href="#about">مين إحنا</a></li>
       <li><a href="#what">بنعمل إيه</a></li>
@@ -152,7 +171,7 @@ footer{padding:34px 0;text-align:center;color:var(--muted);font-size:14px}
       </div>
       <div class="hero-card">
         <div>
-          <div class="big-heart">❤️</div>
+          <svg class="logo-xl" role="img" aria-label="Bella Charity Foundation"><use href="#bella-logo"/></svg>
           <h3>Bella Charity</h3>
           <p>قلوب صغيرة… وفرحة كبيرة</p>
         </div>
@@ -199,14 +218,17 @@ footer{padding:34px 0;text-align:center;color:var(--muted);font-size:14px}
         <h2>من لحظاتنا</h2>
         <p>شوية من الأيام الحلوة اللي عشناها مع الأطفال.</p>
       </div>
+      <a class="ig-profile" href="https://www.instagram.com/bellacharityfoundation/" target="_blank" rel="noopener">
+        <svg class="logo" role="img" aria-label="Bella Charity Foundation"><use href="#bella-logo"/></svg>
+        <div><b>@bellacharityfoundation</b><p>“Charity is the heart of humanity — a small act of kindness can change a life forever.”<br>الجمعية فردية ومبنقبلش تبرعات</p></div>
+      </a>
       <div class="gallery">
-        <div class="ph g1 tall" data-emoji="🎄"><span>كريسماس 2025</span></div>
+        <div class="ph g1" data-emoji="🎄"><span>كريسماس 2025</span></div>
         <div class="ph g2" data-emoji="😊"><span>ضحكة</span></div>
         <div class="ph g3" data-emoji="🎁"><span>الهدايا</span></div>
-        <div class="ph g4 tall" data-emoji="🌙"><span>العيد</span></div>
-        <div class="ph g5 wide" data-emoji="🤍"><span>يوم في الدار</span></div>
+        <div class="ph g4" data-emoji="🌙"><span>العيد</span></div>
+        <div class="ph g5" data-emoji="🤍"><span>يوم في الدار</span></div>
         <div class="ph g6" data-emoji="⛄"><span>Merry Christmas</span></div>
-        <div class="ph g2" data-emoji="❤️"><span>I love them</span></div>
       </div>
       <p class="gal-note">الصور الحقيقية من إنستجرام هتتحط هنا في النسخة الجاية.</p>
     </div>
