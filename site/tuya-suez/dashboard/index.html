@@ -87,21 +87,21 @@
   .lock.mine { border-color:rgba(255,106,43,.4); color:#ffc9b0 }
 
   /* pipeline */
-  .flow { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none }
+  .flow { display:flex; gap:3px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none }
   .flow::-webkit-scrollbar { display:none }
-  .stage { flex:1 0 92px; margin:0; padding:10px 8px; border-radius:14px; background:var(--glass); border:1px solid var(--line); color:var(--fg); text-align:center; font-weight:400; position:relative }
+  .stage { flex:1 1 0; min-width:54px; margin:0; padding:10px 2px; border-radius:14px; background:var(--glass); border:1px solid var(--line); color:var(--fg); text-align:center; font-weight:400; position:relative }
   .stage b { display:block; font-size:1.4rem }
-  .stage span { font-size:.75rem; color:var(--muted) }
+  .stage span { font-size:.68rem; color:var(--muted); white-space:nowrap }
   .stage.on { border-color:var(--accent); background:rgba(255,106,43,.14) }
   .stage.on b { color:var(--accent) }
-  .arrow { align-self:center; color:var(--muted); flex:none; font-size:.9rem }
+  .arrow { align-self:center; color:var(--muted); flex:none; font-size:.7rem }
 
   /* handover card */
   .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px }
   .step { background:rgba(0,0,0,.2); border:1px solid var(--line); border-radius:12px; padding:8px 6px; text-align:center; min-width:0 }
   .step .nm { font-size:.8rem; font-weight:600; margin-bottom:6px }
   .step .ow { font-size:.7rem; color:var(--muted); margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-  .step button.chip { width:auto; margin:0; cursor:pointer; font-family:inherit }
+  .step button.chip { width:auto; max-width:100%; margin:0; padding:3px 7px; font-size:.7rem; gap:2px; cursor:pointer; font-family:inherit }
   .step button.chip:disabled { cursor:default; opacity:.9 }
   .bar { height:6px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:10px }
   .bar i { display:block; height:100%; background:var(--accent) }
