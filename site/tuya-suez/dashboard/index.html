@@ -219,13 +219,13 @@ const CO = { id: 'tuya-suez', name: 'Tuya Suez', logo: '/tuya-suez/icon.png', re
 // Real path: same Supabase project and email+password auth as the CRM.
 // After login the page asks the database (migration 111) what this account may see. The CRM tables are
 // read live and read-only through tsd_crm(); the dashboard never writes to CRM tables.
-// Demo path (?demo=1, or any other host): fake accounts and fake CRM-like data kept only in this
+// Demo path (any host that is not a real one): fake accounts and fake CRM-like data kept only in this
 // browser's localStorage. No passwords stored, no network calls, nothing sent to anyone.
 const SB_URL = 'https://snrsfpprlynixotjipmo.supabase.co';
 const SB_KEY = 'sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds';
 const STORE = 'ts-dash-session';
 const $ = (id) => document.getElementById(id);
-const DEMO = new URLSearchParams(location.search).get('demo') === '1' || !CO.realHosts.includes(location.hostname.toLowerCase());
+const DEMO = !CO.realHosts.includes(location.hostname.toLowerCase());
 document.title = CO.name + ' · لوحة الشركا';
 $('brandName').textContent = CO.name; $('brandLogo').src = CO.logo; $('coName').textContent = CO.name; $('coLogo').src = CO.logo;
 
@@ -492,7 +492,7 @@ function vPipe() {
   if (canSee('pricing')) {
     h += '<h3 class="sec">عروض السعر' + SRC + '</h3><div class="panel">';
     if (!S.quotes.length) h += '<p class="muted" style="margin:0">مفيش عروض.</p>';
-    S.quotes.slice(0, 8).forEach((q) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(q.number) + ' — ' + esc(q.client) + '</div><div class="ss">' + esc(q.date) + (q.by ? ' · ' + esc(q.by) : '') + '</div></div><div style="text-align:left"><b style="font-size:.85rem">' + money(q.total) + '</b><br><span class="chip c-' + (q.status === 'accepted' ? 'done' : q.status === 'rejected' ? 'blocked' : q.status === 'sent' ? 'in_progress' : 'pending') + '">' + (Q_ST[q.status] || q.status) + '</span></div></div></div>'; });
+    S.quotes.slice(0, 8).forEach((q) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(q.number) + ' — ' + esc(q.client) + '</div><div class="ss">' + esc(q.date) + (q.by ? ' · ' + esc(q.by) : '') + '</div></div><div style="text-align:left"><b style="font-size:.85rem">' + money(q.total) + '</b><br><span class="chip c-' + (q.status === 'accepted' ? 'done' : q.status === 'rejected' ? 'blocked' : q.status === 'sent' ? 'in_progress' : 'pending') + '">' + esc(Q_ST[q.status] || q.status) + '</span></div></div></div>'; });
     h += '</div>';
   }
   return h;
