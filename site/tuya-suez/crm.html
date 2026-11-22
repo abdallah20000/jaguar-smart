@@ -1254,30 +1254,38 @@ $("tDiscPct").addEventListener("input", markDisc);
 $("qForm").addEventListener("input", e=>{ if(e.target.name && e.target.name!=="client_type") quoteDirty=true; });
 
 // ---------- discount cap (migration 112) ----------
-// Sales pick 0/10/20/30% only. Effective discount = 1 − (net of the catalog lines ÷ their catalog end-user price),
-// so stacking (line 30% + quote 30%) and a hand-lowered unit price both count. Above 30% the quote needs
-// Ahmed Mostafa's approval (dashboard area «الأسعار»); the database refuses to send it before that.
+// Sales pick 0/10/20/30% only. Effective discount = 1 − (net of the catalog lines ÷ their catalog price:
+// end-user price, or dealer price on a dealer quote), so stacking (line 30% + quote 30%) and a hand-lowered
+// unit price both count. Above 30%, or with any manual line, the quote needs Ahmed Mostafa's approval
+// (dashboard area «الأسعار»); the database refuses to send it before that.
 const DISC_LIMIT = 30, DISC_STEPS = [0,10,20,30];
-let discState = null;   // from quote_discount_state: approved_pct, covered, last_status, last_pct, last_note
+let discState = null;   // from quote_discount_state: needs_approval, covered, pending, approved_pct, last_status, last_pct, last_note
 const discOpts = v => { const n = Number(v)||0, steps = DISC_STEPS.includes(n) ? DISC_STEPS : [...DISC_STEPS, n].sort((a,b)=>a-b);
   return steps.map(d=>`<option value="${d}"${d===n?" selected":""}>${d}%</option>`).join(""); };
 function effDiscount(){
-  const hdr = Math.min(Math.max(Number($("tDiscPct").value)||0,0),100);
-  let base = 0, net = 0;
-  quote.items.forEach(i=>{ const p = i.product_id && prodOf(i), lt = lineTotal(i);
-    if(p && Number(p.end_user_price) > 0){ base += (Number(i.qty)||0) * Number(p.end_user_price); net += lt; }
-    else if(lt < 0) net += lt; });
+  const hdr = Math.min(Math.max(Number($("tDiscPct").value)||0,0),100), type = $("qForm").client_type.value;
+  let base = 0, net = 0, manual = 0, floor = 0;
+  const same = (a,b) => String(a||"").trim().toLowerCase() === String(b||"").trim().toLowerCase();
+  quote.items.filter(i=>String(i.name||"").trim()).forEach(i=>{
+    // catalog = a product with a price, and the line still carries that product's name (same rule as the server)
+    const p = i.product_id && prodOf(i), lt = lineTotal(i), cp = p && same(i.name, p.name) ? Number(priceFor(p, type)) || 0 : 0;
+    if(cp > 0){ base += (Number(i.qty)||0) * cp; net += lt;
+      const unit = (Number(i.unit_price)||0) * (1 - Math.min(Number(i.discount_pct)||0,100)/100) * (1 - hdr/100);
+      if(unit < 0.7*cp - 0.005) floor++; }
+    else { manual++; if(lt < 0) net += lt; } });
   net *= 1 - hdr/100;
-  return { base, net, pct: base > 0 ? 100 * (1 - net/base) : 0 };
+  return { base, net, manual, floor, pct: base > 0 ? 100 * (1 - net/base) : 0 };
 }
 const pctTxt = v => (Math.round(Number(v)*100)/100).toLocaleString("en-US") + "%";
 // "approved" when the saved quote is covered on the server, or (while editing) the approved % still covers it
 function discInfo(){
-  const e = effDiscount(), over = e.pct > DISC_LIMIT + 1e-9, st = discState || {};
-  const approved = over && (!quoteDirty && st.covered === true || quoteDirty && st.approved_pct != null && Number(st.approved_pct) >= e.pct - 1e-9);
-  const pending = over && !approved && st.last_status === "pending" && !quoteDirty && st.covered === false && Number(st.last_pct) >= e.pct - 0.005;
-  const rejected = over && !approved && !pending && st.last_status === "rejected" && Number(st.last_pct) >= e.pct - 0.005;
-  return { ...e, over, approved, pending, rejected, blocked: over && !approved && !isAdmin };
+  const e = effDiscount(), pctOver = e.pct > DISC_LIMIT + 1e-9, over = pctOver || e.manual > 0 || e.floor > 0, st = discState || {};
+  // manual lines: only the saved quote can be matched to an approval, so an unsaved edit waits for the save
+  const approved = over && (!quoteDirty && st.covered === true
+    || quoteDirty && !e.manual && !e.floor && st.approved_pct != null && Number(st.approved_pct) >= e.pct - 1e-9);
+  const pending = over && !approved && !quoteDirty && st.pending === true;
+  const rejected = over && !approved && !pending && !quoteDirty && st.last_status === "rejected";
+  return { ...e, pctOver, over, approved, pending, rejected, blocked: over && !approved && !isAdmin };
 }
 async function loadDiscState(){
   discState = null;
@@ -1293,13 +1301,14 @@ function renderDiscCap(){
   box.classList.toggle("hidden", !d.over); box.classList.toggle("ok", d.approved); box.classList.toggle("no", d.rejected);
   btn.classList.add("hidden");
   if(d.over){
-    const p = pctTxt(d.pct);
-    if(isAdmin && !d.approved) msg.textContent = `الخصم الفعلي ${p} — أكبر من ${DISC_LIMIT}%. إنت أدمن فمش محتاج موافقة.`;
-    else if(d.approved) msg.textContent = `اتوافق ✓ — الخصم الفعلي ${p} عليه موافقة أحمد مصطفى.`;
-    else if(d.pending) msg.textContent = `مستني الموافقة ⏳ — طلبت من أحمد مصطفى يوافق على خصم ${pctTxt(discState.last_pct)}.`;
-    else if(d.rejected){ msg.textContent = `اترفض ✗ — أحمد مصطفى رفض خصم ${pctTxt(discState.last_pct)}${discState.last_note ? `: ${discState.last_note}` : ""}. قلّل الخصم لحد ${DISC_LIMIT}% أو اطلب تاني.`;
+    const why = [d.pctOver ? `الخصم الفعلي ${pctTxt(d.pct)} أكبر من ${DISC_LIMIT}%` : "", d.manual ? `فيه ${d.manual} بند يدوي مش من الكتالوج` : "",
+      d.floor && !d.pctOver ? `فيه ${d.floor} بند سعره تحت سعر الـ${DISC_LIMIT}%` : ""].filter(Boolean).join(" و");
+    if(isAdmin && !d.approved) msg.textContent = `${why}. إنت أدمن فمش محتاج موافقة.`;
+    else if(d.approved) msg.textContent = `اتوافق ✓ — العرض عليه موافقة أحمد مصطفى (${why}).`;
+    else if(d.pending) msg.textContent = `مستني الموافقة ⏳ — الطلب عند أحمد مصطفى (${why}).`;
+    else if(d.rejected){ msg.textContent = `اترفض ✗ — أحمد مصطفى رفض الطلب${discState.last_note ? `: ${discState.last_note}` : ""}. عدّل العرض أو اطلب تاني.`;
       btn.textContent = "اطلب تاني"; btn.classList.toggle("hidden", locked); }
-    else { msg.textContent = `محتاج موافقة أحمد مصطفى — الخصم الفعلي ${p} أكبر من ${DISC_LIMIT}%. احفظه مسودة واطلب موافقة.`;
+    else { msg.textContent = `محتاج موافقة أحمد مصطفى — ${why}.${quoteDirty || !quote.id ? " هيتحفظ مسودة ويتبعت الطلب." : ""}`;
       btn.textContent = "اطلب موافقة"; btn.classList.toggle("hidden", locked); }
   }
   // while it is not approved, sales cannot send it: no "sent"/"accepted", no PDF to share
@@ -1309,7 +1318,7 @@ function renderDiscCap(){
   $("qPdf").title = d.blocked ? "محتاج موافقة أحمد مصطفى على الخصم الأول" : "";
 }
 const discErr = err => { const m = String(err?.message||"");
-  if(m.includes("discount_needs_approval")) return `الخصم أكبر من ${DISC_LIMIT}% — محتاج موافقة أحمد مصطفى قبل ما العرض يتبعت`;
+  if(m.includes("discount_needs_approval")) return "العرض محتاج موافقة أحمد مصطفى قبل ما يتبعت";
   if(m.includes("discount_not_allowed")) return "الخصم المسموح 0 أو 10 أو 20 أو 30% بس";
   if(m.includes("install_not_allowed")) return "التركيب مينفعش يبقى بالسالب";
   return null; };
@@ -1449,7 +1458,7 @@ async function saveQuote(){
   // so the database checks the discount against the lines that are really in it
   const target = row.status, later = !isAdmin && target !== "draft" && (!quote.id || quote.status === "draft");
   if(later){
-    if(discInfo().blocked){ toast(`الخصم أكبر من ${DISC_LIMIT}% — العرض هيتحفظ مسودة لحد موافقة أحمد مصطفى`); f.status.value = "draft"; return saveQuote(); }
+    if(discInfo().blocked){ toast("العرض محتاج موافقة أحمد مصطفى — هيتحفظ مسودة لحد الموافقة"); f.status.value = "draft"; return saveQuote(); }
     row.status = "draft";
   }
   $("qSave").disabled = true;
