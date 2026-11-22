@@ -74,6 +74,10 @@ tr.inactive td{color:var(--muted)}
 .q-lock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--ink);border-inline-start-width:4px;background:var(--soft);padding:12px 14px;border-radius:6px;margin-bottom:16px}
 .q-lock span{flex:1 1 260px;font-size:14px}
 .q-lock.req{border-color:var(--red)}
+.disc-cap{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0 0 auto;width:min(360px,100%);border:1px solid var(--line);border-inline-start:4px solid #b7791f;background:#fffaf0;padding:10px 12px;border-radius:6px;font-size:14px}
+.disc-cap span{flex:1 1 200px}
+.disc-cap.ok{border-inline-start-color:#2f855a;background:#f0fff4}
+.disc-cap.no{border-inline-start-color:var(--red);background:#fff5f5}
 .qv input:disabled,.qv select:disabled,.qv textarea:disabled{background:var(--soft);color:#555;border-color:var(--line);cursor:not-allowed}
 
 /* quotation editor (full screen) */
@@ -486,15 +490,17 @@ tr.row:hover td{background:#fafafa}
         </table>
       </div>
 
-      <datalist id="discList"><option value="10"><option value="20"><option value="30"><option value="40"></datalist>
+      <datalist id="discList"><option value="10"><option value="20"><option value="30"></datalist>
       <div class="q-totals">
         <div><span>إجمالي المنتجات</span><b id="tSub" dir="ltr">0</b></div>
         <div class="inst-mode" id="instMode"><span>نوع العرض</span><span class="im-btns"><button type="button" data-m="supply">توريد فقط</button><button type="button" data-m="install">توريد + تركيب وبرمجة</button></span></div>
         <div id="instRow"><span>تركيب وبرمجة (<span dir="ltr" id="instPctLbl">10%</span> من المنتجات)</span><b id="tInst" dir="ltr">0</b><input id="tInstPct" type="hidden"></div>
         <div><span>خصم <input id="tDiscPct" type="number" min="0" max="100" step="any" dir="ltr"> %</span><b id="tDisc" dir="ltr">0</b></div>
-        <div class="disc-chips" id="discChips" aria-label="اختيار خصم سريع"><button type="button" data-d="0">0%</button><button type="button" data-d="10">10%</button><button type="button" data-d="20">20%</button><button type="button" data-d="30">30%</button><button type="button" data-d="40">40%</button></div>
+        <div class="disc-chips" id="discChips" aria-label="اختيار خصم سريع"><button type="button" data-d="0">0%</button><button type="button" data-d="10">10%</button><button type="button" data-d="20">20%</button><button type="button" data-d="30">30%</button></div>
         <div class="grand"><span>الإجمالي</span><b id="tTotal" dir="ltr">0</b></div>
       </div>
+      <div class="disc-cap hidden" id="discCap" role="status"><span id="discCapMsg"></span>
+        <button type="button" class="line-btn hidden" id="discReq">اطلب موافقة</button></div>
 
       <div class="grid" style="margin-top:18px">
         <div class="f"><label>الحالة</label>
@@ -1203,8 +1209,10 @@ async function openQuote(id){
   $("qDel").classList.toggle("hidden", !quote.id || !isAdmin);
   $("pick").value = ""; $("pickRes").classList.add("hidden"); storeCat = "";
   fillBrands();
+  discState = null; $("tDiscPct").readOnly = !isAdmin;
   quoteDirty = !quote.id; renderQuoteItems();
   $("qv").classList.remove("hidden");
+  loadDiscState();
 }
 function closeQuote(){
   if(quoteDirty && quote?.items.length && !confirm("فيه تعديلات ما اتحفظتش. تقفل من غير حفظ؟")) return;
@@ -1230,7 +1238,7 @@ function updateTotals(){
   const t = calcQuote();
   $("tSub").textContent = money(t.sub); $("tInst").textContent = money(t.inst);
   $("tDisc").textContent = t.disc ? "−"+money(t.disc) : "0"; $("tTotal").textContent = money(t.total);
-  updateCart();
+  updateCart(); renderDiscCap();
 }
 ["tInstPct","tDiscPct"].forEach(id=>$(id).addEventListener("input",()=>{ quoteDirty=true; updateTotals(); }));
 // installation is a separate line: "supply only" (0) or "supply + installation & programming" at a fixed share of the products
@@ -1245,20 +1253,95 @@ $("discChips").addEventListener("click", e => { const b = e.target.closest("butt
 $("tDiscPct").addEventListener("input", markDisc);
 $("qForm").addEventListener("input", e=>{ if(e.target.name && e.target.name!=="client_type") quoteDirty=true; });
 
+// ---------- discount cap (migration 112) ----------
+// Sales pick 0/10/20/30% only. Effective discount = 1 − (net of the catalog lines ÷ their catalog end-user price),
+// so stacking (line 30% + quote 30%) and a hand-lowered unit price both count. Above 30% the quote needs
+// Ahmed Mostafa's approval (dashboard area «الأسعار»); the database refuses to send it before that.
+const DISC_LIMIT = 30, DISC_STEPS = [0,10,20,30];
+let discState = null;   // from quote_discount_state: approved_pct, covered, last_status, last_pct, last_note
+const discOpts = v => { const n = Number(v)||0, steps = DISC_STEPS.includes(n) ? DISC_STEPS : [...DISC_STEPS, n].sort((a,b)=>a-b);
+  return steps.map(d=>`<option value="${d}"${d===n?" selected":""}>${d}%</option>`).join(""); };
+function effDiscount(){
+  const hdr = Math.min(Math.max(Number($("tDiscPct").value)||0,0),100);
+  let base = 0, net = 0;
+  quote.items.forEach(i=>{ const p = i.product_id && prodOf(i), lt = lineTotal(i);
+    if(p && Number(p.end_user_price) > 0){ base += (Number(i.qty)||0) * Number(p.end_user_price); net += lt; }
+    else if(lt < 0) net += lt; });
+  net *= 1 - hdr/100;
+  return { base, net, pct: base > 0 ? 100 * (1 - net/base) : 0 };
+}
+const pctTxt = v => (Math.round(Number(v)*100)/100).toLocaleString("en-US") + "%";
+// "approved" when the saved quote is covered on the server, or (while editing) the approved % still covers it
+function discInfo(){
+  const e = effDiscount(), over = e.pct > DISC_LIMIT + 1e-9, st = discState || {};
+  const approved = over && (!quoteDirty && st.covered === true || quoteDirty && st.approved_pct != null && Number(st.approved_pct) >= e.pct - 1e-9);
+  const pending = over && !approved && st.last_status === "pending" && !quoteDirty && st.covered === false && Number(st.last_pct) >= e.pct - 0.005;
+  const rejected = over && !approved && !pending && st.last_status === "rejected" && Number(st.last_pct) >= e.pct - 0.005;
+  return { ...e, over, approved, pending, rejected, blocked: over && !approved && !isAdmin };
+}
+async function loadDiscState(){
+  discState = null;
+  if(quote?.id){
+    const { data, error } = await sb.rpc("quote_discount_state", { p_quote: quote.id });
+    if(error) console.error(error); else discState = data;
+  }
+  if(quote) renderDiscCap();
+}
+function renderDiscCap(){
+  if(!quote) return;
+  const d = discInfo(), box = $("discCap"), msg = $("discCapMsg"), btn = $("discReq"), f = $("qForm"), locked = isLocked();
+  box.classList.toggle("hidden", !d.over); box.classList.toggle("ok", d.approved); box.classList.toggle("no", d.rejected);
+  btn.classList.add("hidden");
+  if(d.over){
+    const p = pctTxt(d.pct);
+    if(isAdmin && !d.approved) msg.textContent = `الخصم الفعلي ${p} — أكبر من ${DISC_LIMIT}%. إنت أدمن فمش محتاج موافقة.`;
+    else if(d.approved) msg.textContent = `اتوافق ✓ — الخصم الفعلي ${p} عليه موافقة أحمد مصطفى.`;
+    else if(d.pending) msg.textContent = `مستني الموافقة ⏳ — طلبت من أحمد مصطفى يوافق على خصم ${pctTxt(discState.last_pct)}.`;
+    else if(d.rejected){ msg.textContent = `اترفض ✗ — أحمد مصطفى رفض خصم ${pctTxt(discState.last_pct)}${discState.last_note ? `: ${discState.last_note}` : ""}. قلّل الخصم لحد ${DISC_LIMIT}% أو اطلب تاني.`;
+      btn.textContent = "اطلب تاني"; btn.classList.toggle("hidden", locked); }
+    else { msg.textContent = `محتاج موافقة أحمد مصطفى — الخصم الفعلي ${p} أكبر من ${DISC_LIMIT}%. احفظه مسودة واطلب موافقة.`;
+      btn.textContent = "اطلب موافقة"; btn.classList.toggle("hidden", locked); }
+  }
+  // while it is not approved, sales cannot send it: no "sent"/"accepted", no PDF to share
+  f.status.querySelectorAll('option[value="sent"],option[value="accepted"]').forEach(o=>o.disabled = d.blocked);
+  if(d.blocked && !locked && (f.status.value==="sent" || f.status.value==="accepted")) f.status.value = "draft";
+  $("qPdf").disabled = d.blocked && !sharedFile;
+  $("qPdf").title = d.blocked ? "محتاج موافقة أحمد مصطفى على الخصم الأول" : "";
+}
+const discErr = err => { const m = String(err?.message||"");
+  if(m.includes("discount_needs_approval")) return `الخصم أكبر من ${DISC_LIMIT}% — محتاج موافقة أحمد مصطفى قبل ما العرض يتبعت`;
+  if(m.includes("discount_not_allowed")) return "الخصم المسموح 0 أو 10 أو 20 أو 30% بس";
+  if(m.includes("install_not_allowed")) return "التركيب مينفعش يبقى بالسالب";
+  return null; };
+$("discReq").onclick = async ()=>{
+  if(!quote || isLocked()) return;
+  const f = $("qForm");
+  if(f.status.value !== "draft") f.status.value = "draft";
+  if(quoteDirty || !quote.id){ if(!await saveQuote()) return; }
+  $("discReq").disabled = true;
+  try {
+    const { data, error } = await sb.rpc("request_quote_discount_approval", { p_quote: quote.id });
+    if(error){ toast(discErr(error) || "الطلب ما اتبعتش"); console.error(error); return; }
+    toast(data?.state === "approved" ? "عليه موافقة بالفعل ✓" : data?.state === "not_needed" ? "الخصم في الحدود، مش محتاج موافقة" : "الطلب اتبعت لأحمد مصطفى ✓");
+    await loadDiscState();
+  } finally { $("discReq").disabled = false; }
+};
+
 function renderQuoteItems(){
   $("qRows").innerHTML = quote.items.length ? quote.items.map((i,n)=>`<tr data-n="${n}">
       <td class="c-name">${i.product_id && prodOf(i) ? `<div class="nm">${esc(pName(prodOf(i)))}</div>${prodOf(i).description_ar ? `<div class="desc">${esc(prodOf(i).description_ar)}</div>` : ""}` : `<input data-k="name" value="${esc(i.name)}" dir="auto" aria-label="البند">${i.description?`<div class="desc" dir="auto">${esc(i.description)}</div>`:""}`}</td>
       <td class="c-room"><input data-k="room" value="${esc(i.room||"")}" list="rooms" placeholder="المكان"></td>
       <td class="c-qty"><input data-k="qty" type="number" min="0.01" step="any" inputmode="decimal" dir="ltr" value="${esc(i.qty)}" aria-label="العدد"></td>
       <td class="c-price"><input data-k="unit_price" type="number" min="0" step="any" inputmode="decimal" dir="ltr" value="${esc(i.unit_price ?? "")}" class="${i.unit_price?"":"no-price"}" aria-label="سعر الوحدة" placeholder="السعر"></td>
-      <td class="c-disc"><input data-k="discount_pct" type="number" min="0" max="100" step="any" inputmode="decimal" dir="ltr" value="${i.discount_pct ? esc(i.discount_pct) : ""}" placeholder="0" list="discList" aria-label="خصم البند %"></td>
+      <td class="c-disc">${isAdmin ? `<input data-k="discount_pct" type="number" min="0" max="100" step="any" inputmode="decimal" dir="ltr" value="${i.discount_pct ? esc(i.discount_pct) : ""}" placeholder="0" list="discList" aria-label="خصم البند %">`
+        : `<select data-k="discount_pct" dir="ltr" aria-label="خصم البند %">${discOpts(i.discount_pct)}</select>`}</td>
       <td class="c-total" dir="ltr">${money(lineTotal(i))}</td>
       <td class="c-del"><button type="button" class="del" aria-label="شيل البند">×</button></td>
     </tr>`).join("")
     : `<tr><td colspan="7" class="empty">العربية فاضية — دوس + على أي منتج من فوق</td></tr>`;
   $("qRows").querySelectorAll("tr[data-n]").forEach(tr=>{
     const it = quote.items[+tr.dataset.n];
-    tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{
+    tr.querySelectorAll("input,select").forEach(inp=>inp.addEventListener("input",()=>{
       const k = inp.dataset.k; it[k] = (k==="qty"||k==="unit_price"||k==="discount_pct") ? (inp.value===""?null:Number(inp.value)) : inp.value;
       if(k==="unit_price") inp.classList.toggle("no-price", !it.unit_price);
       tr.querySelector(".c-total").textContent = money(lineTotal(it));
@@ -1362,23 +1445,35 @@ async function saveQuote(){
     notes: f.notes.value.trim() || null, terms: f.terms.value.trim() || null
   };
   if(!quote.id) row.created_by = user.email;
+  // sales: the lines are written while the quote is still a draft, and only then is it moved to sent/accepted,
+  // so the database checks the discount against the lines that are really in it
+  const target = row.status, later = !isAdmin && target !== "draft" && (!quote.id || quote.status === "draft");
+  if(later){
+    if(discInfo().blocked){ toast(`الخصم أكبر من ${DISC_LIMIT}% — العرض هيتحفظ مسودة لحد موافقة أحمد مصطفى`); f.status.value = "draft"; return saveQuote(); }
+    row.status = "draft";
+  }
   $("qSave").disabled = true;
+  let draftOnly = false;
   try {
     const res = quote.id ? await sb.from("quotations").update(row).eq("id",quote.id).select("id,quote_number").single()
                          : await sb.from("quotations").insert(row).select("id,quote_number").single();
     if(res.error) throw res.error;
-    quote.id = res.data.id; quote.quote_number = res.data.quote_number;
+    quote.id = res.data.id; quote.quote_number = res.data.quote_number; quote.status = row.status;
     // replace the lines wholesale in one transaction on the server (sales have no direct delete rights)
     const rep = await sb.rpc("replace_quotation_items", { p_quote: quote.id, p_items: items.map((i,n)=>({
       product_id: i.product_id, name: i.name.trim(), description: i.description || null,
       room: String(i.room||"").trim() || null, qty: Number(i.qty), unit_price: Number(i.unit_price)||0,
       discount_pct: Math.min(Math.max(Number(i.discount_pct)||0,0),100), sort_order: n })) });
     if(rep.error) throw rep.error;
-  } catch(err){ toast("الحفظ فشل"); console.error(err); return false; }
+    if(later){
+      const st = await sb.from("quotations").update({ status: target }).eq("id",quote.id);
+      if(st.error){ draftOnly = true; f.status.value = "draft"; toast(discErr(st.error) || "العرض اتحفظ مسودة بس"); console.error(st.error); }
+    }
+  } catch(err){ toast(discErr(err) || "الحفظ فشل"); console.error(err); return false; }
   finally { $("qSave").disabled = false; }
   quote.items = items; quote.status = f.status.value; quoteDirty = false;
   $("qvTitle").textContent = `عرض سعر ${quote.quote_number}`; $("qDel").classList.toggle("hidden", !isAdmin);
-  applyLock(); loadQuotes(); return true;
+  applyLock(); loadQuotes(); await loadDiscState(); return !draftOnly;
 }
 $("qForm").addEventListener("submit", async e=>{ e.preventDefault(); if(await saveQuote()) toast(`العرض ${quote.quote_number} اتحفظ ✓`); });
 
@@ -1406,7 +1501,7 @@ function applyLock(){
     ? (isAdmin ? `${by} طلب مسح العرض ده — امسحه من زرار «مسح العرض» تحت.` : "طلبت مسح العرض ده، والأدمن هيمسحه.")
     : "العرض ده اتبعت للعميل، فمش ممكن يتعدل. لو محتاج تغيّر حاجة، اعمل «عرض جديد بنفس البنود» واطلب من الأدمن يمسح القديم.";
   $("qReqDel").classList.toggle("hidden", !locked || req);
-  renderStore();
+  renderStore(); renderDiscCap();
 }
 $("qReqDel").onclick = async ()=>{
   if(!quote?.id || !confirm(`تبعت للأدمن طلب يمسح العرض ${quote.quote_number}؟`)) return;
@@ -1421,7 +1516,7 @@ $("qCopy").onclick = ()=>{
   quote = { id:null, quote_number:null, lead_id:quote.lead_id, status:"draft", items:quote.items.map(i=>({...i})) };
   f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft";
   $("qvTitle").textContent = `عرض سعر جديد (من ${from})`; $("qDel").classList.add("hidden");
-  sharedFile = null; $("qPdf").textContent = "📄 PDF وابعته";
+  sharedFile = null; $("qPdf").textContent = "📄 PDF وابعته"; discState = null;
   quoteDirty = true; renderQuoteItems(); toast("نسخة جديدة — عدّل واحفظ");
 };
 
@@ -1498,7 +1593,9 @@ async function shareOrDownload(file){
 }
 $("qPdf").onclick = async ()=>{
   if(sharedFile){ const r = await shareOrDownload(sharedFile); if(r!=="needs-tap"){ sharedFile=null; $("qPdf").textContent="📄 PDF وابعته"; } return; }
+  if(!isAdmin && discInfo().blocked){ toast(`العرض محتاج موافقة أحمد مصطفى على الخصم قبل ما يتبعت`); return; }
   if(quoteDirty || !quote.id){ if(!await saveQuote()) return; }
+  if(!isAdmin && discInfo().blocked){ toast(`العرض محتاج موافقة أحمد مصطفى على الخصم قبل ما يتبعت`); return; }
   const btn = $("qPdf"); btn.disabled = true; btn.textContent = "بيجهز الـ PDF…";
   try {
     await loadScript(HTML2PDF_URL);
@@ -1527,6 +1624,7 @@ $("qPdf").onclick = async ()=>{
     if(quote.status==="draft"){
       const { error } = await sb.from("quotations").update({ status:"sent" }).eq("id",quote.id);
       if(!error){ quote.status = "sent"; $("qForm").status.value = "sent"; applyLock(); loadQuotes(); }
+      else if(discErr(error)){ toast(discErr(error)); console.error(error); btn.textContent = "📄 PDF وابعته"; loadDiscState(); return; }
     }
     const r = await shareOrDownload(file);
     if(r==="needs-tap"){ sharedFile = file; btn.textContent = "📤 اضغط عشان تبعته"; }
