@@ -272,7 +272,7 @@ $('signup').addEventListener('submit', async (e) => {
   if (DEMO) { $('suPass').value = ''; demoSignup(name, email); return; }   // fake flow: the password is dropped, never stored
   $('suGo').disabled = true;
   try {
-    const r = await fetch(SB_URL + '/auth/v1/signup', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: $('suPass').value, data: { full_name: name } }) });
+    const r = await fetch(SB_URL + '/auth/v1/signup', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: $('suPass').value, data: { full_name: name, app: 'tuya-dashboard', company: CO.id } }) });
     $('suPass').value = '';
     if (!r.ok) { $('suMsg').textContent = 'مقدرناش نعمل الحساب. اتأكد من الإيميل وإن الباسورد 8 حروف على الأقل.'; return; }
     showWait(name);
@@ -280,10 +280,14 @@ $('signup').addEventListener('submit', async (e) => {
   finally { $('suGo').disabled = false; }
 });
 
-$('out').addEventListener('click', () => { save(null); show(null); });
+function serverLogout() {   // ends the refresh token on the server too, not only the browser copy
+  const s = RS || load(); if (!s || !s.access_token) return;
+  fetch(SB_URL + '/auth/v1/logout', { method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + s.access_token } }).catch(() => {});
+}
+$('out').addEventListener('click', () => { serverLogout(); save(null); show(null); });
 $('toSignup').addEventListener('click', () => screen('signup'));
 $('suBack').addEventListener('click', () => screen('login'));
-$('waitOut').addEventListener('click', () => { if (DEMO) { try { localStorage.removeItem(D_SESSION); } catch (e) {} } save(null); show(null); });
+$('waitOut').addEventListener('click', () => { if (DEMO) { try { localStorage.removeItem(D_SESSION); } catch (e) {} } if (MODE !== 'demo') serverLogout(); save(null); show(null); });
 
 /* =====================================================================
    Shared state. Both demo and real mode fill the same shape:
@@ -398,7 +402,8 @@ function area(k) { return S.areas.find((a) => a.key === k) || { key: k, name: k,
 function owner(k) { return area(k).owner; }
 function owns(k) { return !!me && owner(k) === me; }
 function canSee(k) { const m = mem(me); if (!m) return false; return m.role !== 'staff' || m.see.includes(k) || owns(k); }
-function canMove(k) { return isOwner() || owns('responsibilities') || owns(k); }
+function canMove(k) { return isOwner(); }   // only a company owner (مالك) moves an area (enforced in SQL too)
+function canDecide(a) { return owns(a.area) && !(a.reqBy && a.reqBy === me && !isOwner()); }   // never your own request
 function cCount(t) { return S.comments.filter((c) => c.target === t).length; }
 function toast(t) { const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.appendChild(el); setTimeout(() => el.remove(), 2200); }
 function pendingReqs() { return S.requests.filter((r) => r.status === 'pending'); }
@@ -424,7 +429,7 @@ function sales() {
 
 function myToday() {
   const tasks = S.tasks.filter((t) => t.who === me && !t.done);
-  const appr = S.approvals.filter((a) => a.status === 'pending' && owns(a.area));
+  const appr = S.approvals.filter((a) => a.status === 'pending' && canDecide(a));
   const steps = [];
   S.jobs.forEach((j) => STEPS.forEach((s) => { if (owns(s.area) && (j[s.key] === 'blocked' || j[s.key] === 'in_progress')) steps.push({ j, s }); }));
   return { tasks, appr, steps, reqs: isOwner() ? pendingReqs() : [] };
@@ -523,7 +528,7 @@ function vJobs() {
 function vTasks() {
   const mine = S.tasks.filter((t) => t.who === me);
   const pend = S.approvals.filter((a) => a.status === 'pending' && canSee(a.area));
-  const myAppr = pend.filter((a) => owns(a.area)), otherAppr = pend.filter((a) => !owns(a.area));
+  const myAppr = pend.filter((a) => canDecide(a)), otherAppr = pend.filter((a) => !canDecide(a));
   let h = '<h2>مهام ' + esc(first(me)) + '</h2>';
   h += '<h3 class="sec">مهامي <span class="n">' + mine.filter((t) => !t.done).length + '</span></h3><div class="panel">';
   if (!mine.length) h += '<p class="muted" style="margin:0">مفيش مهام.</p>';
@@ -555,10 +560,10 @@ function apprItem(a, can) {
 }
 
 function vAreas() {
-  const boss = isOwner() || owns('responsibilities');
+  const boss = isOwner();
   let h = isOwner() ? vAccess() : '';
   h += '<h2>كل حتة ليها صاحب</h2><p class="muted" style="margin:0 0 12px">صاحب الحتة بس اللي يعدّل ويوافق فيها، والباقي يشوفوا ويعلّقوا. التحويل من هنا من غير أي تعديل في الكود.</p>';
-  h += '<div class="lock' + (boss ? ' mine' : '') + '">' + (boss ? 'تقدر تحوّل أي حتة لأي عضو.' : 'تقدر تحوّل الحتت اللي إنت صاحبها بس. الباقي بيحوّله ' + esc(U(owner('responsibilities')).full) + '.') + '</div><div class="panel">';
+  h += '<div class="lock' + (boss ? ' mine' : '') + '">' + (boss ? 'تقدر تحوّل أي حتة لأي عضو.' : 'المالك بس اللي يحوّل الحتت من شخص لشخص.') + '</div><div class="panel">';
   S.areas.filter((a) => canSee(a.key)).forEach((a) => {
     h += '<div class="item"><div class="row"><span class="av ' + U(a.owner).cls + '">' + esc(U(a.owner).ini) + '</span><div class="grow"><div class="tt">' + esc(a.name) + '</div><div class="ss">صاحبها: ' + esc(U(a.owner).full) + (a.owner === me ? ' (إنت)' : '') + '</div></div>';
     h += canMove(a.key) ? '<select class="sel" data-own="' + a.key + '" aria-label="صاحب ' + esc(a.name) + '">' + S.members.map((m) => '<option value="' + esc(m.user) + '"' + (m.user === a.owner ? ' selected' : '') + '>' + esc(U(m.user).full) + '</option>').join('') + '</select>' : '<span class="chip c-pending">🔒</span>';
@@ -595,7 +600,7 @@ function vAccess() {
   h += '</div><h3 class="sec">الأعضاء <span class="n">' + S.members.length + '</span></h3><div class="panel">';
   S.members.forEach((m) => {
     const n = S.areas.filter((a) => a.owner === m.user).length;
-    h += '<div class="item"><div class="row"><span class="av ' + U(m.user).cls + '">' + esc(U(m.user).ini) + '</span><div class="grow"><div class="tt">' + esc(U(m.user).full) + '</div><div class="ss">' + ROLES[m.role] + ' · صاحب ' + n + ' حتة' + (m.role === 'staff' && m.see.length ? ' · يشوف: ' + m.see.map((k) => esc(area(k).name)).join('، ') : '') + '</div></div>';
+    h += '<div class="item"><div class="row"><span class="av ' + U(m.user).cls + '">' + esc(U(m.user).ini) + '</span><div class="grow"><div class="tt">' + esc(U(m.user).full) + '</div><div class="ss">' + (String(m.user).includes('@') ? '<span dir="ltr">' + esc(m.user) + '</span> · ' : '') + ROLES[m.role] + ' · صاحب ' + n + ' حتة' + (m.role === 'staff' && m.see.length ? ' · يشوف: ' + m.see.map((k) => esc(area(k).name)).join('، ') : '') + '</div></div>';
     h += m.role === 'owner' ? '<span class="chip c-own">مالك</span>' : '<button class="sm nob" data-revoke="' + esc(m.user) + '">اسحب الصلاحية</button>';
     h += '</div></div>';
   });
@@ -628,12 +633,12 @@ async function act(kind, p) {
     try {
       const [tt, ti] = (p.target || ':').split(':');
       if (kind === 'step') await rpc('tsd_set_job_step', { p_job: p.job, p_step: p.step, p_status: p.status });
-      else if (kind === 'done') await rest('PATCH', 'tsd_tasks?id=eq.' + encodeURIComponent(p.id), { status: 'done', done_at: now });
+      else if (kind === 'done') await rpc('tsd_complete_task', { p_id: p.id });
       else if (kind === 'decide') await rpc('tsd_decide', { p_id: p.id, p_approve: p.ok });
       else if (kind === 'owner') await rpc('tsd_set_area_owner', { p_company: CO.id, p_area: p.area, p_owner: p.to });
       else if (kind === 'comment') await rest('POST', 'tsd_comments', { company: CO.id, area_key: p.area, target_type: tt, target_id: ti, body: p.body });
       else if (kind === 'grant') await rpc('tsd_grant_access', { p_company: CO.id, p_user: p.user, p_role: p.role, p_see: p.see, p_own: p.own });
-      else if (kind === 'deny') await rpc('tsd_deny_request', { p_user: p.user });
+      else if (kind === 'deny') await rpc('tsd_deny_request', { p_company: CO.id, p_user: p.user });
       else if (kind === 'revoke') await rpc('tsd_revoke_member', { p_company: CO.id, p_email: p.user });
       await realLoad(); return true;
     } catch (e) { toast('مقدرناش نحفظ: ' + (e.message || 'خطأ')); render(); return false; }
@@ -680,7 +685,7 @@ $('view').addEventListener('click', async (e) => {
     if (await act('done', { id: x.id })) { render(); toast('برافو، خلصت'); }
   } else if (d.ap) {
     const [id, ok] = d.ap.split('|'), a = S.approvals.find((x) => String(x.id) === id);
-    if (!a || !owns(a.area) || a.status !== 'pending') return;
+    if (!a || !canDecide(a) || a.status !== 'pending') return;
     if (await act('decide', { id: a.id, ok: ok === '1' })) { render(); toast(ok === '1' ? 'اتوافق' : 'اترفض'); }
   } else if (d.approve) {
     if (!isOwner()) return;
@@ -709,7 +714,7 @@ function leaveApp() {
 function logout() {
   leaveApp();
   if (MODE === 'demo') { try { localStorage.removeItem(D_SESSION); } catch (e) {} }
-  else save(null);
+  else { serverLogout(); save(null); }
   me = null; MODE = null; show(null);
 }
 
@@ -747,7 +752,7 @@ if (DEMO) {
 /* ---------------- real (needs migration 111; until it is run, the old «بتتجهز» message shows) ---------------- */
 async function call(method, path, body) {
   RS = await refresh(RS) || RS;
-  const r = await fetch(SB_URL + '/rest/v1/' + path, { method, headers: { apikey: SB_KEY, Authorization: 'Bearer ' + RS.access_token, 'Content-Type': 'application/json', ...(path.startsWith('rpc/') || method === 'GET' ? {} : { Prefer: 'return=minimal' }) }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(SB_URL + '/rest/v1/' + path, { method, headers: { apikey: SB_KEY, Authorization: 'Bearer ' + RS.access_token, 'Content-Type': 'application/json', 'x-company': CO.id, ...(path.startsWith('rpc/') || method === 'GET' ? {} : { Prefer: 'return=minimal' }) }, body: body ? JSON.stringify(body) : undefined });
   if (!r.ok) { const e = new Error(r.status === 404 ? 'not ready' : (await r.text()).slice(0, 120)); e.status = r.status; throw e; }
   const t = await r.text(); return t ? JSON.parse(t) : null;
 }
@@ -765,7 +770,7 @@ async function realLoad() {
     get('tsd_approvals?' + c + '&order=created_at.desc&limit=100'), get('tsd_comments?' + c + '&order=created_at&limit=500'),
     get('tsd_area_history?' + c + '&order=changed_at&limit=50')
   ]);
-  const reqs = access.role === 'owner' ? await get('tsd_access_requests?status=eq.pending&order=created_at') : [];
+  const reqs = access.role === 'owner' ? await get('tsd_access_requests?' + c + '&status=eq.pending&order=created_at') : [];
   const users = {};
   (mems || []).forEach((m) => { const n = m.display_name || m.email.split('@')[0]; users[m.email] = { full: n, ini: n[0], cls: m.role === 'owner' ? '' : 'b' }; });
   (reqs || []).forEach((r) => { const n = r.full_name || r.email.split('@')[0]; users[r.email] = { full: n, ini: n[0], cls: 'b' }; });
@@ -781,7 +786,7 @@ async function realLoad() {
     stock: (x.stock || []).map((s) => ({ id: s.id, name: s.name, unit: s.unit, qty: Number(s.quantity), min: s.min_qty })),
     jobs: (jobs || []).map((j) => ({ id: j.id, customer: j.customer_name, place: j.area_text, total: j.amount_total, paid: j.amount_paid, goods: j.goods_status, techs: j.techs_status, install: j.install_status, collect: j.collect_status, note: j.notes })),
     tasks: (tasks || []).map((t) => ({ id: t.id, area: t.area_key, title: t.title, who: t.assignee_email, due: t.due_date || '—', done: t.status === 'done' })),
-    approvals: (appr || []).map((a) => ({ id: a.id, area: a.area_key, title: a.title, details: a.details, amount: a.amount, status: a.status, by: a.requested_by ? String(a.requested_by).split('@')[0] : '', dby: a.decided_by })),
+    approvals: (appr || []).map((a) => ({ id: a.id, area: a.area_key, title: a.title, details: a.details, amount: a.amount, status: a.status, by: a.requested_by ? String(a.requested_by).split('@')[0] : '', reqBy: a.requested_by, dby: a.decided_by })),
     comments: (cms || []).map((m) => ({ target: m.target_type + ':' + m.target_id, area: m.area_key, who: m.author_email, body: m.body, at: m.created_at }))
   };
   if (!S.users[me]) S.users[me] = { full: me.split('@')[0], ini: me[0], cls: 'b' };
