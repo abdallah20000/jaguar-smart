@@ -16,32 +16,135 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
 <style>
-  :root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a; }
+  :root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a;
+          --ok:#5fd39a; --warn:#ffc35a; --info:#7fb6ff; }
   * { box-sizing:border-box }
-  html,body { height:100%; margin:0 }
-  body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
-         padding:env(safe-area-inset-top) max(16px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px,env(safe-area-inset-left)); display:flex; align-items:center; justify-content:center }
+  html,body { min-height:100%; margin:0 }
+  body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%) fixed; background-color:var(--bg); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+         padding:env(safe-area-inset-top) max(16px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px,env(safe-area-inset-left)); min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column }
+  body.in-app { display:block; padding-bottom:calc(84px + env(safe-area-inset-bottom)) }
   .card { width:100%; max-width:380px; background:var(--glass); border:1px solid var(--line); border-radius:22px; padding:28px 22px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
   .brand { display:flex; align-items:center; gap:12px; margin-bottom:22px }
   .brand img { width:46px; height:46px; border-radius:12px }
   .brand h1 { font-size:1.15rem; margin:0 }
   .brand p { margin:2px 0 0; color:var(--muted); font-size:.85rem }
   label { display:block; font-size:.85rem; color:var(--muted); margin:14px 0 6px }
-  input { width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit; direction:ltr; text-align:right }
-  input:focus { outline:2px solid var(--accent); outline-offset:1px }
+  input, textarea, select { width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit }
+  input { direction:ltr; text-align:right }
+  input:focus, textarea:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px }
   button { width:100%; margin-top:20px; padding:14px; border:0; border-radius:14px; background:var(--accent); color:#1a0d05; font:600 1rem inherit; font-family:inherit; cursor:pointer }
-  button:disabled { opacity:.6 }
+  button:disabled { opacity:.6; cursor:default }
   .msg { min-height:1.2em; margin-top:12px; font-size:.85rem; color:var(--err) }
   .muted { color:var(--muted); font-size:.85rem; line-height:1.7 }
   .link { background:none; color:var(--muted); margin-top:10px; font-weight:400; text-decoration:underline }
   [hidden] { display:none !important }
+
+  /* demo */
+  .banner { position:sticky; top:0; z-index:30; width:calc(100% + 32px); margin:0 -16px 14px; padding:8px 16px; text-align:center; font-size:.85rem; font-weight:600;
+            background:repeating-linear-gradient(135deg, rgba(255,106,43,.22) 0 12px, rgba(255,106,43,.12) 12px 24px); border-bottom:1px solid rgba(255,106,43,.4); color:#ffd2bd }
+  body:not(.in-app) .banner { position:fixed; top:0; left:0; right:0; width:auto; margin:0 }
+  .demo-box { margin-bottom:6px; padding-bottom:18px; border-bottom:1px dashed var(--line) }
+  .demo-box h3 { margin:0 0 4px; font-size:.95rem }
+  .demo-acc { display:flex; align-items:center; gap:10px; text-align:right; margin-top:10px; background:var(--glass2); color:var(--fg); border:1px solid var(--line); font-weight:600 }
+  .demo-acc .av { flex:none }
+  .or { text-align:center; color:var(--muted); font-size:.8rem; margin:14px 0 0 }
+
+  /* app shell */
+  .app { width:100%; max-width:560px; margin:0 auto }
+  .top { display:flex; align-items:center; gap:10px; margin:6px 0 16px }
+  .top img { width:38px; height:38px; border-radius:10px }
+  .top .t { flex:1; min-width:0 }
+  .top .t b { display:block; font-size:1rem }
+  .top .t span { color:var(--muted); font-size:.8rem }
+  .av { width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-weight:600; font-size:.9rem; background:#3a2418; color:#ffb48f; border:1px solid rgba(255,106,43,.35) }
+  .av.b { background:#18283a; color:#9cc8ff; border-color:rgba(127,182,255,.35) }
+  .sm { width:auto; margin:0; padding:8px 12px; border-radius:10px; font-size:.85rem; font-weight:600 }
+  .ghost { background:var(--glass2); color:var(--fg); border:1px solid var(--line) }
+  .okb { background:var(--ok); color:#06210f }
+  .nob { background:rgba(255,138,122,.16); color:var(--err); border:1px solid rgba(255,138,122,.35) }
+  h2 { font-size:1.25rem; margin:0 0 4px }
+  h3.sec { font-size:1rem; margin:22px 0 10px; display:flex; align-items:center; gap:8px }
+  h3.sec .n { background:var(--accent); color:#1a0d05; border-radius:99px; padding:0 8px; font-size:.8rem }
+  .panel { background:var(--glass); border:1px solid var(--line); border-radius:18px; padding:14px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); margin-bottom:12px }
+  .row { display:flex; align-items:center; gap:10px }
+  .row .grow { flex:1; min-width:0 }
+  .item { padding:12px 0; border-top:1px solid var(--line) }
+  .item:first-child { border-top:0; padding-top:2px }
+  .item .tt { font-weight:600; font-size:.95rem }
+  .item .ss { color:var(--muted); font-size:.8rem; margin-top:3px; line-height:1.6 }
+  .acts { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:10px }
+  .tile { background:var(--glass); border:1px solid var(--line); border-radius:16px; padding:12px; cursor:pointer; text-align:right; color:var(--fg); margin:0; font-weight:400 }
+  .tile b { display:block; font-size:1.5rem; color:var(--accent) }
+  .tile span { font-size:.78rem; color:var(--muted) }
+  .chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:.75rem; font-weight:600; border:1px solid transparent; white-space:nowrap }
+  .c-pending { background:rgba(154,164,174,.14); color:#c3cbd3; border-color:rgba(154,164,174,.3) }
+  .c-in_progress { background:rgba(127,182,255,.14); color:var(--info); border-color:rgba(127,182,255,.35) }
+  .c-done { background:rgba(95,211,154,.14); color:var(--ok); border-color:rgba(95,211,154,.35) }
+  .c-blocked { background:rgba(255,138,122,.14); color:var(--err); border-color:rgba(255,138,122,.35) }
+  .c-own { background:rgba(255,106,43,.14); color:#ffb48f; border-color:rgba(255,106,43,.35) }
+  .lock { font-size:.78rem; color:var(--muted); background:rgba(255,255,255,.04); border:1px dashed var(--line); border-radius:12px; padding:8px 10px; margin-bottom:12px; line-height:1.6 }
+  .lock.mine { border-color:rgba(255,106,43,.4); color:#ffc9b0 }
+
+  /* pipeline */
+  .flow { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none }
+  .flow::-webkit-scrollbar { display:none }
+  .stage { flex:1 0 92px; margin:0; padding:10px 8px; border-radius:14px; background:var(--glass); border:1px solid var(--line); color:var(--fg); text-align:center; font-weight:400; position:relative }
+  .stage b { display:block; font-size:1.4rem }
+  .stage span { font-size:.75rem; color:var(--muted) }
+  .stage.on { border-color:var(--accent); background:rgba(255,106,43,.14) }
+  .stage.on b { color:var(--accent) }
+  .arrow { align-self:center; color:var(--muted); flex:none; font-size:.9rem }
+
+  /* handover card */
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px }
+  .step { background:rgba(0,0,0,.2); border:1px solid var(--line); border-radius:12px; padding:8px 6px; text-align:center; min-width:0 }
+  .step .nm { font-size:.8rem; font-weight:600; margin-bottom:6px }
+  .step .ow { font-size:.7rem; color:var(--muted); margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .step button.chip { width:auto; margin:0; cursor:pointer; font-family:inherit }
+  .step button.chip:disabled { cursor:default; opacity:.9 }
+  .bar { height:6px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:10px }
+  .bar i { display:block; height:100%; background:var(--accent) }
+
+  /* nav */
+  nav { position:fixed; bottom:0; left:0; right:0; z-index:20; display:flex; justify-content:center; padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+        background:rgba(15,18,22,.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-top:1px solid var(--line) }
+  nav .in { display:flex; width:100%; max-width:560px }
+  nav button { flex:1; margin:0; padding:6px 2px; background:none; color:var(--muted); font-size:.72rem; font-weight:600; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px }
+  nav button svg { width:22px; height:22px }
+  nav button.on { color:var(--accent); background:rgba(255,106,43,.1) }
+
+  /* sheet */
+  .sheet-bg { position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.55); display:flex; align-items:flex-end; justify-content:center }
+  .sheet { width:100%; max-width:560px; max-height:82vh; overflow:auto; background:#171b20; border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) }
+  .cm { background:rgba(255,255,255,.05); border-radius:12px; padding:9px 11px; margin-top:8px; font-size:.88rem; line-height:1.6 }
+  .cm small { display:block; color:var(--muted); font-size:.72rem }
+  textarea { min-height:70px; resize:vertical; margin-top:12px }
+  .toast { position:fixed; bottom:calc(90px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:50; background:#262c33; border:1px solid var(--line); padding:10px 16px; border-radius:12px; font-size:.88rem; max-width:90vw }
+  .ph { text-align:center; padding:22px 14px }
+  .ph svg { width:40px; height:40px; color:var(--muted) }
+  .mini { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center }
+  .mini div { background:rgba(0,0,0,.2); border-radius:10px; padding:8px 2px }
+  .mini b { display:block; font-size:1.05rem }
+  .mini span { font-size:.7rem; color:var(--muted) }
+  .chk { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px }
+  .chk label { margin:0; display:flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--line); border-radius:99px; font-size:.8rem; color:var(--fg); background:rgba(0,0,0,.2) }
+  .chk input { width:auto; margin:0; accent-color:var(--accent) }
+  .sub { font-size:.78rem; color:var(--muted); margin:12px 0 2px }
+  select.sel { padding:8px 10px; font-size:.85rem; width:auto; max-width:150px }
+  .wait { text-align:center }
+  .wait svg { width:54px; height:54px; color:var(--accent) }
+  .small-link { display:block; width:auto; margin:14px auto 0; padding:4px 8px; background:none; color:var(--muted); font-size:.82rem; font-weight:400; text-decoration:underline }
+  .src { font-size:.7rem; color:var(--muted); border:1px solid var(--line); border-radius:99px; padding:1px 8px; margin-inline-start:6px; font-weight:400 }
 </style>
 </head>
 <body>
-<main class="card">
+<div class="banner" id="demoBanner" hidden>نسخة تجريبية — داتا وهمية</div>
+
+<main class="card" id="loginCard">
   <div class="brand">
-    <img src="/tuya-suez/icon.png" alt="">
-    <div><h1>Tuya Suez</h1><p>لوحة الشركا</p></div>
+    <img id="brandLogo" src="/tuya-suez/icon.png" alt="">
+    <div><h1 id="brandName">Tuya Suez</h1><p>لوحة الشركا</p></div>
   </div>
 
   <form id="login">
@@ -51,7 +154,36 @@
     <input id="pass" type="password" autocomplete="current-password" required>
     <button id="go" type="submit">دخول</button>
     <div class="msg" id="msg"></div>
+    <button class="small-link" id="toSignup" type="button">مالكش حساب؟ اعمل حساب</button>
+    <button class="small-link" id="toDemo" type="button" hidden>دخول تجريبي</button>
   </form>
+
+  <section id="demoBox" hidden>
+    <h3 style="margin:0 0 4px;font-size:.95rem">دخول تجريبي</h3>
+    <p class="muted" style="margin:0">داتا وهمية بالكامل. مفيش باسورد بيتحفظ، ومفيش حاجة بتتبعت لأي حد.</p>
+    <div id="demoList"></div>
+    <button class="small-link" id="demoBack" type="button">رجوع للدخول</button>
+  </section>
+
+  <form id="signup" hidden>
+    <p class="muted" id="suNote" style="margin:0">بعد ما تعمل حساب، هيفضل مستني موافقة قبل ما تشوف أي حاجة.</p>
+    <label for="suName">اسمك</label>
+    <input id="suName" type="text" autocomplete="name" required minlength="2" maxlength="60" style="direction:rtl">
+    <label for="suEmail">الإيميل</label>
+    <input id="suEmail" type="email" autocomplete="email" required>
+    <label for="suPass">الباسورد</label>
+    <input id="suPass" type="password" autocomplete="new-password" required minlength="8">
+    <button id="suGo" type="submit">اعمل الحساب</button>
+    <div class="msg" id="suMsg"></div>
+    <button class="small-link" id="suBack" type="button">عندي حساب، ادخل</button>
+  </form>
+
+  <section id="wait" class="wait" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <h2 style="margin:10px 0 6px;font-size:1.15rem">حسابك مستني موافقة</h2>
+    <p class="muted" id="waitTxt">أول ما الأدمن يوافق ويحدد صلاحياتك، اللوحة هتفتح لك هنا لوحدها.</p>
+    <button class="link" id="waitOut" type="button">خروج</button>
+  </section>
 
   <section id="home" hidden>
     <h2 style="margin:0 0 8px;font-size:1.1rem">أهلاً <span id="who"></span></h2>
@@ -60,21 +192,57 @@
   </section>
 </main>
 
+<div class="app" id="app" hidden>
+  <header class="top">
+    <img id="coLogo" src="/tuya-suez/icon.png" alt="">
+    <div class="t"><b id="coName">Tuya Suez</b><span>لوحة الشركا</span></div>
+    <span class="av" id="meAv"></span>
+  </header>
+  <div id="view"></div>
+</div>
+
+<nav id="nav" hidden><div class="in">
+  <button data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>الرئيسية</button>
+  <button data-tab="pipe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>البنات</button>
+  <button data-tab="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3"/></svg>التسليم</button>
+  <button data-tab="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>المهام</button>
+  <button data-tab="areas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 4a3 3 0 0 1 0 6M21 20c0-2.5-1.5-4-4-4.6"/></svg>المسؤوليات</button>
+</div></nav>
+
 <script>
-// Login only. Uses the same Supabase project and email+password auth as the Tuya Suez CRM.
-// No data is read here yet; the dashboard content comes later.
+// ---------------------------------------------------------------------------------------------
+// One app, parametrised by company. This page serves Tuya Suez; the same code can later be served
+// with another CO config at another path. Everything below reads CO, never a hard-coded company.
+// ---------------------------------------------------------------------------------------------
+const CO = { id: 'tuya-suez', name: 'Tuya Suez', logo: '/tuya-suez/icon.png', realHosts: ['jaguarsmart.com', 'www.jaguarsmart.com'] };
+
+// Real path: same Supabase project and email+password auth as the CRM.
+// After login the page asks the database (migration 111) what this account may see. The CRM tables are
+// read live and read-only through tsd_crm(); the dashboard never writes to CRM tables.
+// Demo path (?demo=1, or any other host): fake accounts and fake CRM-like data kept only in this
+// browser's localStorage. No passwords stored, no network calls, nothing sent to anyone.
 const SB_URL = 'https://snrsfpprlynixotjipmo.supabase.co';
 const SB_KEY = 'sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds';
 const STORE = 'ts-dash-session';
 const $ = (id) => document.getElementById(id);
+const DEMO = new URLSearchParams(location.search).get('demo') === '1' || !CO.realHosts.includes(location.hostname.toLowerCase());
+document.title = CO.name + ' · لوحة الشركا';
+$('brandName').textContent = CO.name; $('brandLogo').src = CO.logo; $('coName').textContent = CO.name; $('coLogo').src = CO.logo;
 
 function load() { try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { return null; } }
 function save(s) { try { s ? localStorage.setItem(STORE, JSON.stringify(s)) : localStorage.removeItem(STORE); } catch (e) {} }
 
+function screen(which) {
+  ['login', 'signup', 'demoBox', 'wait', 'home'].forEach((id) => { $(id).hidden = id !== which; });
+}
 function show(s) {
   const ok = !!(s && s.access_token);
-  $('login').hidden = ok; $('home').hidden = !ok;
+  screen(ok ? 'home' : 'login');
   if (ok) $('who').textContent = (s.user && s.user.email) || '';
+}
+function showWait(name) {
+  screen('wait');
+  $('waitTxt').textContent = (name ? name + '، ' : '') + 'أول ما الأدمن يوافق ويحدد صلاحياتك، اللوحة هتفتح لك هنا لوحدها.';
 }
 
 async function refresh(s) {
@@ -92,14 +260,552 @@ $('login').addEventListener('submit', async (e) => {
     const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: $('email').value.trim(), password: $('pass').value }) });
     const j = await r.json();
     if (!r.ok) { $('msg').textContent = 'الإيميل أو الباسورد مش صح'; return; }
-    save(j); $('pass').value = ''; show(j);
+    save(j); $('pass').value = ''; await realStart(j);
   } catch (err) { $('msg').textContent = 'مفيش اتصال، جرّب تاني'; }
   finally { $('go').disabled = false; }
 });
 
-$('out').addEventListener('click', () => { save(null); show(null); });
+$('signup').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = $('suName').value.trim(), email = $('suEmail').value.trim().toLowerCase();
+  $('suMsg').textContent = '';
+  if (DEMO) { $('suPass').value = ''; demoSignup(name, email); return; }   // fake flow: the password is dropped, never stored
+  $('suGo').disabled = true;
+  try {
+    const r = await fetch(SB_URL + '/auth/v1/signup', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: $('suPass').value, data: { full_name: name } }) });
+    $('suPass').value = '';
+    if (!r.ok) { $('suMsg').textContent = 'مقدرناش نعمل الحساب. اتأكد من الإيميل وإن الباسورد 8 حروف على الأقل.'; return; }
+    showWait(name);
+  } catch (err) { $('suMsg').textContent = 'مفيش اتصال، جرّب تاني'; }
+  finally { $('suGo').disabled = false; }
+});
 
-(async () => { show(await refresh(load()).catch(() => null)); })();
+$('out').addEventListener('click', () => { save(null); show(null); });
+$('toSignup').addEventListener('click', () => screen('signup'));
+$('suBack').addEventListener('click', () => screen('login'));
+$('waitOut').addEventListener('click', () => { if (DEMO) { try { localStorage.removeItem(D_SESSION); } catch (e) {} } save(null); show(null); });
+
+/* =====================================================================
+   Shared state. Both demo and real mode fill the same shape:
+   S = { users{id:{full,ini,cls}}, members[{user,role,see}], requests[{user,at,status}], areas[], history[],
+         leads[] (CRM leads), quotes[] (CRM quotations), stock[] (CRM inventory), jobs[], tasks[], approvals[], comments[] }
+   In real mode a user id is the email.
+   ===================================================================== */
+const ROLES = { owner: 'مالك', admin: 'أدمن', staff: 'موظف' };
+const CRM_STATUS = { new: 'جديد', contacted: 'اتكلمنا', site_visit: 'زيارة موقع', quotation_sent: 'عرض سعر اتبعت', negotiation: 'تفاوض', won: 'اتقفل', lost: 'خسرناه' };
+const STAGES = [
+  { key: 'reception', name: 'استقبال', crm: ['new'] }, { key: 'understand', name: 'فهم الطلب', crm: ['contacted', 'site_visit'] },
+  { key: 'quote', name: 'عرض السعر', crm: ['quotation_sent'] }, { key: 'followup', name: 'المتابعة', crm: ['negotiation'] },
+  { key: 'approved', name: 'الموافقة', crm: ['won'] }
+];
+const stageOf = (status) => (STAGES.find((s) => s.crm.includes(status)) || {}).key;
+const STEPS = [
+  { key: 'goods', name: 'بضاعة', area: 'goods' }, { key: 'techs', name: 'فنيين', area: 'technicians' },
+  { key: 'install', name: 'تركيب', area: 'installs' }, { key: 'collect', name: 'تحصيل', area: 'collection' }
+];
+const ST = { pending: 'مستني', in_progress: 'شغال', done: 'خلص', blocked: 'واقف' };
+const ST_NEXT = { pending: 'in_progress', in_progress: 'done', done: 'blocked', blocked: 'pending' };
+const Q_ST = { draft: 'مسودة', sent: 'اتبعت', accepted: 'اتوافق', rejected: 'اترفض' };
+const AREA_NAMES = [
+  ['responsibilities', 'توزيع المسؤوليات'], ['sales', 'المبيعات وفريق البنات'], ['pricing', 'الأسعار وعروض السعر'],
+  ['delivery', 'التسليم (فتح بطاقة شغلانة)'], ['goods', 'المخزن والبضاعة'], ['technicians', 'الفنيين'],
+  ['installs', 'التركيب والتسليم للعميل'], ['collection', 'الكاش والتحصيل'], ['marketing', 'التسويق والإعلانات']
+];
+const D_SESSION = 'ts-dash-demo-user';
+const D_DATA = 'ts-dash-demo-' + CO.id + '-v3';
+
+let S = null, me = null, MODE = null, tab = 'home', stageSel = 'followup', RS = null;
+
+function seed() {
+  const h = (n) => new Date(Date.now() - n * 3600e3).toISOString();
+  const d = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+  const L = (id, name, tail, status, girl, last, hrs, area) => ({ id: 'l' + id, name, phone: '01' + (id % 3) + '•••••' + tail, status, assigned_to: girl, last, at: h(hrs), created_at: h(hrs + 24 * (id % 5)), area });
+  const own = { sales: 'ahmed', delivery: 'ahmed', technicians: 'ahmed', installs: 'ahmed', goods: 'omar' };
+  return {
+    users: {
+      abdallah: { full: 'عبدالله', ini: 'ع', cls: '' },
+      ahmed: { full: 'أحمد مصطفى', ini: 'أ', cls: 'b' },
+      omar: { full: 'عمر', ini: 'ع', cls: 'b' }
+    },
+    members: [{ user: 'abdallah', role: 'owner', see: [] }, { user: 'ahmed', role: 'admin', see: [] }, { user: 'omar', role: 'admin', see: [] }],
+    requests: [],
+    areas: AREA_NAMES.map(([key, name]) => ({ key, name, owner: own[key] || 'abdallah' })),
+    history: [],
+    leads: [
+      L(1, 'م. كريم الصاوي (وهمي)', '4821', 'new', 'منة', 'رسالة واتساب: عايز يسأل على الكاميرات', 1, 'حي السلام'),
+      L(2, 'أ. نورهان سليم (وهمي)', '7730', 'new', 'سلمى', 'سابت رقمها من الإعلان', 3, 'الأربعين'),
+      L(3, 'د. هشام البنا (وهمي)', '1194', 'new', 'منة', 'مكالمة فايتة', 5, 'فيصل'),
+      L(4, 'أ. ياسمين فؤاد (وهمي)', '5502', 'site_visit', 'منة', 'اتفقنا على زيارة معاينة الخميس', 4, 'الجناين'),
+      L(5, 'م. طارق عزمي (وهمي)', '3317', 'contacted', 'سلمى', 'بعت صور الشقة، 3 أوض وصالة', 9, 'عتاقة'),
+      L(6, 'أ. رانيا حمدي (وهمي)', '9046', 'quotation_sent', 'سلمى', 'اتبعتلها عرض Q-9104 (وهمي)', 20, 'السويس'),
+      L(7, 'م. شريف علام (وهمي)', '6688', 'quotation_sent', 'منة', 'مستني نعدل العرض ونشيل ستارة', 26, 'الأربعين'),
+      L(8, 'أ. دينا شكري (وهمي)', '2275', 'quotation_sent', 'سلمى', 'العرض جاهز ومستني موافقة السعر', 6, 'فيصل'),
+      L(9, 'أ. محمود رجب (وهمي)', '8410', 'negotiation', 'منة', 'قال هيرد بعد ما يكلم مراته', 48, 'حي السلام'),
+      L(10, 'د. سارة الحفناوي (وهمي)', '1359', 'negotiation', 'منة', 'طلبت خصم 5%', 30, 'الجناين'),
+      L(11, 'م. وليد منصور (وهمي)', '4467', 'negotiation', 'سلمى', 'متابعة تانية، مردش', 72, 'السخنة'),
+      L(12, 'أ. هبة القاضي (وهمي)', '7023', 'won', 'سلمى', 'وافقت ودفعت عربون (وهمي)', 2, 'الأربعين'),
+      L(13, 'م. أيمن جاد (وهمي)', '3981', 'won', 'منة', 'وافق، مستني ميعاد التركيب', 28, 'فيصل')
+    ],
+    quotes: [
+      { id: 'q1', number: 'Q-9101', client: 'أ. هبة القاضي (وهمي)', total: 42000, status: 'accepted', date: d(3), by: 'سلمى' },
+      { id: 'q2', number: 'Q-9102', client: 'م. أيمن جاد (وهمي)', total: 27500, status: 'accepted', date: d(6), by: 'منة' },
+      { id: 'q3', number: 'Q-9103', client: 'د. عمرو الفقي (وهمي)', total: 61000, status: 'accepted', date: d(12), by: 'منة' },
+      { id: 'q4', number: 'Q-9104', client: 'أ. رانيا حمدي (وهمي)', total: 38500, status: 'sent', date: d(1), by: 'سلمى' },
+      { id: 'q5', number: 'Q-9105', client: 'م. شريف علام (وهمي)', total: 19800, status: 'sent', date: d(2), by: 'منة' },
+      { id: 'q6', number: 'Q-9106', client: 'أ. دينا شكري (وهمي)', total: 31200, status: 'draft', date: d(0), by: 'سلمى' }
+    ],
+    stock: [
+      { id: 's1', name: 'سويتش 3 خط زجاج (وهمي)', unit: 'قطعة', qty: 0, min: 10 },
+      { id: 's2', name: 'سويتش 2 خط زجاج (وهمي)', unit: 'قطعة', qty: 14, min: 10 },
+      { id: 's3', name: 'موتور ستارة (وهمي)', unit: 'قطعة', qty: 3, min: 4 },
+      { id: 's4', name: 'بوابة Zigbee (وهمي)', unit: 'قطعة', qty: 9, min: 3 },
+      { id: 's5', name: 'كاميرا خارجي 4MP (وهمي)', unit: 'قطعة', qty: 6, min: 4 }
+    ],
+    jobs: [
+      { id: 'j1', customer: 'أ. هبة القاضي (وهمي)', place: 'السويس — حي الأربعين', total: 42000, paid: 10000, goods: 'done', techs: 'in_progress', install: 'pending', collect: 'pending' },
+      { id: 'j2', customer: 'م. أيمن جاد (وهمي)', place: 'السويس — فيصل', total: 27500, paid: 0, goods: 'blocked', techs: 'pending', install: 'pending', collect: 'pending', note: 'سويتش 3 خط ناقص في المخزن' },
+      { id: 'j3', customer: 'د. عمرو الفقي (وهمي)', place: 'العين السخنة — شاليه', total: 61000, paid: 45000, goods: 'done', techs: 'done', install: 'done', collect: 'in_progress' }
+    ],
+    tasks: [
+      { id: 't1', area: 'sales', title: 'راجع متابعات البنات المتأخرة أكتر من يومين', who: 'ahmed', due: 'النهارده', done: false },
+      { id: 't2', area: 'technicians', title: 'ثبّت ميعاد الفني لشغلانة أ. هبة القاضي', who: 'ahmed', due: 'النهارده', done: false },
+      { id: 't3', area: 'installs', title: 'تسليم وتجربة شاليه د. عمرو مع العميل', who: 'ahmed', due: 'بكرة', done: false },
+      { id: 't4', area: 'goods', title: 'اطلب سويتشات 3 خط ناقصة من المورد', who: 'omar', due: 'النهارده', done: false },
+      { id: 't5', area: 'collection', title: 'حصّل باقي فلوس شاليه السخنة', who: 'abdallah', due: 'بكرة', done: false }
+    ],
+    approvals: [
+      { id: 'a1', area: 'sales', title: 'خصم 5% لـ د. سارة الحفناوي (وهمي)', details: 'طلبته منة عشان تقفل البيعة النهارده', amount: 1900, status: 'pending', by: 'منة' },
+      { id: 'a2', area: 'technicians', title: 'فني زيادة يوم السبت', details: 'الشغلانة كبيرة ومحتاجة اتنين', amount: 600, status: 'pending', by: 'سلمى' },
+      { id: 'a3', area: 'pricing', title: 'عرض سعر Q-9106 لـ أ. دينا شكري (وهمي)', details: '8 سويتش + 2 ستارة + كاميرا', amount: 31200, status: 'pending', by: 'سلمى' },
+      { id: 'a4', area: 'goods', title: 'شراء 30 سويتش 3 خط من المورد', details: 'المخزن خلص والشغلانة واقفة', amount: 13500, status: 'pending', by: 'عمر' },
+      { id: 'a5', area: 'collection', title: 'تقسيط باقي فلوس م. أيمن جاد على شهرين', details: 'العميل طالب', amount: 27500, status: 'pending', by: 'منة' }
+    ],
+    comments: [{ target: 'job:j2', area: 'delivery', who: 'ahmed', body: 'العميل مستعجل، لو السويتش مش هيوصل قبل الأحد نبلّغه.', at: h(2) }]
+  };
+}
+
+function dLoad() { try { S = JSON.parse(localStorage.getItem(D_DATA) || 'null'); } catch (e) { S = null; } if (!S || !S.areas) { S = seed(); dSave(); } }
+function dSave() { if (MODE !== 'real') try { localStorage.setItem(D_DATA, JSON.stringify(S)); } catch (e) {} }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function money(n) { return Number(n || 0).toLocaleString('ar-EG') + ' ج.م'; }
+function ago(iso) { if (!iso) return ''; const m = Math.max(1, Math.round((Date.now() - new Date(iso)) / 60000)); return m < 60 ? 'من ' + m + ' دقيقة' : m < 1440 ? 'من ' + Math.round(m / 60) + ' ساعة' : 'من ' + Math.round(m / 1440) + ' يوم'; }
+function U(id) { return S.users[id] || { full: String(id || '؟').split('@')[0], ini: String(id || '؟')[0], cls: 'b' }; }
+function first(id) { return U(id).full.split(' ')[0]; }
+function mem(u) { return S.members.find((m) => m.user === u); }
+function role() { const m = mem(me); return m ? m.role : null; }
+function isOwner() { return role() === 'owner'; }
+function area(k) { return S.areas.find((a) => a.key === k) || { key: k, name: k, owner: null }; }
+function owner(k) { return area(k).owner; }
+function owns(k) { return !!me && owner(k) === me; }
+function canSee(k) { const m = mem(me); if (!m) return false; return m.role !== 'staff' || m.see.includes(k) || owns(k); }
+function canMove(k) { return isOwner() || owns('responsibilities') || owns(k); }
+function cCount(t) { return S.comments.filter((c) => c.target === t).length; }
+function toast(t) { const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.appendChild(el); setTimeout(() => el.remove(), 2200); }
+function pendingReqs() { return S.requests.filter((r) => r.status === 'pending'); }
+function curStep(j) { const s = STEPS.find((s) => j[s.key] !== 'done'); return s ? s.key : 'done'; }
+function lockNote(k, extra) {
+  return (owns(k)
+    ? '<div class="lock mine">«' + esc(area(k).name) + '» مسؤوليتك — إنت اللي بتعدّل وتوافق هنا.'
+    : '<div class="lock">«' + esc(area(k).name) + '» مسؤولية ' + esc(U(owner(k)).full) + ' — إنت شايف بس، وتقدر تكتب تعليق.') + (extra || '') + '</div>';
+}
+function noAccess(k) { return '<div class="panel ph"><p class="muted" style="margin:0">«' + esc(area(k).name) + '» مش ضمن صلاحياتك.</p></div>'; }
+function cBtn(t, k, label) { const n = cCount(t); return '<button class="sm ghost" data-cm="' + esc(t) + '" data-cma="' + k + '" data-cmt="' + esc(label) + '">تعليق' + (n ? ' (' + n + ')' : '') + '</button>'; }
+const SRC = '<span class="src">من الـCRM</span>';
+
+function sales() {
+  const month = new Date().toISOString().slice(0, 7), today = new Date().toISOString().slice(0, 10);
+  return {
+    volume: S.quotes.filter((q) => q.status === 'accepted' && String(q.date).slice(0, 7) === month).reduce((a, q) => a + Number(q.total || 0), 0),
+    newToday: S.leads.filter((l) => String(l.created_at).slice(0, 10) === today).length,
+    sent: S.quotes.filter((q) => q.status === 'sent').length,
+    low: S.stock.filter((s) => s.min != null && Number(s.qty) <= Number(s.min)).length
+  };
+}
+
+function myToday() {
+  const tasks = S.tasks.filter((t) => t.who === me && !t.done);
+  const appr = S.approvals.filter((a) => a.status === 'pending' && owns(a.area));
+  const steps = [];
+  S.jobs.forEach((j) => STEPS.forEach((s) => { if (owns(s.area) && (j[s.key] === 'blocked' || j[s.key] === 'in_progress')) steps.push({ j, s }); }));
+  return { tasks, appr, steps, reqs: isOwner() ? pendingReqs() : [] };
+}
+
+function render() {
+  if (!mem(me)) { const n = U(me).full; leaveApp(); showWait(n); return; }
+  $('meAv').textContent = U(me).ini; $('meAv').className = 'av ' + U(me).cls;
+  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+  const v = $('view');
+  if (tab === 'home') v.innerHTML = vHome();
+  else if (tab === 'pipe') v.innerHTML = vPipe();
+  else if (tab === 'jobs') v.innerHTML = vJobs();
+  else if (tab === 'tasks') v.innerHTML = vTasks();
+  else if (tab === 'areas') v.innerHTML = vAreas();
+}
+
+function vHome() {
+  const t = myToday(), n = t.tasks.length + t.appr.length + t.steps.length + t.reqs.length, sv = sales();
+  const mine = S.areas.filter((a) => a.owner === me);
+  let h = '<h2>أهلاً ' + esc(U(me).full) + '</h2><p class="muted" style="margin:0">' + ROLES[role()] + ' · مسؤول عن: ' + (mine.map((a) => esc(a.name)).join('، ') || 'مفيش لسه') + '</p>';
+  h += '<h3 class="sec">المطلوب منك النهارده <span class="n">' + n + '</span></h3><div class="panel">';
+  if (!n) h += '<p class="muted" style="margin:0">مفيش حاجة مستنياك النهارده.</p>';
+  t.reqs.forEach((r) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">طلب دخول: ' + esc(U(r.user).full) + '</div><div class="ss">حساب جديد مستني موافقتك</div></div><button class="sm" data-go="areas">افتح</button></div></div>'; });
+  t.appr.forEach((a) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">وافق على: ' + esc(a.title) + '</div><div class="ss">' + esc(area(a.area).name) + ' · ' + money(a.amount) + '</div></div><button class="sm" data-go="tasks">افتح</button></div></div>'; });
+  t.tasks.forEach((x) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(x.title) + '</div><div class="ss">مهمة · ' + esc(x.due) + '</div></div><button class="sm ghost" data-done="' + esc(x.id) + '">خلصت</button></div></div>'; });
+  t.steps.forEach(({ j, s }) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(s.name) + ' — ' + esc(j.customer) + '</div><div class="ss">بطاقة تسليم</div></div><span class="chip c-' + j[s.key] + '">' + ST[j[s.key]] + '</span></div></div>'; });
+  h += '</div>';
+  h += '<h3 class="sec">المبيعات' + SRC + '</h3><div class="panel"><div class="mini">';
+  h += '<div><b>' + (canSee('pricing') ? sv.volume.toLocaleString('ar-EG') : '—') + '</b><span>مبيعات الشهر ج.م</span></div>';
+  h += '<div><b>' + (canSee('sales') ? sv.newToday : '—') + '</b><span>عميل جديد النهارده</span></div>';
+  h += '<div><b>' + (canSee('pricing') ? sv.sent : '—') + '</b><span>عرض سعر مستني</span></div>';
+  h += '<div><b style="color:' + (sv.low ? 'var(--err)' : 'inherit') + '">' + (canSee('goods') ? sv.low : '—') + '</b><span>صنف ناقص</span></div></div></div>';
+  h += '<div class="tiles">';
+  h += '<button class="tile" data-go="pipe"><b>' + S.leads.filter((l) => stageOf(l.status)).length + '</b><span>عميل في خط البنات</span></button>';
+  h += '<button class="tile" data-go="jobs"><b>' + S.jobs.filter((j) => curStep(j) !== 'done').length + '</b><span>شغلانة مفتوحة</span></button>';
+  h += '<button class="tile" data-go="tasks"><b>' + S.approvals.filter((a) => a.status === 'pending' && canSee(a.area)).length + '</b><span>مستني موافقة</span></button></div>';
+  h += '<h3 class="sec">رسايل العملا</h3><div class="panel ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6A8 8 0 1 1 21 12z"/></svg>';
+  h += '<p class="muted" style="margin:8px 0 0">رسايل الواتساب والصفحة هتتربط هنا بعدين. دلوقتي مفيش رسايل حقيقية في اللوحة.</p></div>';
+  return h + '<button class="link" data-out="1" type="button">خروج</button>';
+}
+
+function vPipe() {
+  let h = '<h2>خط البنات' + SRC + '</h2><p class="muted" style="margin:0 0 12px">العملا من الـCRM اللي البنات شغالين عليه، من أول رسالة لحد الموافقة. دوس على أي مرحلة تشوف عملاها.</p>';
+  if (!canSee('sales')) return h + noAccess('sales');
+  h += lockNote('sales', '<br>البنات بيحرّكوا العميل من الـCRM؛ هنا قراية بس + تعليقات وموافقات.') + '<div class="flow">';
+  STAGES.forEach((s, i) => {
+    const n = S.leads.filter((l) => stageOf(l.status) === s.key).length;
+    h += (i ? '<span class="arrow">←</span>' : '') + '<button class="stage' + (s.key === stageSel ? ' on' : '') + '" data-stage="' + s.key + '"><b>' + n + '</b><span>' + s.name + '</span></button>';
+  });
+  h += '</div>';
+  const st = STAGES.find((s) => s.key === stageSel), list = S.leads.filter((l) => stageOf(l.status) === stageSel);
+  h += '<h3 class="sec">' + esc(st.name) + ' <span class="n">' + list.length + '</span></h3><div class="panel">';
+  if (!list.length) h += '<p class="muted" style="margin:0">مفيش عملا في المرحلة دي.</p>';
+  list.forEach((l) => {
+    h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(l.name) + '</div><div class="ss"><span dir="ltr">' + esc(l.phone) + '</span>' + (l.area ? ' · ' + esc(l.area) : '') + ' · ' + esc(CRM_STATUS[l.status] || l.status) + '</div></div><span class="chip c-own">' + esc(l.assigned_to || '—') + '</span></div>';
+    h += '<div class="ss">آخر حاجة: ' + esc(l.last || '—') + (l.at ? ' · ' + ago(l.at) : '') + '</div><div class="acts">' + cBtn('lead:' + l.id, 'sales', l.name) + '</div></div>';
+  });
+  h += '</div>';
+  if (canSee('pricing')) {
+    h += '<h3 class="sec">عروض السعر' + SRC + '</h3><div class="panel">';
+    if (!S.quotes.length) h += '<p class="muted" style="margin:0">مفيش عروض.</p>';
+    S.quotes.slice(0, 8).forEach((q) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(q.number) + ' — ' + esc(q.client) + '</div><div class="ss">' + esc(q.date) + (q.by ? ' · ' + esc(q.by) : '') + '</div></div><div style="text-align:left"><b style="font-size:.85rem">' + money(q.total) + '</b><br><span class="chip c-' + (q.status === 'accepted' ? 'done' : q.status === 'rejected' ? 'blocked' : q.status === 'sent' ? 'in_progress' : 'pending') + '">' + (Q_ST[q.status] || q.status) + '</span></div></div></div>'; });
+    h += '</div>';
+  }
+  return h;
+}
+
+function vJobs() {
+  let h = '<h2>بطاقة تسليم</h2><p class="muted" style="margin:0 0 12px">كل شغلانة: بضاعة ← فنيين ← تركيب ← تحصيل. كل خطوة ليها صاحب، وصاحبها بس اللي يغيّر حالتها (دوس على الحالة).</p>';
+  if (!canSee('delivery')) return h + noAccess('delivery');
+  if (!S.jobs.length) h += '<div class="panel"><p class="muted" style="margin:0">مفيش شغلانات لسه.</p></div>';
+  S.jobs.forEach((j) => {
+    const done = STEPS.filter((s) => j[s.key] === 'done').length;
+    h += '<div class="panel"><div class="row"><div class="grow"><div class="tt" style="font-weight:600">' + esc(j.customer) + '</div><div class="ss muted" style="font-size:.8rem">' + esc(j.place || '') + '</div></div>';
+    h += '<div style="text-align:left;font-size:.8rem"><b>' + money(j.total) + '</b><div class="muted" style="font-size:.75rem">اتحصّل ' + money(j.paid) + '</div></div></div><div class="steps">';
+    STEPS.forEach((s) => {
+      const mine = owns(s.area);
+      h += '<div class="step"><div class="nm">' + s.name + '</div><button class="chip c-' + j[s.key] + '" data-step="' + esc(j.id) + '|' + s.key + '"' + (mine ? '' : ' disabled title="مسؤولية ' + esc(U(owner(s.area)).full) + '"') + '>' + ST[j[s.key]] + (mine ? '' : ' 🔒') + '</button><div class="ow">' + esc(first(owner(s.area))) + '</div></div>';
+    });
+    h += '</div><div class="bar"><i style="width:' + (done * 25) + '%"></i></div>';
+    if (j.note) h += '<div class="ss muted" style="font-size:.8rem;margin-top:8px">ملاحظة: ' + esc(j.note) + '</div>';
+    h += '<div class="acts">' + cBtn('job:' + j.id, 'delivery', j.customer) + '</div></div>';
+  });
+  if (canSee('goods')) {
+    h += '<h3 class="sec">المخزن' + SRC + '</h3><div class="panel">';
+    S.stock.slice().sort((a, b) => (a.qty - a.min) - (b.qty - b.min)).slice(0, 8).forEach((s) => {
+      const low = s.min != null && Number(s.qty) <= Number(s.min);
+      h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(s.name) + '</div><div class="ss">الحد الأدنى ' + esc(s.min == null ? '—' : s.min) + '</div></div><span class="chip ' + (low ? 'c-blocked' : 'c-done') + '">' + esc(s.qty) + ' ' + esc(s.unit) + '</span></div></div>';
+    });
+    h += '</div>';
+  }
+  return h;
+}
+
+function vTasks() {
+  const mine = S.tasks.filter((t) => t.who === me);
+  const pend = S.approvals.filter((a) => a.status === 'pending' && canSee(a.area));
+  const myAppr = pend.filter((a) => owns(a.area)), otherAppr = pend.filter((a) => !owns(a.area));
+  let h = '<h2>مهام ' + esc(first(me)) + '</h2>';
+  h += '<h3 class="sec">مهامي <span class="n">' + mine.filter((t) => !t.done).length + '</span></h3><div class="panel">';
+  if (!mine.length) h += '<p class="muted" style="margin:0">مفيش مهام.</p>';
+  mine.forEach((t) => {
+    h += '<div class="item"><div class="row"><div class="grow"><div class="tt"' + (t.done ? ' style="text-decoration:line-through;opacity:.6"' : '') + '>' + esc(t.title) + '</div><div class="ss">' + esc(area(t.area).name) + ' · ' + esc(t.due) + '</div></div>';
+    h += t.done ? '<span class="chip c-done">خلصت</span>' : '<button class="sm ghost" data-done="' + esc(t.id) + '">خلصت</button>';
+    h += '</div><div class="acts">' + cBtn('task:' + t.id, t.area, t.title) + '</div></div>';
+  });
+  h += '</div><h3 class="sec">مستني موافقتك <span class="n">' + myAppr.length + '</span></h3><div class="panel">';
+  if (!myAppr.length) h += '<p class="muted" style="margin:0">مفيش حاجة مستنية موافقتك.</p>';
+  myAppr.forEach((a) => { h += apprItem(a, true); });
+  h += '</div><h3 class="sec">مستني موافقة غيرك <span class="n">' + otherAppr.length + '</span></h3><div class="panel">';
+  if (!otherAppr.length) h += '<p class="muted" style="margin:0">مفيش.</p>';
+  otherAppr.forEach((a) => { h += apprItem(a, false); });
+  h += '</div>';
+  const decided = S.approvals.filter((a) => a.status !== 'pending' && canSee(a.area));
+  if (decided.length) {
+    h += '<h3 class="sec">اتقرّر</h3><div class="panel">';
+    decided.forEach((a) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(a.title) + '</div><div class="ss">' + esc(U(a.dby).full) + '</div></div><span class="chip ' + (a.status === 'approved' ? 'c-done">اتوافق' : 'c-blocked">اترفض') + '</span></div></div>'; });
+    h += '</div>';
+  }
+  return h;
+}
+function apprItem(a, can) {
+  let h = '<div class="item"><div class="tt">' + esc(a.title) + '</div><div class="ss">' + esc(a.details || '') + '<br>' + esc(area(a.area).name) + ' · ' + money(a.amount) + ' · طلب: ' + esc(a.by || '—') + '</div><div class="acts">';
+  if (can) h += '<button class="sm okb" data-ap="' + esc(a.id) + '|1">موافق</button><button class="sm nob" data-ap="' + esc(a.id) + '|0">مرفوض</button>';
+  else h += '<span class="chip c-pending">🔒 صاحبها ' + esc(U(owner(a.area)).full) + '</span>';
+  return h + cBtn('approval:' + a.id, a.area, a.title) + '</div></div>';
+}
+
+function vAreas() {
+  const boss = isOwner() || owns('responsibilities');
+  let h = isOwner() ? vAccess() : '';
+  h += '<h2>كل حتة ليها صاحب</h2><p class="muted" style="margin:0 0 12px">صاحب الحتة بس اللي يعدّل ويوافق فيها، والباقي يشوفوا ويعلّقوا. التحويل من هنا من غير أي تعديل في الكود.</p>';
+  h += '<div class="lock' + (boss ? ' mine' : '') + '">' + (boss ? 'تقدر تحوّل أي حتة لأي عضو.' : 'تقدر تحوّل الحتت اللي إنت صاحبها بس. الباقي بيحوّله ' + esc(U(owner('responsibilities')).full) + '.') + '</div><div class="panel">';
+  S.areas.filter((a) => canSee(a.key)).forEach((a) => {
+    h += '<div class="item"><div class="row"><span class="av ' + U(a.owner).cls + '">' + esc(U(a.owner).ini) + '</span><div class="grow"><div class="tt">' + esc(a.name) + '</div><div class="ss">صاحبها: ' + esc(U(a.owner).full) + (a.owner === me ? ' (إنت)' : '') + '</div></div>';
+    h += canMove(a.key) ? '<select class="sel" data-own="' + a.key + '" aria-label="صاحب ' + esc(a.name) + '">' + S.members.map((m) => '<option value="' + esc(m.user) + '"' + (m.user === a.owner ? ' selected' : '') + '>' + esc(U(m.user).full) + '</option>').join('') + '</select>' : '<span class="chip c-pending">🔒</span>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+  if (S.history.length) {
+    h += '<h3 class="sec">آخر التحويلات</h3><div class="panel">';
+    S.history.slice(-6).reverse().forEach((x) => { h += '<div class="item"><div class="ss" style="margin:0">«' + esc(area(x.area).name) + '»: من ' + esc(first(x.from)) + ' لـ ' + esc(first(x.to)) + ' · حوّلها ' + esc(first(x.by)) + ' · ' + ago(x.at) + '</div></div>'; });
+    h += '</div>';
+  }
+  if (MODE === 'demo') {
+    const others = Object.keys(S.users).filter((u) => u !== me);
+    h += '<h3 class="sec">التجربة</h3><div class="panel"><p class="muted" style="margin:0">جرّب: حوّل حتة، وبعدين ادخل بحساب تاني وشوف الزراير اتغيرت.</p><div class="acts">';
+    others.forEach((u) => { h += '<button class="sm" data-as="' + esc(u) + '">ادخل كـ ' + esc(U(u).full) + '</button>'; });
+    h += '<button class="sm ghost" data-reset="1">رجّع الداتا الوهمية للأول</button></div></div>';
+  }
+  return h + '<button class="link" data-out="1" type="button">خروج</button>';
+}
+
+function vAccess() {
+  const reqs = pendingReqs(), opts = AREA_NAMES.filter(([k]) => k !== 'responsibilities');
+  let h = '<h2>طلبات الدخول</h2><p class="muted" style="margin:0 0 12px">أي حد بيعمل حساب بيفضل مش شايف حاجة لحد ما توافق وتحدد الدور والحتت.</p><div class="panel">';
+  if (!reqs.length) h += '<p class="muted" style="margin:0">مفيش طلبات جديدة.</p>';
+  reqs.forEach((r) => {
+    const id = r.user, k = esc(id);
+    h += '<div class="item" data-req="' + k + '"><div class="tt">' + esc(U(id).full) + '</div><div class="ss" dir="ltr" style="text-align:right">' + esc(r.email || '') + ' · ' + ago(r.at) + '</div>';
+    h += '<div class="sub">الشركة</div><div class="chk"><label><input type="checkbox" name="co" value="' + CO.id + '" checked>' + esc(CO.name) + '</label></div>';
+    h += '<div class="sub">الدور</div><div class="chk">' + ['staff', 'admin'].map((ro, i) => '<label><input type="radio" name="role" value="' + ro + '"' + (i === 0 ? ' checked' : '') + '>' + ROLES[ro] + (ro === 'admin' ? ' (يشوف كله)' : '') + '</label>').join('') + '</div>';
+    h += '<div class="sub">الحتت اللي هيبقى صاحبها</div><div class="chk">' + opts.map(([a, n]) => '<label><input type="checkbox" name="own" value="' + a + '">' + n + '</label>').join('') + '</div>';
+    h += '<div class="sub">الحتت اللي يشوفها بس (للموظف)</div><div class="chk">' + opts.map(([a, n]) => '<label><input type="checkbox" name="see" value="' + a + '">' + n + '</label>').join('') + '</div>';
+    h += '<div class="acts"><button class="sm okb" data-approve="' + k + '">وافق وادّيله الصلاحية</button><button class="sm nob" data-deny="' + k + '">ارفض</button></div></div>';
+  });
+  h += '</div><h3 class="sec">الأعضاء <span class="n">' + S.members.length + '</span></h3><div class="panel">';
+  S.members.forEach((m) => {
+    const n = S.areas.filter((a) => a.owner === m.user).length;
+    h += '<div class="item"><div class="row"><span class="av ' + U(m.user).cls + '">' + esc(U(m.user).ini) + '</span><div class="grow"><div class="tt">' + esc(U(m.user).full) + '</div><div class="ss">' + ROLES[m.role] + ' · صاحب ' + n + ' حتة' + (m.role === 'staff' && m.see.length ? ' · يشوف: ' + m.see.map((k) => esc(area(k).name)).join('، ') : '') + '</div></div>';
+    h += m.role === 'owner' ? '<span class="chip c-own">مالك</span>' : '<button class="sm nob" data-revoke="' + esc(m.user) + '">اسحب الصلاحية</button>';
+    h += '</div></div>';
+  });
+  return h + '</div>';
+}
+
+function openThread(target, areaKey, title) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  const draw = () => {
+    const list = S.comments.filter((c) => c.target === target);
+    bg.innerHTML = '<div class="sheet" role="dialog" aria-label="تعليقات"><div class="row"><div class="grow"><b>تعليقات</b><div class="muted">' + esc(title) + '</div></div><button class="sm ghost" data-x="1">قفل</button></div>' +
+      (list.length ? list.map((c) => '<div class="cm"><small>' + esc(U(c.who).full) + ' · ' + ago(c.at) + '</small>' + esc(c.body) + '</div>').join('') : '<p class="muted">مفيش تعليقات لسه.</p>') +
+      '<textarea id="cmBody" placeholder="اكتب تعليقك (للفريق جوه اللوحة بس)"></textarea><button data-send="1">ابعت التعليق</button></div>';
+  };
+  draw();
+  bg.addEventListener('click', async (e) => {
+    if (e.target === bg || e.target.closest('[data-x]')) { bg.remove(); render(); return; }
+    if (e.target.closest('[data-send]')) {
+      const b = bg.querySelector('#cmBody').value.trim(); if (!b || !canSee(areaKey)) return;
+      if (await act('comment', { target, area: areaKey, body: b.slice(0, 2000) })) { draw(); toast('اتسجل التعليق'); }
+    }
+  });
+  document.body.appendChild(bg);
+}
+
+/* ---------------- actions: demo changes local data, real calls the database (migration 111) ---------------- */
+async function act(kind, p) {
+  const now = new Date().toISOString();
+  if (MODE === 'real') {
+    try {
+      const [tt, ti] = (p.target || ':').split(':');
+      if (kind === 'step') await rpc('tsd_set_job_step', { p_job: p.job, p_step: p.step, p_status: p.status });
+      else if (kind === 'done') await rest('PATCH', 'tsd_tasks?id=eq.' + encodeURIComponent(p.id), { status: 'done', done_at: now });
+      else if (kind === 'decide') await rpc('tsd_decide', { p_id: p.id, p_approve: p.ok });
+      else if (kind === 'owner') await rpc('tsd_set_area_owner', { p_company: CO.id, p_area: p.area, p_owner: p.to });
+      else if (kind === 'comment') await rest('POST', 'tsd_comments', { company: CO.id, area_key: p.area, target_type: tt, target_id: ti, body: p.body });
+      else if (kind === 'grant') await rpc('tsd_grant_access', { p_company: CO.id, p_user: p.user, p_role: p.role, p_see: p.see, p_own: p.own });
+      else if (kind === 'deny') await rpc('tsd_deny_request', { p_user: p.user });
+      else if (kind === 'revoke') await rpc('tsd_revoke_member', { p_company: CO.id, p_email: p.user });
+      await realLoad(); return true;
+    } catch (e) { toast('مقدرناش نحفظ: ' + (e.message || 'خطأ')); render(); return false; }
+  }
+  if (kind === 'step') { const j = S.jobs.find((x) => x.id === p.job); j[p.step] = p.status; if (p.step === 'collect' && p.status === 'done') j.paid = j.total; }
+  else if (kind === 'done') { S.tasks.find((t) => t.id === p.id).done = true; }
+  else if (kind === 'decide') { const a = S.approvals.find((x) => x.id === p.id); a.status = p.ok ? 'approved' : 'rejected'; a.dby = me; }
+  else if (kind === 'owner') { const a = area(p.area); S.history.push({ area: p.area, from: a.owner, to: p.to, by: me, at: now }); a.owner = p.to; }
+  else if (kind === 'comment') { S.comments.push({ target: p.target, area: p.area, who: me, body: p.body, at: now }); }
+  else if (kind === 'grant') {
+    S.members = S.members.filter((m) => m.user !== p.user).concat([{ user: p.user, role: p.role, see: p.role === 'staff' ? p.see : [] }]);
+    p.own.forEach((k) => { const a = area(k); if (a.owner !== p.user) { S.history.push({ area: k, from: a.owner, to: p.user, by: me, at: now }); a.owner = p.user; } });
+    const r = S.requests.find((x) => x.user === p.user); if (r) r.status = 'approved';
+  } else if (kind === 'deny') { const r = S.requests.find((x) => x.user === p.user); if (r) r.status = 'revoked'; }
+  else if (kind === 'revoke') {
+    S.areas.forEach((a) => { if (a.owner === p.user) { S.history.push({ area: a.key, from: p.user, to: me, by: me, at: now }); a.owner = me; } });
+    S.members = S.members.filter((m) => m.user !== p.user);
+    const r = S.requests.find((x) => x.user === p.user); if (r) r.status = 'revoked';
+  }
+  dSave(); return true;
+}
+
+$('nav').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (!b) return; tab = b.dataset.tab; render(); window.scrollTo(0, 0); });
+$('view').addEventListener('change', async (e) => {
+  const s = e.target.closest('select[data-own]'); if (!s) return;
+  const k = s.dataset.own, a = area(k), to = s.value;
+  if (!canMove(k) || !mem(to) || to === a.owner) { render(); return; }
+  if (await act('owner', { area: k, to })) { render(); toast('«' + a.name + '» بقت مسؤولية ' + U(to).full); }
+});
+$('view').addEventListener('click', async (e) => {
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset;
+  if (d.go) { tab = d.go; render(); window.scrollTo(0, 0); }
+  else if (d.out) { logout(); }
+  else if (d.stage) { stageSel = d.stage; render(); }
+  else if (d.cm) openThread(d.cm, d.cma, d.cmt);
+  else if (d.step) {
+    const [job, step] = d.step.split('|'), s = STEPS.find((x) => x.key === step), j = S.jobs.find((x) => String(x.id) === job);
+    if (!j || !owns(s.area)) return;
+    const status = ST_NEXT[j[step]];
+    if (await act('step', { job: j.id, step, status })) { render(); toast(s.name + ': ' + ST[status]); }
+  } else if (d.done) {
+    const x = S.tasks.find((t) => String(t.id) === d.done); if (!x || !(x.who === me || owns(x.area))) return;
+    if (await act('done', { id: x.id })) { render(); toast('برافو، خلصت'); }
+  } else if (d.ap) {
+    const [id, ok] = d.ap.split('|'), a = S.approvals.find((x) => String(x.id) === id);
+    if (!a || !owns(a.area) || a.status !== 'pending') return;
+    if (await act('decide', { id: a.id, ok: ok === '1' })) { render(); toast(ok === '1' ? 'اتوافق' : 'اترفض'); }
+  } else if (d.approve) {
+    if (!isOwner()) return;
+    const box = t.closest('[data-req]'), user = d.approve;
+    if (!box.querySelector('input[name=co]:checked')) { toast('اختار الشركة'); return; }
+    const ro = (box.querySelector('input[name=role]:checked') || {}).value || 'staff';
+    const own = [...box.querySelectorAll('input[name=own]:checked')].map((i) => i.value);
+    const see = [...box.querySelectorAll('input[name=see]:checked')].map((i) => i.value);
+    if (await act('grant', { user, role: ro, own, see })) { render(); toast('اتوافق على ' + U(user).full + ' · ' + ROLES[ro]); }
+  } else if (d.deny) { if (isOwner() && await act('deny', { user: d.deny })) { render(); toast('اترفض الطلب'); } }
+  else if (d.revoke) {
+    if (!isOwner() || d.revoke === me) return;
+    const n = U(d.revoke).full;
+    if (await act('revoke', { user: d.revoke })) { render(); toast('اتسحبت صلاحية ' + n); }
+  } else if (d.as && MODE === 'demo') { demoEnter(d.as); toast('دخلت كـ ' + U(d.as).full + ' (تجريبي)'); }
+  else if (d.reset && MODE === 'demo') { S = seed(); dSave(); demoEnter(S.users[me] ? me : 'abdallah'); toast('الداتا رجعت للأول'); }
+});
+
+function openApp() {
+  document.body.classList.add('in-app'); $('loginCard').hidden = true; $('app').hidden = false; $('nav').hidden = false;
+  render(); window.scrollTo(0, 0);
+}
+function leaveApp() {
+  document.body.classList.remove('in-app'); $('loginCard').hidden = false; $('app').hidden = true; $('nav').hidden = true;
+}
+function logout() {
+  leaveApp();
+  if (MODE === 'demo') { try { localStorage.removeItem(D_SESSION); } catch (e) {} }
+  else save(null);
+  me = null; MODE = null; show(null);
+}
+
+/* ---------------- demo ---------------- */
+function demoEnter(who) {
+  dLoad(); if (!S.users[who]) return;
+  MODE = 'demo'; me = who; tab = 'home'; try { localStorage.setItem(D_SESSION, who); } catch (e) {}
+  if (!mem(who)) { leaveApp(); showWait(U(who).full); return; }
+  openApp();
+}
+function demoSignup(name, email) {
+  dLoad();
+  if (name.length < 2 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $('suMsg').textContent = 'اكتب اسم وإيميل صح'; return; }
+  if (S.requests.some((r) => r.email === email)) { $('suMsg').textContent = 'الإيميل ده متسجل قبل كده في التجربة'; return; }
+  const id = 'u' + Date.now().toString(36);
+  S.users[id] = { full: name, ini: name.trim()[0], cls: 'b' };
+  S.requests.push({ user: id, email, at: new Date().toISOString(), status: 'pending' });
+  MODE = 'demo'; dSave();
+  $('suName').value = ''; $('suEmail').value = '';
+  demoEnter(id);
+}
+function drawDemoList() {
+  dLoad();
+  const fixed = ['abdallah', 'ahmed', 'omar'], extra = S.requests.map((r) => r.user).filter((u) => S.users[u] && !fixed.includes(u));
+  $('demoList').innerHTML = fixed.concat(extra).map((u) => '<button class="demo-acc" type="button" data-demo="' + esc(u) + '"><span class="av ' + U(u).cls + '">' + esc(U(u).ini) + '</span><span>' + esc(U(u).full) + ' (تجريبي)</span></button>').join('');
+}
+if (DEMO) {
+  $('demoBanner').hidden = false; $('toDemo').hidden = false;
+  $('suNote').textContent = 'تجريبي: الحساب بيتعمل وهمي هنا بس، والباسورد مش بيتحفظ. بعد كده هيفضل مستني موافقة.';
+  $('toDemo').addEventListener('click', () => { drawDemoList(); screen('demoBox'); });
+  $('demoBack').addEventListener('click', () => screen('login'));
+  $('demoList').addEventListener('click', (e) => { const b = e.target.closest('[data-demo]'); if (b) demoEnter(b.dataset.demo); });
+}
+
+/* ---------------- real (needs migration 111; until it is run, the old «بتتجهز» message shows) ---------------- */
+async function call(method, path, body) {
+  RS = await refresh(RS) || RS;
+  const r = await fetch(SB_URL + '/rest/v1/' + path, { method, headers: { apikey: SB_KEY, Authorization: 'Bearer ' + RS.access_token, 'Content-Type': 'application/json', ...(path.startsWith('rpc/') || method === 'GET' ? {} : { Prefer: 'return=minimal' }) }, body: body ? JSON.stringify(body) : undefined });
+  if (!r.ok) { const e = new Error(r.status === 404 ? 'not ready' : (await r.text()).slice(0, 120)); e.status = r.status; throw e; }
+  const t = await r.text(); return t ? JSON.parse(t) : null;
+}
+const rpc = (fn, args) => call('POST', 'rpc/' + fn, args || {});
+const rest = (method, path, body) => call(method, path, body);
+const get = (path) => call('GET', path);
+
+async function realLoad() {
+  const c = 'company=eq.' + CO.id;
+  const access = await rpc('tsd_my_access', { p_company: CO.id });
+  if (!access) return 'wait';
+  const [crm, areas, mems, jobs, tasks, appr, cms, hist] = await Promise.all([
+    rpc('tsd_crm', { p_company: CO.id }), get('tsd_areas?' + c + '&order=sort_order'), get('tsd_memberships?' + c),
+    get('tsd_jobs?' + c + '&order=created_at.desc&limit=50'), get('tsd_tasks?' + c + '&order=created_at.desc&limit=200'),
+    get('tsd_approvals?' + c + '&order=created_at.desc&limit=100'), get('tsd_comments?' + c + '&order=created_at&limit=500'),
+    get('tsd_area_history?' + c + '&order=changed_at&limit=50')
+  ]);
+  const reqs = access.role === 'owner' ? await get('tsd_access_requests?status=eq.pending&order=created_at') : [];
+  const users = {};
+  (mems || []).forEach((m) => { const n = m.display_name || m.email.split('@')[0]; users[m.email] = { full: n, ini: n[0], cls: m.role === 'owner' ? '' : 'b' }; });
+  (reqs || []).forEach((r) => { const n = r.full_name || r.email.split('@')[0]; users[r.email] = { full: n, ini: n[0], cls: 'b' }; });
+  const x = crm || {};
+  S = {
+    users,
+    members: (mems || []).map((m) => ({ user: m.email, role: m.role, see: m.see_areas || [] })),
+    requests: (reqs || []).map((r) => ({ user: r.email, uid: r.user_id, email: r.email, at: r.created_at, status: r.status })),
+    areas: (areas || []).map((a) => ({ key: a.key, name: a.name, owner: a.owner_email })),
+    history: (hist || []).map((h) => ({ area: h.area_key, from: h.from_email, to: h.to_email, by: h.changed_by, at: h.changed_at })),
+    leads: (x.leads || []).map((l) => ({ id: l.id, name: l.name, phone: l.phone, status: l.status, assigned_to: l.assigned_to ? String(l.assigned_to).split('@')[0] : '', last: l.last_note, at: l.last_at || l.created_at, created_at: l.created_at, area: l.area })),
+    quotes: (x.quotes || []).map((q) => ({ id: q.id, number: q.quote_number, client: q.client_name, total: q.total, status: q.status, date: q.quote_date, by: q.created_by ? String(q.created_by).split('@')[0] : '' })),
+    stock: (x.stock || []).map((s) => ({ id: s.id, name: s.name, unit: s.unit, qty: Number(s.quantity), min: s.min_qty })),
+    jobs: (jobs || []).map((j) => ({ id: j.id, customer: j.customer_name, place: j.area_text, total: j.amount_total, paid: j.amount_paid, goods: j.goods_status, techs: j.techs_status, install: j.install_status, collect: j.collect_status, note: j.notes })),
+    tasks: (tasks || []).map((t) => ({ id: t.id, area: t.area_key, title: t.title, who: t.assignee_email, due: t.due_date || '—', done: t.status === 'done' })),
+    approvals: (appr || []).map((a) => ({ id: a.id, area: a.area_key, title: a.title, details: a.details, amount: a.amount, status: a.status, by: a.requested_by ? String(a.requested_by).split('@')[0] : '', dby: a.decided_by })),
+    comments: (cms || []).map((m) => ({ target: m.target_type + ':' + m.target_id, area: m.area_key, who: m.author_email, body: m.body, at: m.created_at }))
+  };
+  if (!S.users[me]) S.users[me] = { full: me.split('@')[0], ini: me[0], cls: 'b' };
+  if (MODE === 'real' && !$('app').hidden) render();
+  return 'ok';
+}
+async function realStart(s) {
+  if (!s || !s.access_token) { show(null); return; }
+  RS = s; me = String((s.user && s.user.email) || '').toLowerCase();
+  try {
+    const r = await realLoad();
+    if (r === 'wait') { showWait(''); return; }
+    MODE = 'real'; tab = 'home'; openApp();
+  } catch (e) { show(s); }   // dashboard tables not there yet → keep the «اللوحة بتتجهز» message
+}
+
+(async () => {
+  if (DEMO) {
+    let dm = null; try { dm = localStorage.getItem(D_SESSION); } catch (e) {}
+    if (dm) { dLoad(); if (S.users[dm]) { demoEnter(dm); return; } }
+  }
+  const s = await refresh(load()).catch(() => null);
+  if (s) await realStart(s); else show(null);
+})();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
