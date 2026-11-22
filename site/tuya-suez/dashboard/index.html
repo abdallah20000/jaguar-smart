@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tuya Suez · لوحة الشركا</title>
+<meta name="theme-color" content="#0f1216">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="/tuya-suez/icon.png">
+<link rel="apple-touch-icon" href="/tuya-suez/icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tuya Suez">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<style>
+  :root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a; }
+  * { box-sizing:border-box }
+  html,body { height:100%; margin:0 }
+  body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+         padding:env(safe-area-inset-top) max(16px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px,env(safe-area-inset-left)); display:flex; align-items:center; justify-content:center }
+  .card { width:100%; max-width:380px; background:var(--glass); border:1px solid var(--line); border-radius:22px; padding:28px 22px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+  .brand { display:flex; align-items:center; gap:12px; margin-bottom:22px }
+  .brand img { width:46px; height:46px; border-radius:12px }
+  .brand h1 { font-size:1.15rem; margin:0 }
+  .brand p { margin:2px 0 0; color:var(--muted); font-size:.85rem }
+  label { display:block; font-size:.85rem; color:var(--muted); margin:14px 0 6px }
+  input { width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit; direction:ltr; text-align:right }
+  input:focus { outline:2px solid var(--accent); outline-offset:1px }
+  button { width:100%; margin-top:20px; padding:14px; border:0; border-radius:14px; background:var(--accent); color:#1a0d05; font:600 1rem inherit; font-family:inherit; cursor:pointer }
+  button:disabled { opacity:.6 }
+  .msg { min-height:1.2em; margin-top:12px; font-size:.85rem; color:var(--err) }
+  .muted { color:var(--muted); font-size:.85rem; line-height:1.7 }
+  .link { background:none; color:var(--muted); margin-top:10px; font-weight:400; text-decoration:underline }
+  [hidden] { display:none !important }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="brand">
+    <img src="/tuya-suez/icon.png" alt="">
+    <div><h1>Tuya Suez</h1><p>لوحة الشركا</p></div>
+  </div>
+
+  <form id="login">
+    <label for="email">الإيميل</label>
+    <input id="email" type="email" autocomplete="username" required>
+    <label for="pass">الباسورد</label>
+    <input id="pass" type="password" autocomplete="current-password" required>
+    <button id="go" type="submit">دخول</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <section id="home" hidden>
+    <h2 style="margin:0 0 8px;font-size:1.1rem">أهلاً <span id="who"></span></h2>
+    <p class="muted">اللوحة بتتجهز دلوقتي، وأول ما الداتا تخلص هتظهر هنا لوحدها من غير ما تنزّل حاجة تاني.</p>
+    <button class="link" id="out" type="button">خروج</button>
+  </section>
+</main>
+
+<script>
+// Login only. Uses the same Supabase project and email+password auth as the Tuya Suez CRM.
+// No data is read here yet; the dashboard content comes later.
+const SB_URL = 'https://snrsfpprlynixotjipmo.supabase.co';
+const SB_KEY = 'sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds';
+const STORE = 'ts-dash-session';
+const $ = (id) => document.getElementById(id);
+
+function load() { try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { return null; } }
+function save(s) { try { s ? localStorage.setItem(STORE, JSON.stringify(s)) : localStorage.removeItem(STORE); } catch (e) {} }
+
+function show(s) {
+  const ok = !!(s && s.access_token);
+  $('login').hidden = ok; $('home').hidden = !ok;
+  if (ok) $('who').textContent = (s.user && s.user.email) || '';
+}
+
+async function refresh(s) {
+  if (!s || !s.refresh_token) return null;
+  if (s.expires_at && s.expires_at * 1000 > Date.now() + 60000) return s;
+  const r = await fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: s.refresh_token }) });
+  if (!r.ok) return null;
+  const n = await r.json(); save(n); return n;
+}
+
+$('login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('msg').textContent = ''; $('go').disabled = true;
+  try {
+    const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: $('email').value.trim(), password: $('pass').value }) });
+    const j = await r.json();
+    if (!r.ok) { $('msg').textContent = 'الإيميل أو الباسورد مش صح'; return; }
+    save(j); $('pass').value = ''; show(j);
+  } catch (err) { $('msg').textContent = 'مفيش اتصال، جرّب تاني'; }
+  finally { $('go').disabled = false; }
+});
+
+$('out').addEventListener('click', () => { save(null); show(null); });
+
+(async () => { show(await refresh(load()).catch(() => null)); })();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

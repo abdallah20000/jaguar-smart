@@ -1,0 +1,16 @@
+{
+  "name": "Tuya Suez · لوحة الشركا",
+  "short_name": "Tuya Suez",
+  "description": "لوحة إدارة Tuya Suez للشركا",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#0f1216",
+  "theme_color": "#0f1216",
+  "icons": [
+    { "src": "/tuya-suez/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}
