@@ -1194,12 +1194,12 @@ async function openQuote(id){
       sb.from("quotation_items").select("product_id,name,description,room,qty,unit_price,discount_pct,sort_order").eq("quotation_id",id).order("sort_order")
     ]);
     if(e1||e2){ toast("مشكلة في فتح العرض"); console.error(e1||e2); return; }
-    quote = { id:q.id, quote_number:q.quote_number, lead_id:q.lead_id, status:q.status, items:items.map(({sort_order,...i})=>i),
+    quote = { id:q.id, quote_number:q.quote_number, lead_id:q.lead_id, status:q.status, client_type:q.client_type, items:items.map(({sort_order,...i})=>i),
       delete_requested_by:q.delete_requested_by, delete_requested_at:q.delete_requested_at };
     ["client_name","client_type","quote_date","valid_until","status","notes","terms"].forEach(k=>f[k].value = q[k] ?? "");
     $("tInstPct").value = q.install_pct; $("tDiscPct").value = q.discount_pct; markDisc(); markInst();
   } else {
-    quote = { id:null, quote_number:null, lead_id:current.id, status:"draft", items:[] };
+    quote = { id:null, quote_number:null, lead_id:current.id, status:"draft", client_type:null, items:[] };
     const today = todayStr();
     f.client_name.value = current.name; f.client_type.value = current.client_type==="dealer" ? "dealer" : "end_customer";
     f.quote_date.value = today; f.valid_until.value = addDays(today,7); f.status.value = "draft"; f.terms.value = DEFAULT_TERMS;
@@ -1282,10 +1282,13 @@ function discInfo(){
   const e = effDiscount(), pctOver = e.pct > DISC_LIMIT + 1e-9, over = pctOver || e.manual > 0 || e.floor > 0, st = discState || {};
   // manual lines: only the saved quote can be matched to an approval, so an unsaved edit waits for the save
   const approved = over && (!quoteDirty && st.covered === true
-    || quoteDirty && !e.manual && !e.floor && st.approved_pct != null && Number(st.approved_pct) >= e.pct - 1e-9);
+    || quoteDirty && !e.manual && !e.floor && st.approved_pct != null && Number(st.approved_pct) >= e.pct - 1e-9
+       && quote.client_type === $("qForm").client_type.value);   // an approval is tied to its price list
   const pending = over && !approved && !quoteDirty && st.pending === true;
   const rejected = over && !approved && !pending && !quoteDirty && st.last_status === "rejected";
-  return { ...e, pctOver, over, approved, pending, rejected, blocked: over && !approved && !isAdmin };
+  // only a draft is held back: a quote saved as sent/accepted (also from before this rule) keeps its PDF/share
+  const draft = !quote?.id || quote.status === "draft";
+  return { ...e, pctOver, over, approved, pending, rejected, draft, blocked: over && !approved && !isAdmin && draft };
 }
 async function loadDiscState(){
   discState = null;
@@ -1298,7 +1301,7 @@ async function loadDiscState(){
 function renderDiscCap(){
   if(!quote) return;
   const d = discInfo(), box = $("discCap"), msg = $("discCapMsg"), btn = $("discReq"), f = $("qForm"), locked = isLocked();
-  box.classList.toggle("hidden", !d.over); box.classList.toggle("ok", d.approved); box.classList.toggle("no", d.rejected);
+  box.classList.toggle("hidden", !d.over || !d.draft); box.classList.toggle("ok", d.approved); box.classList.toggle("no", d.rejected);
   btn.classList.add("hidden");
   if(d.over){
     const why = [d.pctOver ? `الخصم الفعلي ${pctTxt(d.pct)} أكبر من ${DISC_LIMIT}%` : "", d.manual ? `فيه ${d.manual} بند يدوي مش من الكتالوج` : "",
@@ -1467,7 +1470,7 @@ async function saveQuote(){
     const res = quote.id ? await sb.from("quotations").update(row).eq("id",quote.id).select("id,quote_number").single()
                          : await sb.from("quotations").insert(row).select("id,quote_number").single();
     if(res.error) throw res.error;
-    quote.id = res.data.id; quote.quote_number = res.data.quote_number; quote.status = row.status;
+    quote.id = res.data.id; quote.quote_number = res.data.quote_number; quote.status = row.status; quote.client_type = row.client_type;
     // replace the lines wholesale in one transaction on the server (sales have no direct delete rights)
     const rep = await sb.rpc("replace_quotation_items", { p_quote: quote.id, p_items: items.map((i,n)=>({
       product_id: i.product_id, name: i.name.trim(), description: i.description || null,

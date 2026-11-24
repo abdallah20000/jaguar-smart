@@ -20,8 +20,10 @@
 --   its catalog price after the line % and the quote %.
 --   * A CRM (non-admin) user of Tuya Suez cannot move a quotation from draft to sent/accepted while it needs
 --     approval, unless an APPROVED request made through request_quote_discount_approval() exists for that
---     quotation and covers it as it is now: % not bigger, discount amount (EGP) not bigger, and the manual /
---     below-floor lines exactly the same (any change to them or to the quote discount needs a new approval).
+--     quotation and covers it as it is now: % not bigger, discount amount (EGP) not bigger, the manual /
+--     below-floor lines, the quote discount and the client type (price list) exactly the same (any change
+--     to them needs a new approval), and approved within the last 14 days.
+--   * The check runs on the NEW row: a send that also changes client_type is measured on the new price list.
 --     Admins are not limited; server jobs (no CRM role) are not touched.
 --   * When a CRM user moves a quotation out of draft, its subtotal / install_amount / discount_amount / total
 --     are recomputed from the saved lines (same formula as the CRM page), and installation cannot be negative.
@@ -56,17 +58,20 @@ alter table public.quote_discount_requests enable row level security;   -- no po
 revoke all on public.quote_discount_requests from public, anon, authenticated;
 
 -- ---------- the numbers of a saved quotation, computed on the server ----------
--- manual_sig = md5 of the manual lines (name, qty, price, line %) and the quote %, so any change to them shows.
+-- p_client_type is passed in (the guard passes NEW.client_type), never read from the stored row.
+-- manual_sig = md5 of the client type, the quote % and the manual / below-floor lines (name, qty, price,
+-- line %, catalog unit), so any change to them shows. It is returned whenever the quote needs approval.
 -- earlier drafts of this file (never run) used other names/columns; drop them so a re-run is clean
 drop function if exists public.quote_effective_discount(uuid, numeric);
 drop function if exists public.quote_discount_covered(uuid, numeric, numeric, numeric);
 drop function if exists public.quote_discount_calc(uuid, numeric);
-create function public.quote_discount_calc(p_quote uuid, p_header_pct numeric)
+drop function if exists public.quote_discount_calc(uuid, numeric, text);
+create function public.quote_discount_calc(p_quote uuid, p_header_pct numeric, p_client_type text)
 returns table (catalog_total numeric, catalog_net numeric, effective_pct numeric,
                manual_lines int, manual_total numeric, floor_lines int, manual_sig text, needs_approval boolean)
 language sql stable security definer set search_path = '' as $$
   with q as (
-    select qq.id, qq.company, qq.client_type from public.quotations qq where qq.id = p_quote
+    select qq.id, qq.company, coalesce(p_client_type, '') as client_type from public.quotations qq where qq.id = p_quote
   ), x as (
     -- a line counts as catalog only if its product (same company) has a catalog price > 0 AND the line
     -- still carries that product's name; a renamed line is treated as manual
@@ -95,7 +100,7 @@ language sql stable security definer set search_path = '' as $$
            coalesce(sum(line_total) filter (where not cat), 0) as m_total,
            count(*) filter (where below)::int as f_n,
            -- fingerprint of every line that needs a person to look at it (manual or below the floor) + quote %
-           md5(jsonb_build_array(coalesce(p_header_pct, 0),
+           md5(jsonb_build_array(coalesce(p_client_type, ''), coalesce(p_header_pct, 0),
                coalesce(jsonb_agg(jsonb_build_array(lower(trim(name)), qty, unit_price, discount_pct, cat_unit)
                                   order by lower(trim(name)), qty, unit_price, discount_pct, cat_unit)
                         filter (where not cat or below), '[]'::jsonb))::text) as m_sig
@@ -104,13 +109,14 @@ language sql stable security definer set search_path = '' as $$
   select round(s.base, 2), round(s.net, 2),
          case when s.base > 0 then round(100 * (1 - s.net / s.base), 4) else 0 end,
          s.m_n, round(s.m_total, 2), s.f_n,
-         case when s.m_n > 0 or s.f_n > 0 then s.m_sig end,
+         case when (s.m_n > 0) or (s.f_n > 0) or (s.base > 0 and round(100 * (1 - s.net / s.base), 4) > 30)
+              then s.m_sig end,
          (s.m_n > 0) or (s.f_n > 0) or (s.base > 0 and round(100 * (1 - s.net / s.base), 4) > 30)
   from s;
 $$;
-revoke execute on function public.quote_discount_calc(uuid, numeric) from public, anon, authenticated;
+revoke execute on function public.quote_discount_calc(uuid, numeric, text) from public, anon, authenticated;
 
--- does a request in status p_status cover the quotation as it is now?
+-- does a request in status p_status cover the quotation as it is now? An approval counts for 14 days.
 create or replace function public.quote_discount_covers(p_quote uuid, p_status text, p_pct numeric,
                                                         p_base numeric, p_net numeric, p_sig text)
 returns boolean language sql stable security definer set search_path = '' as $$
@@ -119,20 +125,22 @@ returns boolean language sql stable security definer set search_path = '' as $$
     join public.tsd_approvals a on a.id = r.approval_id
     where r.quotation_id = p_quote and a.status = p_status and a.area_key = 'pricing'
       and a.ref_table = 'quotations' and a.ref_id = p_quote and a.company = r.company
+      and (p_status <> 'approved' or a.decided_at > now() - interval '14 days')
       and r.effective_pct >= p_pct
       and (r.catalog_total - r.catalog_net) + 1 >= (p_base - p_net)
       and r.manual_sig is not distinct from p_sig);
 $$;
 revoke execute on function public.quote_discount_covers(uuid, text, numeric, numeric, numeric, text) from public, anon, authenticated;
 
--- highest discount % approved for this quotation (null = none) — for display only
+-- highest discount % approved (and not expired) for this quotation (null = none) — for display only
 create or replace function public.quote_approved_pct(p_quote uuid)
 returns numeric language sql stable security definer set search_path = '' as $$
   select max(r.effective_pct)
   from public.quote_discount_requests r
   join public.tsd_approvals a on a.id = r.approval_id
   where r.quotation_id = p_quote and a.status = 'approved' and a.area_key = 'pricing'
-    and a.ref_table = 'quotations' and a.ref_id = p_quote and a.company = r.company;
+    and a.ref_table = 'quotations' and a.ref_id = p_quote and a.company = r.company
+    and a.decided_at > now() - interval '14 days';
 $$;
 revoke execute on function public.quote_approved_pct(uuid) from public, anon, authenticated;
 
@@ -153,7 +161,8 @@ begin
     raise exception 'discount_not_allowed: quote discount must be 0, 10, 20 or 30' using errcode = 'P0001';
   end if;
   if new.status in ('sent', 'accepted') and (tg_op = 'INSERT' or old.status is distinct from new.status) then
-    select * into c from public.quote_discount_calc(new.id, new.discount_pct);
+    -- measured on the NEW row (client type and quote %), not on what is stored before this update
+    select * into c from public.quote_discount_calc(new.id, new.discount_pct, new.client_type);
     if c.needs_approval and not public.quote_discount_covers(new.id, 'approved', c.effective_pct,
                                                              c.catalog_total, c.catalog_net, c.manual_sig) then
       raise exception 'discount_needs_approval: effective discount %, manual lines %', round(c.effective_pct, 2), c.manual_lines
@@ -213,7 +222,7 @@ begin
   if not found or q.company is distinct from public.my_company() then
     raise exception 'quotation not found' using errcode = 'P0002';
   end if;
-  select * into c from public.quote_discount_calc(q.id, q.discount_pct);
+  select * into c from public.quote_discount_calc(q.id, q.discount_pct, q.client_type);
   select a.status, r.effective_pct, a.decision_note, r.created_at into l_status, l_pct, l_note, l_at
   from public.quote_discount_requests r join public.tsd_approvals a on a.id = r.approval_id
   where r.quotation_id = q.id order by r.created_at desc limit 1;
@@ -251,7 +260,7 @@ begin
     raise exception 'quotation is locked' using errcode = 'P0001';
   end if;
 
-  select * into c from public.quote_discount_calc(q.id, q.discount_pct);
+  select * into c from public.quote_discount_calc(q.id, q.discount_pct, q.client_type);
   if not c.needs_approval then
     return json_build_object('state', 'not_needed', 'effective_pct', c.effective_pct);
   end if;
