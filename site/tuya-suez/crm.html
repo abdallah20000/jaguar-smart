@@ -1286,8 +1286,9 @@ function discInfo(){
        && quote.client_type === $("qForm").client_type.value);   // an approval is tied to its price list
   const pending = over && !approved && !quoteDirty && st.pending === true;
   const rejected = over && !approved && !pending && !quoteDirty && st.last_status === "rejected";
-  // only a draft is held back: a quote saved as sent/accepted (also from before this rule) keeps its PDF/share
-  const draft = !quote?.id || quote.status === "draft";
+  // only a quote saved as sent/accepted (statuses the server checks; also from before this rule) keeps its
+  // PDF/share; a draft or any other status (e.g. a draft PATCHed to "rejected") stays held back
+  const draft = !quote?.id || !["sent","accepted"].includes(quote.status);
   return { ...e, pctOver, over, approved, pending, rejected, draft, blocked: over && !approved && !isAdmin && draft };
 }
 async function loadDiscState(){
