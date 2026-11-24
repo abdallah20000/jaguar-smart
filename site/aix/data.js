@@ -57,11 +57,14 @@ window.AIX_DEMO = {
   scenes: [
     { id: "s1", icon: "sun", name: { ar: "صباح الخير", en: "Good morning" },
       actions: [["d4", { pos: 100 }], ["d11", { pos: 100 }], ["d5", { on: true }], ["d10", { on: false }]] },
-    { id: "s2", icon: "out", name: { ar: "خارج البيت", en: "Leaving home" },
+    { id: "s2", icon: "out", name: { ar: "خروج", en: "Leaving" },
       actions: [["d1", { on: false }], ["d2", { all: false }], ["d3", { on: false }], ["d5", { on: false }], ["d9", { on: false }], ["d10", { on: false }], ["d12", { all: false }], ["d14", { on: false }], ["d15", { on: false }]] },
+    // Coming home: entrance + living lights, living AC to 24, curtain half open.
+    { id: "s5", icon: "home", name: { ar: "رجوع", en: "Coming home" },
+      actions: [["d2", { gang: ["switch_3", true] }], ["d2", { gang: ["switch_1", true] }], ["d1", { on: true, bright: 70 }], ["d3", { on: true, temp: 24 }], ["d4", { pos: 50 }]] },
     { id: "s3", icon: "film", name: { ar: "فيلم", en: "Movie night" },
       actions: [["d1", { on: true, bright: 20 }], ["d2", { gang: ["switch_2", true] }], ["d2", { gang: ["switch_1", false] }], ["d4", { pos: 0 }], ["d3", { on: true, temp: 22 }]] },
-    { id: "s4", icon: "moon", name: { ar: "تصبح على خير", en: "Good night" },
+    { id: "s4", icon: "moon", name: { ar: "نوم", en: "Bedtime" },
       actions: [["d1", { on: false }], ["d2", { all: false }], ["d11", { pos: 0 }], ["d10", { on: true, temp: 24 }], ["d14", { on: true }]] }
   ],
   automations: [

@@ -9,7 +9,10 @@
   let state;
 
   function loadDemo() {
-    try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch (e) {}
+    try {
+      const s = localStorage.getItem(KEY);
+      if (s) { const saved = JSON.parse(s); saved.scenes = JSON.parse(JSON.stringify(window.AIX_DEMO.scenes)); return saved; } // scenes always follow the latest demo
+    } catch (e) {}
     return JSON.parse(JSON.stringify(window.AIX_DEMO));
   }
   function saveDemo() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }

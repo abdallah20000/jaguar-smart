@@ -6,7 +6,8 @@
   const view = $('#view'), sheet = $('#sheet'), back = $('#sheetBack');
   let lang = 'ar';
   try { lang = localStorage.getItem('aix-lang') || 'ar'; } catch (e) {}
-  let tab = 'home', roomOpen = null, sheetId = null;
+  let tab = 'home', roomOpen = null, sheetId = null, roomFilter = 'all';
+  try { roomFilter = localStorage.getItem('aix-room') || 'all'; } catch (e) {}
 
   // ---------- text ----------
   const T = {
@@ -23,7 +24,8 @@
       s3: 'لو مفتاح فيه كذا خط', s3d: 'كل خط هيظهر جهاز لوحده. اضغط عليه وسمّيه واختار أيقونته وأوضته.',
       addSoon: 'الجاية: الإضافة من جوه AIX نفسه من غير Smart Life.',
       connection: 'الاتصال', demo: 'بيت تجريبي', live: 'متوصل بتويا', demoNote: 'التطبيق شغّال ببيت تجريبي لحد ما مفاتيح تويا تتحط على السيرفر.',
-      family: 'العيلة', language: 'اللغة', reset: 'رجّع البيت التجريبي لأوله', resetDone: 'رجع لأوله', hint: 'دوس على الأيقونة تشغّل وتقفل، ودوس على الاسم يفتح التحكم.' },
+      family: 'العيلة', language: 'اللغة',
+      nowHome: 'دلوقتي في البيت', thingsOn: 'حاجات شغّالة', oneOn: 'حاجة واحدة شغّالة', allQuiet: 'البيت كله مقفول', allQuietSub: 'مفيش حاجة بتسحب كهربا دلوقتي', approxKw: 'حوالي', kw: 'كيلووات', w: 'وات', biggest: 'أكتر حاجة', estNote: 'الاستهلاك تقديري', houseOff: 'اقفل كل حاجة', houseOffDone: 'اتقفل', devicesWord: 'أجهزة', allRooms: 'الكل', emptyRoom: 'مفيش أجهزة في الأوضة دي لسه', emptyRoomSub: 'ضيف جهاز من Smart Life أو انقل خط مفتاح هنا من إعداداته.', offlineDemo: 'مفيش نت · البيت التجريبي شغّال عادي', offlineLive: 'مفيش نت · الأوامر هتستنى لحد ما النت يرجع', backOnline: 'النت رجع', sceneDone: 'اشتغل', changed: 'اتغيّرت', reset: 'رجّع البيت التجريبي لأوله', resetDone: 'رجع لأوله', hint: 'دوس على الأيقونة تشغّل وتقفل، ودوس على الاسم يفتح التحكم.' },
     en: { home: 'Home', rooms: 'Rooms', automation: 'Automation', settings: 'Settings',
       climate: 'Climate', lights: 'Lights', security: 'Security', shades: 'Shades', scenes: 'Scenes', favorites: 'Favourites',
       on: 'On', off: 'Off', open: 'Open', closed: 'Closed', locked: 'Locked', unlocked: 'Unlocked', ok: 'OK', leak: 'Leak detected!', motion: 'Motion', noMotion: 'No motion',
@@ -37,7 +39,8 @@
       s3: 'Switches with several lines', s3d: 'Every line becomes its own accessory. Tap it to name it, pick an icon and a room.',
       addSoon: 'Next: add accessories inside AIX itself, without Smart Life.',
       connection: 'Connection', demo: 'Demo home', live: 'Connected to Tuya', demoNote: 'Running on a demo home until the Tuya keys are on the server.',
-      family: 'Family', language: 'Language', reset: 'Reset demo home', resetDone: 'Reset done', hint: 'Tap the icon to switch on/off, tap the name for controls.' }
+      family: 'Family', language: 'Language',
+      nowHome: 'Right now', thingsOn: 'things on', oneOn: 'One thing on', allQuiet: 'Everything is off', allQuietSub: 'Nothing is drawing power right now', approxKw: 'about', kw: 'kW', w: 'W', biggest: 'Biggest', estNote: 'Estimated draw', houseOff: 'Turn everything off', houseOffDone: 'Turned off', devicesWord: 'devices', allRooms: 'All', emptyRoom: 'No accessories here yet', emptyRoomSub: 'Add one in Smart Life, or move a switch line here from its settings.', offlineDemo: 'Offline · the demo home still works', offlineLive: 'Offline · commands will wait until you are back online', backOnline: 'Back online', sceneDone: 'ran', changed: 'changed', reset: 'Reset demo home', resetDone: 'Reset done', hint: 'Tap the icon to switch on/off, tap the name for controls.' }
   };
   const t = k => (T[lang] && T[lang][k]) || k;
   const N = o => (o && (o[lang] || o.en || o.ar)) || '';
@@ -118,6 +121,36 @@
     return '';
   }
 
+  // Rough draw per accessory (watts) until real power data comes from Tuya.
+  function watts(a) {
+    if (!isOn(a)) return 0;
+    if (a.kind === 'ac') return 1400;              // 1.5 HP split, compressor running
+    if (a.kind === 'plug') return a.power || 0;
+    if (a.kind === 'light') return Math.round(45 * (a.bright || 100) / 100);
+    if (a.kind === 'line') return a.icon === 'fan' ? 70 : 18;
+    return 0;
+  }
+  const switchable = a => ['light', 'line', 'ac', 'plug'].includes(a.kind);
+  function nowCard() {
+    const on = accessories().filter(a => switchable(a) && isOn(a));
+    const total = on.reduce((s, a) => s + watts(a), 0);
+    if (!on.length) return `<section class="now glass quiet"><span class="now-dot"></span><div class="now-txt"><small>${t('nowHome')}</small><b>${t('allQuiet')}</b><span>${t('allQuietSub')}</span></div></section>`;
+    const top = on.slice().sort((x, y) => watts(y) - watts(x))[0];
+    const load = total >= 1000 ? `${(total / 1000).toFixed(1)} ${t('kw')}` : `${total} ${t('w')}`;
+    const pct = Math.min(100, Math.round(total / 40));  // 4 kW = full bar
+    return `<section class="now glass"><div class="now-txt"><small>${t('nowHome')}</small>
+      <b><span class="num">${on.length}</span> ${on.length === 1 ? t('oneOn') : t('thingsOn')}</b>
+      <span>${t('approxKw')} <em>${load}</em> · ${t('biggest')}: ${N(top.name)}</span>
+      <i class="meter" aria-label="${t('estNote')}"><i style="width:${pct}%"></i></i></div>
+      <button class="now-off" data-houseoff>${ic('power')}<span>${t('houseOff')}</span></button></section>`;
+  }
+  function roomBar() {
+    const rooms = S().rooms.filter(r => accessories().some(a => a.room === r.id));
+    const btn = (id, label) => `<button class="${roomFilter === id ? 'sel' : ''}" data-rf="${id}">${label}</button>`;
+    return `<div class="rf" role="tablist">${btn('all', t('allRooms'))}${rooms.map(r => btn(r.id, N(r.name))).join('')}</div>`;
+  }
+  const emptyState = () => `<div class="empty glass"><span class="eg">${ic('plus')}</span><b>${t('emptyRoom')}</b><span>${t('emptyRoomSub')}</span><button class="pill glass" data-add>${t('addTitle')}</button></div>`;
+
   // ---------- writing ----------
   async function setAcc(a, patch) {
     if (a.kind === 'line') {
@@ -157,23 +190,29 @@
       <div class="chip glass c-shade"><span class="cg">${ic('curtain')}</span><div><b>${t('shades')}</b><span>${sOpen} ${t('open')}</span></div></div>
     </div>`;
   }
-  const scenes = () => `<div class="scenes">${S().scenes.map(s => `<button class="scene glass" data-scene="${s.id}"><span class="sg">${ic(s.icon === 'out' ? 'leave' : s.icon)}</span><b>${N(s.name)}</b></button>`).join('')}</div>`;
+  const scenes = () => `<div class="scenes">${S().scenes.map(s => `<button class="scene glass" data-scene="${s.id}"><span class="sg">${ic(s.icon === 'out' ? 'leave' : s.icon === 'home' ? 'house' : s.icon)}</span><b>${N(s.name)}</b></button>`).join('')}</div>`;
   const secH = (title, roomId) => `<div class="sec-h"><h2>${title}</h2>${roomId ? `<button class="pill glass" data-alloff="${roomId}">${t('allOff')}</button>` : ''}</div>`;
 
   // ---------- views ----------
   function vHome() {
     const all = accessories();
-    const favs = all.filter(a => a.fav);
-    let html = chips() + secH(t('scenes')) + scenes();
-    if (favs.length) html += secH(t('favorites')) + grid(favs, true);
-    S().rooms.forEach(r => { const list = all.filter(a => a.room === r.id); if (list.length) html += secH(N(r.name), r.id) + grid(list, false); });
+    if (roomFilter !== 'all' && !S().rooms.some(r => r.id === roomFilter)) roomFilter = 'all';
+    let html = nowCard() + chips() + secH(t('scenes')) + scenes() + roomBar();
+    if (roomFilter === 'all') {
+      const favs = all.filter(a => a.fav);
+      if (favs.length) html += secH(t('favorites')) + grid(favs, true);
+      S().rooms.forEach(r => { const list = all.filter(a => a.room === r.id); if (list.length) html += secH(N(r.name), r.id) + grid(list, false); });
+    } else {
+      const r = S().rooms.find(x => x.id === roomFilter), list = all.filter(a => a.room === roomFilter);
+      html += secH(N(r.name), list.length ? r.id : null) + (list.length ? grid(list, false) : emptyState());
+    }
     return html;
   }
   function vRooms() {
     const all = accessories();
     if (roomOpen) {
       const r = S().rooms.find(x => x.id === roomOpen), list = all.filter(a => a.room === roomOpen);
-      return `<button class="back" data-roomback>${ic('chev')} ${t('rooms')}</button>${secH(N(r.name), r.id)}${grid(list, false)}`;
+      return `<button class="back" data-roomback>${ic('chev')} ${t('rooms')}</button>${secH(N(r.name), list.length ? r.id : null)}${list.length ? grid(list, false) : emptyState()}`;
     }
     return `<div class="rooms" style="margin-top:14px">${S().rooms.map(r => {
       const list = all.filter(a => a.room === r.id), on = list.filter(isOn).length;
@@ -256,7 +295,8 @@
     const title = tab === 'home' ? N(S().home.name) : tab === 'rooms' ? t('rooms') : tab === 'automation' ? t('automation') : t('settings');
     $('#top').innerHTML = `<span class="badge glass ${live ? 'live' : ''}">${live ? 'LIVE' : 'DEMO'}</span>
       <div class="top-actions"><button class="circle glass" data-langtoggle aria-label="language" style="font:600 13px var(--fe)">${lang === 'ar' ? 'EN' : 'ع'}</button><button class="circle glass" data-add aria-label="${t('addTitle')}">${ic('plus')}</button></div>`;
-    return `<div class="title"><h1>${title}</h1>${tab === 'home' ? '<span class="brandmark">AIX</span>' : ''}</div>`;
+    const off = navigator.onLine === false ? `<div class="offline" role="status"><span></span>${t(live ? 'offlineLive' : 'offlineDemo')}</div>` : '';
+    return `${off}<div class="title"><h1>${title}</h1>${tab === 'home' ? '<span class="brandmark">AIX</span>' : ''}</div>`;
   }
   function tabs() {
     const items = [['home', 'house'], ['rooms', 'rooms'], ['automation', 'clock'], ['settings', 'gear']];
@@ -274,12 +314,14 @@
 
   // ---------- events ----------
   document.addEventListener('click', async e => {
-    const el = e.target.closest('[data-toggle],[data-open],[data-scene],[data-alloff],[data-tab],[data-room],[data-roomback],[data-auto],[data-lang],[data-langtoggle],[data-reset],[data-add],[data-close],[data-pw],[data-setv],[data-temp],[data-mode],[data-licon],[data-lroom],[data-lfav]');
+    const el = e.target.closest('[data-houseoff],[data-rf],[data-toggle],[data-open],[data-scene],[data-alloff],[data-tab],[data-room],[data-roomback],[data-auto],[data-lang],[data-langtoggle],[data-reset],[data-add],[data-close],[data-pw],[data-setv],[data-temp],[data-mode],[data-licon],[data-lroom],[data-lfav]');
     if (!el) return;
     const d = el.dataset;
+    if ('houseoff' in d) { const list = accessories().filter(a => switchable(a) && isOn(a)); for (const a of list) await setAcc(a, { on: false }); render(); toast(`${t('houseOffDone')} ${list.length} ${t('devicesWord')}`); return; }
+    if ('rf' in d) { roomFilter = d.rf; try { localStorage.setItem('aix-room', roomFilter); } catch (e) {} render(); const b = document.querySelector(`[data-rf="${d.rf}"]`); if (b && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'center' }); return; }
     if ('toggle' in d) { await toggle(acc(d.toggle)); render(); return; }
     if ('open' in d) { openSheet(d.open); return; }
-    if ('scene' in d) { await AIX.runScene(d.scene); render(); const b = document.querySelector(`[data-scene="${d.scene}"]`); if (b) { b.classList.add('ran'); setTimeout(() => b.classList.remove('ran'), 1200); } toast(t('runDone')); return; }
+    if ('scene' in d) { const before = JSON.stringify(S().devices); await AIX.runScene(d.scene); const after = S().devices, prev = JSON.parse(before); const n = after.filter((x, i) => JSON.stringify(x) !== JSON.stringify(prev[i])).length; render(); const b = document.querySelector(`[data-scene="${d.scene}"]`); if (b) { b.classList.add('ran'); setTimeout(() => b.classList.remove('ran'), 1200); } const sc = S().scenes.find(x => x.id === d.scene); toast(`${N(sc.name)} ${t('sceneDone')}${n ? ' · ' + n + ' ' + t('devicesWord') + ' ' + t('changed') : ''}`); return; }
     if ('alloff' in d) { for (const a of accessories().filter(x => x.room === d.alloff && canToggle(x) && isOn(x))) await (a.kind === 'curtain' ? setAcc(a, { pos: 0 }) : setAcc(a, { on: false })); render(); return; }
     if ('tab' in d) { tab = d.tab; roomOpen = null; render(); window.scrollTo(0, 0); return; }
     if ('room' in d) { roomOpen = d.room; render(); window.scrollTo(0, 0); return; }
@@ -307,6 +349,8 @@
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hidden) closeSheet(); });
   back.addEventListener('click', closeSheet);
+  window.addEventListener('offline', () => render());
+  window.addEventListener('online', () => { render(); toast(t('backOnline')); });
 
   AIX.init().then(() => {
     // deep links for previews: #tab-rooms, #tab-automation, #open-<accessoryId>
