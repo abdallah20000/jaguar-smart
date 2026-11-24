@@ -1,6 +1,6 @@
 // Tuya Suez partners dashboard: minimal service worker so the page installs as an app.
 // Network-first for everything; only the shell is cached for offline open.
-const CACHE = 'ts-dash-v2';
+const CACHE = 'ts-dash-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', '/tuya-suez/icon.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

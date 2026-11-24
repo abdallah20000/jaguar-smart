@@ -135,6 +135,10 @@
   .wait { text-align:center }
   .wait svg { width:54px; height:54px; color:var(--accent) }
   .small-link { display:block; width:auto; margin:14px auto 0; padding:4px 8px; background:none; color:var(--muted); font-size:.82rem; font-weight:400; text-decoration:underline }
+  .c-rev { background:rgba(127,182,255,.12); color:var(--info); border-color:rgba(127,182,255,.35) }
+  .lock.rev { border-color:rgba(127,182,255,.45); color:#cfe2ff }
+  .vf input, .vf select, .vf textarea { margin-top:6px }
+  a.lnk { color:var(--info) }
   .src { font-size:.7rem; color:var(--muted); border:1px solid var(--line); border-radius:99px; padding:1px 8px; margin-inline-start:6px; font-weight:400 }
 </style>
 </head>
@@ -204,6 +208,7 @@
 <nav id="nav" hidden><div class="in">
   <button data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>الرئيسية</button>
   <button data-tab="pipe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>البنات</button>
+  <button data-tab="visits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>المعاينات</button>
   <button data-tab="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3"/></svg>التسليم</button>
   <button data-tab="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>المهام</button>
   <button data-tab="areas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 4a3 3 0 0 1 0 6M21 20c0-2.5-1.5-4-4-4.6"/></svg>المسؤوليات</button>
@@ -311,12 +316,19 @@ const ST = { pending: 'مستني', in_progress: 'شغال', done: 'خلص', blo
 const ST_NEXT = { pending: 'in_progress', in_progress: 'done', done: 'blocked', blocked: 'pending' };
 const Q_ST = { draft: 'مسودة', sent: 'اتبعت', accepted: 'اتوافق', rejected: 'اترفض' };
 const AREA_NAMES = [
-  ['responsibilities', 'توزيع المسؤوليات'], ['sales', 'المبيعات وفريق البنات'], ['pricing', 'الأسعار وعروض السعر'],
+  ['responsibilities', 'توزيع المسؤوليات'], ['sales', 'المبيعات وفريق البنات'], ['visits', 'المعاينات'], ['pricing', 'الأسعار وعروض السعر'],
   ['delivery', 'التسليم (فتح بطاقة شغلانة)'], ['goods', 'المخزن والبضاعة'], ['technicians', 'الفنيين'],
   ['installs', 'التركيب والتسليم للعميل'], ['collection', 'الكاش والتحصيل'], ['marketing', 'التسويق والإعلانات']
 ];
 const D_SESSION = 'ts-dash-demo-user';
-const D_DATA = 'ts-dash-demo-' + CO.id + '-v3';
+const D_DATA = 'ts-dash-demo-' + CO.id + '-v4';
+const REV_AREAS = ['sales', 'pricing', 'visits'];   // what «مسؤول المبيعات» owns and «مراجع» only reviews
+const NEEDS = { lights: 'إضاءة', curtains: 'ستاير', cameras: 'كاميرات', locks: 'كوالين', screens: 'شاشات', other: 'حاجة تانية' };
+const V_ST = { new: 'جديدة', scheduled: 'اتحدد ميعاد', done: 'خلصت', cancelled: 'اتلغت' };
+const V_CHIP = { new: 'c-blocked', scheduled: 'c-in_progress', done: 'c-done', cancelled: 'c-pending' };
+const V_RES = { quote: 'هيتعمل عرض سعر', sold: 'اتقفلت', thinking: 'العميل بيفكر', not_interested: 'مش مهتم', other: 'تاني' };
+const ACT_KIND = { created: 'اتعمل', status: 'اتغيرت الحالة', decision: 'قرار', comment: 'تعليق', reassign: 'اتنقل لبنت تانية', delete_request: 'طلب مسح عرض', deleted: 'اتمسح عرض', delete_rejected: 'اترفض مسح عرض', role: 'صلاحيات' };
+const MAPS_RE = /^https:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+\/maps|maps\.google\.[a-z.]+\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
 
 let S = null, me = null, MODE = null, tab = 'home', stageSel = 'followup', RS = null;
 
@@ -324,14 +336,14 @@ function seed() {
   const h = (n) => new Date(Date.now() - n * 3600e3).toISOString();
   const d = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
   const L = (id, name, tail, status, girl, last, hrs, area) => ({ id: 'l' + id, name, phone: '01' + (id % 3) + '•••••' + tail, status, assigned_to: girl, last, at: h(hrs), created_at: h(hrs + 24 * (id % 5)), area });
-  const own = { sales: 'ahmed', delivery: 'ahmed', technicians: 'ahmed', installs: 'ahmed', goods: 'omar' };
+  const own = { sales: 'ahmed', pricing: 'ahmed', visits: 'ahmed', delivery: 'ahmed', technicians: 'ahmed', installs: 'ahmed', goods: 'omar' };
   return {
     users: {
       abdallah: { full: 'عبدالله', ini: 'ع', cls: '' },
       ahmed: { full: 'أحمد مصطفى', ini: 'أ', cls: 'b' },
       omar: { full: 'عمر', ini: 'ع', cls: 'b' }
     },
-    members: [{ user: 'abdallah', role: 'owner', see: [] }, { user: 'ahmed', role: 'admin', see: [] }, { user: 'omar', role: 'admin', see: [] }],
+    members: [{ user: 'abdallah', role: 'owner', see: [], review: REV_AREAS.slice(), mgr: false }, { user: 'ahmed', role: 'admin', see: [], review: [], mgr: true }, { user: 'omar', role: 'admin', see: [], review: [], mgr: false }],
     requests: [],
     areas: AREA_NAMES.map(([key, name]) => ({ key, name, owner: own[key] || 'abdallah' })),
     history: [],
@@ -356,7 +368,21 @@ function seed() {
       { id: 'q3', number: 'Q-9103', client: 'د. عمرو الفقي (وهمي)', total: 61000, status: 'accepted', date: d(12), by: 'منة' },
       { id: 'q4', number: 'Q-9104', client: 'أ. رانيا حمدي (وهمي)', total: 38500, status: 'sent', date: d(1), by: 'سلمى' },
       { id: 'q5', number: 'Q-9105', client: 'م. شريف علام (وهمي)', total: 19800, status: 'sent', date: d(2), by: 'منة' },
-      { id: 'q6', number: 'Q-9106', client: 'أ. دينا شكري (وهمي)', total: 31200, status: 'draft', date: d(0), by: 'سلمى' }
+      { id: 'q6', number: 'Q-9106', client: 'أ. دينا شكري (وهمي)', total: 31200, status: 'draft', date: d(0), by: 'سلمى' },
+      { id: 'q7', number: 'Q-9107', client: 'م. شريف علام (وهمي)', total: 21300, status: 'sent', date: d(4), by: 'منة', delReq: h(3) }
+    ],
+    visits: [
+      { id: 'v1', client: 'أ. ياسمين فؤاد (وهمي)', phone: '010•••••5502', needs: ['lights', 'curtains'], needsText: '3 أوض وريسبشن', mapsUrl: 'https://maps.app.goo.gl/demo', address: 'الجناين — عمارة 4 (وهمي)', date: d(-2), time: '17:00', notes: 'العميلة فاضية بعد العصر', photos: [], status: 'new', by: 'منة', at: h(4) },
+      { id: 'v2', client: 'م. طارق عزمي (وهمي)', phone: '012•••••3317', needs: ['cameras', 'locks'], needsText: '', address: 'عتاقة — فيلا (وهمي)', date: d(-1), time: '12:00', notes: '', photos: [], status: 'scheduled', when: new Date(Date.now() + 864e5).toISOString(), by: 'سلمى', at: h(30) },
+      { id: 'v3', client: 'أ. هبة القاضي (وهمي)', phone: '011•••••7023', needs: ['screens', 'other'], needsText: 'شاشة مطبخ', address: 'الأربعين (وهمي)', date: d(5), time: '', notes: '', photos: [], status: 'done', result: 'sold', note: 'اتفقنا على 3 شاشات', by: 'سلمى', at: h(140) }
+    ],
+    activity: [
+      { id: 'x6', area: 'pricing', type: 'quote', target: 'q7', kind: 'delete_request', body: 'Q-9107 — م. شريف علام (وهمي)', who: 'منة', at: h(3) },
+      { id: 'x1', area: 'visits', type: 'visit', target: 'v1', kind: 'created', body: 'معاينة جديدة', who: 'منة', at: h(4) },
+      { id: 'x3', area: 'visits', type: 'visit', target: 'v2', kind: 'status', from: 'new', to: 'scheduled', body: 'الميعاد بكرة الضهر', who: 'ahmed', at: h(26) },
+      { id: 'x2', area: 'visits', type: 'visit', target: 'v2', kind: 'created', body: 'معاينة جديدة', who: 'سلمى', at: h(30) },
+      { id: 'x5', area: 'sales', type: 'lead', target: 'l7', kind: 'reassign', body: 'م. شريف علام (وهمي)', from: 'سلمى', to: 'منة', who: 'ahmed', at: h(50) },
+      { id: 'x4', area: 'visits', type: 'visit', target: 'v3', kind: 'status', from: 'scheduled', to: 'done', body: 'النتيجة اتقفلت — اتفقنا على 3 شاشات', who: 'ahmed', at: h(120) }
     ],
     stock: [
       { id: 's1', name: 'سويتش 3 خط زجاج (وهمي)', unit: 'قطعة', qty: 0, min: 10 },
@@ -403,12 +429,16 @@ function owner(k) { return area(k).owner; }
 function owns(k) { return !!me && owner(k) === me; }
 function canSee(k) { const m = mem(me); if (!m) return false; return m.role !== 'staff' || m.see.includes(k) || owns(k); }
 function canMove(k) { return isOwner(); }   // only a company owner (مالك) moves an area (enforced in SQL too)
-function canDecide(a) { return owns(a.area) && !(a.reqBy && a.reqBy === me && !isOwner()); }   // never your own request
+function reviewing(k) { const m = mem(me); return !!m && (m.review || []).includes(k); }   // «مراجع»: sees, comments, never acts (SQL refuses too)
+function canAct(k) { return owns(k) && !reviewing(k); }
+function isMgr() { const m = mem(me); return !!m && !!m.mgr; }
+function canDecide(a) { return canAct(a.area) && !(a.reqBy && a.reqBy === me && !isOwner()); }   // never your own request
 function cCount(t) { return S.comments.filter((c) => c.target === t).length; }
 function toast(t) { const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.appendChild(el); setTimeout(() => el.remove(), 2200); }
 function pendingReqs() { return S.requests.filter((r) => r.status === 'pending'); }
 function curStep(j) { const s = STEPS.find((s) => j[s.key] !== 'done'); return s ? s.key : 'done'; }
 function lockNote(k, extra) {
+  if (reviewing(k)) return '<div class="lock rev">«' + esc(area(k).name) + '» إنت مراجع فيها: بتشوف كل حاجة وتعلّق، والموافقة والتعديل لـ ' + esc(U(owner(k)).full) + '.' + (extra || '') + '</div>';
   return (owns(k)
     ? '<div class="lock mine">«' + esc(area(k).name) + '» مسؤوليتك — إنت اللي بتعدّل وتوافق هنا.'
     : '<div class="lock">«' + esc(area(k).name) + '» مسؤولية ' + esc(U(owner(k)).full) + ' — إنت شايف بس، وتقدر تكتب تعليق.') + (extra || '') + '</div>';
@@ -432,7 +462,8 @@ function myToday() {
   const appr = S.approvals.filter((a) => a.status === 'pending' && canDecide(a));
   const steps = [];
   S.jobs.forEach((j) => STEPS.forEach((s) => { if (owns(s.area) && (j[s.key] === 'blocked' || j[s.key] === 'in_progress')) steps.push({ j, s }); }));
-  return { tasks, appr, steps, reqs: isOwner() ? pendingReqs() : [] };
+  const visits = canAct('visits') ? (S.visits || []).filter((v) => v.status === 'new') : [];
+  return { tasks, appr, steps, visits, reqs: isOwner() ? pendingReqs() : [] };
 }
 
 function render() {
@@ -442,18 +473,21 @@ function render() {
   const v = $('view');
   if (tab === 'home') v.innerHTML = vHome();
   else if (tab === 'pipe') v.innerHTML = vPipe();
+  else if (tab === 'visits') v.innerHTML = vVisits();
   else if (tab === 'jobs') v.innerHTML = vJobs();
   else if (tab === 'tasks') v.innerHTML = vTasks();
   else if (tab === 'areas') v.innerHTML = vAreas();
 }
 
 function vHome() {
-  const t = myToday(), n = t.tasks.length + t.appr.length + t.steps.length + t.reqs.length, sv = sales();
+  const t = myToday(), n = t.tasks.length + t.appr.length + t.steps.length + t.reqs.length + t.visits.length, sv = sales();
   const mine = S.areas.filter((a) => a.owner === me);
-  let h = '<h2>أهلاً ' + esc(U(me).full) + '</h2><p class="muted" style="margin:0">' + ROLES[role()] + ' · مسؤول عن: ' + (mine.map((a) => esc(a.name)).join('، ') || 'مفيش لسه') + '</p>';
+  const rv = REV_AREAS.filter(reviewing);
+  let h = '<h2>أهلاً ' + esc(U(me).full) + '</h2><p class="muted" style="margin:0">' + ROLES[role()] + (isMgr() ? ' · مسؤول المبيعات' : '') + (rv.length ? ' · مراجع في: ' + rv.map((k) => esc(area(k).name)).join('، ') : '') + ' · مسؤول عن: ' + (mine.map((a) => esc(a.name)).join('، ') || 'مفيش لسه') + '</p>';
   h += '<h3 class="sec">المطلوب منك النهارده <span class="n">' + n + '</span></h3><div class="panel">';
   if (!n) h += '<p class="muted" style="margin:0">مفيش حاجة مستنياك النهارده.</p>';
   t.reqs.forEach((r) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">طلب دخول: ' + esc(U(r.user).full) + '</div><div class="ss">حساب جديد مستني موافقتك</div></div><button class="sm" data-go="areas">افتح</button></div></div>'; });
+  t.visits.forEach((x) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">معاينة جديدة: ' + esc(x.client) + '</div><div class="ss">من ' + esc(first(x.by)) + ' · ' + esc(x.date) + '</div></div><button class="sm" data-vopen="' + esc(x.id) + '">افتح</button></div></div>'; });
   t.appr.forEach((a) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">وافق على: ' + esc(a.title) + '</div><div class="ss">' + esc(area(a.area).name) + ' · ' + money(a.amount) + '</div></div><button class="sm" data-go="tasks">افتح</button></div></div>'; });
   t.tasks.forEach((x) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(x.title) + '</div><div class="ss">مهمة · ' + esc(x.due) + '</div></div><button class="sm ghost" data-done="' + esc(x.id) + '">خلصت</button></div></div>'; });
   t.steps.forEach(({ j, s }) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(s.name) + ' — ' + esc(j.customer) + '</div><div class="ss">بطاقة تسليم</div></div><span class="chip c-' + j[s.key] + '">' + ST[j[s.key]] + '</span></div></div>'; });
@@ -492,6 +526,15 @@ function vPipe() {
   if (canSee('pricing')) {
     h += '<h3 class="sec">عروض السعر' + SRC + '</h3><div class="panel">';
     if (!S.quotes.length) h += '<p class="muted" style="margin:0">مفيش عروض.</p>';
+    const delReqs = S.quotes.filter((q) => q.delReq), qm = isMgr() && !reviewing('pricing');
+    if (delReqs.length) {
+      h += '<div class="lock' + (qm ? ' mine' : reviewing('pricing') ? ' rev' : '') + '">طلبات مسح عروض: ' + delReqs.length + (qm ? ' — إنت اللي بتقرر.' : ' — بيقرر فيها مسؤول المبيعات.') + '</div>';
+      delReqs.forEach((q) => {
+        h += '<div class="item"><div class="row"><div class="grow"><div class="tt">🗑 ' + esc(q.number) + ' — ' + esc(q.client) + '</div><div class="ss">' + money(q.total) + (q.by ? ' · ' + esc(q.by) : '') + ' · ' + ago(q.delReq) + '</div></div></div>';
+        if (qm) h += '<div class="acts"><button class="sm okb" data-qdel="' + esc(q.id) + '|1">امسحه</button><button class="sm nob" data-qdel="' + esc(q.id) + '|0">ارفض المسح</button></div>';
+        h += '</div>';
+      });
+    }
     S.quotes.slice(0, 8).forEach((q) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(q.number) + ' — ' + esc(q.client) + '</div><div class="ss">' + esc(q.date) + (q.by ? ' · ' + esc(q.by) : '') + '</div></div><div style="text-align:left"><b style="font-size:.85rem">' + money(q.total) + '</b><br><span class="chip c-' + (q.status === 'accepted' ? 'done' : q.status === 'rejected' ? 'blocked' : q.status === 'sent' ? 'in_progress' : 'pending') + '">' + esc(Q_ST[q.status] || q.status) + '</span></div></div></div>'; });
     h += '</div>';
   }
@@ -550,7 +593,98 @@ function vTasks() {
     decided.forEach((a) => { h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(a.title) + '</div><div class="ss">' + esc(U(a.dby).full) + '</div></div><span class="chip ' + (a.status === 'approved' ? 'c-done">اتوافق' : 'c-blocked">اترفض') + '</span></div></div>'; });
     h += '</div>';
   }
+  const log = (S.activity || []).filter((x) => x.kind !== 'comment' && x.kind !== 'created' && canSee(x.area)).slice(0, 40);
+  h += '<h3 class="sec">سجل القرارات <span class="n">' + log.length + '</span></h3><div class="panel">';
+  if (!log.length) h += '<p class="muted" style="margin:0">لسه مفيش قرارات متسجلة.</p>';
+  log.forEach((x) => { h += '<div class="item"><div class="tt" style="font-size:.88rem">' + esc(actLine(x)) + '</div><div class="ss">' + esc(area(x.area).name) + ' · ' + esc(U(x.who).full) + ' · ' + ago(x.at) + '</div></div>'; });
+  return h + '</div>';
+}
+function actLine(x) {
+  const st = (v) => V_ST[v] || ({ pending: 'مستني', approved: 'اتوافق', rejected: 'اترفض' })[v] || v || '';
+  if (x.kind === 'status' || x.kind === 'decision') return (x.type === 'visit' ? 'معاينة: ' : '') + st(x.from) + ' ← ' + st(x.to) + (x.body ? ' — ' + x.body : '');
+  if (x.kind === 'reassign') return 'العميل ' + (x.body || '') + ' اتنقل من ' + (x.from || '—') + ' لـ ' + (x.to || '—');
+  return (ACT_KIND[x.kind] || x.kind) + (x.body ? ': ' + x.body : '');
+}
+
+/* ---------------- site visits (المعاينات, migration 113) ---------------- */
+function vVisits() {
+  let h = '<h2>المعاينات</h2><p class="muted" style="margin:0 0 12px">البنت بتسلّم المعاينة من كارت العميل في الـCRM. صاحب «المعاينات» بيحدد الميعاد، وبعدها «خلصت» بالنتيجة أو «اتلغت» بالسبب.</p>';
+  if (!canSee('visits')) return h + noAccess('visits');
+  h += lockNote('visits');
+  const all = S.visits || [];
+  [['new', 'جديدة — مستنية رد'], ['scheduled', 'اتحدد ميعادها'], ['closed', 'خلصت / اتلغت']].forEach(([k, name]) => {
+    const list = all.filter((v) => (k === 'closed' ? (v.status === 'done' || v.status === 'cancelled') : v.status === k)).slice(0, k === 'closed' ? 15 : 100);
+    h += '<h3 class="sec">' + name + ' <span class="n">' + list.length + '</span></h3><div class="panel">';
+    if (!list.length) h += '<p class="muted" style="margin:0">مفيش.</p>';
+    list.forEach((v) => {
+      h += '<div class="item"><div class="row"><div class="grow"><div class="tt">' + esc(v.client) + '</div><div class="ss">' + esc((v.needs || []).map((n) => NEEDS[n] || n).join('، ')) + (v.needsText ? ' — ' + esc(v.needsText) : '') + '<br>' + esc(v.date) + (v.time ? ' ' + esc(String(v.time).slice(0, 5)) : '') + ' · من ' + esc(first(v.by)) + '</div></div>';
+      h += '<span class="chip ' + V_CHIP[v.status] + '">' + esc(V_ST[v.status] || v.status) + '</span></div><div class="acts"><button class="sm ghost" data-vopen="' + esc(v.id) + '">افتح' + (canAct('visits') && (v.status === 'new' || v.status === 'scheduled') ? ' وقرّر' : '') + '</button></div></div>';
+    });
+    h += '</div>';
+  });
   return h;
+}
+function mapsOf(v) {
+  if (v.mapsUrl && MAPS_RE.test(v.mapsUrl)) return v.mapsUrl;
+  if (v.lat != null && v.lng != null && isFinite(v.lat) && isFinite(v.lng)) return 'https://www.google.com/maps?q=' + Number(v.lat) + ',' + Number(v.lng);
+  return '';
+}
+function openVisit(id) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  const draw = () => {
+    const v = (S.visits || []).find((x) => String(x.id) === String(id)); if (!v) { bg.remove(); return; }
+    const log = (S.activity || []).filter((x) => x.type === 'visit' && String(x.target) === String(v.id)).slice().sort((a, b) => String(a.at).localeCompare(String(b.at)));
+    const can = canAct('visits') && (v.status === 'new' || v.status === 'scheduled'), mp = mapsOf(v);
+    let h = '<div class="sheet" role="dialog" aria-label="معاينة"><div class="row"><div class="grow"><b>معاينة: ' + esc(v.client) + '</b><div class="muted">من ' + esc(U(v.by).full) + ' · ' + ago(v.at) + '</div></div><button class="sm ghost" data-x="1">قفل</button></div>';
+    h += '<div class="cm"><small>الحالة</small><span class="chip ' + V_CHIP[v.status] + '">' + esc(V_ST[v.status] || v.status) + '</span>' + (v.status === 'scheduled' && v.when ? ' ' + esc(new Date(v.when).toLocaleString('ar-EG', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) : '') + (v.status === 'done' ? ' · ' + esc(V_RES[v.result] || v.result || '') : '') + (v.note ? '<br>' + esc(v.note) : '') + '</div>';
+    h += '<div class="cm"><small>العميل</small>' + esc(v.client) + (v.phone ? ' · <a class="lnk" dir="ltr" href="tel:' + esc(String(v.phone).replace(/[^\d+]/g, '')) + '">' + esc(v.phone) + '</a>' : '') + '</div>';
+    h += '<div class="cm"><small>المكان</small>' + esc(v.address || '—') + (mp ? ' · <a class="lnk" href="' + esc(mp) + '" target="_blank" rel="noopener noreferrer">افتح على الخريطة</a>' : '') + '</div>';
+    h += '<div class="cm"><small>محتاج</small>' + esc((v.needs || []).map((n) => NEEDS[n] || n).join('، ')) + (v.needsText ? ' — ' + esc(v.needsText) : '') + '</div>';
+    h += '<div class="cm"><small>الميعاد اللي البنت كتبته</small>' + esc(v.date) + (v.time ? ' ' + esc(String(v.time).slice(0, 5)) : '') + (v.notes ? '<br>' + esc(v.notes) : '') + '</div>';
+    if ((v.photos || []).length) h += '<div class="cm"><small>صور</small>' + v.photos.map((p, i) => '<button class="sm ghost" style="margin:4px 0 0 6px" data-photo="' + esc(p) + '">صورة ' + (i + 1) + '</button>').join('') + '</div>';
+    if (can) {
+      h += '<div class="vf"><div class="sub">' + (v.status === 'new' ? 'حدّد ميعاد المعاينة' : 'غيّر الميعاد') + '</div><input type="datetime-local" id="vWhen" style="direction:ltr"><button class="sm okb" style="margin-top:8px" data-vs="scheduled">' + (v.status === 'new' ? 'وافق وحدّد الميعاد' : 'غيّر الميعاد') + '</button>';
+      if (v.status === 'scheduled') h += '<div class="sub">خلصت؟</div><select id="vRes"><option value="">النتيجة…</option>' + Object.keys(V_RES).map((k) => '<option value="' + k + '">' + V_RES[k] + '</option>').join('') + '</select><textarea id="vDoneNote" placeholder="ملاحظة على المعاينة (اختياري)"></textarea><button class="sm okb" style="margin-top:8px" data-vs="done">خلصت</button>';
+      h += '<div class="sub">إلغاء</div><textarea id="vWhy" placeholder="سبب الإلغاء (لازم)"></textarea><button class="sm nob" style="margin-top:8px" data-vs="cancelled">الغي المعاينة</button></div>';
+    } else if (v.status === 'new' || v.status === 'scheduled') {
+      h += '<div class="lock' + (reviewing('visits') ? ' rev' : '') + '" style="margin-top:12px">' + (reviewing('visits') ? 'إنت مراجع هنا: بتشوف وتعلّق بس.' : 'القرار لـ ' + esc(U(owner('visits')).full) + '.') + '</div>';
+    }
+    h += '<h3 class="sec">السجل</h3>' + (log.length ? log.map((x) => '<div class="cm"><small>' + esc(U(x.who).full) + ' · ' + ago(x.at) + '</small>' + esc(x.kind === 'comment' ? x.body : x.kind === 'created' ? 'اتسلمت المعاينة' : actLine(x)) + '</div>').join('') : '<p class="muted">مفيش.</p>');
+    h += '<textarea id="vNote" placeholder="اكتب تعليق (للفريق بس)"></textarea><button data-vnote="1">ابعت التعليق</button></div>';
+    bg.innerHTML = h;
+  };
+  draw();
+  bg.addEventListener('click', async (e) => {
+    const b = e.target.closest('button');
+    if (e.target === bg || (b && b.dataset.x)) { bg.remove(); render(); return; }
+    if (!b) return;
+    if (b.dataset.photo) { photoOpen(b.dataset.photo); return; }
+    if (b.dataset.vnote) {
+      const body = bg.querySelector('#vNote').value.trim(); if (!body) return;
+      if (await act('vnote', { id, body: body.slice(0, 2000) })) { draw(); toast('اتسجل التعليق'); }
+      return;
+    }
+    if (b.dataset.vs) {
+      const st = b.dataset.vs, p = { id, status: st };
+      if (st === 'scheduled') { const w = bg.querySelector('#vWhen').value; if (!w) { toast('اختار اليوم والساعة'); return; } p.when = new Date(w).toISOString(); }
+      if (st === 'done') { p.result = bg.querySelector('#vRes').value; p.note = bg.querySelector('#vDoneNote').value.trim(); if (!p.result) { toast('اختار النتيجة'); return; } }
+      if (st === 'cancelled') { p.note = bg.querySelector('#vWhy').value.trim(); if (!p.note) { toast('اكتب سبب الإلغاء'); return; } }
+      b.disabled = true;
+      if (await act('vstatus', p)) { draw(); toast('المعاينة: ' + V_ST[st]); } else b.disabled = false;
+    }
+  });
+  document.body.appendChild(bg);
+}
+async function photoOpen(path) {
+  if (MODE !== 'real') { toast('مفيش صور في التجربة'); return; }
+  const w = window.open('', '_blank');
+  try {
+    RS = await refresh(RS) || RS;
+    const r = await fetch(SB_URL + '/storage/v1/object/sign/visit-photos/' + String(path).split('/').map(encodeURIComponent).join('/'), { method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + RS.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ expiresIn: 300 }) });
+    const j = r.ok ? await r.json() : null, u = j && (j.signedURL || j.signedUrl);
+    if (!u || u.charAt(0) !== '/') throw new Error('no url');
+    if (w) w.location = SB_URL + '/storage/v1' + u; else location.href = SB_URL + '/storage/v1' + u;
+  } catch (e) { if (w) w.close(); toast('مقدرناش نفتح الصورة'); }
 }
 function apprItem(a, can) {
   let h = '<div class="item"><div class="tt">' + esc(a.title) + '</div><div class="ss">' + esc(a.details || '') + '<br>' + esc(area(a.area).name) + ' · ' + money(a.amount) + ' · طلب: ' + esc(a.by || '—') + '</div><div class="acts">';
@@ -600,11 +734,16 @@ function vAccess() {
   h += '</div><h3 class="sec">الأعضاء <span class="n">' + S.members.length + '</span></h3><div class="panel">';
   S.members.forEach((m) => {
     const n = S.areas.filter((a) => a.owner === m.user).length;
-    h += '<div class="item"><div class="row"><span class="av ' + U(m.user).cls + '">' + esc(U(m.user).ini) + '</span><div class="grow"><div class="tt">' + esc(U(m.user).full) + '</div><div class="ss">' + (String(m.user).includes('@') ? '<span dir="ltr">' + esc(m.user) + '</span> · ' : '') + ROLES[m.role] + ' · صاحب ' + n + ' حتة' + (m.role === 'staff' && m.see.length ? ' · يشوف: ' + m.see.map((k) => esc(area(k).name)).join('، ') : '') + '</div></div>';
+    const rv = (m.review || []);
+    h += '<div class="item"><div class="row"><span class="av ' + U(m.user).cls + '">' + esc(U(m.user).ini) + '</span><div class="grow"><div class="tt">' + esc(U(m.user).full) + (m.mgr ? ' <span class="chip c-own">مسؤول المبيعات</span>' : '') + (rv.length ? ' <span class="chip c-rev">مراجع</span>' : '') + '</div><div class="ss">' + (String(m.user).includes('@') ? '<span dir="ltr">' + esc(m.user) + '</span> · ' : '') + ROLES[m.role] + ' · صاحب ' + n + ' حتة' + (m.role === 'staff' && m.see.length ? ' · يشوف: ' + m.see.map((k) => esc(area(k).name)).join('، ') : '') + (rv.length ? ' · مراجع في: ' + rv.map((k) => esc(area(k).name)).join('، ') : '') + '</div></div>';
     h += m.role === 'owner' ? '<span class="chip c-own">مالك</span>' : '<button class="sm nob" data-revoke="' + esc(m.user) + '">اسحب الصلاحية</button>';
-    h += '</div></div>';
+    h += '</div>';
+    if (m.role !== 'owner') h += '<div class="acts">' + (m.mgr ? '<button class="sm ghost" data-mgr="' + esc(m.user) + '|0">شيل «مسؤول المبيعات»</button>' : '<button class="sm" data-mgr="' + esc(m.user) + '|1">عيّنه مسؤول المبيعات</button>') + '</div>';
+    else if (m.user === me) h += '<div class="acts">' + (rv.length ? '<button class="sm ghost" data-rev="0">شيل المراجعة عني (ارجع توافق بنفسك)</button>' : '<button class="sm ghost" data-rev="1">خليني مراجع في المبيعات والأسعار والمعاينات</button>') + '</div>';
+    h += '</div>';
   });
-  return h + '</div>';
+  h += '</div><p class="muted" style="font-size:.78rem;margin-top:-4px">«عيّنه مسؤول المبيعات» بيدّيله المبيعات والأسعار والمعاينات، وبيخليك مراجع فيهم (تشوف وتعلّق بس). الدخول والأدوار والمنتجات والأسعار بتفضل معاك.</p>';
+  return h;
 }
 
 function openThread(target, areaKey, title) {
@@ -640,8 +779,13 @@ async function act(kind, p) {
       else if (kind === 'grant') await rpc('tsd_grant_access', { p_company: CO.id, p_user: p.user, p_role: p.role, p_see: p.see, p_own: p.own });
       else if (kind === 'deny') await rpc('tsd_deny_request', { p_company: CO.id, p_user: p.user });
       else if (kind === 'revoke') await rpc('tsd_revoke_member', { p_company: CO.id, p_email: p.user });
+      else if (kind === 'vstatus') await rpc('tsd_set_visit_status', { p_id: p.id, p_status: p.status, p_note: p.note || null, p_result: p.result || null, p_when: p.when || null });
+      else if (kind === 'vnote') await rpc('tsd_add_note', { p_target_type: 'visit', p_target_id: p.id, p_body: p.body });
+      else if (kind === 'qdel') await rpc('tsd_decide_quote_deletion', { p_quote: p.id, p_approve: p.ok, p_note: p.note || null });
+      else if (kind === 'mgr') await rpc('tsd_set_sales_manager', { p_company: CO.id, p_email: p.user, p_on: p.on, p_owner_reviews: true });
+      else if (kind === 'review') await rpc('tsd_set_review_areas', { p_company: CO.id, p_email: me, p_areas: p.areas });
       await realLoad(); return true;
-    } catch (e) { toast('مقدرناش نحفظ: ' + (e.message || 'خطأ')); render(); return false; }
+    } catch (e) { toast(/reviewer_read_only/.test(e.message || '') ? 'إنت مراجع هنا — مش مسموح تعدّل' : 'مقدرناش نحفظ: ' + (e.message || 'خطأ')); render(); return false; }
   }
   if (kind === 'step') { const j = S.jobs.find((x) => x.id === p.job); j[p.step] = p.status; if (p.step === 'collect' && p.status === 'done') j.paid = j.total; }
   else if (kind === 'done') { S.tasks.find((t) => t.id === p.id).done = true; }
@@ -653,6 +797,23 @@ async function act(kind, p) {
     p.own.forEach((k) => { const a = area(k); if (a.owner !== p.user) { S.history.push({ area: k, from: a.owner, to: p.user, by: me, at: now }); a.owner = p.user; } });
     const r = S.requests.find((x) => x.user === p.user); if (r) r.status = 'approved';
   } else if (kind === 'deny') { const r = S.requests.find((x) => x.user === p.user); if (r) r.status = 'revoked'; }
+  else if (kind === 'vstatus') {
+    const v = S.visits.find((x) => x.id === p.id); if (!v || !canAct('visits')) return false;
+    S.activity.unshift({ id: 'x' + Date.now(), area: 'visits', type: 'visit', target: v.id, kind: 'status', from: v.status, to: p.status, body: [p.result ? 'النتيجة ' + V_RES[p.result] : '', p.note || ''].filter(Boolean).join(' — '), who: me, at: now });
+    v.status = p.status; if (p.when) v.when = p.when; if (p.result) v.result = p.result; if (p.note) v.note = p.note;
+  } else if (kind === 'vnote') { S.activity.unshift({ id: 'x' + Date.now(), area: 'visits', type: 'visit', target: p.id, kind: 'comment', body: p.body, who: me, at: now }); }
+  else if (kind === 'qdel') {
+    const q = S.quotes.find((x) => x.id === p.id); if (!q || !isMgr() || reviewing('pricing')) return false;
+    S.activity.unshift({ id: 'x' + Date.now(), area: 'pricing', type: 'quote', target: q.id, kind: p.ok ? 'deleted' : 'delete_rejected', body: q.number + ' — ' + q.client, who: me, at: now });
+    if (p.ok) S.quotes = S.quotes.filter((x) => x.id !== q.id); else delete q.delReq;
+  } else if (kind === 'mgr') {
+    const m = mem(p.user); if (!m || !isOwner()) return false; m.mgr = p.on;
+    S.activity.unshift({ id: 'x' + Date.now(), area: 'responsibilities', type: 'member', target: p.user, kind: 'role', body: (U(p.user).full) + (p.on ? ' بقى مسؤول المبيعات' : ' اتشال من مسؤول المبيعات'), who: me, at: now });
+    if (p.on) { REV_AREAS.forEach((k) => { const a = area(k); if (a.owner !== p.user) { S.history.push({ area: k, from: a.owner, to: p.user, by: me, at: now }); a.owner = p.user; } }); mem(me).review = REV_AREAS.slice(); }
+  } else if (kind === 'review') {
+    if (!isOwner()) return false; mem(me).review = p.areas.slice();
+    S.activity.unshift({ id: 'x' + Date.now(), area: 'responsibilities', type: 'member', target: me, kind: 'role', body: 'مراجع في: ' + (p.areas.map((k) => area(k).name).join('، ') || 'ولا حتة'), who: me, at: now });
+  }
   else if (kind === 'revoke') {
     S.areas.forEach((a) => { if (a.owner === p.user) { S.history.push({ area: a.key, from: p.user, to: me, by: me, at: now }); a.owner = me; } });
     S.members = S.members.filter((m) => m.user !== p.user);
@@ -675,6 +836,22 @@ $('view').addEventListener('click', async (e) => {
   else if (d.out) { logout(); }
   else if (d.stage) { stageSel = d.stage; render(); }
   else if (d.cm) openThread(d.cm, d.cma, d.cmt);
+  else if (d.vopen) openVisit(d.vopen);
+  else if (d.qdel) {
+    const [id, ok] = d.qdel.split('|'), q = S.quotes.find((x) => String(x.id) === id);
+    if (!q || !isMgr() || reviewing('pricing')) return;
+    if (ok === '1' && !confirm('تمسح العرض ' + q.number + ' نهائي؟')) return;
+    if (await act('qdel', { id: q.id, ok: ok === '1' })) { render(); toast(ok === '1' ? 'العرض اتمسح' : 'طلب المسح اترفض'); }
+  } else if (d.mgr) {
+    const [u, on] = d.mgr.split('|'); if (!isOwner() || !mem(u)) return;
+    if (on === '1' && !confirm(U(u).full + ' هيبقى مسؤول المبيعات: هياخد المبيعات والأسعار والمعاينات، وإنت هتبقى مراجع فيهم. تمام؟')) return;
+    if (await act('mgr', { user: u, on: on === '1' })) { render(); toast(on === '1' ? U(u).full + ' بقى مسؤول المبيعات' : 'اتشال'); }
+  } else if (d.rev) {
+    if (!isOwner()) return;
+    const areas = d.rev === '1' ? REV_AREAS.slice() : [];
+    if (!areas.length && !confirm('هترجع توافق وتعدّل بنفسك في الحتت اللي إنت صاحبها. تمام؟')) return;
+    if (await act('review', { areas })) { render(); toast(areas.length ? 'بقيت مراجع' : 'اتشالت المراجعة'); }
+  }
   else if (d.step) {
     const [job, step] = d.step.split('|'), s = STEPS.find((x) => x.key === step), j = S.jobs.find((x) => String(x.id) === job);
     if (!j || !owns(s.area)) return;
@@ -771,18 +948,25 @@ async function realLoad() {
     get('tsd_area_history?' + c + '&order=changed_at&limit=50')
   ]);
   const reqs = access.role === 'owner' ? await get('tsd_access_requests?' + c + '&status=eq.pending&order=created_at') : [];
+  // migration 113 adds these; before it runs they are simply empty and the page works as before
+  const [vis, actv] = await Promise.all([
+    get('tsd_site_visits?' + c + '&order=created_at.desc&limit=150').catch(() => []),
+    get('tsd_activity?' + c + '&order=created_at.desc&limit=300').catch(() => [])
+  ]);
   const users = {};
   (mems || []).forEach((m) => { const n = m.display_name || m.email.split('@')[0]; users[m.email] = { full: n, ini: n[0], cls: m.role === 'owner' ? '' : 'b' }; });
   (reqs || []).forEach((r) => { const n = r.full_name || r.email.split('@')[0]; users[r.email] = { full: n, ini: n[0], cls: 'b' }; });
   const x = crm || {};
   S = {
     users,
-    members: (mems || []).map((m) => ({ user: m.email, role: m.role, see: m.see_areas || [] })),
+    members: (mems || []).map((m) => ({ user: m.email, role: m.role, see: m.see_areas || [], review: m.review_areas || [], mgr: !!m.sales_manager })),
     requests: (reqs || []).map((r) => ({ user: r.email, uid: r.user_id, email: r.email, at: r.created_at, status: r.status })),
     areas: (areas || []).map((a) => ({ key: a.key, name: a.name, owner: a.owner_email })),
     history: (hist || []).map((h) => ({ area: h.area_key, from: h.from_email, to: h.to_email, by: h.changed_by, at: h.changed_at })),
     leads: (x.leads || []).map((l) => ({ id: l.id, name: l.name, phone: l.phone, status: l.status, assigned_to: l.assigned_to ? String(l.assigned_to).split('@')[0] : '', last: l.last_note, at: l.last_at || l.created_at, created_at: l.created_at, area: l.area })),
-    quotes: (x.quotes || []).map((q) => ({ id: q.id, number: q.quote_number, client: q.client_name, total: q.total, status: q.status, date: q.quote_date, by: q.created_by ? String(q.created_by).split('@')[0] : '' })),
+    quotes: (x.quotes || []).map((q) => ({ id: q.id, number: q.quote_number, client: q.client_name, total: q.total, status: q.status, date: q.quote_date, by: q.created_by ? String(q.created_by).split('@')[0] : '', delReq: q.delete_requested_at })),
+    visits: (vis || []).map((v) => ({ id: v.id, client: v.client_name, phone: v.client_phone, needs: v.needs || [], needsText: v.needs_text, mapsUrl: v.maps_url, lat: v.lat, lng: v.lng, address: v.address, date: v.visit_date, time: v.visit_time, notes: v.notes, photos: v.photos || [], status: v.status, when: v.scheduled_for, result: v.result, note: v.status_note, by: v.created_by, at: v.created_at })),
+    activity: (actv || []).map((a) => ({ id: a.id, area: a.area_key, type: a.target_type, target: a.target_id, kind: a.kind, body: a.body, from: a.from_value, to: a.to_value, who: a.actor, at: a.created_at })),
     stock: (x.stock || []).map((s) => ({ id: s.id, name: s.name, unit: s.unit, qty: Number(s.quantity), min: s.min_qty })),
     jobs: (jobs || []).map((j) => ({ id: j.id, customer: j.customer_name, place: j.area_text, total: j.amount_total, paid: j.amount_paid, goods: j.goods_status, techs: j.techs_status, install: j.install_status, collect: j.collect_status, note: j.notes })),
     tasks: (tasks || []).map((t) => ({ id: t.id, area: t.area_key, title: t.title, who: t.assignee_email, due: t.due_date || '—', done: t.status === 'done' })),
