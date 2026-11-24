@@ -71,6 +71,27 @@ tr.inactive td{color:var(--muted)}
 .q-st.accepted{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 .q-st.rejected{color:var(--muted);text-decoration:line-through}
 .q-st.del{border-color:var(--red);color:var(--red);font-weight:600}
+/* reviewer / site visits (113) */
+.rev-note{background:var(--cream);border:1px solid #f3d9b5;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:14px;line-height:1.7}
+.v-card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+.v-card .v-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.v-st{font-size:12px;padding:2px 10px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+.v-st.new{border-color:var(--amber);color:var(--amber);font-weight:600}
+.v-st.scheduled{border-color:var(--ink);font-weight:600}
+.v-st.done{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.v-st.cancelled{color:var(--muted);text-decoration:line-through}
+.v-log{list-style:none;margin:8px 0 0;padding:0;font-size:12.5px}
+.v-log li{padding:5px 0;border-top:1px dashed var(--line)}
+.v-log .meta{font-size:11.5px;color:var(--muted)}
+.v-form{border:1px solid var(--ink);border-radius:8px;padding:14px;margin-top:10px}
+.v-needs{display:flex;flex-wrap:wrap;gap:6px}
+.v-needs label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:4px 10px;font-size:13px;color:var(--ink);margin:0;cursor:pointer}
+.v-needs input{width:auto;margin:0}
+.v-loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.v-loc .ok{font-size:12px;color:#1b7a3d}
+.v-cm{display:flex;gap:6px;margin-top:8px}
+.v-cm input{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:6px}
+.v-cm button{padding:7px 12px}
 .q-lock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--ink);border-inline-start-width:4px;background:var(--soft);padding:12px 14px;border-radius:6px;margin-bottom:16px}
 .q-lock span{flex:1 1 260px;font-size:14px}
 .q-lock.req{border-color:var(--red)}
@@ -416,6 +437,7 @@ tr.row:hover td{background:#fafafa}
 <aside class="drawer hidden" id="drawer" aria-modal="true" role="dialog">
   <div class="drawer-head"><h2 id="dTitle">عميل جديد</h2><button class="x" id="dClose" aria-label="إغلاق">×</button></div>
   <div class="drawer-body">
+    <div class="rev-note hidden" id="revNote"></div>
     <form id="leadForm">
       <div class="grid">
         <div class="f"><label>الاسم *</label><input name="name" required></div>
@@ -426,7 +448,7 @@ tr.row:hover td{background:#fafafa}
           <select name="client_type"><option value="end_customer">عميل نهائي</option><option value="dealer">ديلر</option></select></div>
         <div class="f"><label>الحالة</label><select name="status" id="statusSel"></select></div>
         <div class="f"><label>الميزانية (جنيه)</label><input name="budget" type="number" min="0" step="1000" dir="ltr"></div>
-        <div class="f"><label>مسؤول عنه</label><input name="assigned_to" list="team"></div>
+        <div class="f"><label>مسؤول عنه <span id="assignHint" class="hidden">· يغيّره مسؤول المبيعات بس</span></label><input name="assigned_to" list="team"></div>
         <div class="f"><label>ميعاد المتابعة الجاية</label><input name="next_follow_up" type="date"></div>
         <div class="f full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
       </div>
@@ -441,6 +463,29 @@ tr.row:hover td{background:#fafafa}
       <div class="section-t">عروض الأسعار</div>
       <button type="button" class="line-btn" id="newQuote">+ عرض سعر جديد</button>
       <ul class="q-list" id="qList"></ul>
+
+      <div id="visitBlock" class="hidden">
+        <div class="section-t">المعاينة</div>
+        <button type="button" class="line-btn" id="visitBtn">🏠 سلّم معاينة</button>
+        <form class="v-form hidden" id="visitForm" autocomplete="off">
+          <p class="sub" style="margin:0 0 10px" id="vClient"></p>
+          <div class="grid">
+            <div class="f full"><label>لينك الموقع على جوجل ماب</label>
+              <div class="v-loc"><input name="maps_url" type="url" dir="ltr" placeholder="https://maps.app.goo.gl/..." style="flex:1;min-width:180px">
+                <button type="button" class="line-btn" id="vGeo">📍 موقعي دلوقتي</button><span class="ok hidden" id="vGeoOk"></span></div></div>
+            <div class="f full"><label>العنوان بالكلام</label><input name="address" maxlength="300" placeholder="مثلاً: حي الأربعين، عمارة 5، الدور التالت"></div>
+            <div class="f full"><label>محتاج إيه؟ *</label>
+              <div class="v-needs" id="vNeeds"></div>
+              <input name="needs_text" maxlength="500" placeholder="تفاصيل زيادة (اختياري)" style="margin-top:8px"></div>
+            <div class="f"><label>اليوم *</label><input name="visit_date" type="date" required></div>
+            <div class="f"><label>الساعة</label><input name="visit_time" type="time"></div>
+            <div class="f full"><label>ملاحظات</label><textarea name="notes" maxlength="1000"></textarea></div>
+            <div class="f full"><label>صور (اختياري، لحد 3)</label><input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
+          </div>
+          <div class="actions"><button class="primary" type="submit" id="vSubmit">سلّم</button><button type="button" class="line-btn" id="vCancel">إلغاء</button></div>
+        </form>
+        <div id="visitList"></div>
+      </div>
 
       <div class="section-t">سجل المتابعة</div>
       <form class="fu-add" id="fuForm">
@@ -461,7 +506,9 @@ tr.row:hover td{background:#fafafa}
   <div class="qv-head"><h2 id="qvTitle">عرض سعر جديد</h2><button class="x" id="qvClose" aria-label="إغلاق">×</button></div>
   <div class="qv-body">
     <div class="q-lock hidden" id="qLock"><span id="qLockMsg"></span>
-      <button type="button" class="line-btn hidden" id="qReqDel">🗑 اطلب من الأدمن يمسحه</button></div>
+      <button type="button" class="line-btn hidden" id="qReqDel">🗑 اطلب مسحه</button>
+      <button type="button" class="line-btn hidden" id="qDelOk">✓ وافق على المسح</button>
+      <button type="button" class="line-btn hidden" id="qDelNo">✗ ارفض المسح</button></div>
     <form id="qForm" autocomplete="off">
       <div class="qv-meta">
         <div class="f"><label>العميل</label><input name="client_name" required></div>
@@ -689,6 +736,9 @@ async function onSession(session){
   }
   document.querySelectorAll(".admin-only").forEach(a=>a.classList.toggle("hidden", role !== "admin"));
   isAdmin = role === "admin"; productsLoaded = false;
+  powers = null;
+  if(user){ const pw = await sb.rpc("tsd_crm_powers"); if(!pw.error && pw.data) powers = pw.data; }   // null until migration 113 runs
+  $("newLead").classList.toggle("hidden", isRev("sales"));
   $("newProduct").classList.toggle("hidden", !isAdmin);
   $("newPkg").classList.toggle("hidden", !isAdmin);
   document.querySelectorAll(".p-admin").forEach(el=>el.classList.toggle("hidden", !isAdmin));
@@ -754,15 +804,15 @@ $("newLead").onclick = ()=>{
   current=null; const f=$("leadForm"); f.reset(); setGcal(null);
   f.status.value="new"; f.source.value="instagram";
   $("dTitle").textContent="عميل جديد"; $("delBtn").classList.add("hidden"); $("fuBlock").classList.add("hidden");
-  showDrawer(true); f.name.focus();
+  applyLeadRoles(); showDrawer(true); f.name.focus();
 };
 
 async function openLead(id){
   current = leads.find(l=>l.id===id); if(!current) return;
   const f=$("leadForm");
   ["name","phone","area","source","client_type","status","budget","assigned_to","next_follow_up","notes"].forEach(k=>f[k].value = current[k] ?? "");
-  $("dTitle").textContent=current.name; $("delBtn").classList.toggle("hidden", !isAdmin); $("fuBlock").classList.remove("hidden");
-  $("fuForm").reset(); setGcal(current); showDrawer(true); loadFollowUps(); loadQuotes();
+  $("dTitle").textContent=current.name; $("delBtn").classList.toggle("hidden", !isAdmin || isRev("sales")); $("fuBlock").classList.remove("hidden");
+  $("fuForm").reset(); setGcal(current); applyLeadRoles(); showDrawer(true); loadFollowUps(); loadQuotes(); loadVisits();
 }
 
 $("leadForm").addEventListener("submit", async e=>{
@@ -777,7 +827,7 @@ $("leadForm").addEventListener("submit", async e=>{
   const res = current ? await sb.from("leads").update(row).eq("id",current.id).select().single()
                       : await sb.from("leads").insert(row).select().single();
   $("saveBtn").disabled=false;
-  if(res.error){ toast("الحفظ فشل"); console.error(res.error); return; }
+  if(res.error){ toast(roleErr(res.error) || "الحفظ فشل"); console.error(res.error); return; }
   toast(current?"اتعدل ✓":"العميل اتضاف ✓");
   await loadLeads(); openLead(res.data.id);
 });
@@ -808,6 +858,154 @@ $("fuForm").addEventListener("submit", async e=>{
   if(f.next.value) upd.next_follow_up=f.next.value;
   if(Object.keys(upd).length) await sb.from("leads").update(upd).eq("id",current.id);
   toast("المتابعة اتسجلت ✓"); await loadLeads(); openLead(current.id);
+});
+
+// ---------- ROLES + SITE VISITS (migration 113) ----------
+// powers = { company, visits_on, manager, review[], visits_owner } from tsd_crm_powers(); null before 113 runs,
+// and then the page behaves exactly as before. The buttons below only mirror the database: every rule is
+// enforced in SQL (a reviewer's write is refused, only the sales manager reassigns or decides a deletion).
+let powers = null, visits = [];
+const isRev = area => !!powers && Array.isArray(powers.review) && powers.review.includes(area);
+const isManager = area => !!powers && !!powers.manager && !isRev(area);
+const NEEDS = [["lights","إضاءة"],["curtains","ستاير"],["cameras","كاميرات"],["locks","كوالين"],["screens","شاشات"],["other","حاجة تانية"]];
+const V_ST = { new:"جديدة — مستنية الرد", scheduled:"اتحدد ميعاد", done:"خلصت", cancelled:"اتلغت" };
+const V_RES = { quote:"هيتعمل عرض سعر", sold:"اتقفلت", thinking:"العميل بيفكر", not_interested:"مش مهتم", other:"تاني" };
+const MAPS_RE = /^https:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+\/maps|maps\.google\.[a-z.]+\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
+function roleErr(e){
+  const m = String(e?.message || "");
+  if(m.includes("reviewer_read_only")) return "إنت مراجع هنا — بتشوف وتعلّق بس، والتعديل لمسؤول المبيعات";
+  if(m.includes("reassign_needs_manager")) return "تغيير «مسؤول عنه» لعميل له مسؤول بيعمله مسؤول المبيعات بس";
+  if(m.includes("only the sales manager")) return "مسؤول المبيعات بس اللي يقرر المسح";
+  if(m.includes("visit_open")) return "العميل ده عنده معاينة مفتوحة بالفعل";
+  if(m.includes("location_required")) return "حط لينك الموقع أو موقعك الحالي أو العنوان";
+  if(m.includes("needs_required")) return "اختار العميل محتاج إيه";
+  if(m.includes("bad_date")) return "اختار يوم من النهارده لقدّام";
+  if(m.includes("invalid_photo") || m.includes("too_many_photos")) return "مشكلة في الصور — جرّب من غير صور";
+  return null;
+}
+function applyLeadRoles(){
+  const ro = isRev("sales"), f = $("leadForm");
+  f.querySelectorAll("input,select,textarea").forEach(el=>el.disabled = ro);
+  $("saveBtn").classList.toggle("hidden", ro);
+  $("fuForm").classList.toggle("hidden", ro);
+  $("newQuote").classList.toggle("hidden", isRev("pricing"));
+  // «مسؤول عنه»: a girl fills it when empty; moving a client from one person to another is the sales manager's
+  const lockAssign = !ro && !!current && !!String(current.assigned_to||"").trim() && !isAdmin && !isManager("sales") && !!powers;
+  f.assigned_to.readOnly = lockAssign; $("assignHint").classList.toggle("hidden", !lockAssign);
+  const rv = ["sales","pricing","visits"].filter(isRev);
+  $("revNote").classList.toggle("hidden", !rv.length);
+  $("revNote").textContent = rv.length ? "إنت «مراجع» في المبيعات والأسعار والمعاينات: بتشوف كل حاجة وتعلّق، والتعديل والموافقة لمسؤول المبيعات. المنتجات والأسعار والصلاحيات لسه معاك." : "";
+  $("visitBlock").classList.toggle("hidden", !current || !powers || !powers.visits_on);
+  $("visitForm").classList.add("hidden");
+}
+const visitOwner = () => (powers && powers.visits_owner) || "أحمد";
+async function loadVisits(){
+  const leadId = current?.id; visits = [];
+  if(!leadId || !powers || !powers.visits_on){ $("visitList").innerHTML = ""; return; }
+  $("visitBtn").textContent = "🏠 سلّم معاينة لـ" + visitOwner();
+  $("visitList").innerHTML = `<p class="sub">بيحمّل…</p>`;
+  const { data, error } = await sb.from("tsd_site_visits").select("*").eq("lead_id", leadId).order("created_at",{ascending:false});
+  if(current?.id !== leadId) return;
+  if(error){ $("visitList").innerHTML = ""; console.error(error); return; }
+  visits = data || [];
+  let log = [];
+  if(visits.length){
+    const r = await sb.from("tsd_activity").select("target_id,kind,body,from_value,to_value,actor,created_at")
+      .eq("target_type","visit").in("target_id", visits.map(v=>v.id)).order("created_at");
+    if(!r.error) log = r.data || [];
+  }
+  if(current?.id !== leadId) return;
+  const open = visits.some(v=>v.status==="new"||v.status==="scheduled");
+  $("visitBtn").classList.toggle("hidden", open || isRev("visits"));
+  $("visitList").innerHTML = visits.length ? visits.map(v=>visitCard(v, log.filter(x=>x.target_id===v.id))).join("")
+    : `<p class="sub">لسه مفيش معاينة للعميل ده.</p>`;
+}
+function visitCard(v, log){
+  const needs = v.needs.map(n=>(NEEDS.find(x=>x[0]===n)||[,n])[1]).join("، ");
+  const when = v.status==="scheduled" && v.scheduled_for ? new Date(v.scheduled_for).toLocaleString("ar-EG",{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}) : "";
+  const extra = v.status==="done" ? (V_RES[v.result]||"") : v.status==="cancelled" ? (v.status_note||"") : when;
+  const maps = v.maps_url && MAPS_RE.test(v.maps_url) ? v.maps_url : (v.lat!=null && v.lng!=null ? `https://www.google.com/maps?q=${Number(v.lat)},${Number(v.lng)}` : "");
+  return `<div class="v-card"><div class="v-top"><b>معاينة ${esc(v.visit_date)}${v.visit_time?" "+esc(String(v.visit_time).slice(0,5)):""}</b>
+      <span class="v-st ${esc(v.status)}">${esc(V_ST[v.status]||v.status)}${extra?" · "+esc(extra):""}</span></div>
+    <div class="sub">${esc(needs)}${v.needs_text?" — "+esc(v.needs_text):""}</div>
+    <div class="sub">${v.address?esc(v.address)+" · ":""}${maps?`<a href="${esc(maps)}" target="_blank" rel="noopener noreferrer">الموقع على الخريطة</a>`:""}${v.photos?.length?` · ${v.photos.length} صورة`:""}</div>
+    ${v.status==="done"&&v.status_note?`<div class="sub">ملاحظة: ${esc(v.status_note)}</div>`:""}
+    <ul class="v-log">${log.map(x=>`<li>${esc(logLine(x))}<div class="meta">${new Date(x.created_at).toLocaleString("ar-EG",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})} · ${esc(String(x.actor||"").split("@")[0])}</div></li>`).join("")}</ul>
+    <form class="v-cm" data-v="${esc(v.id)}"><input maxlength="2000" placeholder="اكتب تعليق على المعاينة"><button class="line-btn" type="submit">علّق</button></form></div>`;
+}
+function logLine(x){
+  if(x.kind==="comment") return "💬 " + (x.body||"");
+  if(x.kind==="created") return "اتسلمت المعاينة";
+  if(x.kind==="status") return `${V_ST[x.from_value]||x.from_value||""} ← ${V_ST[x.to_value]||x.to_value}${x.body?" — "+x.body:""}`;
+  return x.body || x.kind;
+}
+$("visitList").addEventListener("submit", async e=>{
+  const f = e.target.closest("form.v-cm"); if(!f) return; e.preventDefault();
+  const inp = f.querySelector("input"), body = inp.value.trim(); if(!body) return;
+  const { error } = await sb.rpc("tsd_add_note", { p_target_type:"visit", p_target_id:f.dataset.v, p_body:body });
+  if(error){ toast("التعليق ما اتسجلش"); console.error(error); return; }
+  inp.value = ""; loadVisits();
+});
+$("vNeeds").innerHTML = NEEDS.map(([k,l])=>`<label><input type="checkbox" name="needs" value="${k}">${l}</label>`).join("");
+let vGeo = null;
+$("visitBtn").onclick = ()=>{
+  if(!current || isRev("visits")) return;
+  const f = $("visitForm"); f.reset(); vGeo = null; $("vGeoOk").classList.add("hidden");
+  $("vClient").textContent = `${current.name} · ${current.phone}${current.area?" · "+current.area:""}`;
+  f.visit_date.min = todayStr(); f.visit_date.value = addDays(todayStr(), 1);
+  if(current.area) f.address.value = current.area;
+  f.classList.remove("hidden"); $("visitBtn").classList.add("hidden");
+};
+$("vCancel").onclick = ()=>{ $("visitForm").classList.add("hidden"); $("visitBtn").classList.remove("hidden"); };
+$("vGeo").onclick = ()=>{
+  if(!navigator.geolocation){ toast("الموبايل ده مش بيدّي الموقع"); return; }
+  $("vGeo").disabled = true;
+  navigator.geolocation.getCurrentPosition(p=>{
+    $("vGeo").disabled = false;
+    vGeo = { lat: +p.coords.latitude.toFixed(6), lng: +p.coords.longitude.toFixed(6) };
+    $("vGeoOk").textContent = "اتسجل الموقع ✓"; $("vGeoOk").classList.remove("hidden");
+  }, ()=>{ $("vGeo").disabled = false; toast("مقدرناش ناخد الموقع — حط اللينك أو العنوان"); }, { enableHighAccuracy:true, timeout:15000 });
+};
+// shrink a photo to ≤1600px JPEG before upload
+function shrink(file){
+  return new Promise((res, rej)=>{
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = ()=>{ const k = Math.min(1, 1600/Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width*k); c.height = Math.round(img.height*k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); c.toBlob(b=>b?res(b):rej(new Error("photo")), "image/jpeg", 0.8); };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error("photo")); };
+    img.src = url;
+  });
+}
+function visitPayload(f){
+  const url = f.maps_url.value.trim(), needs = [...f.querySelectorAll("input[name=needs]:checked")].map(i=>i.value);
+  if(url && !MAPS_RE.test(url)) return { err: "اللينك لازم يكون لينك جوجل ماب (https://maps.app.goo.gl/… أو google.com/maps)" };
+  if(!url && !vGeo && !f.address.value.trim()) return { err: "حط لينك الموقع أو موقعك الحالي أو العنوان" };
+  if(!needs.length && !f.needs_text.value.trim()) return { err: "اختار العميل محتاج إيه" };
+  if(!f.visit_date.value || f.visit_date.value < todayStr()) return { err: "اختار يوم من النهارده لقدّام" };
+  if(f.photos.files.length > 3) return { err: "3 صور بالكتير" };
+  return { p: { p_lead: current.id, p_maps_url: url || null, p_lat: vGeo ? vGeo.lat : null, p_lng: vGeo ? vGeo.lng : null,
+    p_address: f.address.value.trim() || null, p_needs: needs, p_needs_text: f.needs_text.value.trim() || null,
+    p_date: f.visit_date.value, p_time: f.visit_time.value || null, p_notes: f.notes.value.trim() || null, p_photos: [] } };
+}
+$("visitForm").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!current || !powers) return;
+  const f = e.target, v = visitPayload(f);
+  if(v.err){ toast(v.err); return; }
+  $("vSubmit").disabled = true;
+  try {
+    for(const file of [...f.photos.files].slice(0,3)){
+      const path = `${powers.company}/${user.id}/${crypto.randomUUID()}.jpg`;
+      const up = await sb.storage.from("visit-photos").upload(path, await shrink(file), { contentType:"image/jpeg", upsert:false });
+      if(up.error){ console.error(up.error); if(!confirm("الصور ما اترفعتش. تسلّم المعاينة من غير صور؟")){ return; } v.p.p_photos = []; break; }
+      v.p.p_photos.push(path);
+    }
+    const { error } = await sb.rpc("tsd_handover_visit", v.p);
+    if(error){ toast(roleErr(error) || "التسليم فشل"); console.error(error); return; }
+    toast("المعاينة اتسلمت لـ" + visitOwner() + " ✓");
+    const id = current.id; f.classList.add("hidden"); await loadLeads(); openLead(id);
+  } catch(err){ toast("التسليم فشل"); console.error(err); }
+  finally { $("vSubmit").disabled = false; }
 });
 
 // ---------- TABS ----------
@@ -1496,29 +1694,46 @@ $("qDel").onclick = async ()=>{
 // a sent quotation is read-only for sales: they make a new one and ask an admin to delete the old
 function applyLock(){
   if(!quote) return;
-  const locked = !!quote.id && quote.status !== "draft" && !isAdmin, req = !!quote.delete_requested_at;
+  const ro = isRev("pricing"), locked = ro || (!!quote.id && quote.status !== "draft" && !isAdmin), req = !!quote.delete_requested_at;
+  const mgr = isManager("pricing") && req;
   $("qForm").querySelectorAll("input,select,textarea").forEach(el=>el.disabled = locked);
   $("qRows").querySelectorAll(".del").forEach(el=>el.classList.toggle("hidden", locked));
   ["pick","qBrand","addCustom","addPkg","tInstPct","tDiscPct"].forEach(id=>$(id).disabled = locked);
   $("instMode").querySelectorAll("button").forEach(b=>b.disabled = locked);
   $("qSave").classList.toggle("hidden", locked);
-  $("qCopy").classList.toggle("hidden", !quote.id);
+  $("qCopy").classList.toggle("hidden", !quote.id || ro);
+  $("qDel").classList.toggle("hidden", !quote.id || !isAdmin || ro);
   const by = (quote.delete_requested_by||"").split("@")[0];
-  $("qLock").classList.toggle("hidden", !locked && !(isAdmin && req));
+  $("qLock").classList.toggle("hidden", !locked && !(isAdmin && req) && !mgr);
   $("qLock").classList.toggle("req", req);
-  $("qLockMsg").textContent = req
-    ? (isAdmin ? `${by} طلب مسح العرض ده — امسحه من زرار «مسح العرض» تحت.` : "طلبت مسح العرض ده، والأدمن هيمسحه.")
-    : "العرض ده اتبعت للعميل، فمش ممكن يتعدل. لو محتاج تغيّر حاجة، اعمل «عرض جديد بنفس البنود» واطلب من الأدمن يمسح القديم.";
-  $("qReqDel").classList.toggle("hidden", !locked || req);
+  $("qLockMsg").textContent = ro
+    ? (req ? `إنت مراجع في عروض الأسعار — ${by} طلب مسح العرض ده، ومسؤول المبيعات بيقرر.` : "إنت مراجع في عروض الأسعار: بتشوف بس، والتعديل والموافقة لمسؤول المبيعات.")
+    : req
+    ? (mgr ? `${by} طلب مسح العرض ده — وافق أو ارفض.` : isAdmin ? `${by} طلب مسح العرض ده — امسحه من زرار «مسح العرض» تحت.` : powers ? "طلبت مسح العرض ده، ومسؤول المبيعات هيراجعه." : "طلبت مسح العرض ده، والأدمن هيمسحه.")
+    : "العرض ده اتبعت للعميل، فمش ممكن يتعدل. لو محتاج تغيّر حاجة، اعمل «عرض جديد بنفس البنود» واطلب مسح القديم.";
+  $("qReqDel").classList.toggle("hidden", !locked || req || ro);
+  $("qDelOk").classList.toggle("hidden", !mgr); $("qDelNo").classList.toggle("hidden", !mgr);
   renderStore(); renderDiscCap();
 }
 $("qReqDel").onclick = async ()=>{
-  if(!quote?.id || !confirm(`تبعت للأدمن طلب يمسح العرض ${quote.quote_number}؟`)) return;
+  if(!quote?.id || !confirm(`تبعت طلب مسح العرض ${quote.quote_number}؟`)) return;
   const { error } = await sb.rpc("request_quote_deletion", { p_quote: quote.id });
   if(error){ toast("الطلب ما اتبعتش"); console.error(error); return; }
   quote.delete_requested_at = new Date().toISOString(); quote.delete_requested_by = user.email;
-  applyLock(); loadQuotes(); toast("الطلب اتبعت للأدمن ✓");
+  applyLock(); loadQuotes(); toast("طلب المسح اتبعت ✓");
 };
+async function decideDeletion(ok){
+  if(!quote?.id) return;
+  const note = ok ? (confirm(`تمسح العرض ${quote.quote_number} نهائي؟`) ? "" : null) : prompt("سبب الرفض (اختياري)", "");
+  if(note === null) return;
+  const { error } = await sb.rpc("tsd_decide_quote_deletion", { p_quote: quote.id, p_approve: ok, p_note: note || null });
+  if(error){ toast(roleErr(error) || "ما اتنفذش"); console.error(error); return; }
+  if(ok){ quoteDirty = false; closeQuote(); toast("العرض اتمسح"); }
+  else { quote.delete_requested_at = null; quote.delete_requested_by = null; applyLock(); toast("طلب المسح اترفض"); }
+  loadQuotes();
+}
+$("qDelOk").onclick = ()=>decideDeletion(true);
+$("qDelNo").onclick = ()=>decideDeletion(false);
 $("qCopy").onclick = ()=>{
   if(!quote) return;
   const from = quote.quote_number, f = $("qForm"), today = todayStr();
