@@ -1,0 +1,16 @@
+{
+  "name": "نظام الشركة",
+  "short_name": "نظام الشركة",
+  "description": "نظام الشركة: المخزون والإدارة",
+  "start_url": "/system/",
+  "scope": "/system/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#0f1216",
+  "theme_color": "#0f1216",
+  "icons": [
+    { "src": "/system/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

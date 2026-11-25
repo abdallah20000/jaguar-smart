@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نظام الشركة</title>
+<meta name="theme-color" content="#0f1216">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="/system/manifest.webmanifest">
+<link rel="icon" href="/system/icon.png">
+<link rel="apple-touch-icon" href="/system/icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="نظام الشركة">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a; --ok:#5fd39a; --warn:#ffc35a; --info:#7fb6ff }
+* { box-sizing:border-box }
+html, body { margin:0 }
+body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%) fixed; background-color:var(--bg); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:env(safe-area-inset-bottom) }
+.wrap { max-width:640px; margin:0 auto; padding:0 16px 40px }
+.banner { background:#3a2a0a; color:var(--warn); text-align:center; font-size:.82rem; padding:6px 10px; border-bottom:1px solid rgba(255,195,90,.35) }
+.top { display:flex; align-items:center; gap:10px; padding:14px 0 10px; position:sticky; top:0; z-index:5; background:rgba(15,18,22,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+.top .t { flex:1; min-width:0 }
+.top .t b { display:block; font-size:1.05rem }
+.top .t span { color:var(--muted); font-size:.78rem }
+.top img { width:34px; height:34px; border-radius:9px }
+label { display:block; font-size:.85rem; color:var(--muted); margin:12px 0 6px }
+input, textarea, select { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit; font-size:.95rem }
+select option { background:#171b20; color:var(--fg) }
+input:focus, textarea:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px }
+button { padding:11px 16px; border:0; border-radius:12px; background:var(--accent); color:#1a0d05; font-family:inherit; font-weight:600; font-size:.92rem; cursor:pointer }
+button.full { width:100%; margin-top:16px; padding:13px }
+button.ghost { background:var(--glass2); color:var(--fg); border:1px solid var(--line) }
+button.sm { padding:6px 12px; font-size:.8rem; border-radius:10px }
+button.nob { background:rgba(255,138,122,.16); color:var(--err); border:1px solid rgba(255,138,122,.35) }
+button.okb { background:var(--ok); color:#06210f }
+button:disabled { opacity:.5; cursor:default }
+.card { background:var(--glass); border:1px solid var(--line); border-radius:20px; padding:20px 18px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+.login { max-width:380px; margin:8vh auto 0 }
+.login .brand { text-align:center; margin-bottom:8px }
+.login .brand img { width:56px; height:56px; border-radius:14px }
+.login .brand h1 { margin:8px 0 2px; font-size:1.3rem }
+.msg { min-height:1.2em; margin-top:12px; font-size:.85rem; color:var(--err) }
+.msg.ok { color:var(--ok) }
+.muted { color:var(--muted); font-size:.85rem; line-height:1.7 }
+.link { background:none; color:var(--muted); font-weight:400; text-decoration:underline; padding:8px; display:block; margin:8px auto 0 }
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px }
+.tile { background:var(--glass); border:1px solid var(--line); border-radius:18px; padding:18px 14px; text-align:right; color:var(--fg); min-height:104px; display:flex; flex-direction:column; justify-content:space-between; font-weight:400 }
+.tile b { font-size:1.05rem }
+.tile small { color:var(--muted); font-size:.78rem }
+.tile svg { width:30px; height:30px; color:var(--accent) }
+.tile.off { opacity:.4; cursor:default }
+.tile.off svg { color:var(--muted) }
+.panel { background:var(--glass); border:1px solid var(--line); border-radius:18px; padding:14px; margin-bottom:12px }
+.item { padding:11px 0; border-top:1px solid var(--line) }
+.item:first-child { border-top:0 }
+.row { display:flex; align-items:center; gap:8px }
+.row .grow { flex:1; min-width:0 }
+.item b { font-size:.95rem }
+.item .ss { color:var(--muted); font-size:.8rem; margin-top:3px; line-height:1.6; word-break:break-word }
+.chip { display:inline-block; font-size:.72rem; padding:2px 9px; border-radius:99px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted); white-space:nowrap }
+.chip.low { background:rgba(255,138,122,.14); color:var(--err); border-color:rgba(255,138,122,.35) }
+.chip.ok { background:rgba(95,211,154,.14); color:var(--ok); border-color:rgba(95,211,154,.35) }
+.chip.warn { background:rgba(255,195,90,.14); color:var(--warn); border-color:rgba(255,195,90,.35) }
+.tabs { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none }
+.tabs::-webkit-scrollbar { display:none }
+.tabs button { background:var(--glass); color:var(--muted); border:1px solid var(--line); white-space:nowrap; font-weight:400; padding:8px 14px }
+.tabs button.on { background:rgba(255,106,43,.16); color:var(--accent); border-color:var(--accent); font-weight:600 }
+h3.sec { margin:16px 0 8px; font-size:.95rem; display:flex; align-items:center; gap:8px }
+.qty { font-variant-numeric:tabular-nums; font-weight:600; direction:ltr; unicode-bidi:isolate }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.perm-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 10px; margin-top:8px }
+.perm-grid label { margin:0 0 4px; font-size:.75rem }
+.perm-grid select { padding:7px 8px; font-size:.82rem }
+.back { background:none; color:var(--muted); padding:6px 8px; font-weight:400 }
+.empty { text-align:center; color:var(--muted); padding:22px 8px; font-size:.9rem }
+.sheetbg { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:20; display:flex; align-items:flex-end; justify-content:center }
+.sheet { width:100%; max-width:560px; max-height:88vh; overflow:auto; background:#171b20; border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) }
+.sheet h4 { margin:0 0 4px; font-size:1.05rem }
+.toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:50; background:#262c33; border:1px solid var(--line); padding:10px 16px; border-radius:12px; font-size:.88rem; max-width:90vw }
+.hidden { display:none }
+.cnt-in { width:92px; text-align:center; direction:ltr; padding:7px 6px }
+.switch { display:flex; align-items:center; gap:8px }
+</style>
+</head>
+<body>
+<div id="banner" class="banner hidden">نسخة تجريبية — بيانات وهمية</div>
+<div class="wrap" id="app"></div>
+<div id="sheetHost"></div>
+<div class="toast hidden" id="toast"></div>
+
+<script>
+'use strict';
+/* ============================ «نظام الشركة» — one-file app ============================
+   Real host (jaguarsmart.com / www): Supabase RPCs sys_* (migration 114). The server is the real guard;
+   hiding buttons below is only convenience. Any other host: DEMO with in-memory fake data, no network. */
+const SUPABASE_URL = "https://snrsfpprlynixotjipmo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q9zcnd6bo1cM4VDRysyjbA_XBr6lhds";
+const REAL_HOSTS = ['jaguarsmart.com', 'www.jaguarsmart.com'];
+const DEMO = !REAL_HOSTS.includes(location.hostname.toLowerCase());
+const $ = (id) => document.getElementById(id);
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function num(n) { n = Number(n); return isFinite(n) ? String(Math.round(n * 1000) / 1000) : '0'; }
+function fdate(s) { try { const d = new Date(s); return isNaN(d) ? '' : d.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return ''; } }
+
+const COMPANY_NAMES = { 'tuya-suez': 'تويا السويس', 'aix': 'AIX', 'jaguar': 'جاجوار' };
+const cname = (c) => COMPANY_NAMES[c] || c;
+const MODULES = [
+  { k: 'inventory', n: 'المخزون', live: true }, { k: 'users', n: 'المستخدمين والصلاحيات', live: true, adminOnly: true },
+  { k: 'sales', n: 'المبيعات' }, { k: 'purchasing', n: 'المشتريات' }, { k: 'accounts', n: 'الحسابات' },
+  { k: 'projects', n: 'المشاريع' }, { k: 'hr', n: 'الموارد البشرية' }, { k: 'reports', n: 'التقارير' }
+];
+const MOD_NAME = Object.fromEntries(MODULES.map((m) => [m.k, m.n]));
+const LEVELS = [['', '—'], ['view', 'يشوف'], ['edit', 'يعدّل'], ['approve', 'يوافق']];
+const RANK = { view: 1, edit: 2, approve: 3 };
+const KIND_NAME = { in: 'وارد', out: 'صادر', adjust: 'تسوية جرد', transfer_out: 'تحويل (خارج)', transfer_in: 'تحويل (داخل)' };
+const ICONS = {
+  inventory: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.9.7 3.2 2.4 3.5 5.2"/></svg>',
+  other: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 12h6"/></svg>'
+};
+
+/* ---------------------------------- fake backend (demo only) ---------------------------------- */
+const Fake = (() => {
+  let seq = 0; const id = () => 'd' + (++seq).toString(16).padStart(8, '0') + '-0000-4000-8000-000000000000';
+  const ME = 'demo@example.com';
+  const db = { admins: [ME, 'omar@example.com'], perms: [], audit: [], wh: [], items: [], stock: {}, moves: [], counts: [], extra: ['ahmed@example.com', 'mona@example.com'] };
+  const now = () => new Date().toISOString();
+  const aud = (action, company, target, details) => db.audit.unshift({ id: id(), at: now(), actor: ME, action, company, target, details: details || {} });
+  db.perms.push({ company: 'tuya-suez', email: 'ahmed@example.com', module: 'inventory', level: 'edit' }, { company: 'tuya-suez', email: 'mona@example.com', module: 'inventory', level: 'view' }, { company: 'aix', email: 'mona@example.com', module: 'sales', level: 'view' });
+  function addWh(company, name, location) { const w = { id: id(), company, name, location, active: true, created_at: now() }; db.wh.push(w); return w; }
+  function addItem(company, code, name, category, unit, min) { const it = { id: id(), company, code, name, category, unit, min_qty: min, product_id: null, active: true }; db.items.push(it); return it; }
+  function put(it, w, q) { db.stock[it.id + '|' + w.id] = q; }
+  const w1 = addWh('tuya-suez', 'المخزن الرئيسي', 'السويس'), w2 = addWh('tuya-suez', 'مخزن العمليات', 'سيارة الفني');
+  const w3 = addWh('aix', 'مخزن AIX', 'القاهرة');
+  [['SW-01', 'سويتش زيجبي ٣ زر', 'سويتشات', 'قطعة', 10, 24, 3], ['HB-01', 'هاب زيجبي', 'هابات', 'قطعة', 5, 4, 2], ['CAM-01', 'كاميرا واي فاي', 'كاميرات', 'قطعة', 6, 9, 0], ['CB-01', 'كابل شبكة', 'كابلات', 'متر', 100, 350, 0], ['SN-01', 'حساس حركة', 'حساسات', 'قطعة', 8, 15, 5]].forEach((r) => { const it = addItem('tuya-suez', r[0], r[1], r[2], r[3], r[4]); put(it, w1, r[5]); put(it, w2, r[6]); });
+  [['AX-01', 'جهاز تحكم مركزي', 'تحكم', 'قطعة', 3, 2], ['AX-02', 'شاشة لمس', 'شاشات', 'قطعة', 2, 6]].forEach((r) => { const it = addItem('aix', r[0], r[1], r[2], r[3], r[4]); put(it, w3, r[5]); });
+  aud('seed', null, null, { note: 'بيانات وهمية' });
+
+  const isAdmin = (e) => db.admins.includes(e);
+  const gone = (m) => { throw new Error(m); };
+  const total = (it) => db.wh.filter((w) => w.company === it.company).reduce((s, w) => s + (db.stock[it.id + '|' + w.id] || 0), 0);
+  const q = (it, w) => db.stock[it.id + '|' + w] || 0;
+  const wh = (i) => db.wh.find((w) => w.id === i) || gone('المخزن غير موجود');
+  const it_ = (i) => db.items.find((x) => x.id === i) || gone('الصنف غير موجود');
+  function addMove(company, it, w, kind, qty, before, after, ref, note) { db.moves.unshift({ id: id(), at: now(), company, item_id: it.id, item_name: it.name, warehouse_id: w, warehouse_name: wh(w).name, kind, qty, qty_before: before, qty_after: after, ref: ref || null, note: note || null, by_email: ME }); }
+  const fns = {
+    sys_me() { const companies = ['tuya-suez', 'aix']; const perms = {}; return { email: ME, is_admin: true, companies, perms }; },
+    sys_is_admin() { return true; },
+    sys_can() { return true; },
+    sys_people() {
+      const emails = new Set([...db.admins, ...db.extra, ...db.perms.map((p) => p.email)]);
+      return [...emails].map((email) => { const perms = {}; db.perms.filter((p) => p.email === email).forEach((p) => { (perms[p.company] = perms[p.company] || {})[p.module] = p.level; }); return { email, is_admin: isAdmin(email), perms }; });
+    },
+    sys_set_admin(a) {
+      const e = String(a.p_email || '').trim().toLowerCase(); if (!e) gone('اكتب الإيميل');
+      if (!a.p_on) { if (e === ME) gone('مينفعش تشيل نفسك'); if (db.admins.length <= 1) gone('مينفعش تشيل آخر أدمن'); db.admins = db.admins.filter((x) => x !== e); } else if (!db.admins.includes(e)) db.admins.push(e);
+      aud(a.p_on ? 'admin_on' : 'admin_off', null, e); return null;
+    },
+    sys_set_permission(a) {
+      const e = String(a.p_email).toLowerCase(); db.perms = db.perms.filter((p) => !(p.company === a.p_company && p.email === e && p.module === a.p_module));
+      if (a.p_level) db.perms.push({ company: a.p_company, email: e, module: a.p_module, level: a.p_level });
+      aud('perm', a.p_company, e, { module: a.p_module, level: a.p_level }); return null;
+    },
+    sys_audit_list(a) { return db.audit.slice(0, a.p_limit || 100); },
+    sys_warehouses_list(a) { return db.wh.filter((w) => w.company === a.p_company); },
+    sys_warehouse_save(a) {
+      if (!String(a.p_name || '').trim()) gone('اكتب اسم المخزن');
+      let w = a.p_id ? wh(a.p_id) : null; if (!w) { w = { id: id(), company: a.p_company, created_at: now() }; db.wh.push(w); }
+      w.name = a.p_name; w.location = a.p_location || null; w.active = a.p_active !== false; aud('warehouse_save', a.p_company, w.name); return w.id;
+    },
+    sys_items_list(a) {
+      return db.items.filter((x) => x.company === a.p_company && x.active).map((x) => { const t = total(x); return { id: x.id, code: x.code, name: x.name, category: x.category, unit: x.unit, min_qty: x.min_qty, total_qty: t, wh_qty: a.p_warehouse ? q(x, a.p_warehouse) : null, low: t <= x.min_qty }; });
+    },
+    sys_item_save(a) {
+      if (!String(a.p_name || '').trim()) gone('اكتب اسم الصنف');
+      if (a.p_code && db.items.some((x) => x.company === a.p_company && x.code === a.p_code && x.id !== a.p_id)) gone('الكود ده مستخدم قبل كده');
+      let x = a.p_id ? it_(a.p_id) : null; if (!x) { x = { id: id(), company: a.p_company, active: true, product_id: null }; db.items.push(x); }
+      Object.assign(x, { code: a.p_code || null, name: a.p_name, category: a.p_category || null, unit: a.p_unit || 'قطعة', min_qty: Number(a.p_min_qty) || 0 }); aud('item_save', a.p_company, x.name); return x.id;
+    },
+    sys_move(a) {
+      const it = it_(a.p_item), qty = Number(a.p_qty); if (!(qty > 0)) gone('الكمية لازم تكون أكبر من صفر');
+      const b = q(it, a.p_warehouse), aft = a.p_kind === 'in' ? b + qty : b - qty; if (aft < 0) gone('الرصيد مش كفاية (الموجود ' + num(b) + ')');
+      db.stock[it.id + '|' + a.p_warehouse] = aft; addMove(a.p_company, it, a.p_warehouse, a.p_kind, qty, b, aft, a.p_ref, a.p_note); aud('move', a.p_company, it.name, { kind: a.p_kind, qty }); return { qty_after: aft };
+    },
+    sys_transfer(a) {
+      const it = it_(a.p_item), qty = Number(a.p_qty); if (!(qty > 0)) gone('الكمية لازم تكون أكبر من صفر'); if (a.p_from === a.p_to) gone('اختار مخزنين مختلفين');
+      const b = q(it, a.p_from); if (b - qty < 0) gone('الرصيد مش كفاية (الموجود ' + num(b) + ')'); const b2 = q(it, a.p_to);
+      db.stock[it.id + '|' + a.p_from] = b - qty; db.stock[it.id + '|' + a.p_to] = b2 + qty;
+      addMove(a.p_company, it, a.p_from, 'transfer_out', qty, b, b - qty, null, a.p_note); addMove(a.p_company, it, a.p_to, 'transfer_in', qty, b2, b2 + qty, null, a.p_note); aud('transfer', a.p_company, it.name, { qty }); return null;
+    },
+    sys_moves_list(a) { return db.moves.filter((m) => m.company === a.p_company && (!a.p_item || m.item_id === a.p_item)).slice(0, a.p_limit || 200); },
+    sys_low_stock(a) { return fns.sys_items_list({ p_company: a.p_company }).filter((x) => x.low); },
+    sys_count_start(a) {
+      const w = wh(a.p_warehouse); const c = { id: id(), company: a.p_company, warehouse_id: w.id, status: 'draft', note: a.p_note || null, created_by: ME, created_at: now(), lines: [] };
+      db.items.filter((x) => x.company === a.p_company && x.active).forEach((x) => c.lines.push({ item_id: x.id, expected: q(x, w.id), counted: null })); db.counts.unshift(c); aud('count_start', a.p_company, w.name); return c.id;
+    },
+    sys_count_set(a) { const c = db.counts.find((x) => x.id === a.p_count) || gone('الجرد غير موجود'); if (c.status !== 'draft') gone('الجرد مقفول'); const l = c.lines.find((x) => x.item_id === a.p_item); if (!l) gone('الصنف مش في الجرد'); l.counted = a.p_counted === null || a.p_counted === '' ? null : Number(a.p_counted); return null; },
+    sys_count_get(a) {
+      const c = db.counts.find((x) => x.id === a.p_count) || gone('الجرد غير موجود');
+      return { id: c.id, company: c.company, warehouse_id: c.warehouse_id, warehouse_name: wh(c.warehouse_id).name, status: c.status, note: c.note, created_by: c.created_by, created_at: c.created_at, posted_at: c.posted_at || null,
+        lines: c.lines.map((l) => ({ item_id: l.item_id, name: it_(l.item_id).name, code: it_(l.item_id).code, expected: l.expected, counted: l.counted, diff: l.counted == null ? null : l.counted - l.expected })) };
+    },
+    sys_count_post(a) {
+      const c = db.counts.find((x) => x.id === a.p_count) || gone('الجرد غير موجود'); if (c.status !== 'draft') gone('الجرد مقفول');
+      c.lines.forEach((l) => { if (l.counted != null && l.counted !== l.expected) { const x = it_(l.item_id); db.stock[x.id + '|' + c.warehouse_id] = l.counted; addMove(c.company, x, c.warehouse_id, 'adjust', l.counted - l.expected, l.expected, l.counted, 'جرد', null); } });
+      c.status = 'posted'; c.posted_at = now(); aud('count_post', c.company, wh(c.warehouse_id).name); return null;
+    },
+    sys_counts_list(a) { return db.counts.filter((c) => c.company === a.p_company).map((c) => ({ id: c.id, warehouse_id: c.warehouse_id, warehouse_name: wh(c.warehouse_id).name, status: c.status, note: c.note, created_by: c.created_by, created_at: c.created_at, posted_at: c.posted_at || null })); },
+    sys_import_legacy() { gone('الاستيراد مش متاح في النسخة التجريبية'); }
+  };
+  return { call(name, args) { const f = fns[name]; if (!f) throw new Error('RPC مش موجود: ' + name); return Promise.resolve(JSON.parse(JSON.stringify(f(args || {}) ?? null))); } };
+})();
+
+/* ------------------------------------------ rpc layer ------------------------------------------ */
+let sb = null;
+if (!DEMO) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { sb = null; } }
+async function rpc(name, args) {
+  if (DEMO) return Fake.call(name, args);
+  if (!sb) throw new Error('تعذّر تحميل مكتبة الاتصال — اتأكد من الإنترنت');
+  const { data, error } = await sb.rpc(name, args || {});
+  if (error) { const m = String(error.message || ''); throw new Error(error.code === 'PGRST202' || /Could not find the function/i.test(m) ? 'النظام لسه متفعّلش (الميجريشن 114 لم تُشغّل)' : m || 'خطأ'); }
+  return data;
+}
+
+/* --------------------------------------------- state --------------------------------------------- */
+const S = { me: null, co: null, route: 'login', tab: 'wh', busy: false, err: '', loginMsg: '', wh: [], items: [], moves: [], counts: [], low: [], count: null, people: [], audit: [], whFilter: '', moveKind: 'in', sheet: null, newEmail: '' };
+try { S.co = localStorage.getItem('sys-co'); } catch (e) {}
+const lvl = (m) => (S.me && S.me.is_admin) ? 3 : (RANK[(((S.me || {}).perms || {})[S.co] || {})[m]] || 0);
+const can = (m, l) => lvl(m) >= RANK[l];
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.remove('hidden'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add('hidden'), 3200); }
+async function act(fn, okMsg) { if (S.busy) return; S.busy = true; try { await fn(); if (okMsg) toast(okMsg); } catch (e) { toast(e.message || 'حصل خطأ'); } S.busy = false; render(); }
+
+/* -------------------------------------------- session -------------------------------------------- */
+async function loadMe() {
+  const me = await rpc('sys_me');
+  if (!me || !me.email) throw new Error('الحساب ده مش متسجّل في النظام');
+  me.perms = me.perms || {}; me.companies = Array.isArray(me.companies) ? me.companies.slice() : [];
+  if (me.is_admin) ['tuya-suez', 'aix'].forEach((c) => { if (!me.companies.includes(c)) me.companies.push(c); });
+  S.me = me;
+  if (!S.co || !me.companies.includes(S.co)) S.co = me.companies[0] || null;
+  setCo(S.co);
+}
+function setCo(c) { S.co = c; try { if (c) localStorage.setItem('sys-co', c); } catch (e) {} S.wh = []; S.items = []; S.moves = []; S.counts = []; S.low = []; S.count = null; }
+async function boot() {
+  if (DEMO) $('banner').classList.remove('hidden');
+  let signedIn = DEMO;
+  if (!DEMO && sb) { try { const { data } = await sb.auth.getSession(); signedIn = !!(data && data.session); } catch (e) { signedIn = false; } }
+  S.signed = signedIn;
+  if (signedIn) { try { await loadMe(); } catch (e) { S.loginMsg = e.message; S.signed = false; S.me = null; } }
+  if (!location.hash) location.hash = S.me ? '#home' : '#login';
+  route();
+}
+async function route() {
+  const r = (location.hash || '#login').slice(1).split('?')[0];
+  S.route = ['login', 'home', 'admin', 'inventory'].includes(r) ? r : 'home';
+  if (!S.me && S.route !== 'login') { location.hash = '#login'; return; }
+  if (S.me && S.route === 'login') { location.hash = '#home'; return; }
+  if (S.route === 'admin' && !(S.me && S.me.is_admin)) { location.hash = '#home'; return; }
+  if (S.route === 'inventory' && !can('inventory', 'view')) { location.hash = '#home'; return; }
+  S.sheet = null; render();
+  if (S.route === 'admin') act(loadAdmin);
+  if (S.route === 'inventory') act(() => loadInv(S.tab));
+}
+window.addEventListener('hashchange', route);
+
+async function doLogin(email, pass) {
+  if (!email || (!DEMO && !pass)) { S.loginMsg = 'اكتب الإيميل والباسورد'; return render(); }
+  S.loginMsg = ''; S.busy = true; render();
+  try {
+    if (!DEMO) { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw new Error('الإيميل أو الباسورد غلط'); }
+    await loadMe(); S.signed = true;
+    S.busy = false; if (location.hash === '#home') route(); else location.hash = '#home';
+  } catch (e) { S.loginMsg = e.message; S.busy = false; if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (x) {} } S.me = null; render(); }
+}
+async function doLogout() { if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (e) {} } S.me = null; S.signed = false; S.loginMsg = ''; location.hash = '#login'; route(); }
+
+/* ---------------------------------------------- loaders ---------------------------------------------- */
+async function loadAdmin() {
+  const [p, a] = await Promise.all([rpc('sys_people'), rpc('sys_audit_list', { p_limit: 100 })]);
+  S.people = (p || []).map((x) => ({ email: x.email, is_admin: !!x.is_admin, perms: normPerms(x.perms) })).sort((a, b) => a.email.localeCompare(b.email));
+  S.audit = a || [];
+}
+function normPerms(p) {
+  if (!p) return {}; if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { return {}; } }
+  if (Array.isArray(p)) { const o = {}; p.forEach((r) => { if (r && r.company) (o[r.company] = o[r.company] || {})[r.module] = r.level; }); return o; }
+  return p;
+}
+async function loadInv(tab) {
+  const c = S.co; if (!c) return;
+  const jobs = [rpc('sys_warehouses_list', { p_company: c }).then((d) => { S.wh = d || []; })];
+  if (tab === 'items' || tab === 'move') jobs.push(rpc('sys_items_list', { p_company: c, p_warehouse: tab === 'items' && S.whFilter ? S.whFilter : null }).then((d) => { S.items = d || []; }));
+  if (tab === 'move') jobs.push(rpc('sys_moves_list', { p_company: c, p_item: null, p_limit: 30 }).then((d) => { S.moves = d || []; }));
+  if (tab === 'count') jobs.push(rpc('sys_counts_list', { p_company: c }).then((d) => { S.counts = d || []; }));
+  if (tab === 'alerts') jobs.push(rpc('sys_low_stock', { p_company: c }).then((d) => { S.low = d || []; }));
+  await Promise.all(jobs);
+}
+
+/* ---------------------------------------------- views ---------------------------------------------- */
+function header(title, sub, back) {
+  let h = '<div class="top">' + (back ? '<button class="back" data-act="home" aria-label="رجوع">‹ رجوع</button>' : '<img src="/system/icon.png" alt="">') + '<div class="t"><b>' + esc(title) + '</b><span>' + esc(sub || '') + '</span></div>';
+  if (S.me && S.me.companies.length > 1) h += '<select data-chg="co" style="width:auto;padding:7px 10px" aria-label="الشركة">' + S.me.companies.map((c) => '<option value="' + esc(c) + '"' + (c === S.co ? ' selected' : '') + '>' + esc(cname(c)) + '</option>').join('') + '</select>';
+  if (!back) h += '<button class="ghost sm" data-act="logout">خروج</button>';
+  return h + '</div>';
+}
+function vLogin() {
+  return '<div class="login"><div class="card"><div class="brand"><img src="/system/icon.png" alt=""><h1>نظام الشركة</h1><div class="muted">سجّل دخولك للمتابعة</div></div>' +
+    '<form data-form="login"><label for="lgE">الإيميل</label><input id="lgE" type="email" autocomplete="username" inputmode="email" dir="ltr" required value="' + (DEMO ? 'demo@example.com' : '') + '">' +
+    '<label for="lgP">الباسورد</label><input id="lgP" type="password" autocomplete="current-password" dir="ltr"' + (DEMO ? '' : ' required') + '>' +
+    '<button class="full" type="submit"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'جاري الدخول…' : 'دخول') + '</button></form>' +
+    '<button class="link" data-act="forgot">نسيت الباسورد</button><div class="msg' + (S.forgot ? ' ok' : '') + '" role="alert">' + esc(S.forgot ? 'مش موجود — قريب' : S.loginMsg) + '</div>' +
+    (DEMO ? '<div class="muted" style="text-align:center">في النسخة التجريبية أي باسورد يدخل</div>' : '') + '</div></div>';
+}
+function vHome() {
+  const tiles = MODULES.map((m) => {
+    let on = false;
+    if (m.k === 'inventory') on = can('inventory', 'view');
+    if (m.k === 'users') { if (!S.me.is_admin) return ''; on = true; }
+    const go = m.k === 'users' ? 'admin' : m.k;
+    const live = m.live;
+    if (live && on) return '<button class="tile" data-act="go" data-to="' + esc(go) + '">' + (ICONS[m.k] || ICONS.other) + '<div><b>' + esc(m.n) + '</b></div></button>';
+    return '<button class="tile off" disabled>' + ICONS.other + '<div><b>' + esc(m.n) + '</b><br><small>' + (live ? 'مفيش صلاحية' : 'قريب') + '</small></div></button>';
+  }).join('');
+  return header('نظام الشركة', S.me.email) + '<h3 class="sec">الوحدات — ' + esc(cname(S.co)) + '</h3><div class="tiles">' + tiles + '</div>';
+}
+function permsLine(p) { return ''; }
+
+function vAdmin() {
+  let h = header('الإدارة', 'المستخدمين والصلاحيات', true);
+  h += '<div class="panel"><form data-form="addperson"><label for="npE" style="margin-top:0">إضافة شخص بالإيميل</label><div class="row"><input id="npE" type="email" dir="ltr" placeholder="name@example.com" required style="flex:1"><button type="submit" class="sm">إضافة</button></div></form></div>';
+  h += '<h3 class="sec">الناس</h3>';
+  if (!S.people.length) h += '<div class="empty">مفيش ناس</div>';
+  S.people.forEach((p, i) => {
+    h += '<div class="panel"><div class="row"><div class="grow"><b dir="ltr" style="word-break:break-all">' + esc(p.email) + '</b></div>' +
+      (p.is_admin ? '<span class="chip ok">أدمن</span>' : '') + '<button class="sm ' + (p.is_admin ? 'nob' : 'ghost') + '" data-act="toggleadmin" data-i="' + i + '">' + (p.is_admin ? 'شيل الأدمن' : 'خليه أدمن') + '</button></div>';
+    (S.me.companies || []).forEach((c) => {
+      h += '<div class="muted" style="margin-top:12px"><b style="color:var(--fg)">' + esc(cname(c)) + '</b></div><div class="perm-grid">';
+      MODULES.forEach((m) => {
+        const cur = ((p.perms || {})[c] || {})[m.k] || '';
+        h += '<div><label>' + esc(m.n) + '</label><select data-chg="perm" data-i="' + i + '" data-c="' + esc(c) + '" data-m="' + esc(m.k) + '">' + LEVELS.map((l) => '<option value="' + l[0] + '"' + (l[0] === cur ? ' selected' : '') + '>' + l[1] + '</option>').join('') + '</select></div>';
+      });
+      h += '</div>';
+    });
+    h += '</div>';
+  });
+  h += '<h3 class="sec">سجل العمليات</h3><div class="panel">';
+  if (!S.audit.length) h += '<div class="empty">السجل فاضي</div>';
+  S.audit.forEach((a) => {
+    let d = ''; try { d = a.details && Object.keys(a.details).length ? JSON.stringify(a.details) : ''; } catch (e) {}
+    h += '<div class="item"><div class="row"><b class="grow">' + esc(a.action) + '</b><span class="muted">' + esc(fdate(a.at)) + '</span></div><div class="ss" dir="auto">' + esc([a.actor, a.company ? cname(a.company) : '', a.target, d].filter(Boolean).join(' · ')) + '</div></div>';
+  });
+  return h + '</div>';
+}
+
+function whName(id) { const w = S.wh.find((x) => x.id === id); return w ? w.name : ''; }
+function whOptions(sel, onlyActive) { return S.wh.filter((w) => !onlyActive || w.active).map((w) => '<option value="' + esc(w.id) + '"' + (w.id === sel ? ' selected' : '') + '>' + esc(w.name) + '</option>').join(''); }
+
+function vInventory() {
+  const T = [['wh', 'المخازن'], ['items', 'الأصناف'], ['move', 'حركة'], ['count', 'الجرد'], ['alerts', 'تنبيهات']];
+  let h = header('المخزون', cname(S.co), true) + '<div class="tabs">' + T.map((t) => '<button class="' + (S.tab === t[0] ? 'on' : '') + '" data-act="tab" data-t="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>';
+  const edit = can('inventory', 'edit');
+  if (S.tab === 'wh') {
+    h += edit ? '<button class="sm" data-act="whform" style="margin-bottom:10px">+ مخزن جديد</button>' : '';
+    if (!S.wh.length) h += '<div class="empty">مفيش مخازن لسه</div>';
+    h += '<div class="panel">' + S.wh.map((w) => '<div class="item row"><div class="grow"><b>' + esc(w.name) + '</b><div class="ss">' + esc(w.location || '—') + '</div></div>' + (w.active ? '' : '<span class="chip warn">موقوف</span>') + (edit ? '<button class="sm ghost" data-act="whform" data-id="' + esc(w.id) + '">تعديل</button>' : '') + '</div>').join('') + '</div>';
+    if (S.me.is_admin) h += '<button class="sm ghost" data-act="legacy">استيراد المخزون القديم</button>';
+  }
+  if (S.tab === 'items') {
+    h += '<div class="row" style="margin-bottom:10px"><select data-chg="whfilter" class="grow" aria-label="فلتر المخزن"><option value="">كل المخازن (الإجمالي)</option>' + whOptions(S.whFilter) + '</select>' + (edit ? '<button class="sm" data-act="itemform">+ صنف</button>' : '') + '</div>';
+    if (!S.items.length) h += '<div class="empty">مفيش أصناف لسه</div>';
+    h += '<div class="panel">' + S.items.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b> ' + (x.low ? '<span class="chip low">ناقص</span>' : '') + '<div class="ss">' + esc([x.code, x.category].filter(Boolean).join(' · ') || '—') + ' · الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><div style="text-align:left"><div class="qty">' + esc(num(S.whFilter && x.wh_qty != null ? x.wh_qty : x.total_qty)) + '</div><div class="ss">' + esc(x.unit) + '</div></div>' + (edit ? '<button class="sm ghost" data-act="itemform" data-id="' + esc(x.id) + '">تعديل</button>' : '') + '</div>').join('') + '</div>';
+  }
+  if (S.tab === 'move') {
+    if (!edit) h += '<div class="empty">ليك صلاحية المشاهدة بس</div>';
+    else if (!S.wh.length || !S.items.length) h += '<div class="empty">أضف مخزن وصنف الأول</div>';
+    else {
+      const k = S.moveKind, tr = k === 'transfer';
+      h += '<div class="panel"><form data-form="move"><div class="tabs" style="padding-top:0">' + [['in', 'وارد'], ['out', 'صادر'], ['transfer', 'تحويل']].map((t) => '<button type="button" class="' + (k === t[0] ? 'on' : '') + '" data-act="kind" data-k="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>' +
+        '<label for="mvI" style="margin-top:0">الصنف</label><select id="mvI" name="item">' + S.items.map((x) => '<option value="' + esc(x.id) + '">' + esc(x.name) + ' (' + esc(num(x.total_qty)) + ')</option>').join('') + '</select>' +
+        '<label for="mvW">' + (tr ? 'من مخزن' : 'المخزن') + '</label><select id="mvW" name="wh">' + whOptions('', true) + '</select>' +
+        (tr ? '<label for="mvT">إلى مخزن</label><select id="mvT" name="to">' + whOptions('', true) + '</select>' : '') +
+        '<label for="mvQ">الكمية</label><input id="mvQ" name="qty" type="number" min="0" step="any" inputmode="decimal" required dir="ltr">' +
+        (tr ? '' : '<label for="mvR">مرجع (فاتورة / إذن)</label><input id="mvR" name="ref">') + '<label for="mvN">ملاحظة</label><input id="mvN" name="note">' +
+        '<button class="full" type="submit">تسجيل</button></form></div>';
+    }
+    h += '<h3 class="sec">آخر الحركات</h3><div class="panel">' + (S.moves.length ? S.moves.map((m) => '<div class="item"><div class="row"><b class="grow">' + esc(m.item_name || m.item_id) + '</b><span class="chip">' + esc(KIND_NAME[m.kind] || m.kind) + '</span></div><div class="ss"><span class="qty">' + esc(num(m.qty)) + '</span> · ' + esc(num(m.qty_before)) + ' ← ' + esc(num(m.qty_after)) + ' · ' + esc(m.warehouse_name || whName(m.warehouse_id)) + ' · ' + esc(fdate(m.at)) + (m.ref ? ' · ' + esc(m.ref) : '') + '</div></div>').join('') : '<div class="empty">مفيش حركات</div>') + '</div>';
+  }
+  if (S.tab === 'count') h += vCount(edit);
+  if (S.tab === 'alerts') {
+    h += '<div class="panel">' + (S.low.length ? S.low.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b><div class="ss">الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><span class="chip low">' + esc(num(x.total_qty)) + ' ' + esc(x.unit) + '</span></div>').join('') : '<div class="empty">مفيش أصناف ناقصة</div>') + '</div>';
+  }
+  return h;
+}
+function vCount(edit) {
+  const c = S.count;
+  if (c) {
+    const draft = c.status === 'draft', ap = can('inventory', 'approve');
+    let h = '<button class="back" data-act="countlist">‹ كل الجرد</button><div class="panel"><div class="row"><div class="grow"><b>' + esc(c.warehouse_name || whName(c.warehouse_id)) + '</b><div class="ss">' + esc(c.note || '') + ' ' + esc(fdate(c.created_at)) + '</div></div><span class="chip ' + (draft ? 'warn' : 'ok') + '">' + (draft ? 'مسودة' : c.status === 'posted' ? 'اترحّل' : 'ملغي') + '</span></div></div><div class="panel">';
+    h += (c.lines || []).map((l, i) => '<div class="item row"><div class="grow"><b>' + esc(l.name || l.item_name || l.item_id) + '</b><div class="ss">المتوقع <span class="qty">' + esc(num(l.expected)) + '</span> · الفرق <span class="qty" id="diff' + i + '">' + (l.counted == null ? '—' : esc(num(l.counted - l.expected))) + '</span></div></div>' +
+      (draft && edit ? '<input class="cnt-in" type="number" step="any" inputmode="decimal" data-chg="cnt" data-i="' + i + '" value="' + (l.counted == null ? '' : esc(l.counted)) + '" aria-label="المعدود">' : '<span class="qty">' + (l.counted == null ? '—' : esc(num(l.counted))) + '</span>') + '</div>').join('') + '</div>';
+    if (draft && ap) h += '<button class="full okb" data-act="post">ترحيل الجرد وتسوية الفروق</button>';
+    else if (draft) h += '<div class="muted">الترحيل محتاج صلاحية «يوافق»</div>';
+    return h;
+  }
+  let h = '';
+  if (edit) h += '<div class="panel"><form data-form="countstart"><label style="margin-top:0" for="csW">بدء جرد جديد</label><select id="csW" name="wh">' + whOptions('', true) + '</select><label for="csN">ملاحظة</label><input id="csN" name="note"><button class="full" type="submit"' + (S.wh.length ? '' : ' disabled') + '>ابدأ الجرد</button></form></div>';
+  h += '<h3 class="sec">الجرد السابق</h3><div class="panel">' + (S.counts.length ? S.counts.map((c) => '<div class="item row"><div class="grow"><b>' + esc(c.warehouse_name || whName(c.warehouse_id)) + '</b><div class="ss">' + esc(fdate(c.created_at)) + ' ' + esc(c.note || '') + '</div></div><span class="chip ' + (c.status === 'draft' ? 'warn' : c.status === 'posted' ? 'ok' : '') + '">' + (c.status === 'draft' ? 'مسودة' : c.status === 'posted' ? 'اترحّل' : 'ملغي') + '</span><button class="sm ghost" data-act="countopen" data-id="' + esc(c.id) + '">فتح</button></div>').join('') : '<div class="empty">مفيش جرد</div>') + '</div>';
+  return h;
+}
+
+function vSheet() {
+  const s = S.sheet; if (!s) return '';
+  let body = '';
+  if (s.kind === 'wh') { const w = s.rec || {}; body = '<h4>' + (w.id ? 'تعديل مخزن' : 'مخزن جديد') + '</h4><form data-form="whsave"><label for="shN">الاسم</label><input id="shN" name="name" required value="' + esc(w.name || '') + '"><label for="shL">المكان</label><input id="shL" name="location" value="' + esc(w.location || '') + '"><label class="switch"><input type="checkbox" name="active" style="width:auto"' + (w.id && !w.active ? '' : ' checked') + '> شغّال</label><button class="full" type="submit">حفظ</button></form>'; }
+  if (s.kind === 'item') { const x = s.rec || {}; body = '<h4>' + (x.id ? 'تعديل صنف' : 'صنف جديد') + '</h4><form data-form="itemsave"><label for="siN">الاسم</label><input id="siN" name="name" required value="' + esc(x.name || '') + '"><div class="grid2"><div><label for="siC">الكود</label><input id="siC" name="code" dir="ltr" value="' + esc(x.code || '') + '"></div><div><label for="siU">الوحدة</label><input id="siU" name="unit" value="' + esc(x.unit || 'قطعة') + '"></div></div><div class="grid2"><div><label for="siG">التصنيف</label><input id="siG" name="category" value="' + esc(x.category || '') + '"></div><div><label for="siM">الحد الأدنى</label><input id="siM" name="min" type="number" min="0" step="any" dir="ltr" value="' + esc(x.min_qty == null ? 0 : x.min_qty) + '"></div></div><button class="full" type="submit">حفظ</button></form>'; }
+  return '<div class="sheetbg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-modal="true">' + body + '<button class="full ghost" type="button" data-act="closesheet" style="margin-top:8px">إلغاء</button></div></div>';
+}
+
+function render() {
+  const app = $('app');
+  let h = '';
+  if (S.route === 'login' || !S.me) h = vLogin();
+  else if (S.route === 'home') h = vHome();
+  else if (S.route === 'admin') h = vAdmin();
+  else if (S.route === 'inventory') h = vInventory();
+  app.innerHTML = h; $('sheetHost').innerHTML = vSheet();
+}
+
+/* -------------------------------------------- events -------------------------------------------- */
+const fd = (form) => Object.fromEntries(new FormData(form).entries());
+document.addEventListener('submit', (ev) => {
+  const f = ev.target.closest('form[data-form]'); if (!f) return; ev.preventDefault();
+  const k = f.dataset.form, v = fd(f), c = S.co;
+  if (k === 'login') return void doLogin(String(v.email || f.querySelector('#lgE').value).trim().toLowerCase(), f.querySelector('#lgP').value);
+  if (k === 'addperson') { const e = f.querySelector('#npE').value.trim().toLowerCase(); if (!e) return; if (!S.people.some((p) => p.email === e)) S.people.unshift({ email: e, is_admin: false, perms: {} }); render(); return toast('اضبط صلاحياته من تحت'); }
+  if (k === 'whsave') return void act(async () => { await rpc('sys_warehouse_save', { p_company: c, p_id: S.sheet.rec && S.sheet.rec.id || null, p_name: v.name.trim(), p_location: v.location.trim() || null, p_active: !!v.active }); S.sheet = null; await loadInv(S.tab); }, 'اتحفظ');
+  if (k === 'itemsave') return void act(async () => { await rpc('sys_item_save', { p_company: c, p_id: S.sheet.rec && S.sheet.rec.id || null, p_code: v.code.trim() || null, p_name: v.name.trim(), p_category: v.category.trim() || null, p_unit: v.unit.trim() || 'قطعة', p_min_qty: Number(v.min) || 0 }); S.sheet = null; await loadInv(S.tab); }, 'اتحفظ');
+  if (k === 'move') return void act(async () => {
+    const q = Number(v.qty);
+    if (S.moveKind === 'transfer') await rpc('sys_transfer', { p_company: c, p_item: v.item, p_from: v.wh, p_to: v.to, p_qty: q, p_note: v.note.trim() || null });
+    else await rpc('sys_move', { p_company: c, p_item: v.item, p_warehouse: v.wh, p_kind: S.moveKind, p_qty: q, p_ref: (v.ref || '').trim() || null, p_note: v.note.trim() || null });
+    await loadInv('move');
+  }, 'اتسجّلت الحركة');
+  if (k === 'countstart') return void act(async () => { const id = await rpc('sys_count_start', { p_company: c, p_warehouse: v.wh, p_note: v.note.trim() || null }); S.count = await rpc('sys_count_get', { p_count: id }); }, 'بدأ الجرد');
+});
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest('[data-act]'); if (!t) return;
+  if (t.dataset.act === 'closesheet' && ev.target.closest('[data-stop]') && !ev.target.closest('button[data-act="closesheet"]')) return;
+  const a = t.dataset.act;
+  if (a === 'forgot') { S.forgot = true; return render(); }
+  if (a === 'go') { location.hash = '#' + t.dataset.to; return; }
+  if (a === 'home') { location.hash = '#home'; return; }
+  if (a === 'logout') return void doLogout();
+  if (a === 'closesheet') { S.sheet = null; return render(); }
+  if (a === 'tab') { S.tab = t.dataset.t; S.count = null; render(); return void act(() => loadInv(S.tab)); }
+  if (a === 'kind') { S.moveKind = t.dataset.k; return render(); }
+  if (a === 'whform') { S.sheet = { kind: 'wh', rec: S.wh.find((w) => w.id === t.dataset.id) || null }; return render(); }
+  if (a === 'itemform') { S.sheet = { kind: 'item', rec: S.items.find((x) => x.id === t.dataset.id) || null }; return render(); }
+  if (a === 'legacy') return void act(async () => { await rpc('sys_import_legacy', { p_company: S.co }); await loadInv(S.tab); }, 'تم الاستيراد');
+  if (a === 'toggleadmin') { const p = S.people[+t.dataset.i]; return void act(async () => { await rpc('sys_set_admin', { p_email: p.email, p_on: !p.is_admin }); await loadAdmin(); }, 'اتحدّث'); }
+  if (a === 'countlist') { S.count = null; return void act(() => loadInv('count')); }
+  if (a === 'countopen') return void act(async () => { S.count = await rpc('sys_count_get', { p_count: t.dataset.id }); });
+  if (a === 'post') { if (!confirm('ترحيل الجرد هيعدّل الأرصدة. متأكد؟')) return; return void act(async () => { await rpc('sys_count_post', { p_count: S.count.id }); S.count = await rpc('sys_count_get', { p_count: S.count.id }); await loadInv('count'); }, 'اترحّل الجرد'); }
+});
+document.addEventListener('change', (ev) => {
+  const t = ev.target.closest('[data-chg]'); if (!t) return; const k = t.dataset.chg;
+  if (k === 'co') { setCo(t.value); render(); if (S.route === 'inventory') act(() => loadInv(S.tab)); if (S.route === 'admin') act(loadAdmin); return; }
+  if (k === 'whfilter') { S.whFilter = t.value; return void act(() => loadInv('items')); }
+  if (k === 'perm') { const p = S.people[+t.dataset.i], c = t.dataset.c, m = t.dataset.m, lv = t.value || null; return void act(async () => { await rpc('sys_set_permission', { p_company: c, p_email: p.email, p_module: m, p_level: lv }); (p.perms[c] = p.perms[c] || {})[m] = lv; if (!lv) delete p.perms[c][m]; await loadAdmin(); if (!S.people.some((x) => x.email === p.email)) S.people.unshift(p); }, 'اتحفظت الصلاحية'); }
+  if (k === 'cnt') {
+    const l = S.count.lines[+t.dataset.i], val = t.value === '' ? null : Number(t.value); const prev = l.counted;
+    if (val !== null && !isFinite(val)) { t.value = prev == null ? '' : prev; return; }
+    rpc('sys_count_set', { p_count: S.count.id, p_item: l.item_id, p_counted: val }).then(() => { l.counted = val; const d = $('diff' + t.dataset.i); if (d) d.textContent = val == null ? '—' : num(val - l.expected); }).catch((e) => { toast(e.message); t.value = prev == null ? '' : prev; });
+  }
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/system/sw.js', { scope: '/system/' }).catch(() => {});
+boot();
+</script>
+</body>
+</html>
