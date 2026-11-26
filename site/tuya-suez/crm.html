@@ -870,12 +870,14 @@ const isManager = area => !!powers && !!powers.manager && !isRev(area);
 const NEEDS = [["lights","إضاءة"],["curtains","ستاير"],["cameras","كاميرات"],["locks","كوالين"],["screens","شاشات"],["other","حاجة تانية"]];
 const V_ST = { new:"جديدة — مستنية الرد", scheduled:"اتحدد ميعاد", done:"خلصت", cancelled:"اتلغت" };
 const V_RES = { quote:"هيتعمل عرض سعر", sold:"اتقفلت", thinking:"العميل بيفكر", not_interested:"مش مهتم", other:"تاني" };
-const MAPS_RE = /^https:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+\/maps|maps\.google\.[a-z.]+\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
+const MAPS_RE = /^https:\/\/((www\.)?google\.(com|com\.eg)\/maps([\/?]|$)|maps\.google\.(com|com\.eg)\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
 function roleErr(e){
   const m = String(e?.message || "");
   if(m.includes("reviewer_read_only")) return "إنت مراجع هنا — بتشوف وتعلّق بس، والتعديل لمسؤول المبيعات";
   if(m.includes("reassign_needs_manager")) return "تغيير «مسؤول عنه» لعميل له مسؤول بيعمله مسؤول المبيعات بس";
   if(m.includes("only the sales manager")) return "مسؤول المبيعات بس اللي يقرر المسح";
+  if(m.includes("bad_maps_url")) return "اللينك لازم يكون لينك جوجل ماب";
+  if(m.includes("your own request")) return "مينفعش توافق على طلب إنت اللي طالبه";
   if(m.includes("visit_open")) return "العميل ده عنده معاينة مفتوحة بالفعل";
   if(m.includes("location_required")) return "حط لينك الموقع أو موقعك الحالي أو العنوان";
   if(m.includes("needs_required")) return "اختار العميل محتاج إيه";
@@ -890,7 +892,7 @@ function applyLeadRoles(){
   $("fuForm").classList.toggle("hidden", ro);
   $("newQuote").classList.toggle("hidden", isRev("pricing"));
   // «مسؤول عنه»: a girl fills it when empty; moving a client from one person to another is the sales manager's
-  const lockAssign = !ro && !!current && !!String(current.assigned_to||"").trim() && !isAdmin && !isManager("sales") && !!powers;
+  const lockAssign = !ro && !!current && !!String(current.assigned_to||"").trim() && !isAdmin && !isManager("sales") && !!powers && !!powers.has_manager;
   f.assigned_to.readOnly = lockAssign; $("assignHint").classList.toggle("hidden", !lockAssign);
   const rv = ["sales","pricing","visits"].filter(isRev);
   $("revNote").classList.toggle("hidden", !rv.length);
@@ -904,7 +906,7 @@ async function loadVisits(){
   if(!leadId || !powers || !powers.visits_on){ $("visitList").innerHTML = ""; return; }
   $("visitBtn").textContent = "🏠 سلّم معاينة لـ" + visitOwner();
   $("visitList").innerHTML = `<p class="sub">بيحمّل…</p>`;
-  const { data, error } = await sb.from("tsd_site_visits").select("*").eq("lead_id", leadId).order("created_at",{ascending:false});
+  const { data, error } = await sb.from("tsd_site_visits").select("id,lead_id,maps_url,lat,lng,address,needs,needs_text,visit_date,visit_time,notes,photos,status,scheduled_for,result,status_note,created_at").eq("lead_id", leadId).order("created_at",{ascending:false});
   if(current?.id !== leadId) return;
   if(error){ $("visitList").innerHTML = ""; console.error(error); return; }
   visits = data || [];

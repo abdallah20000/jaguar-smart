@@ -328,7 +328,7 @@ const V_ST = { new: 'جديدة', scheduled: 'اتحدد ميعاد', done: 'خ�
 const V_CHIP = { new: 'c-blocked', scheduled: 'c-in_progress', done: 'c-done', cancelled: 'c-pending' };
 const V_RES = { quote: 'هيتعمل عرض سعر', sold: 'اتقفلت', thinking: 'العميل بيفكر', not_interested: 'مش مهتم', other: 'تاني' };
 const ACT_KIND = { created: 'اتعمل', status: 'اتغيرت الحالة', decision: 'قرار', comment: 'تعليق', reassign: 'اتنقل لبنت تانية', delete_request: 'طلب مسح عرض', deleted: 'اتمسح عرض', delete_rejected: 'اترفض مسح عرض', role: 'صلاحيات' };
-const MAPS_RE = /^https:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+\/maps|maps\.google\.[a-z.]+\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
+const MAPS_RE = /^https:\/\/((www\.)?google\.(com|com\.eg)\/maps([\/?]|$)|maps\.google\.(com|com\.eg)\/|maps\.app\.goo\.gl\/|goo\.gl\/maps\/)/i;
 
 let S = null, me = null, MODE = null, tab = 'home', stageSel = 'followup', RS = null;
 
@@ -637,7 +637,7 @@ function openVisit(id) {
     const can = canAct('visits') && (v.status === 'new' || v.status === 'scheduled'), mp = mapsOf(v);
     let h = '<div class="sheet" role="dialog" aria-label="معاينة"><div class="row"><div class="grow"><b>معاينة: ' + esc(v.client) + '</b><div class="muted">من ' + esc(U(v.by).full) + ' · ' + ago(v.at) + '</div></div><button class="sm ghost" data-x="1">قفل</button></div>';
     h += '<div class="cm"><small>الحالة</small><span class="chip ' + V_CHIP[v.status] + '">' + esc(V_ST[v.status] || v.status) + '</span>' + (v.status === 'scheduled' && v.when ? ' ' + esc(new Date(v.when).toLocaleString('ar-EG', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) : '') + (v.status === 'done' ? ' · ' + esc(V_RES[v.result] || v.result || '') : '') + (v.note ? '<br>' + esc(v.note) : '') + '</div>';
-    h += '<div class="cm"><small>العميل</small>' + esc(v.client) + (v.phone ? ' · <a class="lnk" dir="ltr" href="tel:' + esc(String(v.phone).replace(/[^\d+]/g, '')) + '">' + esc(v.phone) + '</a>' : '') + '</div>';
+    h += '<div class="cm"><small>العميل</small>' + esc(v.client) + (v.phone ? ' · <a class="lnk" dir="ltr" href="tel:' + esc(String(v.phone).replace(/[^\d+]/g, '')) + '">' + esc(v.phone) + '</a>' : owns('visits') && MODE === 'real' ? ' · <button class="sm ghost" data-phone="1">📞 اعرض الرقم</button>' : '') + '</div>';
     h += '<div class="cm"><small>المكان</small>' + esc(v.address || '—') + (mp ? ' · <a class="lnk" href="' + esc(mp) + '" target="_blank" rel="noopener noreferrer">افتح على الخريطة</a>' : '') + '</div>';
     h += '<div class="cm"><small>محتاج</small>' + esc((v.needs || []).map((n) => NEEDS[n] || n).join('، ')) + (v.needsText ? ' — ' + esc(v.needsText) : '') + '</div>';
     h += '<div class="cm"><small>الميعاد اللي البنت كتبته</small>' + esc(v.date) + (v.time ? ' ' + esc(String(v.time).slice(0, 5)) : '') + (v.notes ? '<br>' + esc(v.notes) : '') + '</div>';
@@ -659,6 +659,11 @@ function openVisit(id) {
     if (e.target === bg || (b && b.dataset.x)) { bg.remove(); render(); return; }
     if (!b) return;
     if (b.dataset.photo) { photoOpen(b.dataset.photo); return; }
+    if (b.dataset.phone) {
+      try { const ph = await rpc('tsd_visit_phone', { p_id: id }); const v = S.visits.find((x) => String(x.id) === String(id)); if (ph && v) { v.phone = ph; draw(); } else toast('الرقم مش متاح'); }
+      catch (err) { toast('الرقم مش متاح'); }
+      return;
+    }
     if (b.dataset.vnote) {
       const body = bg.querySelector('#vNote').value.trim(); if (!body) return;
       if (await act('vnote', { id, body: body.slice(0, 2000) })) { draw(); toast('اتسجل التعليق'); }
@@ -950,7 +955,7 @@ async function realLoad() {
   const reqs = access.role === 'owner' ? await get('tsd_access_requests?' + c + '&status=eq.pending&order=created_at') : [];
   // migration 113 adds these; before it runs they are simply empty and the page works as before
   const [vis, actv] = await Promise.all([
-    get('tsd_site_visits?' + c + '&order=created_at.desc&limit=150').catch(() => []),
+    get('tsd_site_visits?' + c + '&select=id,client_name,needs,needs_text,maps_url,lat,lng,address,visit_date,visit_time,notes,photos,status,scheduled_for,result,status_note,created_by,created_at&order=created_at.desc&limit=150').catch(() => []),
     get('tsd_activity?' + c + '&order=created_at.desc&limit=300').catch(() => [])
   ]);
   const users = {};

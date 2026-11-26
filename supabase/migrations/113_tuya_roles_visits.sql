@@ -118,7 +118,7 @@ create table if not exists public.tsd_site_visits (
   lead_id       uuid references public.leads(id) on delete set null,
   client_name   text not null check (length(btrim(client_name)) between 1 and 120),
   client_phone  text check (client_phone is null or length(client_phone) <= 40),
-  maps_url      text check (maps_url is null or (length(maps_url) <= 500 and maps_url ~* '^https://([a-z0-9-]+\.)*(google\.[a-z.]+/maps|maps\.google\.[a-z.]+/|maps\.app\.goo\.gl/|goo\.gl/maps/)')),
+  maps_url      text check (maps_url is null or (length(maps_url) <= 500 and maps_url ~* '^https://((www\.)?google\.(com|com\.eg)/maps([/?]|$)|maps\.google\.(com|com\.eg)/|maps\.app\.goo\.gl/|goo\.gl/maps/)')),
   lat           numeric check (lat is null or lat between -90 and 90),
   lng           numeric check (lng is null or lng between -180 and 180),
   address       text check (address is null or length(address) <= 300),
@@ -141,6 +141,12 @@ create index if not exists tsd_site_visits_lead_idx on public.tsd_site_visits (l
 alter table public.tsd_site_visits enable row level security;
 revoke all on public.tsd_site_visits from anon;
 revoke insert, update, delete, truncate on public.tsd_site_visits from authenticated;   -- only the functions below write
+-- the client's full phone is not readable from the table: tsd_visit_phone() gives it to the visits owner and
+-- to the girl who handed the visit over (same rule as 111, where other members see only the last 3 digits)
+revoke select on public.tsd_site_visits from authenticated;
+grant select (id, company, created_at, lead_id, client_name, maps_url, lat, lng, address, needs, needs_text, visit_date,
+              visit_time, notes, photos, status, scheduled_for, result, status_note, created_by, updated_at, updated_by)
+  on public.tsd_site_visits to authenticated;
 
 -- who reads a visit: anyone who can see the 'visits' area on the dashboard (owner, admins, staff given it),
 -- and the CRM user who handed it over (her own visits, in her own company)
@@ -178,6 +184,16 @@ create policy "visit photos read" on storage.objects for select to authenticated
               or (storage.foldername(name))[2] = (select auth.uid())::text));
 -- no update / delete policies: photos stay as uploaded
 
+create or replace function public.tsd_visit_phone(p_id uuid)
+returns text language sql stable security definer set search_path = '' as $$
+  select s.client_phone from public.tsd_site_visits s
+  where s.id = p_id
+    and (public.tsd_owns(s.company, 'visits')
+         or (s.created_by = public.tsd_me() and s.company = public.my_company() and public.has_role(array['admin','crm'])));
+$$;
+revoke execute on function public.tsd_visit_phone(uuid) from public, anon;
+grant execute on function public.tsd_visit_phone(uuid) to authenticated;
+
 -- ---------- «سلّم معاينة لأحمد» (CRM client card) ----------
 -- Name and phone are copied from the lead on the server. The lead's status becomes 'site_visit' and a line is
 -- added to its follow-up log. One open (new/scheduled) visit per client.
@@ -201,6 +217,9 @@ begin
   end if;
   if exists (select 1 from public.tsd_site_visits s where s.lead_id = l.id and s.status in ('new','scheduled')) then
     raise exception 'visit_open: this client already has an open visit' using errcode = 'P0001';
+  end if;
+  if v_url is not null and v_url !~* '^https://((www\.)?google\.(com|com\.eg)/maps([/?]|$)|maps\.google\.(com|com\.eg)/|maps\.app\.goo\.gl/|goo\.gl/maps/)' then
+    raise exception 'bad_maps_url' using errcode = 'P0001';
   end if;
   if v_url is null and p_lat is null and nullif(btrim(p_address), '') is null then
     raise exception 'location_required' using errcode = 'P0001';
@@ -367,7 +386,7 @@ create trigger tsd_approvals_log after insert or update on public.tsd_approvals
 -- =========================================================================================
 -- 5. CRM powers of «مسؤول المبيعات»
 -- =========================================================================================
--- Reassigning a client: in a company that uses the dashboard, a CRM user who is not admin may fill an EMPTY
+-- Reassigning a client: once the company has a sales manager (setup step 3), a CRM user who is not admin may fill an EMPTY
 -- «مسؤول عنه», but only the sales manager moves a client from one person to another. Every move is logged.
 create or replace function public.tsd_lead_assign_guard()
 returns trigger language plpgsql security definer set search_path = '' as $$
@@ -375,7 +394,7 @@ begin
   if new.assigned_to is distinct from old.assigned_to
      and nullif(btrim(old.assigned_to), '') is not null
      and public.tsd_me() <> ''
-     and exists (select 1 from public.tsd_areas a where a.company = new.company and a.key = 'sales')
+     and exists (select 1 from public.tsd_memberships m where m.company = new.company and m.sales_manager)
      and not public.has_role(array['admin'])
      and not (public.tsd_sales_manager(new.company) and not public.tsd_reviewing(new.company, 'sales')) then
     raise exception 'reassign_needs_manager: only the sales manager moves a client' using errcode = '42501';
@@ -392,7 +411,8 @@ create or replace function public.tsd_crm_log()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if tg_table_name = 'leads' and new.assigned_to is distinct from old.assigned_to then
-    perform public.tsd_log(new.company, 'sales', 'lead', new.id::text, 'reassign', new.name, old.assigned_to, new.assigned_to);
+    perform public.tsd_log(new.company, 'sales', 'lead', new.id::text, 'reassign', new.name,
+                           split_part(old.assigned_to, '@', 1), split_part(new.assigned_to, '@', 1));
   elsif tg_table_name = 'quotations' and new.delete_requested_at is not null and old.delete_requested_at is null then
     perform public.tsd_log(new.company, 'pricing', 'quote', new.id::text, 'delete_request',
                            format('%s — %s', new.quote_number, new.client_name), null, null, new.delete_requested_by);
@@ -420,6 +440,9 @@ begin
     raise exception 'only the sales manager decides a deletion' using errcode = '42501';
   end if;
   if q.delete_requested_at is null then raise exception 'no deletion request' using errcode = 'P0001'; end if;
+  if lower(coalesce(q.delete_requested_by, '')) = public.tsd_me() and not public.tsd_is_owner(q.company) then
+    raise exception 'you cannot decide your own request' using errcode = '42501';
+  end if;
   if p_approve then
     perform public.tsd_log(q.company, 'pricing', 'quote', q.id::text, 'deleted',
                            left(format('%s — %s — %s ج — طلبه %s%s', q.quote_number, q.client_name, q.total,
@@ -442,6 +465,7 @@ returns json language sql stable security definer set search_path = '' as $$
     'company', c.co,
     'visits_on', exists (select 1 from public.tsd_areas a where a.company = c.co and a.key = 'visits'),
     'manager', public.tsd_sales_manager(c.co),
+    'has_manager', exists (select 1 from public.tsd_memberships m where m.company = c.co and m.sales_manager),
     'review', coalesce((select m.review_areas from public.tsd_memberships m where m.company = c.co and m.email = public.tsd_me()), '{}'::text[]),
     'visits_owner', (select coalesce(mm.display_name, split_part(a.owner_email, '@', 1))
                      from public.tsd_areas a
