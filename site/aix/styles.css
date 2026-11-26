@@ -213,3 +213,18 @@ html[dir=rtl] .meter>i{background:linear-gradient(270deg,var(--yellow),var(--ora
 .empty .pill{margin-top:10px}
 .offline{display:flex;align-items:center;gap:8px;margin:2px 0 6px;padding:9px 14px;border-radius:14px;background:rgba(255,159,10,.18);border:.5px solid rgba(255,159,10,.45);font-size:13px;font-weight:600}
 .offline span{width:8px;height:8px;border-radius:50%;background:var(--orange);flex:none}
+
+/* monthly bill estimate */
+.bill{margin-top:10px;padding:14px 16px;border-radius:22px}
+.bill small{display:block;font-size:12px;font-weight:600;color:var(--muted)}
+.bill b{display:block;font-size:22px;font-weight:700;margin-top:2px}
+.bill b.need{font-size:16px;color:var(--orange)}
+.bill-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.bill-f label{display:block;font-size:12px;color:var(--muted);min-width:0}
+.bill-f .field{margin-top:5px;padding:10px 12px;font-family:var(--fe)}
+.bill .hw{margin:10px 2px 0}
+
+/* undo bar */
+.undo{display:flex;align-items:center;gap:14px;padding:8px 8px 8px 16px;z-index:41}
+.undo[hidden]{display:none}
+.undo button{padding:6px 14px;border-radius:999px;background:var(--on-text);color:#fff;font-weight:700}
