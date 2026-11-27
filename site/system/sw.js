@@ -1,6 +1,6 @@
 // «نظام الشركة»: app-shell cache only. Never caches Supabase (/rest/, /auth/) or any cross-origin request.
-const CACHE = 'sys-shell-v2';
-const SHELL = ['/system/', '/system/index.html', '/system/manifest.webmanifest', '/system/icon.png', '/system/push.js'];
+const CACHE = 'sys-shell-v3';
+const SHELL = ['/system/', '/system/index.html', '/system/manifest.webmanifest', '/system/icon.png', '/system/icon-192.png', '/system/aix-logo.png', '/system/push.js'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });

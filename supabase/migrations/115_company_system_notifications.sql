@@ -196,7 +196,7 @@ begin
     select coalesce(sum(s.qty), 0) into v_total from public.sys_stock s where s.item_id = new.item_id;
     v_delta := case new.kind when 'in' then new.qty when 'out' then -new.qty else new.qty end;   -- adjust stores the signed delta
     if v_total <= v_item.min_qty and (v_total - v_delta) > v_item.min_qty then
-      perform public.sys_notify(new.company, v_rec, new.by_email, 'stock.low',
+      perform public.sys_notify(new.company, v_rec, null, 'stock.low',
         'نقص مخزون — ' || v_label,
         '«' || coalesce(v_item.name, '') || '» نزل لـ ' || trim_scale(v_total)::text
           || ' ' || coalesce(v_item.unit, '') || ' (الحد الأدنى '
