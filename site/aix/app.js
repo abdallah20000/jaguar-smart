@@ -25,7 +25,9 @@
       addSoon: 'الجاية: الإضافة من جوه AIX نفسه من غير Smart Life.',
       connection: 'الاتصال', demo: 'بيت تجريبي', live: 'متوصل بتويا', demoNote: 'التطبيق شغّال ببيت تجريبي لحد ما مفاتيح تويا تتحط على السيرفر.',
       family: 'العيلة', language: 'اللغة',
-      nowHome: 'دلوقتي في البيت', thingsOn: 'حاجات شغّالة', oneOn: 'حاجة واحدة شغّالة', allQuiet: 'البيت كله مقفول', allQuietSub: 'مفيش حاجة بتسحب كهربا دلوقتي', approxKw: 'حوالي', kw: 'كيلووات', w: 'وات', biggest: 'أكتر حاجة', estNote: 'الاستهلاك تقديري', houseOff: 'اقفل كل حاجة', houseOffDone: 'اتقفل', devicesWord: 'أجهزة', allRooms: 'الكل', emptyRoom: 'مفيش أجهزة في الأوضة دي لسه', emptyRoomSub: 'ضيف جهاز من Smart Life أو انقل خط مفتاح هنا من إعداداته.', offlineDemo: 'مفيش نت · البيت التجريبي شغّال عادي', offlineLive: 'مفيش نت · الأوامر هتستنى لحد ما النت يرجع', backOnline: 'النت رجع', sceneDone: 'اشتغل', changed: 'اتغيّرت', reset: 'رجّع البيت التجريبي لأوله', resetDone: 'رجع لأوله', hint: 'دوس على الأيقونة تشغّل وتقفل، ودوس على الاسم يفتح التحكم.', billTitle: 'فاتورة الشهر', billEst: 'تقدير', kwhPrice: 'سعر الكيلووات (جنيه)', hoursDay: 'ساعات التشغيل في اليوم', billNeed: 'اكتب سعر الكيلووات', billNote: 'تقدير تقريبي: الحمل الحالي × الساعات × 30 يوم. مش الفاتورة الفعلية.', egp: 'جنيه', leaveTitle: 'الخروج هيقفل', leaveGo: 'نفّذ الخروج', cancel: 'إلغاء', undo: 'تراجع', undone: 'اتراجع', leaveNone: 'مفيش حاجة شغّالة تتقفل', leaveDone: 'اتقفل' },
+      nowHome: 'دلوقتي في البيت', thingsOn: 'حاجات شغّالة', oneOn: 'حاجة واحدة شغّالة', allQuiet: 'البيت كله مقفول', allQuietSub: 'مفيش حاجة بتسحب كهربا دلوقتي', approxKw: 'حوالي', kw: 'كيلووات', w: 'وات', biggest: 'أكتر حاجة', estNote: 'الاستهلاك تقديري', houseOff: 'اقفل كل حاجة', houseOffDone: 'اتقفل', devicesWord: 'أجهزة', allRooms: 'الكل', emptyRoom: 'مفيش أجهزة في الأوضة دي لسه', emptyRoomSub: 'ضيف جهاز من Smart Life أو انقل خط مفتاح هنا من إعداداته.', offlineDemo: 'مفيش نت · البيت التجريبي شغّال عادي', offlineLive: 'مفيش نت · الأوامر هتستنى لحد ما النت يرجع', backOnline: 'النت رجع', sceneDone: 'اشتغل', changed: 'اتغيّرت', reset: 'رجّع البيت التجريبي لأوله', resetDone: 'رجع لأوله', hint: 'دوس على الأيقونة تشغّل وتقفل، ودوس على الاسم يفتح التحكم.', billTitle: 'فاتورة الشهر', billEst: 'تقدير', kwhPrice: 'سعر الكيلووات (جنيه)', hoursDay: 'ساعات التشغيل في اليوم', billNeed: 'اكتب سعر الكيلووات', billNote: 'تقدير تقريبي: الحمل الحالي × الساعات × 30 يوم. مش الفاتورة الفعلية.', egp: 'جنيه', leaveTitle: 'الخروج هيقفل', leaveGo: 'نفّذ الخروج', cancel: 'إلغاء', undo: 'تراجع', undone: 'اتراجع', leaveNone: 'مفيش حاجة شغّالة تتقفل', leaveDone: 'اتقفل',
+      limitLbl: 'الحد الشهري (جنيه)', limitOk: 'في الحدود', limitWarn: 'قربت من الحد', limitOver: 'عدّيت الحد', ofLimit: 'من الحد', byAmt: 'بزيادة',
+      guestsName: 'ضيوف', guestsTodo: 'اضغط للتظبيط', guestsRow: 'مشهد ضيوف', guestsSet: 'اتظبط', guestsUnset: 'لسه ما اتظبطش', guestsCfg: 'ظبّط', guestsHint: 'اختار الأجهزة اللي تشتغل لما تشغّل مشهد «ضيوف». الجهاز اللي ليه مستوى تقدر تظبطه.', guestsSave: 'احفظ المشهد', guestsPick: 'اختار جهاز واحد على الأقل', guestsSaved: 'مشهد ضيوف اتحفظ', guestsClear: 'امسح التظبيط', guestsCleared: 'اتمسح', guestsPicked: 'مختار' },
     en: { home: 'Home', rooms: 'Rooms', automation: 'Automation', settings: 'Settings',
       climate: 'Climate', lights: 'Lights', security: 'Security', shades: 'Shades', scenes: 'Scenes', favorites: 'Favourites',
       on: 'On', off: 'Off', open: 'Open', closed: 'Closed', locked: 'Locked', unlocked: 'Unlocked', ok: 'OK', leak: 'Leak detected!', motion: 'Motion', noMotion: 'No motion',
@@ -40,7 +42,9 @@
       addSoon: 'Next: add accessories inside AIX itself, without Smart Life.',
       connection: 'Connection', demo: 'Demo home', live: 'Connected to Tuya', demoNote: 'Running on a demo home until the Tuya keys are on the server.',
       family: 'Family', language: 'Language',
-      nowHome: 'Right now', thingsOn: 'things on', oneOn: 'One thing on', allQuiet: 'Everything is off', allQuietSub: 'Nothing is drawing power right now', approxKw: 'about', kw: 'kW', w: 'W', biggest: 'Biggest', estNote: 'Estimated draw', houseOff: 'Turn everything off', houseOffDone: 'Turned off', devicesWord: 'devices', allRooms: 'All', emptyRoom: 'No accessories here yet', emptyRoomSub: 'Add one in Smart Life, or move a switch line here from its settings.', offlineDemo: 'Offline · the demo home still works', offlineLive: 'Offline · commands will wait until you are back online', backOnline: 'Back online', sceneDone: 'ran', changed: 'changed', reset: 'Reset demo home', resetDone: 'Reset done', hint: 'Tap the icon to switch on/off, tap the name for controls.', billTitle: 'Monthly bill', billEst: 'estimate', kwhPrice: 'Price per kWh (EGP)', hoursDay: 'Hours on per day', billNeed: 'Enter the kWh price', billNote: 'Rough estimate: current load x hours x 30 days. Not your actual bill.', egp: 'EGP', leaveTitle: 'Leaving will turn off', leaveGo: 'Leave now', cancel: 'Cancel', undo: 'Undo', undone: 'Undone', leaveNone: 'Nothing is on', leaveDone: 'turned off' }
+      nowHome: 'Right now', thingsOn: 'things on', oneOn: 'One thing on', allQuiet: 'Everything is off', allQuietSub: 'Nothing is drawing power right now', approxKw: 'about', kw: 'kW', w: 'W', biggest: 'Biggest', estNote: 'Estimated draw', houseOff: 'Turn everything off', houseOffDone: 'Turned off', devicesWord: 'devices', allRooms: 'All', emptyRoom: 'No accessories here yet', emptyRoomSub: 'Add one in Smart Life, or move a switch line here from its settings.', offlineDemo: 'Offline · the demo home still works', offlineLive: 'Offline · commands will wait until you are back online', backOnline: 'Back online', sceneDone: 'ran', changed: 'changed', reset: 'Reset demo home', resetDone: 'Reset done', hint: 'Tap the icon to switch on/off, tap the name for controls.', billTitle: 'Monthly bill', billEst: 'estimate', kwhPrice: 'Price per kWh (EGP)', hoursDay: 'Hours on per day', billNeed: 'Enter the kWh price', billNote: 'Rough estimate: current load x hours x 30 days. Not your actual bill.', egp: 'EGP', leaveTitle: 'Leaving will turn off', leaveGo: 'Leave now', cancel: 'Cancel', undo: 'Undo', undone: 'Undone', leaveNone: 'Nothing is on', leaveDone: 'turned off',
+      limitLbl: 'Monthly limit (EGP)', limitOk: 'Within limit', limitWarn: 'Close to the limit', limitOver: 'Over the limit', ofLimit: 'of limit', byAmt: 'by',
+      guestsName: 'Guests', guestsTodo: 'Tap to set up', guestsRow: 'Guests scene', guestsSet: 'Set up', guestsUnset: 'Not set up yet', guestsCfg: 'Set up', guestsHint: 'Pick the accessories that turn on when you run the Guests scene. Accessories with a level can be tuned.', guestsSave: 'Save scene', guestsPick: 'Pick at least one accessory', guestsSaved: 'Guests scene saved', guestsClear: 'Clear setup', guestsCleared: 'Cleared', guestsPicked: 'picked' }
   };
   const t = k => (T[lang] && T[lang][k]) || k;
   const N = o => (o && (o[lang] || o.en || o.ar)) || '';
@@ -135,16 +139,37 @@
   // Monthly bill estimate. The kWh price is typed by the user (no tariff guessed); hours/day is also theirs.
   function rd(k, def) { try { const v = localStorage.getItem(k); return v === null ? def : v; } catch (e) { return def; } }
   const num = v => { const n = parseFloat(String(v).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632).replace(',', '.')); return isFinite(n) && n >= 0 ? n : NaN; };
-  function billText() {
+  function billVal() {
     const price = num(rd('aix-kwh', '')), hours = Math.min(24, num(rd('aix-hours', '8')));
-    if (isNaN(price)) return t('billNeed');
-    if (isNaN(hours)) return '–';
-    return `${Math.round(loadW() / 1000 * hours * 30 * price).toLocaleString('en-US')} ${t('egp')}`;
+    if (isNaN(price) || isNaN(hours)) return NaN;
+    return Math.round(loadW() / 1000 * hours * 30 * price);
   }
-  const billCard = () => `<section class="bill glass"><div class="bill-h"><div><small>${t('billTitle')} · ${t('billEst')}</small><b id="billOut" class="${isNaN(num(rd('aix-kwh', ''))) ? 'need' : ''}">${billText()}</b></div></div>
+  function billText() {
+    if (isNaN(num(rd('aix-kwh', '')))) return t('billNeed');
+    const v = billVal();
+    return isNaN(v) ? '–' : `${v.toLocaleString('en-US')} ${t('egp')}`;
+  }
+  // Monthly limit is typed by the user too. No limit or no price = no colouring, no guessing.
+  function billState() {
+    const est = billVal(), lim = num(rd('aix-limit', ''));
+    if (isNaN(est) || isNaN(lim) || lim <= 0) return { lvl: '', text: '' };
+    const pct = Math.floor(est / lim * 100);
+    if (est > lim) return { lvl: 'over', text: `${t('limitOver')} · ${t('byAmt')} ${(est - lim).toLocaleString('en-US')} ${t('egp')}` };
+    if (pct >= 80) return { lvl: 'warn', text: `${t('limitWarn')} · ${pct}% ${t('ofLimit')}` };
+    return { lvl: 'ok', text: `${t('limitOk')} · ${pct}% ${t('ofLimit')}` };
+  }
+  function applyBill() {
+    const o = $('#billOut'); if (o) { o.textContent = billText(); o.classList.toggle('need', isNaN(num(rd('aix-kwh', '')))); }
+    const c = $('#billCard'), st = billState();
+    if (c) { c.classList.remove('ok', 'warn', 'over'); if (st.lvl) c.classList.add(st.lvl); }
+    const l = $('#billS'); if (l) { l.textContent = st.text; l.hidden = !st.text; }
+  }
+  const billCard = () => { const st = billState(); return `<section class="bill glass ${st.lvl}" id="billCard"><div class="bill-h"><div><small>${t('billTitle')} · ${t('billEst')}</small><b id="billOut" class="${isNaN(num(rd('aix-kwh', ''))) ? 'need' : ''}">${billText()}</b></div></div>
+    <p class="bill-s" id="billS" ${st.text ? '' : 'hidden'}>${st.text}</p>
     <div class="bill-f"><label>${t('kwhPrice')}<input class="field" data-bill="aix-kwh" inputmode="decimal" autocomplete="off" value="${rd('aix-kwh', '')}"></label>
-    <label>${t('hoursDay')}<input class="field" data-bill="aix-hours" inputmode="decimal" autocomplete="off" value="${rd('aix-hours', '8')}"></label></div>
-    <p class="hw">${t('billNote')}</p></section>`;
+    <label>${t('hoursDay')}<input class="field" data-bill="aix-hours" inputmode="decimal" autocomplete="off" value="${rd('aix-hours', '8')}"></label>
+    <label class="wide">${t('limitLbl')}<input class="field" data-bill="aix-limit" inputmode="decimal" autocomplete="off" value="${rd('aix-limit', '')}"></label></div>
+    <p class="hw">${t('billNote')}</p></section>`; };
   function nowCard() {
     const on = accessories().filter(a => switchable(a) && isOn(a));
     const total = on.reduce((s, a) => s + watts(a), 0);
@@ -201,6 +226,53 @@
     return { snap, n: list.length };
   }
 
+  // ---------- guests scene: user picks devices (and level where a device has one), saved in this browser ----------
+  const GKEY = 'aix-guests';
+  const GLV = { light: { min: 10, max: 100, step: 5, key: 'bright', fmt: v => v + '%' }, ac: { min: 16, max: 30, step: 1, key: 'temp', fmt: v => v + '°' }, curtain: { min: 0, max: 100, step: 10, key: 'pos', fmt: v => v + '%' } };
+  function guestsLoad() {
+    try { const j = JSON.parse(localStorage.getItem(GKEY) || 'null'); if (j && Array.isArray(j.items) && j.items.length) return j.items; } catch (e) {}
+    return null;
+  }
+  function guestsSave(items) { try { if (items) localStorage.setItem(GKEY, JSON.stringify({ v: 1, items })); else localStorage.removeItem(GKEY); } catch (e) {} }
+  const guestable = a => ['light', 'line', 'ac', 'plug', 'curtain'].includes(a.kind);
+  const sceneList = () => S().scenes.concat([{ id: 'guests', icon: 'sofa', name: { ar: T.ar.guestsName, en: T.en.guestsName }, custom: true }]);
+  const gLevel = (a, c) => Math.max(c.min, Math.min(c.max, a[c.key] != null ? a[c.key] : c.max));
+  function guestPatch(a, lv) {
+    if (a.kind === 'line') return [a.parent, { gang: [a.code, true] }];
+    if (a.kind === 'light') return [a.id, { on: true, bright: lv != null ? lv : (a.bright || 100) }];
+    if (a.kind === 'ac') return [a.id, { on: true, temp: lv != null ? lv : a.temp }];
+    if (a.kind === 'curtain') return [a.id, { pos: lv != null ? lv : 100 }];
+    return [a.id, { on: true }];
+  }
+  async function runGuests() {
+    for (const it of guestsLoad() || []) { const a = acc(it.id); if (a) { const [id, p] = guestPatch(a, it.lv); await AIX.set(id, p); } }
+  }
+  let gDraft = null;
+  function guestsOpen() {
+    const cur = guestsLoad() || [];
+    gDraft = { sel: new Set(cur.map(i => i.id)), lv: {} };
+    cur.forEach(i => { if (i.lv != null) gDraft.lv[i.id] = i.lv; });
+    openSheet('__guests');
+  }
+  function guestsSheet() {
+    const all = accessories().filter(guestable);
+    const rooms = S().rooms.filter(r => all.some(a => a.room === r.id));
+    const row = a => {
+      const on = gDraft.sel.has(a.id), cfg = GLV[a.kind];
+      let lvl = '';
+      if (on && cfg) {
+        const v = gDraft.lv[a.id] != null ? gDraft.lv[a.id] : gLevel(a, cfg);
+        lvl = `<div class="g-lv"><input type="range" dir="ltr" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${v}" data-glevel="${a.id}" aria-label="${N(a.name)}"><b class="g-v">${cfg.fmt(v)}</b></div>`;
+      }
+      return `<div class="g-item"><div class="row"><span class="rg" style="background:rgba(255,255,255,.16)">${ic(iconOf(a))}</span><div class="grow"><b>${N(a.name)}</b></div><button class="sw ${on ? 'on' : ''}" data-gsel="${a.id}" role="switch" aria-checked="${on}" aria-label="${N(a.name)}"></button></div>${lvl}</div>`;
+    };
+    return `<div class="grabber"></div><div class="sh-head"><span class="ig">${ic('sofa')}</span><div><b>${t('guestsRow')}</b><span id="gCount">${gDraft.sel.size} ${t('guestsPicked')}</span></div><button class="x" data-close aria-label="close">${ic('x')}</button></div>
+      <p class="hw" style="margin-top:4px">${t('guestsHint')}</p>
+      ${rooms.map(r => `<div class="grp"><h3>${N(r.name)}</h3><div class="list glass">${all.filter(a => a.room === r.id).map(row).join('')}</div></div>`).join('')}
+      <button class="cta on" data-gsave>${t('guestsSave')}</button>${guestsLoad() ? `<button class="cta" data-gclear>${t('guestsClear')}</button>` : ''}`;
+  }
+  function guestsRefresh() { const y = sheet.scrollTop; sheet.innerHTML = guestsSheet(); sheet.scrollTop = y; }
+
   // ---------- writing ----------
   async function setAcc(a, patch) {
     if (a.kind === 'line') {
@@ -240,7 +312,7 @@
       <div class="chip glass c-shade"><span class="cg">${ic('curtain')}</span><div><b>${t('shades')}</b><span>${sOpen} ${t('open')}</span></div></div>
     </div>`;
   }
-  const scenes = () => `<div class="scenes">${S().scenes.map(s => `<button class="scene glass" data-scene="${s.id}"><span class="sg">${ic(s.icon === 'out' ? 'leave' : s.icon === 'home' ? 'house' : s.icon)}</span><b>${N(s.name)}</b></button>`).join('')}</div>`;
+  const scenes = () => `<div class="scenes">${sceneList().map(s => `<button class="scene glass" data-scene="${s.id}"><span class="sg">${ic(s.icon === 'out' ? 'leave' : s.icon === 'home' ? 'house' : s.icon)}</span><span class="sn"><b>${N(s.name)}</b>${s.custom && !guestsLoad() ? `<small>${t('guestsTodo')}</small>` : ''}</span></button>`).join('')}</div>`;
   const secH = (title, roomId) => `<div class="sec-h"><h2>${title}</h2>${roomId ? `<button class="pill glass" data-alloff="${roomId}">${t('allOff')}</button>` : ''}</div>`;
 
   // ---------- views ----------
@@ -277,6 +349,7 @@
     const live = AIX.mode === 'live';
     return secH(t('connection')) + `<div class="list glass"><div class="row"><div class="grow"><b>${live ? t('live') : t('demo')}</b><span>${live ? 'Tuya Cloud' : t('demoNote')}</span></div></div></div>` +
       secH(t('family')) + `<div class="list glass">${S().members.map(m => `<div class="row"><span class="rg" style="background:#8e8e93">${ic('kid')}</span><div class="grow"><b>${m.name}</b><span>${N(m.role)}</span></div></div>`).join('')}</div>` +
+      secH(t('guestsRow')) + `<div class="list glass"><div class="row"><span class="rg">${ic('sofa')}</span><div class="grow"><b>${t('guestsName')}</b><span>${guestsLoad() ? t('guestsSet') + ' · ' + guestsLoad().length + ' ' + t('devicesWord') : t('guestsUnset')}</span></div><button class="pill glass" data-gopen>${t('guestsCfg')}</button></div></div>` +
       secH(t('language')) + `<div class="seg"><button data-lang="ar" class="${lang === 'ar' ? 'sel' : ''}">العربية</button><button data-lang="en" class="${lang === 'en' ? 'sel' : ''}">English</button></div>` +
       (live ? '' : `<button class="cta" data-reset>${t('reset')}</button>`) + `<p class="hw">${t('hint')}</p>`;
   }
@@ -321,7 +394,7 @@
     const lit = isOn(a) && ['light', 'line'].includes(a.kind);
     return `<div class="grabber"></div><div class="sh-head"><span class="ig ${lit ? 'lit' : ''}">${ic(iconOf(a))}</span><div><b>${N(a.name)}</b><span>${roomName(a.room)}</span></div><button class="x" data-close aria-label="close">${ic('x')}</button></div>${body}`;
   }
-  function openSheet(id) { sheetId = id; sheet.innerHTML = id === '__add' ? addSheet() : id.startsWith('__leave:') ? leaveSheet(S().scenes.find(x => x.id === id.slice(8))) : sheetHtml(acc(id)); sheet.hidden = false; back.hidden = false; }
+  function openSheet(id) { sheetId = id; sheet.innerHTML = id === '__add' ? addSheet() : id === '__guests' ? guestsSheet() : id.startsWith('__leave:') ? leaveSheet(S().scenes.find(x => x.id === id.slice(8))) : sheetHtml(acc(id)); sheet.hidden = false; back.hidden = false; }
   function closeSheet() { sheet.hidden = true; back.hidden = true; sheetId = null; render(); }
   function refreshSheet() { if (sheetId && !sheetId.startsWith('__')) { const a = acc(sheetId); if (!a) return closeSheet(); const y = sheet.scrollTop; sheet.innerHTML = sheetHtml(a); sheet.scrollTop = y; } }
 
@@ -364,9 +437,17 @@
 
   // ---------- events ----------
   document.addEventListener('click', async e => {
-    const el = e.target.closest('[data-undo],[data-leavego],[data-houseoff],[data-rf],[data-toggle],[data-open],[data-scene],[data-alloff],[data-tab],[data-room],[data-roomback],[data-auto],[data-lang],[data-langtoggle],[data-reset],[data-add],[data-close],[data-pw],[data-setv],[data-temp],[data-mode],[data-licon],[data-lroom],[data-lfav]');
+    const el = e.target.closest('[data-gopen],[data-gsel],[data-gsave],[data-gclear],[data-undo],[data-leavego],[data-houseoff],[data-rf],[data-toggle],[data-open],[data-scene],[data-alloff],[data-tab],[data-room],[data-roomback],[data-auto],[data-lang],[data-langtoggle],[data-reset],[data-add],[data-close],[data-pw],[data-setv],[data-temp],[data-mode],[data-licon],[data-lroom],[data-lfav]');
     if (!el) return;
     const d = el.dataset;
+    if ('gopen' in d) { guestsOpen(); return; }
+    if ('gsel' in d) { if (gDraft.sel.has(d.gsel)) gDraft.sel.delete(d.gsel); else gDraft.sel.add(d.gsel); guestsRefresh(); return; }
+    if ('gsave' in d) {
+      const items = accessories().filter(a => gDraft.sel.has(a.id)).map(a => { const it = { id: a.id }, c = GLV[a.kind]; if (c) it.lv = gDraft.lv[a.id] != null ? gDraft.lv[a.id] : gLevel(a, c); return it; });
+      if (!items.length) { toast(t('guestsPick')); return; }
+      guestsSave(items); closeSheet(); toast(t('guestsSaved')); return;
+    }
+    if ('gclear' in d) { guestsSave(null); closeSheet(); toast(t('guestsCleared')); return; }
     if ('undo' in d) { const s = undoSnap; hideUndo(); if (s) { await restore(s); render(); toast(t('undone')); } return; }
     if ('leavego' in d) { closeSheet(); const r = await runLeave(d.leavego); render(); if (r.n) showUndo(`${r.n} ${t('devicesWord')} ${t('leaveDone')}`, r.snap); return; }
     if ('houseoff' in d) { const list = accessories().filter(a => switchable(a) && isOn(a)); for (const a of list) await setAcc(a, { on: false }); render(); toast(`${t('houseOffDone')} ${list.length} ${t('devicesWord')}`); return; }
@@ -374,8 +455,9 @@
     if ('toggle' in d) { await toggle(acc(d.toggle)); render(); return; }
     if ('open' in d) { openSheet(d.open); return; }
     if ('scene' in d) {
-      const sc0 = S().scenes.find(x => x.id === d.scene);
-      if (sc0 && sc0.icon === 'out') { if (leaveList(sc0).length) openSheet('__leave:' + sc0.id); else toast(t('leaveNone')); return; } const before = JSON.stringify(S().devices); await AIX.runScene(d.scene); const after = S().devices, prev = JSON.parse(before); const n = after.filter((x, i) => JSON.stringify(x) !== JSON.stringify(prev[i])).length; render(); const b = document.querySelector(`[data-scene="${d.scene}"]`); if (b) { b.classList.add('ran'); setTimeout(() => b.classList.remove('ran'), 1200); } const sc = S().scenes.find(x => x.id === d.scene); toast(`${N(sc.name)} ${t('sceneDone')}${n ? ' · ' + n + ' ' + t('devicesWord') + ' ' + t('changed') : ''}`); return; }
+      const sc0 = sceneList().find(x => x.id === d.scene);
+      if (sc0 && sc0.custom && !guestsLoad()) { guestsOpen(); return; }
+      if (sc0 && sc0.icon === 'out') { if (leaveList(sc0).length) openSheet('__leave:' + sc0.id); else toast(t('leaveNone')); return; } const before = JSON.stringify(S().devices); await (sc0 && sc0.custom ? runGuests() : AIX.runScene(d.scene)); const after = S().devices, prev = JSON.parse(before); const n = after.filter((x, i) => JSON.stringify(x) !== JSON.stringify(prev[i])).length; render(); const b = document.querySelector(`[data-scene="${d.scene}"]`); if (b) { b.classList.add('ran'); setTimeout(() => b.classList.remove('ran'), 1200); } const sc = sceneList().find(x => x.id === d.scene); toast(`${N(sc.name)} ${t('sceneDone')}${n ? ' · ' + n + ' ' + t('devicesWord') + ' ' + t('changed') : ''}`); return; }
     if ('alloff' in d) { for (const a of accessories().filter(x => x.room === d.alloff && canToggle(x) && isOn(x))) await (a.kind === 'curtain' ? setAcc(a, { pos: 0 }) : setAcc(a, { on: false })); render(); return; }
     if ('tab' in d) { tab = d.tab; roomOpen = null; render(); window.scrollTo(0, 0); return; }
     if ('room' in d) { roomOpen = d.room; render(); window.scrollTo(0, 0); return; }
@@ -397,9 +479,11 @@
     if ('lfav' in d) { await setAcc(a, { fav: !a.fav }); refreshSheet(); return; }
   });
   document.addEventListener('input', e => {
+    const g = e.target.closest('[data-glevel]');
+    if (g && gDraft) { const a = acc(g.dataset.glevel); if (a && GLV[a.kind]) { gDraft.lv[a.id] = Number(g.value); const o = g.parentNode.querySelector('.g-v'); if (o) o.textContent = GLV[a.kind].fmt(g.value); } return; }
     const b = e.target.closest('[data-bill]'); if (!b) return;
     try { localStorage.setItem(b.dataset.bill, b.value.trim()); } catch (x) {}
-    const o = $('#billOut'); if (o) { o.textContent = billText(); o.classList.toggle('need', isNaN(num(rd('aix-kwh', '')))); }
+    applyBill();
   });
   document.addEventListener('change', async e => {
     const n = e.target.closest('[data-lname]'); if (!n || !sheetId) return;

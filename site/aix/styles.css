@@ -228,3 +228,23 @@ html[dir=rtl] .meter>i{background:linear-gradient(270deg,var(--yellow),var(--ora
 .undo{display:flex;align-items:center;gap:14px;padding:8px 8px 8px 16px;z-index:41}
 .undo[hidden]{display:none}
 .undo button{padding:6px 14px;border-radius:999px;background:var(--on-text);color:#fff;font-weight:700}
+
+/* monthly limit states (the text line says it too, colour is extra) */
+.bill.ok{border-color:rgba(48,209,88,.45)}
+.bill.warn{background:rgba(255,204,0,.24);border-color:rgba(255,204,0,.75)}
+.bill.over{background:rgba(255,69,58,.3);border-color:rgba(255,69,58,.85)}
+.bill-s{margin:6px 0 0;font-size:13.5px;font-weight:600}
+.bill-s[hidden]{display:none}
+.bill.warn .bill-s{color:var(--yellow)}
+.bill.over .bill-s{color:#ffd9d6}
+.bill-f .wide{grid-column:1/-1}
+
+/* guests scene */
+.scene .sn{display:flex;flex-direction:column;min-width:0;text-align:start}
+.scene small{font-size:11px;color:var(--muted);line-height:1.2;white-space:nowrap}
+.g-item{border-bottom:.5px solid var(--stroke)}
+.g-item:last-child{border-bottom:0}
+.g-item .row{border-bottom:0}
+.g-lv{display:flex;align-items:center;gap:12px;padding:0 16px 12px}
+.g-lv input[type=range]{flex:1;min-width:0;accent-color:#fff}
+.g-v{font:600 14px var(--fe);min-width:42px;text-align:end}
