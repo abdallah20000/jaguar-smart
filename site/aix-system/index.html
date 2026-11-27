@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نظام الشركة — AIX</title>
+<meta name="theme-color" content="#0f1216">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="/aix-system/manifest.webmanifest">
+<link rel="icon" href="/aix-system/icon.png">
+<link rel="apple-touch-icon" href="/aix-system/icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="نظام AIX">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a; --ok:#5fd39a; --warn:#ffc35a; --info:#7fb6ff }
+* { box-sizing:border-box }
+html, body { margin:0 }
+body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%) fixed; background-color:var(--bg); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:env(safe-area-inset-bottom) }
+.wrap { max-width:640px; margin:0 auto; padding:0 16px 40px }
+.banner { background:#3a2a0a; color:var(--warn); text-align:center; font-size:.82rem; padding:6px 10px; border-bottom:1px solid rgba(255,195,90,.35) }
+.top { display:flex; align-items:center; gap:10px; padding:14px 0 10px; position:sticky; top:0; z-index:5; background:rgba(15,18,22,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+.top .t { flex:1; min-width:0 }
+.top .t b { display:block; font-size:1.05rem }
+.top .t span { color:var(--muted); font-size:.78rem }
+.top img { width:34px; height:34px; border-radius:9px }
+label { display:block; font-size:.85rem; color:var(--muted); margin:12px 0 6px }
+input, textarea, select { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit; font-size:.95rem }
+select option { background:#171b20; color:var(--fg) }
+input:focus, textarea:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px }
+button { padding:11px 16px; border:0; border-radius:12px; background:var(--accent); color:#1a0d05; font-family:inherit; font-weight:600; font-size:.92rem; cursor:pointer }
+button.full { width:100%; margin-top:16px; padding:13px }
+button.ghost { background:var(--glass2); color:var(--fg); border:1px solid var(--line) }
+button.sm { padding:6px 12px; font-size:.8rem; border-radius:10px }
+button.nob { background:rgba(255,138,122,.16); color:var(--err); border:1px solid rgba(255,138,122,.35) }
+button.okb { background:var(--ok); color:#06210f }
+button:disabled { opacity:.5; cursor:default }
+.card { background:var(--glass); border:1px solid var(--line); border-radius:20px; padding:20px 18px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+.login { max-width:380px; margin:8vh auto 0 }
+.login .brand { text-align:center; margin-bottom:8px }
+.login .brand img { width:56px; height:56px; border-radius:14px }
+.login .brand h1 { margin:8px 0 2px; font-size:1.3rem }
+.msg { min-height:1.2em; margin-top:12px; font-size:.85rem; color:var(--err) }
+.msg.ok { color:var(--ok) }
+.muted { color:var(--muted); font-size:.85rem; line-height:1.7 }
+.link { background:none; color:var(--muted); font-weight:400; text-decoration:underline; padding:8px; display:block; margin:8px auto 0 }
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px }
+.tile { background:var(--glass); border:1px solid var(--line); border-radius:18px; padding:18px 14px; text-align:right; color:var(--fg); min-height:104px; display:flex; flex-direction:column; justify-content:space-between; font-weight:400 }
+.tile b { font-size:1.05rem }
+.tile small { color:var(--muted); font-size:.78rem }
+.tile svg { width:30px; height:30px; color:var(--accent) }
+.tile.off { opacity:.4; cursor:default }
+.tile.off svg { color:var(--muted) }
+.panel { background:var(--glass); border:1px solid var(--line); border-radius:18px; padding:14px; margin-bottom:12px }
+.item { padding:11px 0; border-top:1px solid var(--line) }
+.item:first-child { border-top:0 }
+.row { display:flex; align-items:center; gap:8px }
+.row .grow { flex:1; min-width:0 }
+.item b { font-size:.95rem }
+.item .ss { color:var(--muted); font-size:.8rem; margin-top:3px; line-height:1.6; word-break:break-word }
+.chip { display:inline-block; font-size:.72rem; padding:2px 9px; border-radius:99px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted); white-space:nowrap }
+.chip.low { background:rgba(255,138,122,.14); color:var(--err); border-color:rgba(255,138,122,.35) }
+.chip.ok { background:rgba(95,211,154,.14); color:var(--ok); border-color:rgba(95,211,154,.35) }
+.chip.warn { background:rgba(255,195,90,.14); color:var(--warn); border-color:rgba(255,195,90,.35) }
+.tabs { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none }
+.tabs::-webkit-scrollbar { display:none }
+.tabs button { background:var(--glass); color:var(--muted); border:1px solid var(--line); white-space:nowrap; font-weight:400; padding:8px 14px }
+.tabs button.on { background:rgba(255,106,43,.16); color:var(--accent); border-color:var(--accent); font-weight:600 }
+h3.sec { margin:16px 0 8px; font-size:.95rem; display:flex; align-items:center; gap:8px }
+.qty { font-variant-numeric:tabular-nums; font-weight:600; direction:ltr; unicode-bidi:isolate }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.perm-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 10px; margin-top:8px }
+.perm-grid label { margin:0 0 4px; font-size:.75rem }
+.perm-grid select { padding:7px 8px; font-size:.82rem }
+.back { background:none; color:var(--muted); padding:6px 8px; font-weight:400 }
+.empty { text-align:center; color:var(--muted); padding:22px 8px; font-size:.9rem }
+.sheetbg { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:20; display:flex; align-items:flex-end; justify-content:center }
+.sheet { width:100%; max-width:560px; max-height:88vh; overflow:auto; background:#171b20; border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) }
+.sheet h4 { margin:0 0 4px; font-size:1.05rem }
+.toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:50; background:#262c33; border:1px solid var(--line); padding:10px 16px; border-radius:12px; font-size:.88rem; max-width:90vw }
+.hidden { display:none }
+.cnt-in { width:92px; text-align:center; direction:ltr; padding:7px 6px }
+.switch { display:flex; align-items:center; gap:8px }
+.late { color:var(--err) }
+</style>
+<style>
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px }
+.stat { background:var(--glass); border:1px solid var(--line); border-radius:16px; padding:14px 12px }
+.stat b { display:block; font-size:1.35rem; font-variant-numeric:tabular-nums }
+.stat span { color:var(--muted); font-size:.78rem }
+.stat.bad b { color:var(--err) } .stat.good b { color:var(--ok) }
+.newbox { background:rgba(127,182,255,.1); border:1px dashed rgba(127,182,255,.45); color:var(--info); border-radius:14px; padding:12px 14px; font-size:.86rem; line-height:1.7; margin-bottom:12px }
+.warnbox { background:rgba(255,195,90,.1); border:1px solid rgba(255,195,90,.35); color:var(--warn); border-radius:12px; padding:8px 12px; font-size:.8rem; margin-bottom:10px; line-height:1.6 }
+.pipe { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none }
+.pipe button { background:var(--glass); color:var(--muted); border:1px solid var(--line); font-weight:400; padding:7px 12px; white-space:nowrap; font-size:.8rem }
+.pipe button.on { background:rgba(255,106,43,.16); color:var(--accent); border-color:var(--accent) }
+.pipe button b { color:var(--fg); margin-inline-start:4px }
+.badge { display:inline-block; min-width:20px; text-align:center; background:var(--accent); color:#1a0d05; border-radius:99px; font-size:.75rem; font-weight:600; padding:1px 7px }
+.inbox { display:flex; align-items:center; gap:12px; width:100%; margin:6px 0 10px; text-align:right; background:rgba(255,106,43,.1); border:1px solid rgba(255,106,43,.4); color:var(--fg); border-radius:18px; padding:14px 16px; font-weight:400 }
+.inbox b { font-size:1rem; display:block }
+.inbox small { color:var(--muted) }
+.steps { display:grid; grid-template-columns:1fr 1fr; gap:6px 10px; margin-top:8px }
+.steps label { margin:0 0 3px; font-size:.74rem }
+.steps select { padding:6px 8px; font-size:.8rem }
+.qrow { border-top:1px solid var(--line); padding:10px 0 }
+.qrow:first-child { border-top:0 }
+.grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px }
+.ltr { direction:ltr; unicode-bidi:isolate }
+a.lnk { color:var(--info) }
+</style>
+</head>
+<body>
+<div id="banner" class="banner hidden">نسخة تجريبية — بيانات وهمية</div>
+<div class="wrap" id="app"></div>
+<div id="sheetHost"></div>
+<div class="toast hidden" id="toast"></div>
+
+<script>
+'use strict';
+/* ============================ «نظام الشركة — AIX» — one-file app ============================
+   Real host (aixegypt.com / www): reads/writes the EXISTING AIX tables and RPCs (AIX's own Supabase project),
+   with the same call shapes the AIX pages (crm.html, crm-team.js, inventory.html, installs.html) already use.
+   No migration, no new server function. Anything not mapped: TODO + «مش موجود» in the UI.
+   Any other host: DEMO with in-memory fake AIX data, no network. All data goes through ONE adapter object `A`. */
+const SUPABASE_URL = "https://xenrnhgxwhujyvtpwmsk.supabase.co";   // AIX's own project (not the Tuya/Jaguar one)
+const SUPABASE_KEY = "sb_publishable_PWiz7ybQJDngH5Ox3vkx6g_GuCQnQ1R";
+const REAL_HOSTS = ['aixegypt.com', 'www.aixegypt.com'];
+const DEMO = !REAL_HOSTS.includes(location.hostname.toLowerCase());
+const AIX_HOME_URL = 'https://aix-home-2026-11-27.jaguar-smart.pages.dev/aix/';
+const $ = (id) => document.getElementById(id);
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function num(n) { n = Number(n); return isFinite(n) ? String(Math.round(n * 1000) / 1000) : '0'; }
+function money(n) { return Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+function fdate(s) { try { const d = new Date(s); return isNaN(d) ? '' : d.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return ''; } }
+function fday(s) { try { if (!s) return '—'; const d = new Date(String(s).length === 10 ? s + 'T00:00:00' : s); return isNaN(d) ? '—' : d.toLocaleDateString('en-GB'); } catch (e) { return '—'; } }
+const today = () => new Date().toLocaleDateString('en-CA');
+const short = (e) => String(e || '—').split('@')[0];
+
+/* Modules in the required order. key = module key; perm = AIX has_role key it maps to in real mode (null = no such thing in AIX). */
+const MODULES = [
+  { k: 'users', n: 'المستخدمين والصلاحيات', perm: 'admin' },
+  { k: 'inventory', n: 'المخزون', perm: 'inventory' },
+  { k: 'sales', n: 'المبيعات وعروض الأسعار', perm: 'crm' },
+  { k: 'purchasing', n: 'المشتريات', perm: null, isNew: true },
+  { k: 'accounts', n: 'الحسابات', perm: 'accounts', isNew: true },
+  { k: 'projects', n: 'المشاريع والتركيبات والفنيين', perm: 'installs' },
+  { k: 'hr', n: 'الموظفين', perm: null, isNew: true },
+  { k: 'reports', n: 'التقارير', perm: 'reports' }
+];
+const MOD = Object.fromEntries(MODULES.map((m) => [m.k, m]));
+const PERM_ORDER = ['admin', 'crm', 'installs', 'inventory', 'errands', 'accounts', 'reports'];   // same order as crm-team.js
+const LEVELS = [['', '—'], ['view', 'يشوف'], ['edit', 'يعدّل'], ['approve', 'يوافق']];
+const RANK = { view: 1, edit: 2, approve: 3 };
+const STATUSES = [['new', 'جديد'], ['contacted', 'اتكلمنا'], ['visit_scheduled', 'معاينة متحددة'], ['site_visit', 'زيارة موقع'], ['quotation_sent', 'عرض سعر اتبعت'], ['negotiation', 'تفاوض'], ['won', 'اتقفل ✓'], ['lost', 'خسرناه']];
+const SOURCES = [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['whatsapp', 'WhatsApp'], ['referral', 'ترشيح'], ['field_visit', 'زيارة ميدانية'], ['website', 'الموقع'], ['dealer', 'ديلر'], ['other', 'أخرى']];
+const Q_STATUS = { draft: 'مسودة', sent: 'اتبعت', accepted: 'اتقبل ✓', rejected: 'اترفض' };
+const DISC_ST = { pending: 'الخصم مستني موافقة', approved: 'الخصم اتوافق عليه', rejected: 'الخصم اترفض' };
+const INST_ST = [['pending', 'مستني'], ['in_progress', 'شغالين فيها'], ['done', 'خلصت ✓'], ['cancelled', 'اتلغت']];
+const STEP_ST = [['pending', 'مستني'], ['in_progress', 'شغال'], ['done', 'خلص'], ['blocked', 'واقف']];
+const JOB_STEPS = [['goods', 'goods_status', 'البضاعة'], ['techs', 'techs_status', 'الفنيين'], ['install', 'install_status', 'التركيب'], ['collect', 'collect_status', 'التحصيل']];
+const TASK_TYPES = { first_call: 'أول مكالمة', follow_up: 'متابعة', schedule_visit: 'تحديد معاينة', do_visit: 'معاينة', prepare_quote: 'تجهيز عرض سعر', quote_follow_up: 'متابعة عرض سعر', collect_payment: 'تحصيل', schedule_install: 'تحديد تركيب' };
+const CATEGORIES = ['Switches & Sockets', 'Curtains', 'Sensors', 'Screens & Hubs', 'Locks', 'Intercom', 'Cameras', 'Network', 'Audio', 'Remotes', 'KNX', 'Gate', 'Electrical', 'Voice Assistants', 'Installation', 'Other'];
+const lab = (list, v) => (list.find((s) => s[0] === v) || [, v || '—'])[1];
+const MISSING = 'مش موجود';
+
+const ICON_P = {
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.9.7 3.2 2.4 3.5 5.2"/>',
+  inventory: '<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  sales: '<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>',
+  purchasing: '<path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
+  accounts: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h3"/>',
+  projects: '<path d="M14.7 6.3a4 4 0 00-5 5L3 18l3 3 6.7-6.7a4 4 0 005-5l-2.4 2.4-2.3-.7-.7-2.3z"/>',
+  hr: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.5-5.5 7-5.5s6.3 1.9 7 5.5"/>',
+  reports: '<path d="M5 3h14v18H5z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  inbox: '<path d="M4 13l2-8h12l2 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/>'
+};
+const icon = (k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + (ICON_P[k] || ICON_P.reports) + '</svg>';
+
+/* ====================================== DEMO adapter (fake AIX data) ====================================== */
+const Demo = (() => {
+  let seq = 0; const id = (p) => (p || 'd') + (++seq);
+  const ME = 'demo@aixegypt.com';
+  const nowI = () => new Date().toISOString();
+  const dayOff = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('en-CA'); };
+  const gone = (m) => { throw new Error(m); };
+  const clone = (x) => JSON.parse(JSON.stringify(x === undefined ? null : x));
+  const db = {
+    catalog: [['admin', 'مدير'], ['crm', 'المبيعات (CRM)'], ['installs', 'التركيبات'], ['inventory', 'المخزن'], ['errands', 'المشاوير'], ['accounts', 'الحسابات'], ['reports', 'التقارير']].map((r) => ({ key: r[0], label_ar: r[1], description_ar: '' })),
+    team: [
+      { email: ME, name: 'مدير العرض', levels: { users: 'approve', inventory: 'approve', sales: 'approve', purchasing: 'approve', accounts: 'approve', projects: 'approve', hr: 'approve', reports: 'approve' }, admin: true },
+      { email: 'ayman@aixegypt.com', name: 'أيمن', levels: { sales: 'approve', reports: 'view', accounts: 'view' }, admin: true },
+      { email: 'sara@aixegypt.com', name: 'سارة (مبيعات)', levels: { sales: 'edit', inventory: 'view' } },
+      { email: 'khaled@aixegypt.com', name: 'خالد (مخزن)', levels: { inventory: 'edit', projects: 'view' } },
+      { email: 'tech1@aixegypt.com', name: 'محمود (فني)', levels: { projects: 'edit' } }
+    ],
+    requests: [{ id: 'r1', email: 'newhire@example.com', full_name: 'هاني الجديد', created_at: nowI(), status: 'pending' }],
+    items: [], moves: [], leads: [], products: [], quotes: [], qitems: {}, follow: [], tasks: [], installs: [], parts: [], jobs: [], decisions: [],
+    purchases: [
+      { id: 'po1', no: 'PO-0007', supplier: 'مورد الصين — شاشات', total: 84000, status: 'pending', date: dayOff(-1) },
+      { id: 'po2', no: 'PO-0006', supplier: 'مورد كابلات محلي', total: 12500, status: 'approved', date: dayOff(-6) },
+      { id: 'po3', no: 'PO-0005', supplier: 'مورد سويتشات', total: 56000, status: 'received', date: dayOff(-15) }
+    ],
+    invoices: [
+      { id: 'iv1', no: 'INV-1042', client: 'فيلا التجمع — م. كريم', total: 148000, paid: 100000, due: dayOff(5) },
+      { id: 'iv2', no: 'INV-1041', client: 'شقة الشيخ زايد', total: 62000, paid: 62000, due: dayOff(-10) },
+      { id: 'iv3', no: 'INV-1040', client: 'مكتب المعادي', total: 39000, paid: 0, due: dayOff(-3) }
+    ],
+    employees: [
+      { id: 'e1', name: 'سارة', job: 'مبيعات', start: '2025-03-01', present: true },
+      { id: 'e2', name: 'خالد', job: 'أمين مخزن', start: '2024-09-15', present: true },
+      { id: 'e3', name: 'محمود', job: 'فني تركيب', start: '2025-01-10', present: false },
+      { id: 'e4', name: 'أيمن', job: 'مدير', start: '2023-05-01', present: true }
+    ]
+  };
+  const L = (name, cat, unit, qty, min, loc) => db.items.push({ id: id('it'), name, category: cat, unit, quantity: qty, min_qty: min, location: loc, notes: null, updated_at: nowI(), updated_by: ME });
+  L('سويتش لمس ٣ زر', 'Switches & Sockets', 'قطعة', 24, 10, 'رف A'); L('هاب زيجبي', 'Screens & Hubs', 'قطعة', 4, 5, 'رف B'); L('شاشة تحكم ٧ بوصة', 'Screens & Hubs', 'قطعة', 6, 3, 'رف B');
+  L('حساس حركة', 'Sensors', 'قطعة', 2, 8, 'رف C'); L('كابل شبكة', 'Network', 'متر', 350, 100, 'مخزن خلفي'); L('كاميرا واي فاي', 'Cameras', 'قطعة', 0, 4, 'رف D');
+  const P = (code, name, cat, brand, eu, dl) => db.products.push({ id: id('pr'), code, name, description: null, category: cat, brand, end_user_price: eu, dealer_price: dl, active: true, image_url: null });
+  P('SW3', 'سويتش لمس ٣ زر', 'Switches & Sockets', 'AIX', 2400, 1900); P('HUB', 'هاب زيجبي مركزي', 'Screens & Hubs', 'AIX', 3800, 3100); P('SCR7', 'شاشة تحكم ٧ بوصة', 'Screens & Hubs', 'AIX', 9500, 8200);
+  P('MOT', 'حساس حركة', 'Sensors', 'AIX', 950, 700); P('CAM', 'كاميرا واي فاي', 'Cameras', 'AIX', 1800, 1400); P('INS', 'تركيب وبرمجة (لكل نقطة)', 'Installation', 'AIX', 350, 350);
+  const LD = (name, phone, area, source, status, budget, follow, who) => { const l = { id: id('ld'), name, phone, area, source, client_type: 'end_user', status, budget, assigned_to: who || 'sara@aixegypt.com', next_follow_up: follow, notes: null, created_by: 'sara@aixegypt.com', created_at: nowI() }; db.leads.push(l); return l; };
+  const l1 = LD('م. كريم — فيلا التجمع', '01000000001', 'التجمع', 'instagram', 'negotiation', 250000, dayOff(0)), l2 = LD('شقة الشيخ زايد', '01000000002', 'الشيخ زايد', 'referral', 'quotation_sent', 90000, dayOff(2)), l3 = LD('مكتب المعادي', '01000000003', 'المعادي', 'website', 'site_visit', 60000, dayOff(-1));
+  LD('دكتورة منى', '01000000004', 'الرحاب', 'facebook', 'new', null, dayOff(1)); LD('فيلا الشروق', '01000000005', 'الشروق', 'instagram', 'won', 180000, null); LD('شقة مدينة نصر', '01000000006', 'مدينة نصر', 'whatsapp', 'lost', 40000, null);
+  const Q = (no, lead, client, status, disc, items, ds, req, extra) => {
+    const sub = items.reduce((s, i) => s + i.qty * i.unit_price * (1 - (i.discount_pct || 0) / 100), 0), inst = Math.round(sub * 0.1), da = Math.round((sub + inst) * disc / 100);
+    const q = Object.assign({ id: id('q'), quote_number: no, lead_id: lead.id, client_name: client, client_type: 'end_user', quote_date: dayOff(-2), valid_until: dayOff(12), status, subtotal: sub, install_pct: 10, install_amount: inst, discount_pct: disc, discount_amount: da, total: sub + inst - da, discount_status: ds || null, discount_requested_by: req || null, discount_note: null, delete_requested_at: null, delete_requested_by: null, notes: null, created_by: 'sara@aixegypt.com' }, extra || {});
+    db.quotes.push(q); db.qitems[q.id] = items; return q;
+  };
+  Q('Q-2026-0031', l1, l1.name, 'draft', 25, [{ product_id: null, name: 'سويتش لمس ٣ زر', qty: 20, unit_price: 2400, discount_pct: 0, room: '' }, { product_id: null, name: 'شاشة تحكم ٧ بوصة', qty: 4, unit_price: 9500, discount_pct: 0, room: '' }], 'pending', 'sara@aixegypt.com');
+  Q('Q-2026-0030', l2, l2.name, 'sent', 5, [{ product_id: null, name: 'هاب زيجبي مركزي', qty: 1, unit_price: 3800, discount_pct: 0, room: '' }, { product_id: null, name: 'سويتش لمس ٣ زر', qty: 12, unit_price: 2400, discount_pct: 0, room: '' }], null, null);
+  Q('Q-2026-0029', l3, l3.name, 'draft', 0, [{ product_id: null, name: 'كاميرا واي فاي', qty: 6, unit_price: 1800, discount_pct: 0, room: '' }], null, null, { delete_requested_at: nowI(), delete_requested_by: 'sara@aixegypt.com' });
+  db.follow.push({ id: id('f'), lead_id: l1.id, note: 'اتصلت — عايز خصم أكبر', done_by: 'sara@aixegypt.com', created_at: nowI() });
+  db.tasks.push({ id: id('t'), lead_id: l3.id, type: 'schedule_visit', title: 'تحديد معاينة مكتب المعادي', instructions: 'اتصل بالعميل وحدد ميعاد', due_at: dayOff(-1) + 'T10:00:00', status: 'open', assigned_to: 'sara@aixegypt.com' }, { id: id('t'), lead_id: l1.id, type: 'quote_follow_up', title: 'متابعة عرض فيلا التجمع', instructions: null, due_at: dayOff(0) + 'T15:00:00', status: 'open', assigned_to: 'sara@aixegypt.com' }, { id: id('t'), lead_id: null, type: 'collect_payment', title: 'تحصيل دفعة شقة الشيخ زايد', instructions: null, due_at: dayOff(3) + 'T12:00:00', status: 'open', assigned_to: 'ayman@aixegypt.com' });
+  const IN = (c, ph, area, tech, d, st) => { const x = { id: id('in'), customer_name: c, phone: ph, area, address: null, technician: tech, scheduled_date: d, scheduled_time: '10:00', status: st, notes: null }; db.installs.push(x); return x; };
+  const i1 = IN('فيلا الشروق', '01000000005', 'الشروق', 'محمود', dayOff(0), 'in_progress'), i2 = IN('شقة التجمع الخامس', '01000000007', 'التجمع', 'عمرو', dayOff(2), 'pending'); IN('مكتب مدينة نصر', '01000000008', 'مدينة نصر', 'محمود', dayOff(-5), 'done');
+  db.parts.push({ id: id('pl'), installation_id: i1.id, item_id: db.items[0].id, qty: 8, created_at: nowI() }, { id: id('pl'), installation_id: i1.id, item_id: db.items[4].id, qty: 60, created_at: nowI() });
+  db.jobs.push({ id: id('jb'), customer_name: 'فيلا الشروق', area_text: 'الشروق', installation_id: i1.id, goods_status: 'done', techs_status: 'done', install_status: 'in_progress', collect_status: 'pending', amount_total: 180000, amount_paid: 90000, notes: null, created_at: nowI() },
+    { id: id('jb'), customer_name: 'شقة التجمع الخامس', area_text: 'التجمع', installation_id: i2.id, goods_status: 'in_progress', techs_status: 'pending', install_status: 'pending', collect_status: 'pending', amount_total: 75000, amount_paid: 0, notes: null, created_at: nowI() });
+  db.decisions.push({ id: 'dc1', kind: 'purchase', title: 'نشتري دفعة شاشات ٧ بوصة قبل ارتفاع السعر؟', details: { الكمية: 20, 'السعر المتوقع': '٩٥٠٠ جنيه للقطعة' }, options: ['نعم|yes', 'لأ|no'], created_at: nowI() });
+  const mv = (it, kind, amount, b, a, note) => db.moves.unshift({ id: id('mv'), item_id: it.id, kind, amount, qty_before: b, qty_after: a, note, created_at: nowI() });
+  const fx = {
+    me() { const u = db.team[0]; return { email: ME, is_admin: true, levels: clone(u.levels) }; },
+    team() { return clone(db.team); }, catalog() { return clone(db.catalog); },
+    setLevel(email, mod, level) { const u = db.team.find((x) => x.email === email) || (db.team.push({ email, name: null, levels: {} }), db.team[db.team.length - 1]); if (level) u.levels[mod] = level; else delete u.levels[mod]; },
+    requests() { return clone(db.requests.filter((r) => r.status === 'pending')); },
+    decideRequest(rid, ok) { const r = db.requests.find((x) => x.id === rid); if (!r) gone('الطلب مش موجود'); r.status = ok ? 'approved' : 'revoked'; if (ok) db.team.push({ email: r.email, name: r.full_name, levels: { sales: 'view' } }); },
+    items() { return clone(db.items); },
+    saveItem(row, iid) { if (iid) Object.assign(db.items.find((x) => x.id === iid), row); else db.items.push(Object.assign({ id: id('it'), updated_at: nowI() }, row)); },
+    adjust(iid, kind, amount, note) { const it = db.items.find((x) => x.id === iid); amount = Number(amount); const b = it.quantity; let a; if (kind === 'in') a = b + amount; else if (kind === 'out') { a = b - amount; if (a < 0) gone('الكمية اللي خارجة أكبر من الموجود'); } else a = amount; it.quantity = a; mv(it, kind, amount, b, a, note || null); },
+    moves(iid) { return clone(db.moves.filter((m) => !iid || m.item_id === iid).slice(0, 50)); },
+    installLines() { return clone(db.parts.map((p) => Object.assign({}, p, { customer_name: (db.installs.find((x) => x.id === p.installation_id) || {}).customer_name }))); },
+    leads() { return clone(db.leads); },
+    saveLead(row, lid) { if (lid) Object.assign(db.leads.find((x) => x.id === lid), row); else db.leads.unshift(Object.assign({ id: id('ld'), created_by: ME, created_at: nowI() }, row)); },
+    followUps(lid) { return clone(db.follow.filter((f) => f.lead_id === lid)); },
+    addFollowUp(lid, note) { db.follow.unshift({ id: id('f'), lead_id: lid, note, done_by: ME, created_at: nowI() }); },
+    products() { return clone(db.products); },
+    saveProduct(row, pid) { if (pid) Object.assign(db.products.find((x) => x.id === pid), row); else db.products.push(Object.assign({ id: id('pr'), image_url: null }, row)); },
+    quotes() { return clone(db.quotes); }, quoteItems(qid) { return clone(db.qitems[qid] || []); },
+    saveQuote(row, items, qid) { let q; if (qid) { q = db.quotes.find((x) => x.id === qid); Object.assign(q, row); } else { q = Object.assign({ id: id('q'), quote_number: 'Q-2026-' + String(32 + db.quotes.length - 3).padStart(4, '0'), created_by: ME, discount_status: null, delete_requested_at: null }, row); db.quotes.unshift(q); } db.qitems[q.id] = clone(items); return { id: q.id, quote_number: q.quote_number }; },
+    requestDisc(qid) { const q = db.quotes.find((x) => x.id === qid); q.discount_status = 'pending'; q.discount_requested_by = ME; },
+    reviewDisc(qid, ok, note) { const q = db.quotes.find((x) => x.id === qid); q.discount_status = ok ? 'approved' : 'rejected'; q.discount_note = note || null; },
+    requestDel(qid) { const q = db.quotes.find((x) => x.id === qid); q.delete_requested_at = nowI(); q.delete_requested_by = ME; },
+    deleteQuote(qid) { db.quotes = db.quotes.filter((x) => x.id !== qid); },
+    tasks() { return clone(db.tasks.filter((t) => t.status === 'open')); },
+    installs() { return clone(db.installs); },
+    saveInstall(row, iid) { if (iid) Object.assign(db.installs.find((x) => x.id === iid), row); else db.installs.unshift(Object.assign({ id: id('in') }, row)); },
+    parts(iid) { return clone(db.parts.filter((p) => p.installation_id === iid)); },
+    take(iid, item, qty) { const it = db.items.find((x) => x.id === item); qty = Number(qty); if (!it || !(qty > 0)) gone('بيانات غلط'); if (it.quantity < qty) gone('المخزن مفيهوش العدد ده'); fx.adjust(item, 'out', qty, 'تركيبة: ' + (db.installs.find((x) => x.id === iid) || {}).customer_name); db.parts.push({ id: id('pl'), installation_id: iid, item_id: item, qty, created_at: nowI() }); },
+    ret(line) { const p = db.parts.find((x) => x.id === line); if (!p) return; fx.adjust(p.item_id, 'in', p.qty, 'رجوع من تركيبة'); db.parts = db.parts.filter((x) => x.id !== line); },
+    jobs() { return clone(db.jobs); },
+    setStep(job, step, status, paid) { const j = db.jobs.find((x) => x.id === job); j[JOB_STEPS.find((s) => s[0] === step)[1]] = status; if (paid != null) j.amount_paid = paid; },
+    decisions() { return clone(db.decisions.filter((d) => !d.done)); },
+    decide(did) { db.decisions.find((d) => d.id === did).done = true; },
+    purchases() { return clone(db.purchases); }, decidePO(pid, ok) { db.purchases.find((p) => p.id === pid).status = ok ? 'approved' : 'rejected'; },
+    invoices() { return clone(db.invoices); }, employees() { return clone(db.employees); }
+  };
+  return { call(name, ...args) { return Promise.resolve().then(() => fx[name](...args)); }, ME };
+})();
+
+/* ====================================== REAL adapter (existing AIX tables / RPCs) ====================================== */
+let sb = null;
+if (!DEMO) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { sb = null; } }
+const Real = (() => {
+  const need = () => { if (!sb) throw new Error('تعذّر تحميل مكتبة الاتصال — اتأكد من الإنترنت'); return sb; };
+  const ok = (r) => { if (r.error) throw new Error(r.error.message || 'خطأ'); return r.data; };
+  const miss = (what) => { throw new Error(MISSING + ' — ' + what); };
+  let team = [];   // cached members (with their raw has_role keys) so setLevel can rebuild the key list
+  const keysToLevels = (keys) => {
+    const lv = {}; const ks = keys || [];
+    if (ks.includes('admin')) { MODULES.forEach((m) => { lv[m.k] = 'approve'; }); return lv; }
+    MODULES.forEach((m) => { if (m.perm && ks.includes(m.perm)) lv[m.k] = 'edit'; });   // AIX stores on/off only, not view/edit/approve
+    return lv;
+  };
+  return {
+    async me() {
+      const keys = ['admin', 'crm', 'inventory', 'installs', 'errands', 'accounts', 'reports']; let res;
+      for (let t = 0; t < 3; t++) { res = await Promise.all(keys.map((k) => need().rpc('has_role', { allowed: [k] }))); if (!res.some((r) => r.error)) break; await new Promise((r) => setTimeout(r, 1200)); }
+      if (res.some((r) => r.error)) throw new Error('مفيش اتصال بالنت دلوقتي — اقفل الصفحة وافتحها تاني');
+      const have = keys.filter((k, i) => res[i].data === true);
+      const { data: { session } } = await need().auth.getSession();
+      return { email: ((session && session.user && session.user.email) || '').toLowerCase(), is_admin: have.includes('admin'), levels: keysToLevels(have), keys: have };
+    },
+    async team() {
+      const r = await need().from('team_members').select('email,name,role,permissions,present_today,company');
+      if (!r.error && r.data) { team = r.data.map((m) => ({ email: m.email, name: m.name, keys: m.permissions || [], levels: keysToLevels(m.permissions || []), admin: (m.permissions || []).includes('admin'), present: m.present_today })); team.readable = true; }
+      else {   // same fallback as crm-team.js: every email the system has seen
+        const [t, l] = await Promise.all([need().from('tasks').select('assigned_to,done_by'), need().from('leads').select('created_by,assigned_to')]); const seen = new Set();
+        (t.data || []).forEach((x) => [x.assigned_to, x.done_by].forEach((e) => e && seen.add(e.toLowerCase()))); (l.data || []).forEach((x) => [x.created_by, x.assigned_to].forEach((e) => e && seen.add(e.toLowerCase())));
+        team = [...seen].sort().map((email) => ({ email, name: null, keys: null, levels: {}, admin: false })); team.readable = false;
+      }
+      return team.map((m) => Object.assign({}, m));
+    },
+    async catalog() { const r = await need().from('permission_catalog').select('key,label_ar,description_ar'); return (r.data || []).sort((a, b) => PERM_ORDER.indexOf(a.key) - PERM_ORDER.indexOf(b.key)); },
+    // AIX keeps only which has_role keys a person has (set_member_permissions replaces the whole list). Levels يشوف/يعدّل/يوافق are NOT stored in AIX:
+    // any non-empty level turns the module's key on. TODO: real per-level storage needs a server change (not part of this task).
+    async setLevel(email, mod, level, name) {
+      const m = MOD[mod]; if (!m || !m.perm) miss('مفيش صلاحية بالاسم ده في AIX');
+      const cur = team.find((x) => x.email === email); if (!cur || !cur.keys) miss('قايمة الفريق مش مقروءة (team_members)');
+      let keys = cur.keys.filter((k) => k !== m.perm); if (level) keys.push(m.perm);
+      keys = keys.sort((a, b) => PERM_ORDER.indexOf(a) - PERM_ORDER.indexOf(b));
+      if (!keys.length) miss('لازم صلاحية واحدة على الأقل (زي ما بتعمل شاشة AIX)');
+      ok(await need().rpc('set_member_permissions', { p_email: email.trim().toLowerCase(), p_permissions: keys, p_name: name || cur.name || null }));
+    },
+    async requests() {   // aixd_access_requests exists only if the dashboard migration 111 was run; otherwise «مش موجود»
+      const r = await need().from('aixd_access_requests').select('user_id,email,full_name,created_at,status').eq('status', 'pending').order('created_at');
+      if (r.error) miss('طلبات الانضمام (aixd_access_requests) مش متفعّلة'); return (r.data || []).map((x) => ({ id: x.user_id, email: x.email, full_name: x.full_name, created_at: x.created_at }));
+    },
+    async decideRequest() { miss('الموافقة على طلب انضمام (aixd_grant_access) من لوحة AIX الجديدة، مش مربوطة هنا'); },   // TODO map aixd_grant_access / aixd_deny_request once 111 is live
+    async items() { return ok(await need().from('inventory_items').select('*').order('name')); },
+    async saveItem(row, iid) { row.updated_by = S.me.email; row.updated_at = new Date().toISOString(); ok(iid ? await need().from('inventory_items').update(row).eq('id', iid) : await need().from('inventory_items').insert(row)); },
+    async adjust(iid, kind, amount, note) { const r = await need().rpc('inventory_adjust', { p_item: iid, p_kind: kind === 'adjust' ? 'count' : kind, p_amount: Number(amount), p_note: note || '' }); if (r.error) throw new Error(/not enough/.test(r.error.message) ? 'الكمية اللي خارجة أكبر من الموجود' : r.error.message); },
+    async moves(iid) { let q = need().from('inventory_moves').select('*').order('created_at', { ascending: false }).limit(50); if (iid) q = q.eq('item_id', iid); return ok(await q); },
+    async installLines() {
+      const l = ok(await need().from('installation_items').select('id,qty,created_at,item_id,installation_id').order('created_at', { ascending: false }).limit(200));
+      const ins = ok(await need().from('installations').select('id,customer_name')); const nm = Object.fromEntries(ins.map((x) => [x.id, x.customer_name]));
+      return l.map((x) => Object.assign({}, x, { customer_name: nm[x.installation_id] }));
+    },
+    async leads() { return ok(await need().from('leads').select('*').order('created_at', { ascending: false })); },
+    async saveLead(row, lid) { ok(lid ? await need().from('leads').update(row).eq('id', lid) : await need().from('leads').insert(row)); },
+    async followUps(lid) { return ok(await need().from('follow_ups').select('*').eq('lead_id', lid).order('created_at', { ascending: false })); },
+    async addFollowUp(lid, note) { ok(await need().from('follow_ups').insert({ lead_id: lid, note, done_by: S.me.email })); },
+    async products() { return ok(await need().from('products').select('id,code,name,description,category,brand,end_user_price,dealer_price,active,image_url').order('category').order('name')); },
+    async saveProduct(row, pid) { ok(pid ? await need().from('products').update(row).eq('id', pid) : await need().from('products').insert(row)); },
+    async quotes() { return ok(await need().from('quotations').select('*').order('created_at', { ascending: false })); },
+    async quoteItems(qid) { return ok(await need().from('quotation_items').select('product_id,name,description,room,qty,unit_price,discount_pct,sort_order').eq('quotation_id', qid).order('sort_order')); },
+    async saveQuote(row, items, qid) {   // same two steps as crm.html saveQuote(): row, then replace_quotation_items
+      if (!qid) row.created_by = S.me.email;
+      const res = qid ? await need().from('quotations').update(row).eq('id', qid).select('id,quote_number').single() : await need().from('quotations').insert(row).select('id,quote_number').single();
+      const d = ok(res);
+      ok(await need().rpc('replace_quotation_items', { p_quote: d.id, p_items: items.map((i, n) => ({ product_id: i.product_id || null, name: String(i.name).trim(), description: i.description || null, room: String(i.room || '').trim() || null, qty: Number(i.qty), unit_price: Number(i.unit_price) || 0, discount_pct: Math.min(Math.max(Number(i.discount_pct) || 0, 0), 100), sort_order: n })) }));
+      return d;
+    },
+    async requestDisc(qid) { ok(await need().rpc('request_discount_approval', { p_quote: qid })); },
+    async reviewDisc(qid, approve, note) { ok(await need().rpc('review_discount', { p_quote: qid, p_approve: approve, p_note: note || null })); },
+    async requestDel(qid) { ok(await need().rpc('request_quote_deletion', { p_quote: qid })); },
+    async deleteQuote(qid) { ok(await need().from('quotations').delete().eq('id', qid)); },   // admin only on the server, as in crm.html
+    async tasks() { return ok(await need().from('tasks').select('id,lead_id,type,title,instructions,due_at,status,assigned_to').eq('status', 'open').order('due_at', { ascending: true, nullsFirst: false })); },   // TODO complete_task payload shape not mapped: list only
+    async installs() { return ok(await need().from('installations').select('*').order('scheduled_date', { ascending: true, nullsFirst: false }).order('created_at', { ascending: false })); },
+    async saveInstall(row, iid) { row.updated_at = new Date().toISOString(); if (!iid) row.created_by = S.me.email; ok(iid ? await need().from('installations').update(row).eq('id', iid) : await need().from('installations').insert(row)); },
+    async parts(iid) { return ok(await need().from('installation_items').select('id,qty,created_at,item_id').eq('installation_id', iid).order('created_at')); },
+    async take(iid, item, qty) { const r = await need().rpc('install_take_item', { p_installation: iid, p_item: item, p_qty: Number(qty) }); if (r.error) throw new Error(/not enough/.test(r.error.message) ? 'المخزن مفيهوش العدد ده' : r.error.message); },
+    async ret(line) { ok(await need().rpc('install_return_item', { p_line: line })); },
+    async jobs() { const r = await need().from('aixd_jobs').select('*').order('created_at', { ascending: false }); if (r.error) miss('مراحل التشغيل (aixd_jobs) مش متفعّلة'); return r.data || []; },
+    async setStep(job, step, status, paid) { ok(await need().rpc('aixd_set_job_step', { p_job: job, p_step: step, p_status: status, p_paid: paid == null ? null : paid })); },
+    async decisions() { const r = await need().from('decisions').select('id,kind,title,details,options,created_at').eq('status', 'pending').order('created_at'); return r.error ? [] : (r.data || []); },
+    async decide(did, choice, comment) { ok(await need().rpc('decide', { p_decision: did, p_choice: choice, p_comment: comment || null })); },
+    // purchasing / accounts / hr do not exist in AIX today
+    async purchases() { return null; }, async decidePO() { miss('المشتريات'); }, async invoices() { return null; }, async employees() { return null; }
+  };
+})();
+const A = DEMO ? new Proxy({}, { get: (_, n) => (...a) => Demo.call(n, ...a) }) : Real;
+
+/* --------------------------------------------- state --------------------------------------------- */
+const S = { me: null, route: 'login', busy: false, loginMsg: '', warn: [], sheet: null, tab: {}, d: {},
+  leadFilter: '', instFilter: '', lowOnly: false, q: '', quote: null };
+const lvl = (m) => (S.me && S.me.is_admin) ? 3 : (RANK[((S.me || {}).levels || {})[m]] || 0);
+const can = (m, l) => lvl(m) >= RANK[l];
+const tabOf = (m, d) => S.tab[m] || d;
+const isAdmin = () => !!(S.me && S.me.is_admin);
+const myEmail = () => S.me ? S.me.email : '';
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.remove('hidden'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add('hidden'), 3400); }
+async function act(fn, okMsg) { if (S.busy) return; S.busy = true; try { await fn(); if (okMsg) toast(okMsg); } catch (e) { toast(e.message || 'حصل خطأ'); } S.busy = false; render(); }
+// load that must not break the whole screen: failure becomes a warning line, the rest still shows
+async function T(fn, dflt) { try { const r = await fn(); return r == null ? dflt : r; } catch (e) { S.warn.push(e.message || 'خطأ'); return dflt; } }
+
+/* -------------------------------------------- session -------------------------------------------- */
+async function loadMe() {
+  const me = await A.me();
+  if (!me || !me.email) throw new Error('الحساب ده مش متسجّل');
+  if (!DEMO && !Object.keys(me.levels || {}).length && !me.is_admin) { try { await sb.auth.signOut(); } catch (e) {} throw new Error('الحساب ده لسه مش متفعّل — كلّم عبدالله'); }
+  S.me = me;
+}
+async function boot() {
+  if (DEMO) $('banner').classList.remove('hidden');
+  let signedIn = DEMO;
+  if (!DEMO && sb) { try { const { data } = await sb.auth.getSession(); signedIn = !!(data && data.session); } catch (e) { signedIn = false; } }
+  if (signedIn) { try { await loadMe(); } catch (e) { S.loginMsg = e.message; S.me = null; } }
+  if (!location.hash) location.hash = S.me ? '#home' : '#login';
+  route();
+}
+const ROUTES = ['login', 'home', 'approvals', ...MODULES.map((m) => m.k)];
+async function route() {
+  const r = (location.hash || '#login').slice(1).split('?')[0];
+  S.route = ROUTES.includes(r) ? r : 'home';
+  if (!S.me && S.route !== 'login') { location.hash = '#login'; return; }
+  if (S.me && S.route === 'login') { location.hash = '#home'; return; }
+  if (MOD[S.route] && !can(S.route, 'view')) { location.hash = '#home'; return; }
+  S.sheet = null; S.warn = []; render();
+  if (S.route !== 'login' && S.route !== 'home') act(() => loadRoute(S.route));
+  if (S.route === 'home') act(loadHomeCount);
+}
+window.addEventListener('hashchange', route);
+async function doLogin(email, pass) {
+  if (!email || (!DEMO && !pass)) { S.loginMsg = 'اكتب الإيميل والباسورد'; return render(); }
+  S.loginMsg = ''; S.busy = true; render();
+  try {
+    if (!DEMO) { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw new Error('الإيميل أو الباسورد غلط'); }
+    await loadMe(); S.busy = false; if (location.hash === '#home') route(); else location.hash = '#home';
+  } catch (e) { S.loginMsg = e.message; S.busy = false; if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (x) {} } S.me = null; render(); }
+}
+async function doLogout() { if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (e) {} } S.me = null; S.loginMsg = ''; location.hash = '#login'; route(); }
+
+/* ---------------------------------------------- loaders ---------------------------------------------- */
+const D = S.d;
+async function loadRoute(r) {
+  S.warn = [];
+  if (r === 'approvals') return loadApprovals();
+  if (r === 'users') { const [t, c, q] = await Promise.all([T(() => A.team(), []), T(() => A.catalog(), []), can('users', 'approve') ? T(() => A.requests(), []) : []]); D.team = t; D.catalog = c; D.requests = q; return; }
+  if (r === 'inventory') { const [i, m, l] = await Promise.all([T(() => A.items(), []), T(() => A.moves(null), []), T(() => A.installLines(), [])]); D.items = i; D.moves = m; D.lines = l; return; }
+  if (r === 'sales') { const [l, q, p, t] = await Promise.all([T(() => A.leads(), []), T(() => A.quotes(), []), T(() => A.products(), []), T(() => A.tasks(), [])]); D.leads = l; D.quotes = q; D.products = p; D.tasks = t; return; }
+  if (r === 'projects') { const [i, j, it, t] = await Promise.all([T(() => A.installs(), []), T(() => A.jobs(), []), T(() => A.items(), []), T(() => A.tasks(), [])]); D.installs = i; D.jobs = j; D.items = it; D.tasks = t; return; }
+  if (r === 'purchasing') { D.purchases = await T(() => A.purchases(), null); return; }
+  if (r === 'accounts') { D.invoices = await T(() => A.invoices(), null); return; }
+  if (r === 'hr') { D.employees = await T(() => A.employees(), null); return; }
+  if (r === 'reports') { const [l, q, i, it, ap] = await Promise.all([T(() => A.leads(), []), T(() => A.quotes(), []), T(() => A.installs(), []), T(() => A.items(), []), collectApprovals()]); Object.assign(D, { leads: l, quotes: q, installs: i, items: it, appr: ap }); }
+}
+async function collectApprovals() {   // one list from every module the person may approve in
+  const out = [];
+  if (can('sales', 'approve')) {
+    const q = await T(() => A.quotes(), []);
+    q.filter((x) => x.discount_status === 'pending').forEach((x) => out.push({ kind: 'disc', mod: 'sales', id: x.id, title: x.quote_number + ' · ' + x.client_name, sub: 'طلب موافقة على خصم · ' + short(x.discount_requested_by) + ' · إجمالي ' + money(x.total), q: x }));
+    q.filter((x) => x.delete_requested_at).forEach((x) => out.push({ kind: 'del', mod: 'sales', id: x.id, title: x.quote_number + ' · ' + x.client_name, sub: 'طلب مسح عرض سعر · ' + short(x.delete_requested_by), q: x }));
+  }
+  if (can('users', 'approve')) (await T(() => A.requests(), [])).forEach((x) => out.push({ kind: 'join', mod: 'users', id: x.id, title: x.full_name || x.email, sub: 'طلب انضمام · ' + x.email }));
+  if (can('purchasing', 'approve')) { const p = await T(() => A.purchases(), null); (p || []).filter((x) => x.status === 'pending').forEach((x) => out.push({ kind: 'po', mod: 'purchasing', id: x.id, title: x.no + ' · ' + x.supplier, sub: 'أمر شراء مستني موافقة · ' + money(x.total) + ' ج' })); }
+  if (isAdmin()) (await T(() => A.decisions(), [])).forEach((x) => out.push({ kind: 'dec', mod: 'users', id: x.id, title: x.title, sub: 'قرار مستني الإدارة', opts: x.options || [], det: x.details }));
+  return out;
+}
+async function loadApprovals() { D.appr = await collectApprovals(); }
+async function loadHomeCount() { D.appr = await collectApprovals(); }
+
+/* ---------------------------------------------- views ---------------------------------------------- */
+function header(title, sub, back) {
+  return '<div class="top">' + (back ? '<button class="back" data-act="home" aria-label="رجوع">‹ رجوع</button>' : '<img src="/aix-system/icon.png" alt="">') + '<div class="t"><b>' + esc(title) + '</b><span>' + esc(sub || '') + '</span></div>' + (back ? '' : '<button class="ghost sm" data-act="logout">خروج</button>') + '</div>';
+}
+const warnBox = () => S.warn.length ? '<div class="warnbox">' + S.warn.map(esc).join('<br>') + '</div>' : '';
+const empty = (t) => '<div class="empty">' + esc(t) + '</div>';
+const tabsBar = (mod, list, def) => '<div class="tabs">' + list.map((t) => '<button class="' + (tabOf(mod, def) === t[0] ? 'on' : '') + '" data-act="tab" data-m="' + mod + '" data-t="' + t[0] + '">' + esc(t[1]) + '</button>').join('') + '</div>';
+const pipeBar = (list, cur, key, counts, total) => '<div class="pipe"><button class="' + (cur === '' ? 'on' : '') + '" data-act="filt" data-k="' + key + '" data-v="">الكل<b>' + total + '</b></button>' + list.map((s) => '<button class="' + (cur === s[0] ? 'on' : '') + '" data-act="filt" data-k="' + key + '" data-v="' + esc(s[0]) + '">' + esc(s[1]) + '<b>' + (counts[s[0]] || 0) + '</b></button>').join('') + '</div>';
+const countBy = (arr, f) => arr.reduce((o, x) => { const k = f(x); o[k] = (o[k] || 0) + 1; return o; }, {});
+const isLow = (i) => i.min_qty != null && Number(i.quantity) <= Number(i.min_qty);
+
+function vLogin() {
+  return '<div class="login"><div class="card"><div class="brand"><img src="/aix-system/icon.png" alt=""><h1>نظام الشركة — AIX</h1><div class="muted">سجّل دخولك للمتابعة</div></div>' +
+    '<form data-form="login"><label for="lgE">الإيميل</label><input id="lgE" type="email" autocomplete="username" inputmode="email" dir="ltr" required value="' + (DEMO ? 'demo@aixegypt.com' : '') + '">' +
+    '<label for="lgP">الباسورد</label><input id="lgP" type="password" autocomplete="current-password" dir="ltr"' + (DEMO ? '' : ' required') + '>' +
+    '<button class="full" type="submit"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'جاري الدخول…' : 'دخول') + '</button></form>' +
+    '<button class="link" data-act="forgot">نسيت الباسورد</button><div class="msg' + (S.forgot ? ' ok' : '') + '" role="alert">' + esc(S.forgot ? 'مش موجود — قريب' : S.loginMsg) + '</div>' +
+    (DEMO ? '<div class="muted" style="text-align:center">في النسخة التجريبية أي باسورد يدخل</div>' : '') + '</div></div>';
+}
+function vHome() {
+  const n = (D.appr || []).length;
+  let h = header('نظام الشركة — AIX', S.me.email);
+  if (D.appr) h += '<button class="inbox" data-act="go" data-to="approvals">' + '<span style="color:var(--accent);width:30px;height:30px;display:inline-block">' + icon('inbox') + '</span><span style="flex:1"><b>الموافقات</b><small>' + (n ? n + ' طلب مستنيك' : 'مفيش حاجة مستنياك') + '</small></span>' + (n ? '<span class="badge">' + n + '</span>' : '') + '</button>';
+  h += '<h3 class="sec">الوحدات</h3><div class="tiles">' + MODULES.filter((m) => can(m.k, 'view')).map((m) =>
+    '<button class="tile" data-act="go" data-to="' + m.k + '"><span style="color:var(--accent);width:30px;height:30px;display:block">' + icon(m.k) + '</span><div><b>' + esc(m.n) + '</b>' + (m.isNew ? '<br><small>جديد — لسه مش موجود في AIX</small>' : '') + '</div></button>').join('') + '</div>';
+  return h;
+}
+
+/* users */
+function levelOf(p, m) { return (p.levels || {})[m] || ''; }
+function vUsers() {
+  const T2 = [['team', 'الفريق والصلاحيات'], ['req', 'طلبات الانضمام' + ((D.requests || []).length ? ' (' + D.requests.length + ')' : '')]];
+  let h = header(MOD.users.n, 'AIX', true) + warnBox() + tabsBar('users', T2, 'team');
+  if (tabOf('users', 'team') === 'team') {
+    if (!DEMO) h += '<div class="newbox">AIX بيخزّن صلاحية تشغيل/إيقاف لكل وحدة بس. اختيار «يشوف / يعدّل / يوافق» بيشغّل نفس الصلاحية؛ التفرقة بين المستويات <b>مش موجود</b> في AIX لسه. «يوافق» فعليًا للأدمن بس. المشتريات والموظفين مفيهمش صلاحية في AIX.</div>';
+    const cat = D.catalog || [];
+    if (cat.length) h += '<div class="muted" style="margin-bottom:8px">صلاحيات AIX الحالية: ' + cat.map((c) => '<span class="chip">' + esc(c.label_ar) + '</span>').join(' ') + '</div>';
+    if (!(D.team || []).length) h += empty('لسه مفيش موظفين ظاهرين');
+    (D.team || []).forEach((p, i) => {
+      h += '<div class="panel"><div class="row"><div class="grow"><b>' + esc(p.name || short(p.email)) + '</b><div class="ss ltr" style="word-break:break-all">' + esc(p.email) + '</div></div>' + (p.admin || (p.levels && p.levels.users === 'approve') ? '<span class="chip ok">أدمن</span>' : '') + '</div><div class="perm-grid">';
+      MODULES.forEach((m) => {
+        const cur = levelOf(p, m.k), dis = !DEMO && !m.perm;
+        h += '<div><label>' + esc(m.n) + '</label><select data-chg="perm" data-i="' + i + '" data-m="' + m.k + '"' + (dis || !can('users', 'approve') ? ' disabled' : '') + '>' + (dis ? '<option>مش موجود</option>' : LEVELS.map((l) => '<option value="' + l[0] + '"' + (l[0] === cur ? ' selected' : '') + '>' + l[1] + '</option>').join('')) + '</select></div>';
+      });
+      h += '</div></div>';
+    });
+    if (!can('users', 'approve')) h += '<div class="muted">تعديل الصلاحيات محتاج «يوافق» على المستخدمين</div>';
+  } else {
+    if (DEMO) h += '<div class="newbox">الشكل ده من فكرة لوحة AIX الجديدة (aixd_access_requests). في النسخة الحقيقية الموافقة مش مربوطة لسه.</div>';
+    h += '<div class="panel">' + ((D.requests || []).length ? D.requests.map((r) => '<div class="item"><div class="row"><div class="grow"><b>' + esc(r.full_name || r.email) + '</b><div class="ss ltr">' + esc(r.email) + ' · ' + esc(fdate(r.created_at)) + '</div></div>' + (can('users', 'approve') ? '<button class="sm okb" data-act="reqdec" data-id="' + esc(r.id) + '" data-ok="1">قبول</button><button class="sm nob" data-act="reqdec" data-id="' + esc(r.id) + '" data-ok="0">رفض</button>' : '') + '</div></div>').join('') : empty('مفيش طلبات انضمام')) + '</div>';
+  }
+  return h;
+}
+
+/* inventory */
+function vInventory() {
+  const T2 = [['items', 'الأصناف'], ['move', 'حركة'], ['alerts', 'تنبيهات'], ['inst', 'التركيبات']], items = D.items || [], edit = can('inventory', 'edit'), tab = tabOf('inventory', 'items');
+  const low = items.filter(isLow), byId = Object.fromEntries(items.map((x) => [x.id, x]));
+  let h = header(MOD.inventory.n, 'AIX', true) + warnBox() + tabsBar('inventory', T2, 'items');
+  if (tab === 'items') {
+    const cats = [...new Set(items.map((i) => i.category).filter(Boolean))].sort();
+    h += '<div class="stats"><div class="stat"><b>' + items.length + '</b><span>كل الأصناف</span></div><div class="stat' + (low.length ? ' bad' : '') + '"><b>' + low.length + '</b><span>قربت تخلص</span></div></div>';
+    h += '<div class="row" style="margin-bottom:10px"><input data-chg="q" class="grow" placeholder="بحث" value="' + esc(S.q) + '" aria-label="بحث"><button class="sm ' + (S.lowOnly ? '' : 'ghost') + '" data-act="lowonly">الناقص بس</button>' + (edit ? '<button class="sm" data-act="itemform">+ صنف</button>' : '') + '</div>';
+    const q = S.q.trim().toLowerCase(), list = items.filter((i) => (!S.lowOnly || isLow(i)) && (!q || [i.name, i.category, i.location].some((x) => String(x || '').toLowerCase().includes(q))));
+    h += '<div class="panel">' + (list.length ? list.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b> ' + (isLow(x) ? '<span class="chip low">ناقص</span>' : '') + '<div class="ss">' + esc([x.category, x.location].filter(Boolean).join(' · ') || '—') + ' · الحد الأدنى ' + esc(x.min_qty == null ? '—' : num(x.min_qty)) + '</div></div><div style="text-align:left"><div class="qty">' + esc(num(x.quantity)) + '</div><div class="ss">' + esc(x.unit) + '</div></div>' + (edit ? '<button class="sm ghost" data-act="itemform" data-id="' + esc(x.id) + '">تعديل</button>' : '') + '</div>').join('') : empty('مفيش أصناف')) + '</div>';
+  }
+  if (tab === 'move') {
+    if (!edit) h += empty('ليك صلاحية المشاهدة بس');
+    else if (!items.length) h += empty('أضف صنف الأول');
+    else h += '<div class="panel"><form data-form="move"><label for="mvI" style="margin-top:0">الصنف</label><select id="mvI" name="item">' + items.map((x) => '<option value="' + esc(x.id) + '">' + esc(x.name) + ' (' + esc(num(x.quantity)) + ')</option>').join('') + '</select><label for="mvK">النوع</label><select id="mvK" name="kind"><option value="in">وارد</option><option value="out">صادر</option><option value="count">جرد (العدد الفعلي)</option></select><label for="mvQ">الكمية</label><input id="mvQ" name="amount" type="number" min="0" step="any" inputmode="decimal" required dir="ltr"><label for="mvN">ملاحظة</label><input id="mvN" name="note"><button class="full" type="submit">تسجيل</button></form></div>';
+    h += '<h3 class="sec">آخر الحركات</h3><div class="panel">' + ((D.moves || []).length ? D.moves.slice(0, 30).map((m) => '<div class="item"><div class="row"><b class="grow">' + esc((byId[m.item_id] || {}).name || 'صنف') + '</b><span class="chip">' + esc({ in: 'وارد', out: 'صادر', count: 'جرد', adjust: 'جرد' }[m.kind] || m.kind) + '</span></div><div class="ss"><span class="qty">' + esc(num(m.amount)) + '</span> · ' + esc(num(m.qty_before)) + ' ← ' + esc(num(m.qty_after)) + ' · ' + esc(fdate(m.created_at)) + (m.note ? ' · ' + esc(m.note) : '') + '</div></div>').join('') : empty('مفيش حركات')) + '</div>';
+  }
+  if (tab === 'alerts') h += '<div class="panel">' + (low.length ? low.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b><div class="ss">الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><span class="chip low">' + esc(num(x.quantity)) + ' ' + esc(x.unit) + '</span></div>').join('') : empty('مفيش أصناف ناقصة')) + '</div>';
+  if (tab === 'inst') {
+    h += '<div class="muted" style="margin-bottom:8px">اللي اتاخد من المخزن للتركيبات (الرجوع بيتعمل من شاشة التركيبة في «المشاريع»).</div><div class="panel">' + ((D.lines || []).length ? D.lines.map((l) => '<div class="item row"><div class="grow"><b>' + esc((byId[l.item_id] || {}).name || 'صنف') + '</b><div class="ss">' + esc(l.customer_name || '—') + ' · ' + esc(fdate(l.created_at)) + '</div></div><span class="qty">' + esc(num(l.qty)) + ' ' + esc((byId[l.item_id] || {}).unit || '') + '</span></div>').join('') : empty('لسه ماخرجش حاجة للتركيبات')) + '</div>';
+  }
+  return h;
+}
+
+/* sales */
+const PRICE = (p, type) => type === 'dealer' ? (p.dealer_price != null ? p.dealer_price : p.end_user_price) : p.end_user_price;
+function qCalc(qt) {
+  const sub = (qt.items || []).reduce((s, i) => s + (Number(i.qty) || 0) * (Number(i.unit_price) || 0) * (1 - (Number(i.discount_pct) || 0) / 100), 0), instPct = Number(qt.install_pct) || 0, discPct = Number(qt.discount_pct) || 0;
+  const inst = Math.round(sub * instPct / 100), disc = Math.round((sub + inst) * discPct / 100), gross = (qt.items || []).reduce((s, i) => s + (Number(i.qty) || 0) * (Number(i.unit_price) || 0), 0);
+  const eff = gross <= 0 ? discPct / 100 : 1 - sub * (1 - discPct / 100) / gross;   // same rule as crm.html: approval needed above 20%
+  return { sub, instPct, inst, discPct, disc, total: sub + inst - disc, needs: eff > 0.2001 };
+}
+function vSales() {
+  const T2 = [['leads', 'العملاء'], ['quotes', 'عروض الأسعار'], ['prod', 'المنتجات والأسعار'], ['follow', 'المتابعات والمهام'], ['disc', 'الخصومات']], tab = tabOf('sales', 'leads'), edit = can('sales', 'edit');
+  const leads = D.leads || [], quotes = D.quotes || [];
+  let h = header(MOD.sales.n, 'AIX', true) + warnBox() + tabsBar('sales', T2, 'leads');
+  if (tab === 'leads') {
+    h += pipeBar(STATUSES, S.leadFilter, 'lead', countBy(leads, (l) => l.status), leads.length) + (edit ? '<button class="sm" data-act="leadform" style="margin-bottom:10px">+ عميل</button>' : '');
+    const list = leads.filter((l) => !S.leadFilter || l.status === S.leadFilter);
+    h += '<div class="panel">' + (list.length ? list.map((l) => '<div class="item row"><div class="grow"><b>' + esc(l.name) + '</b> <span class="chip">' + esc(lab(STATUSES, l.status)) + '</span><div class="ss">' + esc([l.area, lab(SOURCES, l.source), l.budget ? money(l.budget) + ' ج' : ''].filter(Boolean).join(' · ')) + (l.next_follow_up ? ' · متابعة ' + esc(fday(l.next_follow_up)) : '') + '</div></div>' + (l.phone ? '<a class="sm ghost lnk ltr" href="tel:' + esc(l.phone) + '" style="padding:6px 10px;border-radius:10px;font-size:.8rem">' + esc(l.phone) + '</a>' : '') + '<button class="sm ghost" data-act="leadopen" data-id="' + esc(l.id) + '">فتح</button></div>').join('') : empty('مفيش عملاء')) + '</div>';
+  }
+  if (tab === 'quotes') {
+    h += (edit ? '<button class="sm" data-act="qnew" style="margin-bottom:10px">+ عرض سعر</button>' : '') + '<div class="panel">' + (quotes.length ? quotes.map((q) => '<div class="item row"><div class="grow"><b class="ltr">' + esc(q.quote_number) + '</b> <span class="chip ' + (q.status === 'accepted' ? 'ok' : '') + '">' + esc(lab(Object.entries(Q_STATUS), q.status)) + '</span>' + (q.discount_status && q.status === 'draft' ? ' <span class="chip warn">' + esc(DISC_ST[q.discount_status] || q.discount_status) + '</span>' : '') + (q.delete_requested_at ? ' <span class="chip low">مطلوب مسحه</span>' : '') + '<div class="ss">' + esc(q.client_name) + ' · ' + esc(fday(q.quote_date)) + '</div></div><b class="qty">' + esc(money(q.total)) + '</b><button class="sm ghost" data-act="qopen" data-id="' + esc(q.id) + '">فتح</button></div>').join('') : empty('مفيش عروض أسعار')) + '</div>';
+  }
+  if (tab === 'prod') {
+    h += (can('sales', 'approve') ? '<button class="sm" data-act="prodform" style="margin-bottom:10px">+ منتج</button>' : '<div class="muted" style="margin-bottom:8px">تعديل المنتجات والأسعار محتاج «يوافق»</div>');
+    const prods = D.products || [], cats = [...new Set(prods.map((p) => p.category))];
+    h += prods.length ? cats.map((c) => '<h3 class="sec">' + esc(c || '—') + '</h3><div class="panel">' + prods.filter((p) => p.category === c).map((p) => '<div class="item row"><div class="grow"><b>' + esc(p.name) + '</b>' + (p.active ? '' : ' <span class="chip warn">موقوف</span>') + '<div class="ss ltr">' + esc([p.code, p.brand].filter(Boolean).join(' · ')) + '</div></div><div style="text-align:left"><div class="qty">' + esc(money(p.end_user_price)) + '</div><div class="ss">ديلر ' + esc(money(p.dealer_price)) + '</div></div>' + (can('sales', 'approve') ? '<button class="sm ghost" data-act="prodform" data-id="' + esc(p.id) + '">تعديل</button>' : '') + '</div>').join('') + '</div>').join('') : empty('مفيش منتجات');
+  }
+  if (tab === 'follow') {
+    const due = leads.filter((l) => l.next_follow_up && l.next_follow_up <= today() && !['won', 'lost'].includes(l.status)), tasks = D.tasks || [];
+    h += '<h3 class="sec">متابعات النهارده والمتأخرة</h3><div class="panel">' + (due.length ? due.map((l) => '<div class="item row"><div class="grow"><b>' + esc(l.name) + '</b><div class="ss">' + esc(fday(l.next_follow_up)) + (l.next_follow_up < today() ? ' · متأخرة' : '') + '</div></div><button class="sm ghost" data-act="leadopen" data-id="' + esc(l.id) + '">فتح</button></div>').join('') : empty('مفيش متابعات مستنية')) + '</div>';
+    h += '<h3 class="sec">المهام المفتوحة</h3><div class="panel">' + (tasks.length ? tasks.map((t) => '<div class="item"><div class="row"><b class="grow">' + esc(t.title) + '</b><span class="chip">' + esc(TASK_TYPES[t.type] || t.type) + '</span></div><div class="ss">' + esc(short(t.assigned_to)) + ' · ' + esc(fdate(t.due_at)) + (t.instructions ? ' · ' + esc(t.instructions) : '') + '</div></div>').join('') + (DEMO ? '' : '<div class="muted" style="padding-top:8px">إنهاء المهمة (complete_task): ' + MISSING + ' هنا، من شاشة AIX.</div>') : empty('مفيش مهام')) + '</div>';
+  }
+  if (tab === 'disc') {
+    const pend = quotes.filter((q) => q.discount_status === 'pending');
+    h += '<div class="newbox">قاعدة AIX: الخصم لحد 20% يطلع من غير موافقة. فوق 20% (على البنود + العرض كله) لازم الأدمن يوافق قبل ما يتبعت للعميل.</div>';
+    h += '<h3 class="sec">طلبات الخصم المستنية</h3><div class="panel">' + (pend.length ? pend.map((q) => '<div class="item"><div class="row"><div class="grow"><b class="ltr">' + esc(q.quote_number) + '</b> · ' + esc(q.client_name) + '<div class="ss">طلبها ' + esc(short(q.discount_requested_by)) + ' · خصم ' + esc(num(q.discount_pct)) + '% · إجمالي ' + esc(money(q.total)) + '</div></div><button class="sm ghost" data-act="qopen" data-id="' + esc(q.id) + '">فتح</button></div></div>').join('') : empty('مفيش طلبات خصم')) + '</div>';
+    const del = quotes.filter((q) => q.delete_requested_at);
+    h += '<h3 class="sec">طلبات مسح عروض</h3><div class="panel">' + (del.length ? del.map((q) => '<div class="item row"><div class="grow"><b class="ltr">' + esc(q.quote_number) + '</b> · ' + esc(q.client_name) + '<div class="ss">طلبها ' + esc(short(q.delete_requested_by)) + '</div></div></div>').join('') + '<div class="muted" style="padding-top:8px">الموافقة على المسح من صندوق «الموافقات».</div>' : empty('مفيش طلبات مسح')) + '</div>';
+  }
+  return h;
+}
+
+/* projects */
+function vProjects() {
+  const T2 = [['inst', 'التركيبات'], ['jobs', 'المراحل'], ['techs', 'الفنيين'], ['tasks', 'المهام']], tab = tabOf('projects', 'inst'), edit = can('projects', 'edit'), installs = D.installs || [];
+  let h = header(MOD.projects.n, 'AIX', true) + warnBox() + tabsBar('projects', T2, 'inst');
+  if (tab === 'inst') {
+    const t = today(), c = countBy(installs, (i) => i.status);
+    h += pipeBar(INST_ST, S.instFilter, 'inst', c, installs.length) + (edit ? '<button class="sm" data-act="instform" style="margin-bottom:10px">+ تركيبة</button>' : '');
+    const list = installs.filter((i) => !S.instFilter || i.status === S.instFilter);
+    h += '<div class="panel">' + (list.length ? list.map((i) => '<div class="item row"><div class="grow"><b>' + esc(i.customer_name) + '</b> <span class="chip ' + (i.status === 'done' ? 'ok' : i.status === 'cancelled' ? '' : 'warn') + '">' + esc(lab(INST_ST, i.status)) + '</span><div class="ss">' + esc([i.area, i.technician ? 'الفني: ' + i.technician : ''].filter(Boolean).join(' · ') || '—') + ' · <span class="' + (i.scheduled_date && i.scheduled_date < t && !['done', 'cancelled'].includes(i.status) ? 'late' : '') + '">' + esc(fday(i.scheduled_date)) + (i.scheduled_time ? ' ' + esc(i.scheduled_time) : '') + '</span></div></div><button class="sm ghost" data-act="instopen" data-id="' + esc(i.id) + '">فتح</button></div>').join('') : empty('مفيش تركيبات')) + '</div>';
+    h += '<div class="newbox">«تسليم للعميل»: بعد ما التركيبة تخلص، العميل بيستلم التطبيق بتاعه من AIX Home. <a class="lnk" href="' + esc(AIX_HOME_URL) + '" target="_blank" rel="noopener">افتح AIX Home ↗</a><br>ربط التسليم نفسه (إرسال دعوة للعميل من هنا): ' + MISSING + ' لسه.</div>';
+  }
+  if (tab === 'jobs') {
+    const jobs = D.jobs || [];
+    h += '<div class="panel">' + (jobs.length ? jobs.map((j, i) => '<div class="item"><div class="row"><b class="grow">' + esc(j.customer_name) + '</b><span class="qty">' + esc(money(j.amount_paid)) + ' / ' + esc(money(j.amount_total)) + '</span></div><div class="steps">' + JOB_STEPS.map((s) => '<div><label>' + esc(s[2]) + '</label><select data-chg="step" data-i="' + i + '" data-s="' + s[0] + '"' + (edit ? '' : ' disabled') + '>' + STEP_ST.map((o) => '<option value="' + o[0] + '"' + (o[0] === j[s[1]] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></div>').join('') + '</div></div>').join('') : empty(DEMO ? 'مفيش مراحل' : 'مفيش مراحل تشغيل')) + '</div>';
+    if (!DEMO) h += '<div class="muted">كل مرحلة بيغيّرها صاحبها بس (السيرفر بيرفض غير كده).</div>';
+  }
+  if (tab === 'techs') {
+    const g = {}; installs.forEach((i) => { const k = i.technician || '(من غير فني)'; (g[k] = g[k] || []).push(i); });
+    const names = Object.keys(g).sort();
+    h += names.length ? names.map((n) => '<h3 class="sec">' + esc(n) + ' <span class="chip">' + g[n].length + '</span></h3><div class="panel">' + g[n].map((i) => '<div class="item row"><div class="grow"><b>' + esc(i.customer_name) + '</b><div class="ss">' + esc(fday(i.scheduled_date)) + ' · ' + esc(lab(INST_ST, i.status)) + '</div></div>' + (edit ? '<button class="sm ghost" data-act="instopen" data-id="' + esc(i.id) + '">تعيين</button>' : '') + '</div>').join('') + '</div>').join('') : empty('مفيش تركيبات متوزعة');
+  }
+  if (tab === 'tasks') { const tasks = D.tasks || []; h += '<div class="panel">' + (tasks.length ? tasks.map((t) => '<div class="item"><div class="row"><b class="grow">' + esc(t.title) + '</b><span class="chip">' + esc(TASK_TYPES[t.type] || t.type) + '</span></div><div class="ss">' + esc(short(t.assigned_to)) + ' · ' + esc(fdate(t.due_at)) + '</div></div>').join('') : empty('مفيش مهام')) + '</div>'; }
+  return h;
+}
+
+/* reports */
+function vReports() {
+  const leads = D.leads || [], q = D.quotes || [], ins = D.installs || [], items = D.items || [], ap = D.appr || [];
+  const open = leads.filter((l) => !['won', 'lost'].includes(l.status)).length, qval = q.filter((x) => ['draft', 'sent'].includes(x.status)).reduce((s, x) => s + Number(x.total || 0), 0), accepted = q.filter((x) => x.status === 'accepted').reduce((s, x) => s + Number(x.total || 0), 0);
+  const jc = countBy(ins, (i) => i.status), low = items.filter(isLow).length;
+  const card = (b, s, c) => '<div class="stat ' + (c || '') + '"><b>' + esc(b) + '</b><span>' + esc(s) + '</span></div>';
+  let h = header(MOD.reports.n, 'AIX', true) + warnBox() + '<div class="stats">' + card(open, 'عملاء مفتوحين') + card(money(qval) + ' ج', 'قيمة عروض (مسودة/مبعوتة)') + card(money(accepted) + ' ج', 'عروض اتقبلت', 'good') + card(low, 'أصناف ناقصة', low ? 'bad' : '') + card(ap.length, 'موافقات مستنية', ap.length ? 'bad' : '') + card(ins.length, 'كل التركيبات') + '</div>';
+  h += '<h3 class="sec">التركيبات حسب الحالة</h3><div class="panel">' + INST_ST.map((s) => '<div class="item row"><b class="grow">' + esc(s[1]) + '</b><span class="qty">' + (jc[s[0]] || 0) + '</span></div>').join('') + '</div>';
+  h += '<h3 class="sec">العملاء حسب المرحلة</h3><div class="panel">' + STATUSES.map((s) => '<div class="item row"><b class="grow">' + esc(s[1]) + '</b><span class="qty">' + leads.filter((l) => l.status === s[0]).length + '</span></div>').join('') + '</div>';
+  return h;
+}
+
+/* new-in-AIX modules: clear notice + a demo-only screen showing the planned shape */
+function newMod(mod, what, rows, rowFn) {
+  let h = header(MOD[mod].n, 'AIX', true) + warnBox() + '<div class="newbox"><b>جديد — لسه مش موجود في AIX</b><br>' + esc(what) + ' مفيش لها جداول ولا وظائف في AIX النهارده، فالشاشة دي مش بتقرا ولا بتكتب حاجة حقيقية.</div>';
+  if (DEMO) h += '<h3 class="sec">شكل مقترح <span class="chip warn">بيانات وهمية</span></h3><div class="panel">' + (rows && rows.length ? rows.map(rowFn).join('') : empty('فاضي')) + '</div>';
+  return h;
+}
+const poChip = (s) => '<span class="chip ' + (s === 'pending' ? 'warn' : s === 'rejected' ? 'low' : 'ok') + '">' + esc({ pending: 'مستني موافقة', approved: 'اتوافق', received: 'استلمنا', rejected: 'اترفض' }[s] || s) + '</span>';
+function vPurchasing() {
+  let h = newMod('purchasing', 'أوامر الشراء من الموردين', D.purchases, (p) => '<div class="item"><div class="row"><div class="grow"><b class="ltr">' + esc(p.no) + '</b> · ' + esc(p.supplier) + '<div class="ss">' + esc(fday(p.date)) + ' · ' + esc(money(p.total)) + ' ج</div></div>' + poChip(p.status) + '</div></div>');
+  return h;
+}
+function vAccounts() {
+  return newMod('accounts', 'الفواتير والتحصيلات', D.invoices, (v) => { const rest = v.total - v.paid; return '<div class="item"><div class="row"><div class="grow"><b class="ltr">' + esc(v.no) + '</b> · ' + esc(v.client) + '<div class="ss">إجمالي ' + esc(money(v.total)) + ' · اتحصّل ' + esc(money(v.paid)) + ' · استحقاق ' + esc(fday(v.due)) + '</div></div><span class="chip ' + (rest <= 0 ? 'ok' : v.due < today() ? 'low' : 'warn') + '">' + (rest <= 0 ? 'اتسدد' : 'باقي ' + esc(money(rest))) + '</span></div></div>'; });
+}
+function vHr() {
+  return newMod('hr', 'بيانات الموظفين والحضور', D.employees, (e) => '<div class="item row"><div class="grow"><b>' + esc(e.name) + '</b><div class="ss">' + esc(e.job) + ' · من ' + esc(fday(e.start)) + '</div></div><span class="chip ' + (e.present ? 'ok' : 'warn') + '">' + (e.present ? 'حاضر' : 'غايب') + '</span></div>');
+}
+
+/* approvals inbox */
+function vApprovals() {
+  const ap = D.appr || [];
+  let h = header('الموافقات', 'كل الوحدات في مكان واحد', true) + warnBox();
+  if (!ap.length) return h + empty('مفيش حاجة مستنياك 👌');
+  const KIND = { disc: 'خصم', del: 'مسح عرض', join: 'انضمام', po: 'أمر شراء', dec: 'قرار' };
+  ap.forEach((a, i) => {
+    h += '<div class="panel"><div class="row"><b class="grow">' + esc(a.title) + '</b><span class="chip warn">' + esc(KIND[a.kind]) + '</span></div><div class="ss">' + esc(MOD[a.mod].n) + ' · ' + esc(a.sub) + '</div>';
+    if (a.kind === 'dec') h += '<textarea data-note="' + i + '" rows="2" placeholder="تعليق (اختياري)" style="margin-top:8px"></textarea><div class="row" style="margin-top:8px;flex-wrap:wrap">' + a.opts.map((o) => '<button class="sm ghost" data-act="appr" data-i="' + i + '" data-o="' + esc(o) + '">' + esc(String(o).split('|')[0]) + '</button>').join('') + '</div>';
+    else if (a.kind === 'del') h += '<div class="row" style="margin-top:8px"><button class="sm nob" data-act="appr" data-i="' + i + '" data-ok="1">موافقة (مسح العرض)</button></div>';   // TODO: no AIX call to REJECT a deletion request is known, so approve only
+    else h += '<div class="row" style="margin-top:8px"><button class="sm okb" data-act="appr" data-i="' + i + '" data-ok="1">موافقة</button><button class="sm nob" data-act="appr" data-i="' + i + '" data-ok="0">رفض</button>' + (a.kind === 'disc' ? '<button class="sm ghost" data-act="qopen" data-id="' + esc(a.id) + '">فتح العرض</button>' : '') + '</div>';
+    h += '</div>';
+  });
+  return h;
+}
+
+/* ---------------------------------------------- sheets ---------------------------------------------- */
+const opts = (list, cur) => list.map((o) => '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>').join('');
+const catOpts = (cur) => CATEGORIES.concat(cur && !CATEGORIES.includes(cur) ? [cur] : []).map((c) => '<option' + (c === cur ? ' selected' : '') + '>' + esc(c) + '</option>').join('');
+function vSheet() {
+  const s = S.sheet; if (!s) return '';
+  let body = '';
+  if (s.kind === 'item') {
+    const x = s.rec || {};
+    body = '<h4>' + (x.id ? 'تعديل صنف' : 'صنف جديد') + '</h4><form data-form="itemsave"><label for="siN">الاسم</label><input id="siN" name="name" required value="' + esc(x.name || '') + '"><div class="grid2"><div><label for="siG">التصنيف</label><input id="siG" name="category" value="' + esc(x.category || '') + '"></div><div><label for="siU">الوحدة</label><input id="siU" name="unit" value="' + esc(x.unit || 'قطعة') + '"></div></div><div class="grid2"><div><label for="siM">الحد الأدنى</label><input id="siM" name="min" type="number" min="0" step="any" dir="ltr" value="' + esc(x.min_qty == null ? '' : x.min_qty) + '"></div><div><label for="siL">المكان</label><input id="siL" name="location" value="' + esc(x.location || '') + '"></div></div>' + (x.id ? '' : '<label for="siQ">الكمية الابتدائية</label><input id="siQ" name="quantity" type="number" min="0" step="any" dir="ltr" value="0">') + '<label for="siO">ملاحظات</label><input id="siO" name="notes" value="' + esc(x.notes || '') + '"><button class="full" type="submit">حفظ</button></form>';
+  }
+  if (s.kind === 'lead') {
+    const l = s.rec || {};
+    body = '<h4>' + (l.id ? esc(l.name) : 'عميل جديد') + '</h4><form data-form="leadsave"><label for="ldN">الاسم</label><input id="ldN" name="name" required value="' + esc(l.name || '') + '"><div class="grid2"><div><label for="ldP">التليفون</label><input id="ldP" name="phone" dir="ltr" required value="' + esc(l.phone || '') + '"></div><div><label for="ldA">المنطقة</label><input id="ldA" name="area" value="' + esc(l.area || '') + '"></div></div><div class="grid2"><div><label for="ldS">المصدر</label><select id="ldS" name="source">' + opts(SOURCES, l.source || 'instagram') + '</select></div><div><label for="ldT">المرحلة</label><select id="ldT" name="status">' + opts(STATUSES, l.status || 'new') + '</select></div></div><div class="grid2"><div><label for="ldB">الميزانية</label><input id="ldB" name="budget" type="number" min="0" dir="ltr" value="' + esc(l.budget == null ? '' : l.budget) + '"></div><div><label for="ldF">متابعة قادمة</label><input id="ldF" name="next_follow_up" type="date" dir="ltr" value="' + esc(l.next_follow_up || '') + '"></div></div><label for="ldW">مسؤول المتابعة (إيميل)</label><input id="ldW" name="assigned_to" dir="ltr" value="' + esc(l.assigned_to || '') + '"><label for="ldO">ملاحظات</label><input id="ldO" name="notes" value="' + esc(l.notes || '') + '"><button class="full" type="submit">حفظ</button></form>';
+    if (l.id) body += '<h3 class="sec">المتابعات</h3><form data-form="followadd" class="row"><input name="note" placeholder="اكتب متابعة" required style="flex:1"><button class="sm" type="submit">إضافة</button></form><div style="margin-top:8px">' + ((s.follow || []).length ? s.follow.map((f) => '<div class="item"><div>' + esc(f.note) + '</div><div class="ss">' + esc(short(f.done_by)) + ' · ' + esc(fdate(f.created_at)) + '</div></div>').join('') : '<div class="muted">مفيش متابعات</div>') + '</div>';
+  }
+  if (s.kind === 'prod') {
+    const p = s.rec || {};
+    body = '<h4>' + (p.id ? 'تعديل منتج' : 'منتج جديد') + '</h4><form data-form="prodsave"><label for="pdN">الاسم</label><input id="pdN" name="name" required value="' + esc(p.name || '') + '"><div class="grid2"><div><label for="pdC">الكود</label><input id="pdC" name="code" dir="ltr" value="' + esc(p.code || '') + '"></div><div><label for="pdB">الماركة</label><input id="pdB" name="brand" value="' + esc(p.brand || '') + '"></div></div><label for="pdG">التصنيف</label><select id="pdG" name="category">' + catOpts(p.category || 'Other') + '</select><div class="grid2"><div><label for="pdE">سعر المستخدم</label><input id="pdE" name="end_user_price" type="number" min="0" dir="ltr" value="' + esc(p.end_user_price == null ? '' : p.end_user_price) + '"></div><div><label for="pdD">سعر الديلر</label><input id="pdD" name="dealer_price" type="number" min="0" dir="ltr" value="' + esc(p.dealer_price == null ? '' : p.dealer_price) + '"></div></div><label class="switch"><input type="checkbox" name="active" style="width:auto"' + (p.id && !p.active ? '' : ' checked') + '> شغّال</label><button class="full" type="submit">حفظ</button></form>';
+  }
+  if (s.kind === 'inst') {
+    const x = s.rec || {}, byId = Object.fromEntries((D.items || []).map((i) => [i.id, i]));
+    body = '<h4>' + (x.id ? esc(x.customer_name) : 'تركيبة جديدة') + '</h4><form data-form="instsave"><label for="inN">العميل</label><input id="inN" name="customer_name" required value="' + esc(x.customer_name || '') + '"><div class="grid2"><div><label for="inP">التليفون</label><input id="inP" name="phone" dir="ltr" value="' + esc(x.phone || '') + '"></div><div><label for="inA">المنطقة</label><input id="inA" name="area" value="' + esc(x.area || '') + '"></div></div><label for="inD">العنوان</label><input id="inD" name="address" value="' + esc(x.address || '') + '"><div class="grid2"><div><label for="inT">الفني</label><input id="inT" name="technician" value="' + esc(x.technician || '') + '"></div><div><label for="inS">الحالة</label><select id="inS" name="status">' + opts(INST_ST, x.status || 'pending') + '</select></div></div><div class="grid2"><div><label for="inDt">التاريخ</label><input id="inDt" name="scheduled_date" type="date" dir="ltr" value="' + esc(x.scheduled_date || '') + '"></div><div><label for="inTm">الساعة</label><input id="inTm" name="scheduled_time" type="time" dir="ltr" value="' + esc(x.scheduled_time || '') + '"></div></div><label for="inO">ملاحظات</label><input id="inO" name="notes" value="' + esc(x.notes || '') + '"><button class="full" type="submit">حفظ</button></form>';
+    if (x.id) {
+      body += '<h3 class="sec">الحاجات اللي خرجت من المخزن</h3><div>' + ((s.parts || []).length ? s.parts.map((l) => '<div class="item row"><div class="grow"><b class="qty">' + esc(num(l.qty)) + '</b> ' + esc((byId[l.item_id] || {}).unit || '') + ' · ' + esc((byId[l.item_id] || {}).name || 'صنف') + '</div>' + (can('inventory', 'edit') ? '<button class="sm ghost" data-act="ret" data-id="' + esc(l.id) + '">رجّعه للمخزن</button>' : '') + '</div>').join('') : '<div class="muted">لسه ماخرجش حاجة</div>') + '</div>';
+      if (can('inventory', 'edit')) body += '<form data-form="take" class="grid2" style="margin-top:10px"><select name="item" required aria-label="الصنف"><option value="">اختار صنف…</option>' + (D.items || []).map((i) => '<option value="' + esc(i.id) + '"' + (Number(i.quantity) <= 0 ? ' disabled' : '') + '>' + esc(i.name) + ' — ' + esc(num(i.quantity)) + '</option>').join('') + '</select><div class="row"><input name="qty" type="number" min="0" step="any" required dir="ltr" placeholder="العدد" style="flex:1"><button class="sm" type="submit">اخصم</button></div></form>';
+      body += '<div class="muted" style="margin-top:10px">الصور (قبل/بعد): ' + MISSING + ' هنا — بتتفتح من شاشة التركيبات في AIX (installation_photos).</div>';
+    }
+  }
+  if (s.kind === 'quote') body = vQuote(s);
+  return '<div class="sheetbg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-modal="true">' + body + '<button class="full ghost" type="button" data-act="closesheet" style="margin-top:8px">إغلاق</button></div></div>';
+}
+function vQuote(s) {
+  const q = S.quote; if (!q) return '';
+  const t = qCalc(q), locked = !!q.id && q.status !== 'draft' && !can('sales', 'approve'), dis = locked || !can('sales', 'edit') ? ' disabled' : '', ds = q.discount_status;
+  let h = '<h4>' + (q.id ? 'عرض سعر ' + esc(q.quote_number) : 'عرض سعر جديد') + '</h4>' + (q.delete_requested_at ? '<div class="warnbox">فيه طلب مسح للعرض ده</div>' : '');
+  h += '<div class="grid2"><div><label>العميل</label><input data-chg="qf" data-f="client_name" value="' + esc(q.client_name || '') + '"' + dis + '></div><div><label>النوع</label><select data-chg="qf" data-f="client_type"' + dis + '>' + opts([['end_user', 'مستخدم نهائي'], ['dealer', 'ديلر']], q.client_type) + '</select></div></div>';
+  h += '<div class="grid3"><div><label>التاريخ</label><input type="date" dir="ltr" data-chg="qf" data-f="quote_date" value="' + esc(q.quote_date || '') + '"' + dis + '></div><div><label>صالح لحد</label><input type="date" dir="ltr" data-chg="qf" data-f="valid_until" value="' + esc(q.valid_until || '') + '"' + dis + '></div><div><label>الحالة</label><select data-chg="qf" data-f="status"' + dis + '>' + opts(Object.entries(Q_STATUS), q.status) + '</select></div></div>';
+  h += '<h3 class="sec">البنود</h3>' + (q.items.length ? q.items.map((i, n) => '<div class="qrow"><div class="row"><input data-chg="ql" data-i="' + n + '" data-f="name" value="' + esc(i.name) + '" placeholder="البند" style="flex:1"' + dis + '><button class="sm nob" data-act="qdel" data-i="' + n + '"' + dis + '>×</button></div><div class="grid3" style="margin-top:6px"><div><label>العدد</label><input type="number" min="0" step="any" dir="ltr" data-chg="ql" data-i="' + n + '" data-f="qty" value="' + esc(i.qty) + '"' + dis + '></div><div><label>السعر</label><input type="number" min="0" step="any" dir="ltr" data-chg="ql" data-i="' + n + '" data-f="unit_price" value="' + esc(i.unit_price == null ? '' : i.unit_price) + '"' + dis + '></div><div><label>خصم %</label><input type="number" min="0" max="100" step="any" dir="ltr" data-chg="ql" data-i="' + n + '" data-f="discount_pct" value="' + esc(i.discount_pct || 0) + '"' + dis + '></div></div></div>').join('') : '<div class="muted">لسه مفيش بنود</div>');
+  h += '<div class="row" style="margin-top:8px"><select data-chg="qadd" class="grow" aria-label="إضافة من المنتجات"' + dis + '><option value="">+ ضيف من المنتجات…</option>' + (D.products || []).filter((p) => p.active).map((p) => '<option value="' + esc(p.id) + '">' + esc(p.name) + ' — ' + esc(money(PRICE(p, q.client_type))) + '</option>').join('') + '</select><button class="sm ghost" data-act="qcustom"' + dis + '>بند حر</button></div>';
+  h += '<div class="grid2" style="margin-top:6px"><div><label>تركيب %</label><input type="number" min="0" step="any" dir="ltr" data-chg="qf" data-f="install_pct" value="' + esc(q.install_pct) + '"' + dis + '></div><div><label>خصم على العرض %</label><input type="number" min="0" max="100" step="any" dir="ltr" data-chg="qf" data-f="discount_pct" value="' + esc(q.discount_pct) + '"' + dis + '></div></div>';
+  h += '<div class="panel" style="margin-top:10px"><div class="row"><span class="grow">المجموع</span><span class="qty">' + esc(money(t.sub)) + '</span></div><div class="row"><span class="grow">تركيب</span><span class="qty">' + esc(money(t.inst)) + '</span></div><div class="row"><span class="grow">خصم</span><span class="qty">−' + esc(money(t.disc)) + '</span></div><div class="row"><b class="grow">الإجمالي</b><b class="qty">' + esc(money(t.total)) + '</b></div></div>';
+  if (t.needs || ds) {
+    h += '<div class="newbox">' + (ds === 'pending' ? '⏳ الخصم مستني موافقة الأدمن.' : ds === 'approved' ? '✓ الخصم متوافق عليه.' : ds === 'rejected' ? 'الخصم اترفض' + (q.discount_note ? ': ' + esc(q.discount_note) : '') + '. عدّل واطلب تاني.' : 'الخصم فوق 20% — لازم موافقة قبل الإرسال للعميل.') + '</div>';
+  }
+  h += '<div class="row" style="flex-wrap:wrap;gap:8px">';
+  if (can('sales', 'edit') && !locked) h += '<button class="grow" data-act="qsave">حفظ</button>';
+  if (q.id && can('sales', 'edit') && !can('sales', 'approve') && t.needs && ds !== 'pending' && ds !== 'approved') h += '<button class="ghost" data-act="qreq">اطلب موافقة الخصم</button>';
+  if (q.id && can('sales', 'approve') && ds === 'pending') h += '<button class="okb" data-act="qrev" data-ok="1">وافق على الخصم</button><button class="nob" data-act="qrev" data-ok="0">ارفض</button>';
+  if (q.id && can('sales', 'approve') && ds !== 'pending' && t.needs && ds !== 'approved') h += '<button class="okb" data-act="qrev" data-ok="1">وافق على الخصم</button>';
+  if (q.id && can('sales', 'edit') && !can('sales', 'approve') && !q.delete_requested_at) h += '<button class="ghost nob" data-act="qreqdel">اطلب مسح العرض</button>';
+  if (q.id && can('sales', 'approve')) h += '<button class="nob" data-act="qdelete">مسح العرض</button>';
+  return h + '</div>';
+}
+
+function render() {
+  const app = $('app'), host = $('sheetHost'), prev = host.querySelector('.sheet'), top = prev ? prev.scrollTop : 0;
+  let h = '';
+  if (S.route === 'login' || !S.me) h = vLogin();
+  else if (S.route === 'home') h = vHome();
+  else if (S.route === 'approvals') h = vApprovals();
+  else if (S.route === 'users') h = vUsers();
+  else if (S.route === 'inventory') h = vInventory();
+  else if (S.route === 'sales') h = vSales();
+  else if (S.route === 'purchasing') h = vPurchasing();
+  else if (S.route === 'accounts') h = vAccounts();
+  else if (S.route === 'projects') h = vProjects();
+  else if (S.route === 'hr') h = vHr();
+  else if (S.route === 'reports') h = vReports();
+  app.innerHTML = h; host.innerHTML = vSheet();
+  const sh = host.querySelector('.sheet'); if (sh && prev) sh.scrollTop = top;
+}
+
+/* -------------------------------------------- events -------------------------------------------- */
+const fd = (form) => Object.fromEntries(new FormData(form).entries());
+const nz = (v) => { v = String(v == null ? '' : v).trim(); return v === '' ? null : v; };
+const reload = () => loadRoute(S.route);
+function newQuote(lead) { return { id: null, quote_number: null, lead_id: lead ? lead.id : null, client_name: lead ? lead.name : '', client_type: 'end_user', quote_date: today(), valid_until: null, status: 'draft', install_pct: 10, discount_pct: 0, notes: null, items: [], discount_status: null, dirty: false }; }
+async function openQuote(id) {
+  const q = (D.quotes || []).find((x) => x.id === id) || ((D.appr || []).find((a) => a.id === id && a.q) || {}).q; if (!q) return toast('العرض مش موجود');
+  const items = await A.quoteItems(id); S.quote = Object.assign({}, q, { items: items.map((i) => Object.assign({}, i)), dirty: false });
+  if (!(D.products || []).length) D.products = await T(() => A.products(), []);
+  S.sheet = { kind: 'quote' };
+}
+async function saveQuote() {
+  const q = S.quote, t = qCalc(q), items = q.items.filter((i) => String(i.name || '').trim());
+  if (!String(q.client_name || '').trim()) throw new Error('اكتب اسم العميل');
+  if (!items.length) throw new Error('ضيف بند واحد على الأقل');
+  if (items.some((i) => !(Number(i.qty) > 0))) throw new Error('العدد لازم يكون أكبر من صفر');
+  const row = { lead_id: q.lead_id || null, client_name: q.client_name.trim(), client_type: q.client_type, quote_date: q.quote_date, valid_until: q.valid_until || null, status: q.status, subtotal: t.sub, install_pct: t.instPct, install_amount: t.inst, discount_pct: t.discPct, discount_amount: t.disc, total: t.total, notes: q.notes || null };
+  const r = await A.saveQuote(row, items, q.id); q.id = r.id; q.quote_number = r.quote_number; q.items = items; q.dirty = false;
+  D.quotes = await T(() => A.quotes(), D.quotes || []);
+  const fresh = D.quotes.find((x) => x.id === q.id); if (fresh) { q.discount_status = fresh.discount_status; q.discount_note = fresh.discount_note; q.delete_requested_at = fresh.delete_requested_at; }
+}
+document.addEventListener('submit', (ev) => {
+  const f = ev.target.closest('form[data-form]'); if (!f) return; ev.preventDefault();
+  const k = f.dataset.form, v = fd(f), rec = S.sheet && S.sheet.rec;
+  if (k === 'login') return void doLogin(String(v.email || f.querySelector('#lgE').value).trim().toLowerCase(), f.querySelector('#lgP').value);
+  if (k === 'itemsave') return void act(async () => { const row = { name: v.name.trim(), category: nz(v.category), unit: nz(v.unit) || 'قطعة', min_qty: v.min === '' ? null : Number(v.min), location: nz(v.location), notes: nz(v.notes) }; if (!(rec && rec.id)) row.quantity = Number(v.quantity || 0); await A.saveItem(row, rec && rec.id); S.sheet = null; await reload(); }, 'اتحفظ');
+  if (k === 'move') return void act(async () => { await A.adjust(v.item, v.kind, Number(v.amount), nz(v.note)); await reload(); }, 'اتسجّلت الحركة');
+  if (k === 'leadsave') return void act(async () => { const row = { name: v.name.trim(), phone: v.phone.trim(), area: nz(v.area), source: v.source, client_type: (rec && rec.client_type) || 'end_user', status: v.status, budget: v.budget ? Number(v.budget) : null, assigned_to: nz(v.assigned_to), next_follow_up: v.next_follow_up || null, notes: nz(v.notes) }; await A.saveLead(row, rec && rec.id); S.sheet = null; await reload(); }, 'اتحفظ');
+  if (k === 'followadd') return void act(async () => { await A.addFollowUp(rec.id, v.note.trim()); S.sheet.follow = await A.followUps(rec.id); }, 'اتضافت');
+  if (k === 'prodsave') return void act(async () => { const row = { code: nz(v.code), name: v.name.trim(), category: v.category, brand: nz(v.brand), end_user_price: v.end_user_price === '' ? null : Number(v.end_user_price), dealer_price: v.dealer_price === '' ? null : Number(v.dealer_price), active: !!v.active }; await A.saveProduct(row, rec && rec.id); S.sheet = null; await reload(); }, 'اتحفظ');
+  if (k === 'instsave') return void act(async () => { const row = { customer_name: v.customer_name.trim(), phone: nz(v.phone), area: nz(v.area), address: nz(v.address), technician: nz(v.technician), scheduled_date: nz(v.scheduled_date), scheduled_time: nz(v.scheduled_time), status: v.status || 'pending', notes: nz(v.notes) }; await A.saveInstall(row, rec && rec.id); S.sheet = null; await reload(); }, 'اتحفظ');
+  if (k === 'take') return void act(async () => { await A.take(rec.id, v.item, Number(v.qty)); D.items = await A.items(); S.sheet.parts = await A.parts(rec.id); }, 'اتخصم من المخزن');
+});
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest('[data-act]'); if (!t) return;
+  if (t.dataset.act === 'closesheet' && ev.target.closest('[data-stop]') && !ev.target.closest('button[data-act="closesheet"]')) return;
+  const a = t.dataset.act, id = t.dataset.id, rec = S.sheet && S.sheet.rec;
+  if (a === 'forgot') { S.forgot = true; return render(); }
+  if (a === 'go') { location.hash = '#' + t.dataset.to; return; }
+  if (a === 'home') { location.hash = '#home'; return; }
+  if (a === 'logout') return void doLogout();
+  if (a === 'closesheet') { S.sheet = null; S.quote = null; return render(); }
+  if (a === 'tab') { S.tab[t.dataset.m] = t.dataset.t; return render(); }
+  if (a === 'filt') { if (t.dataset.k === 'lead') S.leadFilter = t.dataset.v; else S.instFilter = t.dataset.v; return render(); }
+  if (a === 'lowonly') { S.lowOnly = !S.lowOnly; return render(); }
+  if (a === 'itemform') { S.sheet = { kind: 'item', rec: (D.items || []).find((x) => x.id === id) || null }; return render(); }
+  if (a === 'prodform') { S.sheet = { kind: 'prod', rec: (D.products || []).find((x) => x.id === id) || null }; return render(); }
+  if (a === 'leadform') { S.sheet = { kind: 'lead', rec: null }; return render(); }
+  if (a === 'leadopen') return void act(async () => { const l = (D.leads || []).find((x) => x.id === id); if (!l) return; S.sheet = { kind: 'lead', rec: l, follow: await A.followUps(id) }; });
+  if (a === 'instform') { S.sheet = { kind: 'inst', rec: null, parts: [] }; return render(); }
+  if (a === 'instopen') return void act(async () => { const x = (D.installs || []).find((i) => i.id === id); if (!x) return; const parts = await A.parts(id); if (!(D.items || []).length) D.items = await T(() => A.items(), []); S.sheet = { kind: 'inst', rec: x, parts }; });
+  if (a === 'ret') { if (!confirm('ترجّع ده للمخزن؟')) return; return void act(async () => { await A.ret(id); D.items = await A.items(); S.sheet.parts = await A.parts(rec.id); }, 'رجع للمخزن'); }
+  if (a === 'qnew') { S.quote = newQuote(null); S.sheet = { kind: 'quote' }; return void act(async () => { if (!(D.products || []).length) D.products = await T(() => A.products(), []); }); }
+  if (a === 'qopen') return void act(() => openQuote(id));
+  if (a === 'qcustom') { S.quote.items.push({ product_id: null, name: '', description: null, room: '', qty: 1, unit_price: null, discount_pct: 0 }); S.quote.dirty = true; return render(); }
+  if (a === 'qdel') { S.quote.items.splice(+t.dataset.i, 1); S.quote.dirty = true; return render(); }
+  if (a === 'qsave') return void act(async () => { await saveQuote(); }, 'العرض اتحفظ');
+  if (a === 'qreq') return void act(async () => { if (S.quote.dirty || !S.quote.id) await saveQuote(); await A.requestDisc(S.quote.id); await saveQuoteRefresh(); await reload(); }, 'الطلب اتبعت للأدمن');
+  if (a === 'qrev') { const ok = t.dataset.ok === '1'; const note = ok ? null : prompt('سبب الرفض (اختياري):'); if (!ok && note === null) return; return void act(async () => { if (S.quote.dirty || !S.quote.id) await saveQuote(); await A.reviewDisc(S.quote.id, ok, note); await saveQuoteRefresh(); await reload(); }, ok ? 'وافقت على الخصم' : 'الخصم اترفض'); }
+  if (a === 'qreqdel') { if (!confirm('تبعت للأدمن طلب يمسح العرض ده؟')) return; return void act(async () => { await A.requestDel(S.quote.id); await saveQuoteRefresh(); await reload(); }, 'الطلب اتبعت للأدمن'); }
+  if (a === 'qdelete') { if (!confirm('مسح عرض السعر نهائيًا؟ مفيش رجوع.')) return; return void act(async () => { await A.deleteQuote(S.quote.id); S.sheet = null; S.quote = null; await reload(); }, 'العرض اتمسح'); }
+  if (a === 'reqdec') return void act(async () => { await A.decideRequest(id, t.dataset.ok === '1'); await reload(); }, 'اتسجّل');
+  if (a === 'appr') {
+    const i = +t.dataset.i, x = D.appr[i], ok = t.dataset.ok === '1';
+    return void act(async () => {
+      if (x.kind === 'disc') { const note = ok ? null : prompt('سبب الرفض (اختياري):'); if (!ok && note === null) return; await A.reviewDisc(x.id, ok, note); }
+      else if (x.kind === 'del') { if (!confirm('مسح عرض السعر ' + x.q.quote_number + ' نهائيًا؟ مفيش رجوع.')) return; await A.deleteQuote(x.id); }
+      else if (x.kind === 'join') await A.decideRequest(x.id, ok);
+      else if (x.kind === 'po') await A.decidePO(x.id, ok);
+      else if (x.kind === 'dec') { const c = document.querySelector('[data-note="' + i + '"]'); await A.decide(x.id, t.dataset.o, c && c.value.trim() || null); }
+      await loadApprovals();
+    }, 'اتسجّل');
+  }
+});
+async function saveQuoteRefresh() { D.quotes = await T(() => A.quotes(), D.quotes || []); const f = D.quotes.find((x) => x.id === S.quote.id); if (f) { S.quote.discount_status = f.discount_status; S.quote.discount_note = f.discount_note; S.quote.delete_requested_at = f.delete_requested_at; } }
+document.addEventListener('change', (ev) => {
+  const t = ev.target.closest('[data-chg]'); if (!t) return; const k = t.dataset.chg;
+  if (k === 'q') { S.q = t.value; return render(); }
+  if (k === 'perm') {
+    const p = D.team[+t.dataset.i], m = t.dataset.m, lv = t.value || null;
+    if (!DEMO && m === 'users' && lv && !confirm('ده بيخلّي ' + p.email + ' أدمن في AIX. متأكد؟')) { t.value = levelOf(p, m); return; }
+    return void act(async () => { await A.setLevel(p.email, m, lv, p.name); D.team = await A.team(); }, 'اتحفظت الصلاحية');
+  }
+  if (k === 'step') { const j = D.jobs[+t.dataset.i]; return void act(async () => { await A.setStep(j.id, t.dataset.s, t.value, null); D.jobs = await A.jobs(); }, 'اتحدّثت المرحلة'); }
+  const q = S.quote; if (!q) return;
+  if (k === 'qf') { const f = t.dataset.f; q[f] = t.value; if (f === 'client_type') q.items.forEach((i) => { const p = i.product_id && (D.products || []).find((x) => x.id === i.product_id); if (p) i.unit_price = PRICE(p, q.client_type); }); q.dirty = true; return render(); }
+  if (k === 'ql') { q.items[+t.dataset.i][t.dataset.f] = t.value; q.dirty = true; return render(); }
+  if (k === 'qadd') { const p = (D.products || []).find((x) => x.id === t.value); if (p) { q.items.push({ product_id: p.id, name: p.name, description: p.description || null, room: '', qty: 1, unit_price: PRICE(p, q.client_type), discount_pct: 0 }); q.dirty = true; } return render(); }
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/aix-system/sw.js', { scope: '/aix-system/' }).catch(() => {});
+boot();
+</script>
+</body>
+</html>

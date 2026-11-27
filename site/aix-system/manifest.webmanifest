@@ -1,0 +1,16 @@
+{
+  "name": "نظام الشركة — AIX",
+  "short_name": "نظام AIX",
+  "description": "نظام الشركة لـ AIX: المبيعات والمخزون والتركيبات والصلاحيات",
+  "start_url": "/aix-system/",
+  "scope": "/aix-system/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#0f1216",
+  "theme_color": "#0f1216",
+  "icons": [
+    { "src": "/aix-system/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}
