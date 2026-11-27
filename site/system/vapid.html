@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+<title>مفاتيح VAPID — نظام الشركة</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#15181d; --mute:#5b6572; --line:#d9dee5; --acc:#0b6b4d; --accfg:#fff; --code:#eef1f4; --warn:#8a4b00; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f1216; --card:#181c22; --ink:#e8ebef; --mute:#9aa4b0; --line:#2a313a; --acc:#35c28f; --accfg:#06241a; --code:#0c0f13; --warn:#f0b35f; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.7 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:20px 16px 48px; }
+  h1 { font-size:1.35rem; margin:.2rem 0 .4rem; }
+  h2 { font-size:1.05rem; margin:0 0 .5rem; }
+  p { margin:.3rem 0 .7rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:14px 0; }
+  .mute { color:var(--mute); font-size:.92rem; }
+  .warn { color:var(--warn); }
+  button { font:inherit; border:0; border-radius:10px; padding:.55rem 1rem; background:var(--acc); color:var(--accfg); cursor:pointer; font-weight:600; }
+  button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); font-weight:500; padding:.3rem .7rem; font-size:.9rem; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:.8rem 0 .25rem; }
+  .row b { font-size:.95rem; }
+  pre { direction:ltr; text-align:left; background:var(--code); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:0; overflow-x:auto; white-space:pre-wrap; word-break:break-all; font:13px/1.55 ui-monospace,Menlo,Consolas,monospace; min-height:2.6em; }
+  ol { padding-inline-start:1.3rem; margin:.3rem 0; }
+  li { margin:.35rem 0; }
+  code { direction:ltr; unicode-bidi:embed; background:var(--code); padding:.05rem .35rem; border-radius:5px; font:.9em ui-monospace,Menlo,Consolas,monospace; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>مفاتيح VAPID للإشعارات</h1>
+  <p class="mute">الصفحة دي بتولّد المفاتيح جوه متصفحك بس (WebCrypto). مفيش أي اتصال بالشبكة (متقفل بـ CSP)، ومفيش حاجة بتتحفظ — لو قفلت الصفحة أو عملت refresh المفاتيح بتروح. انسخها قبل ما تقفل.</p>
+
+  <div class="card">
+    <button id="gen">ولّد مفاتيح جديدة</button>
+    <span class="mute" id="msg"></span>
+  </div>
+
+  <div id="out" hidden>
+    <div class="card">
+      <h2>1) المفاتيح</h2>
+      <div class="row"><b>VAPID_PUBLIC_KEY</b><button class="ghost" data-copy="pub">نسخ</button></div>
+      <pre id="pub"></pre>
+      <div class="row"><b>VAPID_PRIVATE_KEY <span class="warn">(سرّي — مايتبعتش لحد)</span></b><button class="ghost" data-copy="priv">نسخ</button></div>
+      <pre id="priv"></pre>
+      <div class="row"><b>VAPID_SUBJECT</b><button class="ghost" data-copy="subj">نسخ</button></div>
+      <pre id="subj">mailto:abdallahsad35@gmail.com</pre>
+      <div class="row"><b>SYS_PUSH_SECRET <span class="warn">(سرّي)</span></b><button class="ghost" data-copy="sec">نسخ</button></div>
+      <pre id="sec"></pre>
+    </div>
+
+    <div class="card">
+      <h2>2) حطّهم في Cloudflare Pages</h2>
+      <ol>
+        <li>Cloudflare Dashboard ← Workers &amp; Pages ← مشروع الموقع (jaguarsmart.com).</li>
+        <li><code>Settings</code> ← <code>Environment variables</code> ← <code>Production</code> ← Add variable.</li>
+        <li>ضيف الأربعة بنفس الأسماء بالظبط: <code>VAPID_PUBLIC_KEY</code> و <code>VAPID_PRIVATE_KEY</code> و <code>VAPID_SUBJECT</code> و <code>SYS_PUSH_SECRET</code>. الاتنين السريين اعملهم <code>Encrypt</code>.</li>
+        <li>اعمل Save، وبعدين Redeploy لآخر نشر (الـ variables ما بتتطبّقش إلا على نشر جديد).</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>3) ابعت الـ public للمنسّق</h2>
+      <p>ابعت <b>VAPID_PUBLIC_KEY</b> بس (ده مش سر) للمنسّق عشان يتحط في <code>site/system/push.js</code>. <span class="warn">الـ private والـ SYS_PUSH_SECRET ماتبعتهمش لأي حد ولا في أي شات.</span></p>
+    </div>
+
+    <div class="card">
+      <h2>4) جملة SQL (Supabase SQL editor — بعد ما تدوس Run على 115)</h2>
+      <p class="mute">فعّل الأول extension اسمه <code>pg_net</code> (Database ← Extensions). السر هنا نفس قيمة SYS_PUSH_SECRET فوق.</p>
+      <div class="row"><b>SQL</b><button class="ghost" data-copy="sql">نسخ</button></div>
+      <pre id="sql"></pre>
+      <p class="mute">على iPhone/iPad: الإشعارات بتشتغل بس لو التطبيق متضاف «للشاشة الرئيسية» (Share ← Add to Home Screen) وتفتحه من هناك.</p>
+    </div>
+  </div>
+</main>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function b64u(buf) {
+    var b = new Uint8Array(buf), s = '';
+    for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  async function generate() {
+    var kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    var pub = await crypto.subtle.exportKey('raw', kp.publicKey);          // 65 bytes, 0x04 || X || Y
+    var jwk = await crypto.subtle.exportKey('jwk', kp.privateKey);         // jwk.d = 32-byte private scalar
+    var sec = crypto.getRandomValues(new Uint8Array(32));
+    $('pub').textContent = b64u(pub);
+    $('priv').textContent = jwk.d;
+    $('sec').textContent = b64u(sec);
+    $('sql').textContent =
+      "insert into public.sys_config (key, value) values\n" +
+      "  ('push_url',    'https://jaguarsmart.com/api/sys-push'),\n" +
+      "  ('push_secret', '" + b64u(sec) + "')\n" +
+      "on conflict (key) do update set value = excluded.value;";
+    $('out').hidden = false;
+    $('msg').textContent = ' اتولّدت. انسخ كل حاجة قبل ما تقفل الصفحة.';
+  }
+  $('gen').addEventListener('click', function () {
+    if (!(window.crypto && crypto.subtle)) { $('msg').textContent = ' المتصفح ده مش بيدعم WebCrypto.'; return; }
+    if (!$('out').hidden && !confirm('ده هيمسح المفاتيح الحالية ويولّد غيرها. متأكد؟')) return;
+    generate().catch(function (e) { $('msg').textContent = ' فشل التوليد: ' + e.message; });
+  });
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-copy]');
+    if (!t) return;
+    var text = $(t.getAttribute('data-copy')).textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+      t.textContent = 'اتنسخ';
+    }, function () {
+      var r = document.createRange(); r.selectNodeContents($(t.getAttribute('data-copy')));
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = 'حدّد يدوي وانسخ';
+    }).then(function () { setTimeout(function () { t.textContent = 'نسخ'; }, 1500); });
+  });
+})();
+</script>
+</body>
+</html>
