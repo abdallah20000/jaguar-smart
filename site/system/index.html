@@ -3,46 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>نظام الشركة</title>
-<meta name="theme-color" content="#0f1216">
+<title>AIX</title>
+<meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="/system/manifest.webmanifest">
-<link rel="icon" href="/system/icon.png">
-<link rel="apple-touch-icon" href="/system/icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/system/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/system/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="نظام الشركة">
+<meta name="apple-mobile-web-app-title" content="AIX">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/system/push.js" defer></script>
 <style>
-:root { --bg:#0f1216; --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1); --line:rgba(255,255,255,.12); --fg:#eef1f4; --muted:#9aa4ae; --accent:#ff6a2b; --err:#ff8a7a; --ok:#5fd39a; --warn:#ffc35a; --info:#7fb6ff }
+:root { --bg:#000; --surface:#161616; --glass:#161616; --glass2:#222; --line:#333; --fg:#fff; --muted:#a5a5a5; --accent:#0df400; --on-accent:#000; --err:#ff8a7a; --ok:#0df400; --warn:#ffc35a; --info:#7fb6ff }
 * { box-sizing:border-box }
 html, body { margin:0 }
-body { background:radial-gradient(120% 80% at 80% 0%, #2a1a12 0%, var(--bg) 55%) fixed; background-color:var(--bg); color:var(--fg); font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:env(safe-area-inset-bottom) }
+body { background:var(--bg); color:var(--fg); font-family:"Archivo","IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh; padding-bottom:env(safe-area-inset-bottom) }
 .wrap { max-width:640px; margin:0 auto; padding:0 16px 40px }
 .banner { background:#3a2a0a; color:var(--warn); text-align:center; font-size:.82rem; padding:6px 10px; border-bottom:1px solid rgba(255,195,90,.35) }
-.top { display:flex; align-items:center; gap:10px; padding:14px 0 10px; position:sticky; top:0; z-index:5; background:rgba(15,18,22,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
+.top { display:flex; align-items:center; gap:10px; padding:14px 0 10px; position:sticky; top:0; z-index:5; background:rgba(0,0,0,.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
 .top .t { flex:1; min-width:0 }
-.top .t b { display:block; font-size:1.05rem }
+.top .t b, .top .t span { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.top .t b { font-size:1.05rem }
 .top .t span { color:var(--muted); font-size:.78rem }
-.top img { width:34px; height:34px; border-radius:9px }
+.top img.logo { height:22px; width:auto; display:block }
+.icon-btn { position:relative; width:40px; height:40px; padding:0; display:inline-flex; align-items:center; justify-content:center; background:var(--glass2); color:var(--fg); border:1px solid var(--line); border-radius:12px; flex:none }
+.icon-btn svg { width:20px; height:20px }
+.badge { position:absolute; top:-5px; inset-inline-start:-5px; min-width:18px; height:18px; padding:0 5px; border-radius:99px; background:var(--accent); color:var(--on-accent); font-size:.7rem; font-weight:700; line-height:18px; text-align:center }
+.top select { max-width:34vw }
 label { display:block; font-size:.85rem; color:var(--muted); margin:12px 0 6px }
-input, textarea, select { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--fg); font:inherit; font-size:.95rem }
-select option { background:#171b20; color:var(--fg) }
+input, textarea, select { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--line); background:#000; color:var(--fg); font:inherit; font-size:.95rem }
+select option { background:#161616; color:var(--fg) }
 input:focus, textarea:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px }
-button { padding:11px 16px; border:0; border-radius:12px; background:var(--accent); color:#1a0d05; font-family:inherit; font-weight:600; font-size:.92rem; cursor:pointer }
+button { padding:11px 16px; border:0; border-radius:12px; background:var(--accent); color:var(--on-accent); font-family:inherit; font-weight:600; font-size:.92rem; cursor:pointer }
 button.full { width:100%; margin-top:16px; padding:13px }
 button.ghost { background:var(--glass2); color:var(--fg); border:1px solid var(--line) }
 button.sm { padding:6px 12px; font-size:.8rem; border-radius:10px }
 button.nob { background:rgba(255,138,122,.16); color:var(--err); border:1px solid rgba(255,138,122,.35) }
-button.okb { background:var(--ok); color:#06210f }
+button.okb { background:var(--ok); color:#000 }
 button:disabled { opacity:.5; cursor:default }
 .card { background:var(--glass); border:1px solid var(--line); border-radius:20px; padding:20px 18px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px) }
 .login { max-width:380px; margin:8vh auto 0 }
 .login .brand { text-align:center; margin-bottom:8px }
-.login .brand img { width:56px; height:56px; border-radius:14px }
+.login .brand img { width:150px; height:auto; display:block; margin:6px auto 4px }
 .login .brand h1 { margin:8px 0 2px; font-size:1.3rem }
 .msg { min-height:1.2em; margin-top:12px; font-size:.85rem; color:var(--err) }
 .msg.ok { color:var(--ok) }
@@ -64,12 +72,12 @@ button:disabled { opacity:.5; cursor:default }
 .item .ss { color:var(--muted); font-size:.8rem; margin-top:3px; line-height:1.6; word-break:break-word }
 .chip { display:inline-block; font-size:.72rem; padding:2px 9px; border-radius:99px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted); white-space:nowrap }
 .chip.low { background:rgba(255,138,122,.14); color:var(--err); border-color:rgba(255,138,122,.35) }
-.chip.ok { background:rgba(95,211,154,.14); color:var(--ok); border-color:rgba(95,211,154,.35) }
+.chip.ok { background:rgba(13,244,0,.12); color:var(--ok); border-color:rgba(13,244,0,.35) }
 .chip.warn { background:rgba(255,195,90,.14); color:var(--warn); border-color:rgba(255,195,90,.35) }
 .tabs { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none }
 .tabs::-webkit-scrollbar { display:none }
 .tabs button { background:var(--glass); color:var(--muted); border:1px solid var(--line); white-space:nowrap; font-weight:400; padding:8px 14px }
-.tabs button.on { background:rgba(255,106,43,.16); color:var(--accent); border-color:var(--accent); font-weight:600 }
+.tabs button.on { background:rgba(13,244,0,.12); color:var(--accent); border-color:var(--accent); font-weight:600 }
 h3.sec { margin:16px 0 8px; font-size:.95rem; display:flex; align-items:center; gap:8px }
 .qty { font-variant-numeric:tabular-nums; font-weight:600; direction:ltr; unicode-bidi:isolate }
 .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px }
@@ -79,10 +87,13 @@ h3.sec { margin:16px 0 8px; font-size:.95rem; display:flex; align-items:center; 
 .back { background:none; color:var(--muted); padding:6px 8px; font-weight:400 }
 .empty { text-align:center; color:var(--muted); padding:22px 8px; font-size:.9rem }
 .sheetbg { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:20; display:flex; align-items:flex-end; justify-content:center }
-.sheet { width:100%; max-width:560px; max-height:88vh; overflow:auto; background:#171b20; border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) }
+.sheet { width:100%; max-width:560px; max-height:88vh; overflow:auto; background:#161616; border:1px solid var(--line); border-bottom:0; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) }
 .sheet h4 { margin:0 0 4px; font-size:1.05rem }
-.toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:50; background:#262c33; border:1px solid var(--line); padding:10px 16px; border-radius:12px; font-size:.88rem; max-width:90vw }
+.toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:50; background:#222; border:1px solid var(--line); padding:10px 16px; border-radius:12px; font-size:.88rem; max-width:90vw }
 .hidden { display:none }
+.dot { display:inline-block; width:8px; height:8px; border-radius:99px; background:var(--accent); margin-inline-end:6px }
+.item.unread { background:rgba(13,244,0,.05) }
+button.item-btn { all:unset; display:block; width:100%; cursor:pointer; box-sizing:border-box }
 .cnt-in { width:92px; text-align:center; direction:ltr; padding:7px 6px }
 .switch { display:flex; align-items:center; gap:8px }
 </style>
@@ -117,21 +128,28 @@ const MODULES = [
 const MOD_NAME = Object.fromEntries(MODULES.map((m) => [m.k, m.n]));
 const LEVELS = [['', '—'], ['view', 'يشوف'], ['edit', 'يعدّل'], ['approve', 'يوافق']];
 const RANK = { view: 1, edit: 2, approve: 3 };
+const LEVEL_AR = { view: 'يشوف', edit: 'يعدّل', approve: 'يوافق' };
+const NEW115 = ['sys_activity_list', 'sys_notifications_list', 'sys_notifications_read'];
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const KIND_NAME = { in: 'وارد', out: 'صادر', adjust: 'تسوية جرد', transfer_out: 'تحويل (خارج)', transfer_in: 'تحويل (داخل)' };
 const ICONS = {
   inventory: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
   users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.9.7 3.2 2.4 3.5 5.2"/></svg>',
+  activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0112 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 004 0"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
   other: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 12h6"/></svg>'
 };
 
 /* ---------------------------------- fake backend (demo only) ---------------------------------- */
 const Fake = (() => {
   let seq = 0; const id = () => 'd' + (++seq).toString(16).padStart(8, '0') + '-0000-4000-8000-000000000000';
-  const ME = 'demo@example.com';
-  const db = { admins: [ME, 'omar@example.com'], perms: [], audit: [], wh: [], items: [], stock: {}, moves: [], counts: [], extra: ['ahmed@example.com', 'mona@example.com'] };
+  let ME = 'demo@example.com';
+  const has115 = !/[?&]no115=1/.test(location.search);
+  const db = { admins: ['demo@example.com', 'omar@example.com'], perms: [], audit: [], wh: [], items: [], stock: {}, moves: [], counts: [], notifs: [], extra: ['ahmed@example.com', 'mona@example.com', 'edit@example.com', 'view@example.com', 'none@example.com'] };
   const now = () => new Date().toISOString();
-  const aud = (action, company, target, details) => db.audit.unshift({ id: id(), at: now(), actor: ME, action, company, target, details: details || {} });
-  db.perms.push({ company: 'tuya-suez', email: 'ahmed@example.com', module: 'inventory', level: 'edit' }, { company: 'tuya-suez', email: 'mona@example.com', module: 'inventory', level: 'view' }, { company: 'aix', email: 'mona@example.com', module: 'sales', level: 'view' });
+  const aud = (action, company, target, details, summary) => db.audit.unshift({ id: id(), at: now(), actor: ME, action, company, target, details: details || {}, summary: summary || null });
+  db.perms.push({ company: 'tuya-suez', email: 'edit@example.com', module: 'inventory', level: 'edit' }, { company: 'tuya-suez', email: 'edit@example.com', module: 'sales', level: 'view' }, { company: 'tuya-suez', email: 'view@example.com', module: 'inventory', level: 'view' }, { company: 'aix', email: 'view@example.com', module: 'inventory', level: 'view' }, { company: 'aix', email: 'approve@example.com', module: 'inventory', level: 'approve' }, { company: 'tuya-suez', email: 'ahmed@example.com', module: 'inventory', level: 'edit' }, { company: 'tuya-suez', email: 'mona@example.com', module: 'inventory', level: 'view' }, { company: 'aix', email: 'mona@example.com', module: 'sales', level: 'view' });
   function addWh(company, name, location) { const w = { id: id(), company, name, location, active: true, created_at: now() }; db.wh.push(w); return w; }
   function addItem(company, code, name, category, unit, min) { const it = { id: id(), company, code, name, category, unit, min_qty: min, product_id: null, active: true }; db.items.push(it); return it; }
   function put(it, w, q) { db.stock[it.id + '|' + w.id] = q; }
@@ -139,19 +157,47 @@ const Fake = (() => {
   const w3 = addWh('aix', 'مخزن AIX', 'القاهرة');
   [['SW-01', 'سويتش زيجبي ٣ زر', 'سويتشات', 'قطعة', 10, 24, 3], ['HB-01', 'هاب زيجبي', 'هابات', 'قطعة', 5, 4, 2], ['CAM-01', 'كاميرا واي فاي', 'كاميرات', 'قطعة', 6, 9, 0], ['CB-01', 'كابل شبكة', 'كابلات', 'متر', 100, 350, 0], ['SN-01', 'حساس حركة', 'حساسات', 'قطعة', 8, 15, 5]].forEach((r) => { const it = addItem('tuya-suez', r[0], r[1], r[2], r[3], r[4]); put(it, w1, r[5]); put(it, w2, r[6]); });
   [['AX-01', 'جهاز تحكم مركزي', 'تحكم', 'قطعة', 3, 2], ['AX-02', 'شاشة لمس', 'شاشات', 'قطعة', 2, 6]].forEach((r) => { const it = addItem('aix', r[0], r[1], r[2], r[3], r[4]); put(it, w3, r[5]); });
-  aud('seed', null, null, { note: 'بيانات وهمية' });
+  { const ago = (m) => new Date(Date.now() - m * 60000).toISOString();
+    const seed = [
+      [5, 'ahmed@example.com', 'stock.in', 'tuya-suez', { qty: 24, before: 0, after: 24 }, 'وارد 24 قطعة — سويتش زيجبي ٣ زر'],
+      [42, 'ahmed@example.com', 'stock.transfer', 'tuya-suez', { qty: 3 }, null],
+      [130, 'demo@example.com', 'permission.set', 'tuya-suez', { module: 'inventory', level: 'view' }, null],
+      [300, 'demo@example.com', 'item.save', 'aix', { name: 'شاشة لمس', created: true }, null],
+      [1500, 'omar@example.com', 'count.post', 'tuya-suez', { lines: 5, adjusted: 2 }, null],
+      [2900, 'demo@example.com', 'admin.set', null, { on: true }, null]];
+    seed.forEach((r) => db.audit.push({ id: id(), at: ago(r[0]), actor: r[1], action: r[2], company: r[3], target: r[2] === 'permission.set' ? 'mona@example.com' : r[2] === 'admin.set' ? 'omar@example.com' : null, details: r[4], summary: r[5] }));
+    db.notifs.push({ id: 'n1', to: null, title: 'جرد جديد اتبدأ', body: 'مخزن العمليات — تويا السويس', created_at: ago(8), read: false }, { id: 'n2', to: null, title: 'أصناف ناقصة', body: 'كاميرا واي فاي وهاب زيجبي تحت الحد الأدنى', created_at: ago(90), read: false }, { id: 'n3', to: null, title: 'اترحّل جرد المخزن الرئيسي', body: 'اتسوّى فرق في صنفين', created_at: ago(1600), read: true });
+  }
 
   const isAdmin = (e) => db.admins.includes(e);
-  const gone = (m) => { throw new Error(m); };
+  const gone = (m, missing) => { const e = new Error(m); if (missing) { e.missing = true; e.code = 'PGRST202'; } throw e; };
   const total = (it) => db.wh.filter((w) => w.company === it.company).reduce((s, w) => s + (db.stock[it.id + '|' + w.id] || 0), 0);
   const q = (it, w) => db.stock[it.id + '|' + w] || 0;
   const wh = (i) => db.wh.find((w) => w.id === i) || gone('المخزن غير موجود');
   const it_ = (i) => db.items.find((x) => x.id === i) || gone('الصنف غير موجود');
   function addMove(company, it, w, kind, qty, before, after, ref, note) { db.moves.unshift({ id: id(), at: now(), company, item_id: it.id, item_name: it.name, warehouse_id: w, warehouse_name: wh(w).name, kind, qty, qty_before: before, qty_after: after, ref: ref || null, note: note || null, by_email: ME }); }
   const fns = {
-    sys_me() { const companies = ['tuya-suez', 'aix']; const perms = {}; return { email: ME, is_admin: true, companies, perms }; },
-    sys_is_admin() { return true; },
+    sys_me() {
+      if (isAdmin(ME)) return { email: ME, is_admin: true, companies: ['tuya-suez', 'aix', 'jaguar'], perms: {} };
+      const perms = {}; db.perms.filter((p) => p.email === ME).forEach((p) => { (perms[p.company] = perms[p.company] || {})[p.module] = p.level; });
+      return { email: ME, is_admin: false, companies: Object.keys(perms), perms };
+    },
+    sys_is_admin() { return isAdmin(ME); },
     sys_can() { return true; },
+    sys_activity_list(a) {
+      if (!has115) gone('Could not find the function public.sys_activity_list', true);
+      const mine = isAdmin(ME) ? null : new Set(db.perms.filter((p) => p.email === ME).map((p) => p.company));
+      const modOf = (x) => /^(admin|permission)\./.test(x) ? 'users' : 'inventory';
+      return db.audit.filter((r) => !mine || (r.company && mine.has(r.company)) || r.actor === ME).slice(0, a.p_limit || 100).map((r) => ({ at: r.at, actor: r.actor, company: r.company, module: modOf(r.action), action: r.action, summary: r.summary }));
+    },
+    sys_notifications_list(a) {
+      if (!has115) gone('Could not find the function public.sys_notifications_list', true);
+      return db.notifs.filter((n) => !n.to || n.to === ME).slice(0, a.p_limit || 30).map((n) => ({ id: n.id, title: n.title, body: n.body, created_at: n.created_at, read_at: n.read ? n.created_at : null }));
+    },
+    sys_notifications_read(a) {
+      if (!has115) gone('Could not find the function public.sys_notifications_read', true);
+      db.notifs.forEach((n) => { if (!n.to || n.to === ME) { if (a.p_ids == null || a.p_ids.includes(n.id)) n.read = true; } }); return null;
+    },
     sys_people() {
       const emails = new Set([...db.admins, ...db.extra, ...db.perms.map((p) => p.email)]);
       return [...emails].map((email) => { const perms = {}; db.perms.filter((p) => p.email === email).forEach((p) => { (perms[p.company] = perms[p.company] || {})[p.module] = p.level; }); return { email, is_admin: isAdmin(email), perms }; });
@@ -159,19 +205,19 @@ const Fake = (() => {
     sys_set_admin(a) {
       const e = String(a.p_email || '').trim().toLowerCase(); if (!e) gone('اكتب الإيميل');
       if (!a.p_on) { if (e === ME) gone('مينفعش تشيل نفسك'); if (db.admins.length <= 1) gone('مينفعش تشيل آخر أدمن'); db.admins = db.admins.filter((x) => x !== e); } else if (!db.admins.includes(e)) db.admins.push(e);
-      aud(a.p_on ? 'admin_on' : 'admin_off', null, e); return null;
+      aud('admin.set', null, e, { on: !!a.p_on }); return null;
     },
     sys_set_permission(a) {
       const e = String(a.p_email).toLowerCase(); db.perms = db.perms.filter((p) => !(p.company === a.p_company && p.email === e && p.module === a.p_module));
       if (a.p_level) db.perms.push({ company: a.p_company, email: e, module: a.p_module, level: a.p_level });
-      aud('perm', a.p_company, e, { module: a.p_module, level: a.p_level }); return null;
+      aud('permission.set', a.p_company, e, { module: a.p_module, level: a.p_level || null }); return null;
     },
-    sys_audit_list(a) { return db.audit.slice(0, a.p_limit || 100); },
+    sys_audit_list(a) { if (!isAdmin(ME)) gone('not allowed'); return db.audit.slice(0, a.p_limit || 100); },
     sys_warehouses_list(a) { return db.wh.filter((w) => w.company === a.p_company); },
     sys_warehouse_save(a) {
       if (!String(a.p_name || '').trim()) gone('اكتب اسم المخزن');
       let w = a.p_id ? wh(a.p_id) : null; if (!w) { w = { id: id(), company: a.p_company, created_at: now() }; db.wh.push(w); }
-      w.name = a.p_name; w.location = a.p_location || null; w.active = a.p_active !== false; aud('warehouse_save', a.p_company, w.name); return w.id;
+      w.name = a.p_name; w.location = a.p_location || null; w.active = a.p_active !== false; aud('warehouse.save', a.p_company, w.id, { name: w.name, created: !a.p_id }); return w.id;
     },
     sys_items_list(a) {
       return db.items.filter((x) => x.company === a.p_company && x.active).map((x) => { const t = total(x); return { id: x.id, code: x.code, name: x.name, category: x.category, unit: x.unit, min_qty: x.min_qty, total_qty: t, wh_qty: a.p_warehouse ? q(x, a.p_warehouse) : null, low: t <= x.min_qty }; });
@@ -180,24 +226,24 @@ const Fake = (() => {
       if (!String(a.p_name || '').trim()) gone('اكتب اسم الصنف');
       if (a.p_code && db.items.some((x) => x.company === a.p_company && x.code === a.p_code && x.id !== a.p_id)) gone('الكود ده مستخدم قبل كده');
       let x = a.p_id ? it_(a.p_id) : null; if (!x) { x = { id: id(), company: a.p_company, active: true, product_id: null }; db.items.push(x); }
-      Object.assign(x, { code: a.p_code || null, name: a.p_name, category: a.p_category || null, unit: a.p_unit || 'قطعة', min_qty: Number(a.p_min_qty) || 0 }); aud('item_save', a.p_company, x.name); return x.id;
+      Object.assign(x, { code: a.p_code || null, name: a.p_name, category: a.p_category || null, unit: a.p_unit || 'قطعة', min_qty: Number(a.p_min_qty) || 0 }); aud('item.save', a.p_company, x.id, { name: x.name, created: !a.p_id }); return x.id;
     },
     sys_move(a) {
       const it = it_(a.p_item), qty = Number(a.p_qty); if (!(qty > 0)) gone('الكمية لازم تكون أكبر من صفر');
       const b = q(it, a.p_warehouse), aft = a.p_kind === 'in' ? b + qty : b - qty; if (aft < 0) gone('الرصيد مش كفاية (الموجود ' + num(b) + ')');
-      db.stock[it.id + '|' + a.p_warehouse] = aft; addMove(a.p_company, it, a.p_warehouse, a.p_kind, qty, b, aft, a.p_ref, a.p_note); aud('move', a.p_company, it.name, { kind: a.p_kind, qty }); return { qty_after: aft };
+      db.stock[it.id + '|' + a.p_warehouse] = aft; addMove(a.p_company, it, a.p_warehouse, a.p_kind, qty, b, aft, a.p_ref, a.p_note); aud('stock.' + a.p_kind, a.p_company, it.id, { qty, before: b, after: aft }, (a.p_kind === 'in' ? 'وارد ' : 'صادر ') + num(qty) + ' ' + it.unit + ' — ' + it.name); return { qty_after: aft };
     },
     sys_transfer(a) {
       const it = it_(a.p_item), qty = Number(a.p_qty); if (!(qty > 0)) gone('الكمية لازم تكون أكبر من صفر'); if (a.p_from === a.p_to) gone('اختار مخزنين مختلفين');
       const b = q(it, a.p_from); if (b - qty < 0) gone('الرصيد مش كفاية (الموجود ' + num(b) + ')'); const b2 = q(it, a.p_to);
       db.stock[it.id + '|' + a.p_from] = b - qty; db.stock[it.id + '|' + a.p_to] = b2 + qty;
-      addMove(a.p_company, it, a.p_from, 'transfer_out', qty, b, b - qty, null, a.p_note); addMove(a.p_company, it, a.p_to, 'transfer_in', qty, b2, b2 + qty, null, a.p_note); aud('transfer', a.p_company, it.name, { qty }); return null;
+      addMove(a.p_company, it, a.p_from, 'transfer_out', qty, b, b - qty, null, a.p_note); addMove(a.p_company, it, a.p_to, 'transfer_in', qty, b2, b2 + qty, null, a.p_note); aud('stock.transfer', a.p_company, it.id, { qty }, 'تحويل ' + num(qty) + ' ' + it.unit + ' — ' + it.name); return null;
     },
     sys_moves_list(a) { return db.moves.filter((m) => m.company === a.p_company && (!a.p_item || m.item_id === a.p_item)).slice(0, a.p_limit || 200); },
     sys_low_stock(a) { return fns.sys_items_list({ p_company: a.p_company }).filter((x) => x.low); },
     sys_count_start(a) {
       const w = wh(a.p_warehouse); const c = { id: id(), company: a.p_company, warehouse_id: w.id, status: 'draft', note: a.p_note || null, created_by: ME, created_at: now(), lines: [] };
-      db.items.filter((x) => x.company === a.p_company && x.active).forEach((x) => c.lines.push({ item_id: x.id, expected: q(x, w.id), counted: null })); db.counts.unshift(c); aud('count_start', a.p_company, w.name); return c.id;
+      db.items.filter((x) => x.company === a.p_company && x.active).forEach((x) => c.lines.push({ item_id: x.id, expected: q(x, w.id), counted: null })); db.counts.unshift(c); aud('count.start', a.p_company, c.id, { warehouse: w.id }, 'جرد ' + w.name); return c.id;
     },
     sys_count_set(a) { const c = db.counts.find((x) => x.id === a.p_count) || gone('الجرد غير موجود'); if (c.status !== 'draft') gone('الجرد مقفول'); const l = c.lines.find((x) => x.item_id === a.p_item); if (!l) gone('الصنف مش في الجرد'); l.counted = a.p_counted === null || a.p_counted === '' ? null : Number(a.p_counted); return null; },
     sys_count_get(a) {
@@ -208,12 +254,12 @@ const Fake = (() => {
     sys_count_post(a) {
       const c = db.counts.find((x) => x.id === a.p_count) || gone('الجرد غير موجود'); if (c.status !== 'draft') gone('الجرد مقفول');
       c.lines.forEach((l) => { if (l.counted != null && l.counted !== l.expected) { const x = it_(l.item_id); db.stock[x.id + '|' + c.warehouse_id] = l.counted; addMove(c.company, x, c.warehouse_id, 'adjust', l.counted - l.expected, l.expected, l.counted, 'جرد', null); } });
-      c.status = 'posted'; c.posted_at = now(); aud('count_post', c.company, wh(c.warehouse_id).name); return null;
+      c.status = 'posted'; c.posted_at = now(); aud('count.post', c.company, c.id, { lines: c.lines.length, adjusted: c.lines.filter((l) => l.counted != null && l.counted !== l.expected).length }); return null;
     },
     sys_counts_list(a) { return db.counts.filter((c) => c.company === a.p_company).map((c) => ({ id: c.id, warehouse_id: c.warehouse_id, warehouse_name: wh(c.warehouse_id).name, status: c.status, note: c.note, created_by: c.created_by, created_at: c.created_at, posted_at: c.posted_at || null })); },
     sys_import_legacy() { gone('الاستيراد مش متاح في النسخة التجريبية'); }
   };
-  return { call(name, args) { const f = fns[name]; if (!f) throw new Error('RPC مش موجود: ' + name); return Promise.resolve(JSON.parse(JSON.stringify(f(args || {}) ?? null))); } };
+  return { login(e) { ME = String(e || '').trim().toLowerCase() || ME; }, call(name, args) { const f = fns[name]; if (!f) throw new Error('RPC مش موجود: ' + name); return Promise.resolve(JSON.parse(JSON.stringify(f(args || {}) ?? null))); } };
 })();
 
 /* ------------------------------------------ rpc layer ------------------------------------------ */
@@ -222,13 +268,19 @@ if (!DEMO) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 async function rpc(name, args) {
   if (DEMO) return Fake.call(name, args);
   if (!sb) throw new Error('تعذّر تحميل مكتبة الاتصال — اتأكد من الإنترنت');
-  const { data, error } = await sb.rpc(name, args || {});
-  if (error) { const m = String(error.message || ''); throw new Error(error.code === 'PGRST202' || /Could not find the function/i.test(m) ? 'النظام لسه متفعّلش (الميجريشن 114 لم تُشغّل)' : m || 'خطأ'); }
+  const { data, error, status } = await sb.rpc(name, args || {});
+  if (error) {
+    const m = String(error.message || '');
+    const e = new Error(m || 'خطأ'); e.code = error.code;
+    e.missing = error.code === 'PGRST202' || status === 404 || /Could not find the function/i.test(m);
+    if (e.missing) e.message = NEW115.includes(name) ? 'الميزة دي لسه متفعّلتش' : 'النظام لسه متفعّلش (الميجريشن 114 لم تُشغّل)';
+    throw e;
+  }
   return data;
 }
 
 /* --------------------------------------------- state --------------------------------------------- */
-const S = { me: null, co: null, route: 'login', tab: 'wh', busy: false, err: '', loginMsg: '', wh: [], items: [], moves: [], counts: [], low: [], count: null, people: [], audit: [], whFilter: '', moveKind: 'in', sheet: null, newEmail: '' };
+const S = { me: null, co: null, route: 'login', tab: 'wh', busy: false, err: '', loginMsg: '', wh: [], items: [], moves: [], counts: [], low: [], count: null, people: [], audit: [], whFilter: '', moveKind: 'in', sheet: null, newEmail: '', act: { rows: [], soon: false, src: '' }, nf: { avail: false, list: [] }, push: { st: '', busy: false } };
 try { S.co = localStorage.getItem('sys-co'); } catch (e) {}
 const lvl = (m) => (S.me && S.me.is_admin) ? 3 : (RANK[(((S.me || {}).perms || {})[S.co] || {})[m]] || 0);
 const can = (m, l) => lvl(m) >= RANK[l];
@@ -242,23 +294,24 @@ async function loadMe() {
   if (!me || !me.email) throw new Error('الحساب ده مش متسجّل في النظام');
   me.perms = me.perms || {}; me.companies = Array.isArray(me.companies) ? me.companies.slice() : [];
   if (me.is_admin) ['tuya-suez', 'aix'].forEach((c) => { if (!me.companies.includes(c)) me.companies.push(c); });
+  else me.companies = me.companies.filter((c) => me.perms[c] && Object.keys(me.perms[c]).length);
   S.me = me;
   if (!S.co || !me.companies.includes(S.co)) S.co = me.companies[0] || null;
   setCo(S.co);
 }
-function setCo(c) { S.co = c; try { if (c) localStorage.setItem('sys-co', c); } catch (e) {} S.wh = []; S.items = []; S.moves = []; S.counts = []; S.low = []; S.count = null; }
+function setCo(c) { S.co = c; S.whFilter = ''; try { if (c) localStorage.setItem('sys-co', c); } catch (e) {} S.wh = []; S.items = []; S.moves = []; S.counts = []; S.low = []; S.count = null; }
 async function boot() {
   if (DEMO) $('banner').classList.remove('hidden');
   let signedIn = DEMO;
   if (!DEMO && sb) { try { const { data } = await sb.auth.getSession(); signedIn = !!(data && data.session); } catch (e) { signedIn = false; } }
   S.signed = signedIn;
-  if (signedIn) { try { await loadMe(); } catch (e) { S.loginMsg = e.message; S.signed = false; S.me = null; } }
+  if (signedIn) { try { await loadMe(); loadNotifs(); } catch (e) { S.loginMsg = e.message; S.signed = false; S.me = null; } }
   if (!location.hash) location.hash = S.me ? '#home' : '#login';
   route();
 }
 async function route() {
   const r = (location.hash || '#login').slice(1).split('?')[0];
-  S.route = ['login', 'home', 'admin', 'inventory'].includes(r) ? r : 'home';
+  S.route = ['login', 'home', 'admin', 'inventory', 'activity', 'settings'].includes(r) ? r : 'home';
   if (!S.me && S.route !== 'login') { location.hash = '#login'; return; }
   if (S.me && S.route === 'login') { location.hash = '#home'; return; }
   if (S.route === 'admin' && !(S.me && S.me.is_admin)) { location.hash = '#home'; return; }
@@ -266,6 +319,8 @@ async function route() {
   S.sheet = null; render();
   if (S.route === 'admin') act(loadAdmin);
   if (S.route === 'inventory') act(() => loadInv(S.tab));
+  if (S.route === 'activity') act(loadActivity);
+  if (S.route === 'settings') act(loadPush);
 }
 window.addEventListener('hashchange', route);
 
@@ -274,15 +329,16 @@ async function doLogin(email, pass) {
   S.loginMsg = ''; S.busy = true; render();
   try {
     if (!DEMO) { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw new Error('الإيميل أو الباسورد غلط'); }
-    await loadMe(); S.signed = true;
+    if (DEMO) Fake.login(email);
+    await loadMe(); S.signed = true; loadNotifs();
     S.busy = false; if (location.hash === '#home') route(); else location.hash = '#home';
   } catch (e) { S.loginMsg = e.message; S.busy = false; if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (x) {} } S.me = null; render(); }
 }
-async function doLogout() { if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (e) {} } S.me = null; S.signed = false; S.loginMsg = ''; location.hash = '#login'; route(); }
+async function doLogout() { if (!DEMO && sb) { try { await sb.auth.signOut(); } catch (e) {} } S.me = null; S.nf = { avail: false, list: [] }; S.signed = false; S.loginMsg = ''; location.hash = '#login'; route(); }
 
 /* ---------------------------------------------- loaders ---------------------------------------------- */
 async function loadAdmin() {
-  const [p, a] = await Promise.all([rpc('sys_people'), rpc('sys_audit_list', { p_limit: 100 })]);
+  const [p, a] = await Promise.all([rpc('sys_people'), rpc('sys_audit_list', { p_limit: 30 })]);
   S.people = (p || []).map((x) => ({ email: x.email, is_admin: !!x.is_admin, perms: normPerms(x.perms) })).sort((a, b) => a.email.localeCompare(b.email));
   S.audit = a || [];
 }
@@ -290,6 +346,33 @@ function normPerms(p) {
   if (!p) return {}; if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { return {}; } }
   if (Array.isArray(p)) { const o = {}; p.forEach((r) => { if (r && r.company) (o[r.company] = o[r.company] || {})[r.module] = r.level; }); return o; }
   return p;
+}
+/* activity: 115 (sys_activity_list) -> admin falls back to 114 (sys_audit_list) -> others see "soon" */
+async function loadActivity() {
+  const r = { rows: [], soon: false, src: '' };
+  try { const d = await rpc('sys_activity_list', { p_limit: 100 }); r.rows = Array.isArray(d) ? d : []; r.src = 'activity'; }
+  catch (e) {
+    if (!e.missing) throw e;
+    if (S.me && S.me.is_admin) { const d = await rpc('sys_audit_list', { p_limit: 100 }); r.rows = Array.isArray(d) ? d : []; r.src = 'audit'; } else r.soon = true;
+  }
+  S.act = r;
+}
+const unread = () => S.nf.list.filter((n) => !n.read).length;
+function normNotif(r) { r = r || {}; return { id: r.id, title: r.title || r.subject || r.summary || '', body: r.body || r.message || r.text || '', at: r.created_at || r.at || null, read: r.read === true || r.is_read === true || !!r.read_at } ; }
+async function loadNotifs() {
+  if (!S.me) return;
+  try { const d = await rpc('sys_notifications_list', { p_limit: 30 }); S.nf.avail = true; S.nf.list = (Array.isArray(d) ? d : []).map(normNotif); }
+  catch (e) { if (e.missing) S.nf = { avail: false, list: [] }; else return; }
+  if (!S.me) return;
+  const a = document.activeElement; if (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)) return paintBell(); render();
+}
+function paintBell() { const b = $('bellBadge'); if (!b) return; const n = unread(); b.textContent = n > 9 ? '9+' : String(n); b.classList.toggle('hidden', !n); }
+setInterval(() => { if (S.me && S.nf.avail && !document.hidden) loadNotifs(); }, 60000);
+async function loadPush() {
+  const P = window.SysPush;
+  if (DEMO) { S.push.st = 'demo'; return; }
+  if (!P || typeof P.status !== 'function') { S.push.st = 'not-configured'; return; }
+  try { S.push.st = await P.status() || 'unsupported'; } catch (e) { S.push.st = 'not-configured'; }
 }
 async function loadInv(tab) {
   const c = S.co; if (!c) return;
@@ -303,30 +386,89 @@ async function loadInv(tab) {
 
 /* ---------------------------------------------- views ---------------------------------------------- */
 function header(title, sub, back) {
-  let h = '<div class="top">' + (back ? '<button class="back" data-act="home" aria-label="رجوع">‹ رجوع</button>' : '<img src="/system/icon.png" alt="">') + '<div class="t"><b>' + esc(title) + '</b><span>' + esc(sub || '') + '</span></div>';
+  let h = '<div class="top">' + (back ? '<button class="back" data-act="home" aria-label="رجوع">‹ رجوع</button>' : '<img class="logo" src="/system/aix-logo.png" alt="AIX">') + '<div class="t"><b>' + esc(title) + '</b><span>' + esc(sub || '') + '</span></div>';
   if (S.me && S.me.companies.length > 1) h += '<select data-chg="co" style="width:auto;padding:7px 10px" aria-label="الشركة">' + S.me.companies.map((c) => '<option value="' + esc(c) + '"' + (c === S.co ? ' selected' : '') + '>' + esc(cname(c)) + '</option>').join('') + '</select>';
-  if (!back) h += '<button class="ghost sm" data-act="logout">خروج</button>';
+  if (S.nf.avail) { const n = unread(); h += '<button class="icon-btn" data-act="bell" aria-label="الإشعارات">' + ICONS.bell + '<span class="badge' + (n ? '' : ' hidden') + '" id="bellBadge">' + (n > 9 ? '9+' : n) + '</span></button>'; }
+  if (!back) h += '<button class="icon-btn" data-act="settings" aria-label="الإعدادات">' + ICONS.gear + '</button>';
   return h + '</div>';
 }
 function vLogin() {
-  return '<div class="login"><div class="card"><div class="brand"><img src="/system/icon.png" alt=""><h1>نظام الشركة</h1><div class="muted">سجّل دخولك للمتابعة</div></div>' +
+  return '<div class="login"><div class="card"><div class="brand"><img src="/system/aix-logo.png" alt="AIX"><h1>نظام الشركة</h1><div class="muted">سجّل دخولك للمتابعة</div></div>' +
     '<form data-form="login"><label for="lgE">الإيميل</label><input id="lgE" type="email" autocomplete="username" inputmode="email" dir="ltr" required value="' + (DEMO ? 'demo@example.com' : '') + '">' +
     '<label for="lgP">الباسورد</label><input id="lgP" type="password" autocomplete="current-password" dir="ltr"' + (DEMO ? '' : ' required') + '>' +
     '<button class="full" type="submit"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'جاري الدخول…' : 'دخول') + '</button></form>' +
     '<button class="link" data-act="forgot">نسيت الباسورد</button><div class="msg' + (S.forgot ? ' ok' : '') + '" role="alert">' + esc(S.forgot ? 'مش موجود — قريب' : S.loginMsg) + '</div>' +
-    (DEMO ? '<div class="muted" style="text-align:center">في النسخة التجريبية أي باسورد يدخل</div>' : '') + '</div></div>';
+    (DEMO ? '<label for="lgD">جرّب بصلاحية</label><select id="lgD" data-chg="demouser"><option value="demo@example.com">أدمن (كل حاجة)</option><option value="approve@example.com">يوافق — مخزون AIX</option><option value="edit@example.com">يعدّل — مخزون تويا السويس</option><option value="view@example.com">يشوف بس — تويا السويس وAIX</option><option value="none@example.com">من غير صلاحيات</option></select><div class="muted" style="text-align:center;margin-top:10px">في النسخة التجريبية أي باسورد يدخل</div>' : '') + '</div></div>';
 }
 function vHome() {
-  const tiles = MODULES.map((m) => {
-    let on = false;
-    if (m.k === 'inventory') on = can('inventory', 'view');
-    if (m.k === 'users') { if (!S.me.is_admin) return ''; on = true; }
-    const go = m.k === 'users' ? 'admin' : m.k;
-    const live = m.live;
-    if (live && on) return '<button class="tile" data-act="go" data-to="' + esc(go) + '">' + (ICONS[m.k] || ICONS.other) + '<div><b>' + esc(m.n) + '</b></div></button>';
-    return '<button class="tile off" disabled>' + ICONS.other + '<div><b>' + esc(m.n) + '</b><br><small>' + (live ? 'مفيش صلاحية' : 'قريب') + '</small></div></button>';
+  const me = S.me, mp = (me.perms || {})[S.co] || {};
+  const tiles = [];
+  const tile = (go, ic, n, extra) => '<button class="tile" data-act="go" data-to="' + esc(go) + '">' + ic + '<div><b>' + esc(n) + '</b>' + (extra || '') + '</div></button>';
+  const soon = (n) => '<button class="tile off" disabled>' + ICONS.other + '<div><b>' + esc(n) + '</b><br><small>قريب</small></div></button>';
+  if (S.co && (me.is_admin || Object.keys(mp).length)) {
+    MODULES.forEach((m) => {
+      if (m.k === 'users') { if (me.is_admin) tiles.push(tile('admin', ICONS.users, m.n)); return; }
+      if (!can(m.k, 'view')) return;
+      tiles.push(m.live ? tile(m.k, ICONS[m.k] || ICONS.other, m.n, me.is_admin ? '' : '<br><small>' + esc(LEVEL_AR[(mp[m.k])] || '') + '</small>') : soon(m.n));
+    });
+    tiles.push(tile('activity', ICONS.activity, 'النشاط'));
+  }
+  if (!tiles.length) return header('', '') + '<div class="card" style="margin-top:14px;text-align:center"><b style="font-size:1.05rem">مفيش صلاحيات لسه</b><div class="muted" style="margin-top:8px">حسابك (<span dir="ltr">' + esc(me.email) + '</span>) متسجّل بس لسه مفيش حاجة متاحة ليه. كلّم الأدمن عشان يدّيك الصلاحيات.</div><button class="full ghost" data-act="logout">تسجيل خروج</button></div>';
+  return header('', '') + '<h3 class="sec">الوحدات — ' + esc(cname(S.co)) + '</h3><div class="tiles">' + tiles.join('') + '</div>';
+}
+function lowOf(x) { return Number(x.min_qty) > 0 && Number(x.total_qty) <= Number(x.min_qty); }
+/* ---- activity labels ---- */
+function actLabel(a) {
+  const d = a.details || {};
+  switch (a.action) {
+    case 'admin.set': return d.on === false ? 'شال صلاحية الأدمن' : 'عيّن أدمن';
+    case 'permission.set': return ('level' in d && !d.level) ? 'شال صلاحية' : 'غيّر صلاحية';
+    case 'stock.in': return 'سجّل وارد'; case 'stock.out': return 'سجّل صادر'; case 'stock.transfer': return 'حوّل بين مخزنين'; case 'stock.adjust': return 'سوّى رصيد';
+    case 'count.start': return 'بدأ جرد'; case 'count.post': return 'رحّل الجرد';
+    case 'warehouse.save': return d.created ? 'أضاف مخزن' : 'عدّل مخزن';
+    case 'item.save': return d.created ? 'أضاف صنف' : 'عدّل صنف';
+    case 'legacy.import': return 'استورد المخزون القديم';
+    default: return a.action || 'عملية';
+  }
+}
+function actDesc(a) {
+  if (a.summary) return String(a.summary);
+  const d = a.details || {}, p = [];
+  if (a.target && !UUID_RE.test(a.target)) p.push(a.target);
+  if (a.action === 'permission.set') p.push((MOD_NAME[d.module] || d.module || '') + (d.level ? ' ← ' + (LEVEL_AR[d.level] || d.level) : ''));
+  else if (d.name) p.push(d.name);
+  if (/^stock\./.test(a.action || '') && d.qty != null) p.push('الكمية ' + num(d.qty) + (d.before != null && d.after != null ? ' (' + num(d.before) + ' ← ' + num(d.after) + ')' : ''));
+  if (a.action === 'count.post' && d.lines != null) p.push('اتسوّى ' + num(d.adjusted || 0) + ' من ' + num(d.lines) + ' صنف');
+  if (a.action === 'legacy.import' && d.imported != null) p.push('اتستورد ' + num(d.imported) + ' صنف');
+  return p.filter(Boolean).join(' · ');
+}
+function actModule(a) { if (a.module) return MOD_NAME[a.module] || a.module; return /^(admin|permission)\./.test(a.action || '') ? MOD_NAME.users : /^(stock|count|warehouse|item|legacy)/.test(a.action || '') ? MOD_NAME.inventory : ''; }
+function actRows(rows) {
+  if (!rows.length) return '<div class="empty">لسه مفيش نشاط</div>';
+  return rows.map((r) => {
+    const a = { at: r.at || r.created_at, actor: r.actor || r.actor_email || r.by_email || '', company: r.company, module: r.module, action: r.action, target: r.target, details: r.details && typeof r.details === 'object' ? r.details : {}, summary: r.summary };
+    const meta = [a.actor, a.company ? cname(a.company) : '', actModule(a)].filter(Boolean).join(' · ');
+    return '<div class="item"><div class="row"><b class="grow">' + esc(actLabel(a)) + '</b><span class="muted" style="white-space:nowrap">' + esc(fdate(a.at)) + '</span></div>' + (actDesc(a) ? '<div class="ss" dir="auto">' + esc(actDesc(a)) + '</div>' : '') + '<div class="ss" dir="auto">' + esc(meta) + '</div></div>';
   }).join('');
-  return header('نظام الشركة', S.me.email) + '<h3 class="sec">الوحدات — ' + esc(cname(S.co)) + '</h3><div class="tiles">' + tiles + '</div>';
+}
+function vActivity() {
+  let h = header('النشاط', 'مين عمل إيه وامتى', true);
+  if (S.act.soon) return h + '<div class="card" style="text-align:center"><b>النشاط هيتفعّل قريب</b><div class="muted" style="margin-top:8px">لسه الميزة دي بتتجهّز، وهتظهر هنا أول ما تشتغل.</div></div>';
+  return h + '<div class="panel">' + actRows(S.act.rows) + '</div>';
+}
+function vSettings() {
+  const me = S.me, st = S.push.st, ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+  let pushH = '';
+  if (st === 'demo') pushH = '<div class="muted">إشعارات الموبايل مش متاحة في النسخة التجريبية.</div>';
+  else if (st === 'not-configured') pushH = '<div class="muted">إشعارات الموبايل بتتجهّز.</div>';
+  else if (st === 'unsupported') pushH = '<div class="muted">المتصفح ده مش بيدعم إشعارات الموبايل.</div>';
+  else if (st === 'denied') pushH = '<div class="muted">الإشعارات مقفولة للموقع ده. افتح إعدادات المتصفح وفعّل الإشعارات لـ jaguarsmart.com وارجع جرّب تاني.</div>';
+  else if (st === 'on') pushH = '<div class="row"><span class="chip ok">مفعّلة على الجهاز ده</span><span class="grow"></span><button class="sm ghost" data-act="pushoff"' + (S.push.busy ? ' disabled' : '') + '>قفّلها</button></div>';
+  else if (st === 'off') pushH = '<button class="full" data-act="pushon"' + (S.push.busy ? ' disabled' : '') + '>فعّل إشعارات الموبايل</button>';
+  else pushH = '<div class="muted">بيتحمّل…</div>';
+  if (ios && !standalone && st !== 'demo') pushH += '<div class="muted" style="margin-top:10px">على iPhone: لازم الأول تفتح الموقع من Safari وتدوس مشاركة ← «إضافة للشاشة الرئيسية»، وبعدين تفتح التطبيق من الأيقونة وتفعّل الإشعارات.</div>';
+  return header('الإعدادات', me.email, true) + '<div class="panel"><div class="item"><div class="muted">الحساب</div><b dir="ltr" style="word-break:break-all">' + esc(me.email) + '</b> ' + (me.is_admin ? '<span class="chip ok">أدمن</span>' : '') + '</div><div class="item"><div class="muted">الشركات</div><div>' + (me.companies.length ? me.companies.map((c) => esc(cname(c))).join('، ') : '—') + '</div></div></div>' +
+    '<h3 class="sec">إشعارات الموبايل</h3><div class="panel">' + pushH + '</div><button class="full ghost" data-act="logout">تسجيل خروج</button>';
 }
 function permsLine(p) { return ''; }
 
@@ -348,22 +490,17 @@ function vAdmin() {
     });
     h += '</div>';
   });
-  h += '<h3 class="sec">سجل العمليات</h3><div class="panel">';
-  if (!S.audit.length) h += '<div class="empty">السجل فاضي</div>';
-  S.audit.forEach((a) => {
-    let d = ''; try { d = a.details && Object.keys(a.details).length ? JSON.stringify(a.details) : ''; } catch (e) {}
-    h += '<div class="item"><div class="row"><b class="grow">' + esc(a.action) + '</b><span class="muted">' + esc(fdate(a.at)) + '</span></div><div class="ss" dir="auto">' + esc([a.actor, a.company ? cname(a.company) : '', a.target, d].filter(Boolean).join(' · ')) + '</div></div>';
-  });
-  return h + '</div>';
+  h += '<h3 class="sec">آخر العمليات</h3><div class="panel">' + actRows(S.audit) + '<button class="sm ghost" data-act="go" data-to="activity" style="margin-top:8px">كل النشاط</button></div>';
+  return h;
 }
 
 function whName(id) { const w = S.wh.find((x) => x.id === id); return w ? w.name : ''; }
 function whOptions(sel, onlyActive) { return S.wh.filter((w) => !onlyActive || w.active).map((w) => '<option value="' + esc(w.id) + '"' + (w.id === sel ? ' selected' : '') + '>' + esc(w.name) + '</option>').join(''); }
 
 function vInventory() {
-  const T = [['wh', 'المخازن'], ['items', 'الأصناف'], ['move', 'حركة'], ['count', 'الجرد'], ['alerts', 'تنبيهات']];
-  let h = header('المخزون', cname(S.co), true) + '<div class="tabs">' + T.map((t) => '<button class="' + (S.tab === t[0] ? 'on' : '') + '" data-act="tab" data-t="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>';
   const edit = can('inventory', 'edit');
+  const T = [['wh', 'المخازن'], ['items', 'الأصناف'], ['move', edit ? 'حركة' : 'الحركات'], ['count', 'الجرد'], ['alerts', 'تنبيهات']];
+  let h = header('المخزون', cname(S.co), true) + '<div class="tabs">' + T.map((t) => '<button class="' + (S.tab === t[0] ? 'on' : '') + '" data-act="tab" data-t="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>';
   if (S.tab === 'wh') {
     h += edit ? '<button class="sm" data-act="whform" style="margin-bottom:10px">+ مخزن جديد</button>' : '';
     if (!S.wh.length) h += '<div class="empty">مفيش مخازن لسه</div>';
@@ -373,10 +510,10 @@ function vInventory() {
   if (S.tab === 'items') {
     h += '<div class="row" style="margin-bottom:10px"><select data-chg="whfilter" class="grow" aria-label="فلتر المخزن"><option value="">كل المخازن (الإجمالي)</option>' + whOptions(S.whFilter) + '</select>' + (edit ? '<button class="sm" data-act="itemform">+ صنف</button>' : '') + '</div>';
     if (!S.items.length) h += '<div class="empty">مفيش أصناف لسه</div>';
-    h += '<div class="panel">' + S.items.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b> ' + (x.low ? '<span class="chip low">ناقص</span>' : '') + '<div class="ss">' + esc([x.code, x.category].filter(Boolean).join(' · ') || '—') + ' · الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><div style="text-align:left"><div class="qty">' + esc(num(S.whFilter && x.wh_qty != null ? x.wh_qty : x.total_qty)) + '</div><div class="ss">' + esc(x.unit) + '</div></div>' + (edit ? '<button class="sm ghost" data-act="itemform" data-id="' + esc(x.id) + '">تعديل</button>' : '') + '</div>').join('') + '</div>';
+    h += '<div class="panel">' + S.items.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b> ' + (lowOf(x) ? '<span class="chip low">ناقص</span>' : '') + '<div class="ss">' + esc([x.code, x.category].filter(Boolean).join(' · ') || '—') + ' · الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><div style="text-align:left"><div class="qty">' + esc(num(S.whFilter && x.wh_qty != null ? x.wh_qty : x.total_qty)) + '</div><div class="ss">' + esc(x.unit) + '</div></div>' + (edit ? '<button class="sm ghost" data-act="itemform" data-id="' + esc(x.id) + '">تعديل</button>' : '') + '</div>').join('') + '</div>';
   }
   if (S.tab === 'move') {
-    if (!edit) h += '<div class="empty">ليك صلاحية المشاهدة بس</div>';
+    if (!edit) h += '<div class="muted" style="margin-bottom:8px">ليك صلاحية المشاهدة بس — التسجيل محتاج صلاحية «يعدّل».</div>';
     else if (!S.wh.length || !S.items.length) h += '<div class="empty">أضف مخزن وصنف الأول</div>';
     else {
       const k = S.moveKind, tr = k === 'transfer';
@@ -392,7 +529,8 @@ function vInventory() {
   }
   if (S.tab === 'count') h += vCount(edit);
   if (S.tab === 'alerts') {
-    h += '<div class="panel">' + (S.low.length ? S.low.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b><div class="ss">الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><span class="chip low">' + esc(num(x.total_qty)) + ' ' + esc(x.unit) + '</span></div>').join('') : '<div class="empty">مفيش أصناف ناقصة</div>') + '</div>';
+    const low = S.low.filter(lowOf);
+    h += '<div class="panel">' + (low.length ? low.map((x) => '<div class="item row"><div class="grow"><b>' + esc(x.name) + '</b><div class="ss">الحد الأدنى ' + esc(num(x.min_qty)) + '</div></div><span class="chip low">' + esc(num(x.total_qty)) + ' ' + esc(x.unit) + '</span></div>').join('') : '<div class="empty">مفيش أصناف ناقصة</div>') + '</div>';
   }
   return h;
 }
@@ -418,7 +556,11 @@ function vSheet() {
   let body = '';
   if (s.kind === 'wh') { const w = s.rec || {}; body = '<h4>' + (w.id ? 'تعديل مخزن' : 'مخزن جديد') + '</h4><form data-form="whsave"><label for="shN">الاسم</label><input id="shN" name="name" required value="' + esc(w.name || '') + '"><label for="shL">المكان</label><input id="shL" name="location" value="' + esc(w.location || '') + '"><label class="switch"><input type="checkbox" name="active" style="width:auto"' + (w.id && !w.active ? '' : ' checked') + '> شغّال</label><button class="full" type="submit">حفظ</button></form>'; }
   if (s.kind === 'item') { const x = s.rec || {}; body = '<h4>' + (x.id ? 'تعديل صنف' : 'صنف جديد') + '</h4><form data-form="itemsave"><label for="siN">الاسم</label><input id="siN" name="name" required value="' + esc(x.name || '') + '"><div class="grid2"><div><label for="siC">الكود</label><input id="siC" name="code" dir="ltr" value="' + esc(x.code || '') + '"></div><div><label for="siU">الوحدة</label><input id="siU" name="unit" value="' + esc(x.unit || 'قطعة') + '"></div></div><div class="grid2"><div><label for="siG">التصنيف</label><input id="siG" name="category" value="' + esc(x.category || '') + '"></div><div><label for="siM">الحد الأدنى</label><input id="siM" name="min" type="number" min="0" step="any" dir="ltr" value="' + esc(x.min_qty == null ? 0 : x.min_qty) + '"></div></div><button class="full" type="submit">حفظ</button></form>'; }
-  return '<div class="sheetbg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-modal="true">' + body + '<button class="full ghost" type="button" data-act="closesheet" style="margin-top:8px">إلغاء</button></div></div>';
+  if (s.kind === 'notifs') {
+    body = '<div class="row"><h4 class="grow">الإشعارات</h4>' + (unread() ? '<button class="sm ghost" data-act="nreadall">تعليم الكل كمقروء</button>' : '') + '</div>' +
+      (S.nf.list.length ? S.nf.list.map((n, i) => '<div class="item' + (n.read ? '' : ' unread') + '"><button class="item-btn" data-act="nread" data-i="' + i + '"><div class="row"><b class="grow">' + (n.read ? '' : '<span class="dot"></span>') + esc(n.title) + '</b><span class="muted" style="white-space:nowrap">' + esc(fdate(n.at)) + '</span></div>' + (n.body ? '<div class="ss">' + esc(n.body) + '</div>' : '') + '</button></div>').join('') : '<div class="empty">مفيش إشعارات</div>');
+  }
+  return '<div class="sheetbg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-modal="true">' + body + '<button class="full ghost" type="button" data-act="closesheet" style="margin-top:8px">' + (s.kind === 'notifs' ? 'إغلاق' : 'إلغاء') + '</button></div></div>';
 }
 
 function render() {
@@ -428,6 +570,8 @@ function render() {
   else if (S.route === 'home') h = vHome();
   else if (S.route === 'admin') h = vAdmin();
   else if (S.route === 'inventory') h = vInventory();
+  else if (S.route === 'activity') h = vActivity();
+  else if (S.route === 'settings') h = vSettings();
   app.innerHTML = h; $('sheetHost').innerHTML = vSheet();
 }
 
@@ -456,6 +600,14 @@ document.addEventListener('click', (ev) => {
   if (a === 'go') { location.hash = '#' + t.dataset.to; return; }
   if (a === 'home') { location.hash = '#home'; return; }
   if (a === 'logout') return void doLogout();
+  if (a === 'settings') { location.hash = '#settings'; return; }
+  if (a === 'bell') { S.sheet = { kind: 'notifs' }; return render(); }
+  if (a === 'nread') { const n = S.nf.list[+t.dataset.i]; if (!n || n.read) return; n.read = true; render(); return void rpc('sys_notifications_read', { p_ids: [n.id] }).catch(() => { n.read = false; render(); }); }
+  if (a === 'nreadall') { const prev = S.nf.list.map((n) => n.read); S.nf.list.forEach((n) => { n.read = true; }); render(); return void rpc('sys_notifications_read', { p_ids: null }).catch(() => { S.nf.list.forEach((n, i) => { n.read = prev[i]; }); render(); }); }
+  if (a === 'pushon' || a === 'pushoff') {
+    const P = window.SysPush; if (!P || S.push.busy) return; S.push.busy = true; render();
+    return void (async () => { try { if (a === 'pushon') await P.enable(sb); else await P.disable(sb); await loadPush(); toast(a === 'pushon' ? (S.push.st === 'on' ? 'الإشعارات اتفعّلت' : S.push.st === 'denied' ? 'الإشعارات مرفوضة من المتصفح' : 'الإشعارات لسه مش متفعّلة') : 'الإشعارات اتقفلت'); } catch (e) { toast((e && e.message) || 'مقدرناش نغيّر الإشعارات'); try { await loadPush(); } catch (x) {} } S.push.busy = false; render(); })();
+  }
   if (a === 'closesheet') { S.sheet = null; return render(); }
   if (a === 'tab') { S.tab = t.dataset.t; S.count = null; render(); return void act(() => loadInv(S.tab)); }
   if (a === 'kind') { S.moveKind = t.dataset.k; return render(); }
@@ -469,7 +621,8 @@ document.addEventListener('click', (ev) => {
 });
 document.addEventListener('change', (ev) => {
   const t = ev.target.closest('[data-chg]'); if (!t) return; const k = t.dataset.chg;
-  if (k === 'co') { setCo(t.value); render(); if (S.route === 'inventory') act(() => loadInv(S.tab)); if (S.route === 'admin') act(loadAdmin); return; }
+  if (k === 'demouser') { const e = $('lgE'); if (e) e.value = t.value; return; }
+  if (k === 'co') { setCo(t.value); if (S.route === 'inventory' && !can('inventory', 'view')) { location.hash = '#home'; return; } render(); if (S.route === 'inventory') act(() => loadInv(S.tab)); if (S.route === 'admin') act(loadAdmin); return; }
   if (k === 'whfilter') { S.whFilter = t.value; return void act(() => loadInv('items')); }
   if (k === 'perm') { const p = S.people[+t.dataset.i], c = t.dataset.c, m = t.dataset.m, lv = t.value || null; return void act(async () => { await rpc('sys_set_permission', { p_company: c, p_email: p.email, p_module: m, p_level: lv }); (p.perms[c] = p.perms[c] || {})[m] = lv; if (!lv) delete p.perms[c][m]; await loadAdmin(); if (!S.people.some((x) => x.email === p.email)) S.people.unshift(p); }, 'اتحفظت الصلاحية'); }
   if (k === 'cnt') {

@@ -1,16 +1,18 @@
 {
-  "name": "نظام الشركة",
-  "short_name": "نظام الشركة",
-  "description": "نظام الشركة: المخزون والإدارة",
+  "name": "AIX",
+  "short_name": "AIX",
+  "description": "AIX: نظام الشركة (المخزون والإدارة)",
   "start_url": "/system/",
   "scope": "/system/",
   "display": "standalone",
   "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
-  "background_color": "#0f1216",
-  "theme_color": "#0f1216",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
-    { "src": "/system/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+    { "src": "/system/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/system/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/system/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
