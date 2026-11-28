@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Bella Beauty &amp; Care</title>
+<meta name="description" content="Demo store preview for Bella Beauty & Care. Sample products and demo prices only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dark:#3B2A33; --cream:#FBF6F2; --blush:#F3E6E0; --rose:#A0564C;
+  --rose-dark:#86443B; --muted:#6B5761; --line:#E6D6CE; --white:#fff;
+  --ok:#2F6B4F; --err:#A3302A;
+  --radius:18px; --shadow:0 10px 30px rgba(59,42,51,.08);
+  --serif:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans:"DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--dark);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:var(--rose);text-underline-offset:3px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1;margin:0 0 .5em;letter-spacing:-.01em}
+h1{font-size:clamp(2.4rem,7vw,4.2rem)}
+h2{font-size:clamp(1.9rem,4.5vw,2.7rem)}
+h3{font-size:1.45rem}
+p{margin:0 0 1em}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+:focus-visible{outline:3px solid var(--rose);outline-offset:2px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:0;background:var(--dark);color:#fff;padding:10px 14px;z-index:100}
+.skip:focus{left:10px;top:10px}
+
+.demo-banner{background:var(--dark);color:var(--cream);text-align:center;font-size:.86rem;padding:9px 16px;letter-spacing:.02em}
+.demo-banner strong{color:#F6CFC6;font-weight:600}
+
+header.site{position:sticky;top:0;z-index:40;background:rgba(251,246,242,.95);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line)}
+.head-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:66px}
+.logo{display:flex;flex-direction:column;text-decoration:none;color:var(--dark);line-height:1}
+.logo b{font-family:var(--serif);font-size:1.9rem;font-weight:700;letter-spacing:.02em}
+.logo small{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+nav.main{display:flex;align-items:center;gap:4px}
+nav.main a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:999px;text-decoration:none;color:var(--dark);font-weight:500;font-size:.95rem}
+nav.main a[aria-current="page"],nav.main a:hover{background:var(--blush)}
+.cart-btn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--dark);border-radius:999px;background:transparent;color:var(--dark);font:600 .95rem var(--sans);cursor:pointer}
+.cart-btn:hover{background:var(--dark);color:var(--cream)}
+.cart-count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--rose);color:#fff;font-size:.75rem}
+@media (max-width:560px){ nav.main a.hide-sm{display:none} .cart-btn .lbl{display:none} }
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border-radius:999px;border:1.5px solid transparent;font:600 1rem var(--sans);cursor:pointer;text-decoration:none;transition:background .15s,color .15s,transform .1s;text-align:center}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--rose);color:#fff}
+.btn-primary:hover{background:var(--rose-dark)}
+.btn-dark{background:var(--dark);color:var(--cream)}
+.btn-dark:hover{background:#2a1d24}
+.btn-ghost{background:transparent;color:var(--dark);border-color:var(--dark)}
+.btn-ghost:hover{background:var(--dark);color:var(--cream)}
+.btn-wa{background:#1F7A4D;color:#fff}
+.btn-wa:hover{background:#17603c}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.link-btn{background:none;border:0;color:var(--rose);font:600 .9rem var(--sans);cursor:pointer;min-height:44px;padding:0 6px;text-decoration:underline;text-underline-offset:3px}
+
+.tag{display:inline-block;font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:3px 0;color:var(--muted);background:none}
+.tag.soft{color:var(--rose-dark)}
+.card a.thumb .tag{background:rgba(251,246,242,.85);padding:4px 8px;border-radius:4px}
+.eyebrow{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);font-weight:700;margin-bottom:12px}
+
+.hero{padding:40px 0 56px;background:radial-gradient(1200px 500px at 85% 0%, #F3E6E0 0%, rgba(243,230,224,0) 60%)}
+.hero-grid{display:grid;gap:32px;align-items:center}
+@media (min-width:880px){ .hero-grid{grid-template-columns:1.05fr .95fr;gap:56px} .hero{padding:72px 0 88px} }
+.hero p.lead{font-size:1.12rem;color:var(--muted);max-width:36ch}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.hero-art{position:relative;aspect-ratio:1/1;border-radius:32px;background:var(--blush);overflow:hidden;box-shadow:var(--shadow)}
+.hero-art svg{width:100%;height:100%}
+.hero-note{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;color:var(--muted);font-size:.9rem}
+.hero-note span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rose);margin-right:8px;vertical-align:middle}
+
+section.block{padding:56px 0}
+section.block.alt{background:var(--blush)}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.section-head p{color:var(--muted);margin:0;max-width:52ch}
+
+.cat-tiles{display:grid;gap:14px}
+@media (min-width:760px){ .cat-tiles{grid-template-columns:repeat(3,1fr);gap:20px} }
+.cat-tile{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center;background:var(--white);border-radius:var(--radius);padding:14px;text-decoration:none;color:var(--dark);border:1px solid var(--line)}
+.cat-tile:hover{box-shadow:var(--shadow)}
+.cat-tile .art{width:110px;height:120px;border-radius:14px;overflow:hidden}
+.cat-tile h3{margin:0 0 4px}
+.cat-tile p{margin:0;color:var(--muted);font-size:.92rem}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (min-width:760px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px} }
+@media (min-width:1040px){ .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.card{background:var(--white);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--line);transition:box-shadow .2s, transform .2s}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.card a.thumb{display:block;position:relative;aspect-ratio:4/5;text-decoration:none}
+.card a.thumb .tag{position:absolute;top:10px;left:10px}
+.card .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card .cat{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card h3{font-size:1.2rem;margin:0}
+.card h3 a{color:var(--dark);text-decoration:none}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px}
+.price{font-weight:700;font-size:1.02rem}
+.from{font-size:.78rem;color:var(--muted);font-weight:500}
+.add-mini{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;border-radius:999px;border:1.5px solid var(--dark);background:transparent;color:var(--dark);font:600 .85rem var(--sans);padding:0 14px;cursor:pointer;text-decoration:none}
+.add-mini:hover{background:var(--dark);color:var(--cream)}
+@media (max-width:420px){ .card .row{flex-direction:column;align-items:stretch} .card h3{font-size:1.08rem} }
+
+.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--white);color:var(--dark);font:600 .92rem var(--sans);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--dark);border-color:var(--dark);color:var(--cream)}
+
+.bundle{display:grid;gap:16px;align-items:center;background:var(--dark);color:var(--cream);border-radius:24px;padding:28px}
+.bundle h2{color:var(--cream);margin-bottom:.25em}
+.bundle p{color:#E9DAD3;margin:0}
+@media (min-width:760px){ .bundle{grid-template-columns:1fr auto;padding:36px 40px} }
+
+.why{display:grid;gap:28px;align-items:center}
+@media (min-width:880px){ .why{grid-template-columns:.9fr 1.1fr;gap:56px} }
+.founder{background:var(--white);border-radius:28px;padding:28px;box-shadow:var(--shadow);text-align:center}
+.founder .avatar{width:132px;height:132px;margin:0 auto 14px;border-radius:50%;background:var(--blush);display:grid;place-items:center;font-family:var(--serif);font-size:3rem;color:var(--rose);font-weight:700}
+.founder blockquote{font-family:var(--serif);font-size:1.35rem;font-style:italic;margin:14px 0 0;color:var(--dark)}
+.pillars{display:grid;gap:14px}
+@media (min-width:560px){ .pillars{grid-template-columns:1fr 1fr} }
+.pillar{background:var(--white);border-radius:var(--radius);padding:18px 18px 16px;border:1px solid var(--line)}
+.pillar .ic{width:40px;height:40px;border-radius:12px;background:var(--blush);display:grid;place-items:center;margin-bottom:10px;color:var(--rose)}
+.pillar h3{font-size:1.25rem;margin-bottom:.3em}
+.pillar p{margin:0;color:var(--muted);font-size:.95rem}
+
+.reviews{display:grid;gap:14px}
+@media (min-width:760px){ .reviews{grid-template-columns:repeat(3,1fr);gap:20px} }
+.review{background:var(--white);border-radius:var(--radius);padding:20px;border:1px dashed #CDB6AC;margin:0}
+.stars{color:var(--rose);letter-spacing:2px;font-size:1rem}
+.review p{font-family:var(--serif);font-size:1.2rem;margin:10px 0}
+.review .who{font-size:.88rem;color:var(--muted)}
+
+.crumbs{font-size:.88rem;color:var(--muted);padding:18px 0 6px}
+.crumbs a{color:var(--muted)}
+.pdp{display:grid;gap:28px;padding:10px 0 56px}
+@media (min-width:880px){ .pdp{grid-template-columns:1fr 1fr;gap:56px;align-items:start} .gallery{position:sticky;top:90px} }
+.gallery .main-art{border-radius:28px;overflow:hidden;aspect-ratio:4/5;background:var(--blush)}
+.gallery .thumbs{display:flex;gap:10px;margin-top:10px}
+.gallery .thumbs button{flex:1;aspect-ratio:1/1;border-radius:14px;overflow:hidden;border:2px solid transparent;padding:0;cursor:pointer;background:var(--blush);min-height:44px}
+.gallery .thumbs button[aria-pressed="true"]{border-color:var(--rose)}
+.pdp .price{font-size:1.5rem}
+.pdp .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--dark);border-radius:999px;overflow:hidden;background:var(--white)}
+.qty button{width:46px;height:46px;border:0;background:transparent;font:600 1.2rem var(--sans);color:var(--dark);cursor:pointer}
+.qty button:hover{background:var(--blush)}
+.qty input{width:46px;height:46px;border:0;text-align:center;font:600 1rem var(--sans);background:transparent;color:var(--dark);-moz-appearance:textfield}
+.qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.buy-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:20px 0}
+.buy-row .btn{flex:1;min-width:180px}
+details.acc{border-top:1px solid var(--line)}
+details.acc:last-of-type{border-bottom:1px solid var(--line)}
+details.acc summary{list-style:none;cursor:pointer;min-height:54px;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";font-size:1.4rem;color:var(--rose)}
+details.acc[open] summary::after{content:"–"}
+details.acc .in{padding:0 0 16px;color:var(--muted)}
+.perks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;font-size:.8rem;color:var(--muted);text-align:center}
+.perks div{background:var(--white);border-radius:12px;padding:10px 6px;border:1px solid var(--line)}
+
+/* Photos */
+img.ph{display:block;width:100%;height:100%;object-fit:cover;background:var(--blush)}
+.card a.thumb{overflow:hidden}
+.card a.thumb img.ph{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.card:hover a.thumb img.ph{transform:scale(1.04)}
+.main-art img.ph{animation:fadeUp .35s ease both}
+.gallery .thumbs{overflow-x:auto;scrollbar-width:none}
+.gallery .thumbs button{flex:0 0 calc(25% - 8px);min-width:64px}
+.unbox{display:grid;gap:28px;align-items:center}
+@media (min-width:880px){ .unbox{grid-template-columns:1fr 1fr;gap:64px} }
+.unbox .pic{border-radius:28px;overflow:hidden;aspect-ratio:4/5;box-shadow:var(--shadow)}
+.unbox ul{list-style:none;padding:0;margin:0 0 22px;display:grid;gap:10px}
+.unbox li{display:flex;gap:12px;align-items:flex-start;color:var(--muted)}
+.unbox li::before{content:"";flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--rose)}
+.unbox .mini{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.unbox .mini a{display:block;border-radius:16px;overflow:hidden;aspect-ratio:1/1;position:relative;color:var(--dark);text-decoration:none}
+.unbox .mini span{position:absolute;left:10px;bottom:10px;background:rgba(251,246,242,.9);border-radius:999px;padding:6px 12px;font-size:.82rem;font-weight:600}
+
+/* Configurator */
+.opt-group{border:0;margin:0 0 18px;padding:0}
+.opt-group legend{font-weight:700;font-size:.95rem;margin-bottom:8px;padding:0;font-family:var(--sans)}
+.opt-group legend span{font-weight:500;color:var(--muted)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt span{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:56px;padding:0 14px;border:1.5px solid #CDB6AC;border-radius:12px;background:var(--white);font-weight:600;font-size:.92rem;cursor:pointer;text-align:center;line-height:1.15}
+.opt span small{display:block;font-weight:500;color:var(--muted);font-size:.72rem}
+.opt.stack span{flex-direction:column;padding:6px 14px}
+.opt input:checked + span{border-color:var(--dark);background:var(--dark);color:var(--cream)}
+.opt input:checked + span small{color:#E9DAD3}
+.opt input:focus-visible + span{outline:3px solid var(--rose);outline-offset:2px}
+.sw-family{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:10px 0 6px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}
+.sw{position:relative}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw .t{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px 8px;border-radius:14px;border:1.5px solid transparent;cursor:pointer;text-align:center;transition:border-color .2s, background .2s}
+.sw .t i{display:block;width:52px;height:52px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(59,42,51,.12), 0 2px 6px rgba(59,42,51,.12)}
+.sw .t b{font-size:.78rem;line-height:1.1}
+.sw .t small{font-size:.68rem;color:var(--muted);line-height:1.1}
+.sw .t:hover{background:var(--white)}
+.sw input:checked + .t{border-color:var(--dark);background:var(--white)}
+.sw input:focus-visible + .t{outline:3px solid var(--rose);outline-offset:2px}
+.len-visual{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:12px 16px;margin-top:10px}
+.len-visual p{margin:0;font-size:.9rem;color:var(--muted)}
+.len-visual p b{color:var(--dark);font-size:1rem}
+.sku-box{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:4px;margin:6px 0 4px}
+.sku-box .lbl{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.sku-box code{font:700 1rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--dark);word-break:break-all}
+.guide-table{width:100%;border-collapse:collapse;font-size:.9rem;color:var(--dark)}
+.guide-table th,.guide-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.shade-guide{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.shade-guide div{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--dark)}
+.shade-guide i{width:22px;height:22px;border-radius:50%;flex:0 0 auto;border:1px solid #E2CFC6}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(59,42,51,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.scrim.open{opacity:1;pointer-events:auto}
+aside.drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--cream);z-index:70;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(59,42,51,.18);visibility:hidden}
+aside.drawer.open{transform:none;visibility:visible}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.drawer-head h2{font-size:1.8rem;margin:0}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--white);cursor:pointer;display:grid;place-items:center;color:var(--dark);font-size:1.3rem}
+.drawer-body{flex:1;overflow-y:auto;padding:12px 20px}
+.drawer-foot{border-top:1px solid var(--line);padding:16px 20px calc(16px + env(safe-area-inset-bottom));background:var(--white)}
+.line-item{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.line-item .art{width:72px;height:88px;border-radius:12px;overflow:hidden;background:var(--blush)}
+.line-item .nm{font-weight:600;line-height:1.3}
+.line-item .sub{font-size:.84rem;color:var(--muted)}
+.line-item .sku{font:600 .76rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted);word-break:break-all}
+.line-item .ctrl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
+.line-item .qty button,.line-item .qty input{width:40px;height:44px}
+.addons{margin:14px 0 4px}
+.addons h3{font-size:1.25rem;margin-bottom:8px}
+.addon{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.addon b{display:block;font-size:.92rem}
+.addon span{font-size:.8rem;color:var(--muted)}
+.addon button{flex:0 0 auto}
+.addon.on{border-color:var(--ok);background:#F1F8F4}
+.totals{display:grid;gap:6px;font-size:.95rem}
+.totals div{display:flex;justify-content:space-between;gap:10px}
+.totals .grand{font-size:1.15rem;font-weight:700;padding-top:8px;border-top:1px solid var(--line);margin-top:4px}
+.totals .disc{color:var(--ok);font-weight:600}
+.upsell{background:var(--blush);border-radius:14px;padding:12px 14px;font-size:.9rem;margin:10px 0 12px}
+.upsell.done{background:#E3F0E8;color:var(--ok)}
+.progress{height:6px;background:#E6D1C8;border-radius:999px;overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;background:var(--rose);border-radius:999px;transition:width .3s}
+.empty{text-align:center;padding:40px 10px;color:var(--muted)}
+
+/* Forms / checkout */
+.checkout{display:grid;gap:28px;padding:16px 0 64px}
+@media (min-width:920px){ .checkout{grid-template-columns:1.25fr .9fr;gap:44px;align-items:start} .summary{position:sticky;top:90px} }
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend{font-family:var(--serif);font-size:1.6rem;font-weight:600;margin-bottom:12px;padding:0}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px}
+.field .hint{font-size:.82rem;color:var(--muted);margin-top:4px}
+.field input,.field select,.field textarea{width:100%;min-height:50px;padding:12px 14px;border:1.5px solid #B99F94;border-radius:12px;background:var(--white);color:var(--dark);font:400 1rem var(--sans)}
+.field textarea{min-height:90px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rose);outline:none;box-shadow:0 0 0 3px rgba(160,86,76,.18)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+.field .err{display:none;color:var(--err);font-size:.85rem;margin-top:5px;font-weight:500}
+.field.invalid .err{display:block}
+.pay-opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid #CDB6AC;border-radius:14px;background:var(--white);margin-bottom:10px;cursor:pointer;min-height:56px}
+.pay-opt input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--rose);flex:0 0 auto}
+.pay-opt.selected{border-color:var(--rose);box-shadow:0 0 0 3px rgba(160,86,76,.12)}
+.pay-opt.disabled{opacity:.65;cursor:not-allowed;background:#F6F0EC}
+.pay-opt b{display:block}
+.pay-opt span{font-size:.86rem;color:var(--muted)}
+.summary{background:var(--white);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.summary h2{font-size:1.8rem}
+.sum-line{display:flex;justify-content:space-between;gap:10px;font-size:.92rem;padding:6px 0}
+.sum-line small{display:block;color:var(--muted);font:600 .74rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.placeholder-note{font-size:.8rem;color:var(--muted);background:var(--blush);border-radius:10px;padding:8px 10px;margin-top:10px}
+.form-alert{display:none;background:#FBE7E4;color:var(--err);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-weight:500}
+.form-alert.show{display:block}
+
+.confirm{max-width:640px;margin:0 auto;padding:40px 0 70px;text-align:center}
+.confirm .check{width:84px;height:84px;border-radius:50%;background:#E3F0E8;color:var(--ok);display:grid;place-items:center;margin:0 auto 18px}
+.order-no{display:inline-block;font:700 1.1rem var(--sans);letter-spacing:.06em;background:var(--white);border:1.5px dashed var(--rose);border-radius:12px;padding:10px 18px;margin:8px 0 22px}
+.confirm .box{background:var(--white);border-radius:20px;padding:20px;text-align:left;margin:18px 0;box-shadow:0 1px 0 var(--line)}
+.confirm .actions{display:grid;gap:12px}
+@media (min-width:560px){ .confirm .actions{grid-template-columns:1fr 1fr} }
+
+.admin-table{width:100%;border-collapse:collapse;background:var(--white);font-size:.9rem}
+.admin-table th,.admin-table td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.admin-table th{background:var(--blush);font-weight:600}
+.admin-table code{font-size:.78rem;color:var(--muted)}
+.table-wrap{overflow-x:auto;border-radius:16px;box-shadow:0 1px 0 var(--line)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--white);border-radius:16px;padding:14px 16px;border:1px solid var(--line)}
+.stat b{display:block;font-family:var(--serif);font-size:1.9rem;line-height:1.1}
+.stat span{font-size:.82rem;color:var(--muted)}
+.admin-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+
+footer.site{background:var(--dark);color:#E9DAD3;padding:44px 0 calc(30px + env(safe-area-inset-bottom));margin-top:20px}
+footer.site .cols{display:grid;gap:24px}
+@media (min-width:760px){ footer.site .cols{grid-template-columns:1.4fr 1fr 1fr} }
+footer.site a{color:#F6CFC6}
+footer.site h3{color:var(--cream);font-size:1.3rem}
+footer.site ul{list-style:none;margin:0;padding:0}
+footer.site li a{display:inline-flex;min-height:40px;align-items:center}
+footer.site .fine{border-top:1px solid rgba(255,255,255,.12);margin-top:28px;padding-top:16px;font-size:.82rem}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);background:var(--dark);color:var(--cream);padding:12px 18px;border-radius:999px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:80;max-width:calc(100% - 32px);text-align:center;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#app > *{animation:fadeUp .45s ease both}
+.card,.cat-tile,.btn,.chip,.opt span{transition:all .2s ease}
+.ship-bar{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:.9rem;margin:10px 0 12px}
+.ship-bar.done{border-color:#BFDCCB;background:#F1F8F4;color:var(--ok)}
+.announce{background:var(--blush);color:var(--dark);text-align:center;font-size:.82rem;letter-spacing:.08em;padding:8px 16px}
+.promise{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 16px;padding:8px 0}
+@media (min-width:880px){ .promise{grid-template-columns:repeat(4,1fr)} }
+.promise div{text-align:center}
+.promise svg{margin:0 auto 10px;color:var(--rose)}
+.promise h3{font-size:1.3rem;margin-bottom:.25em}
+.promise p{font-size:.9rem;color:var(--muted);margin:0}
+.match{display:grid;gap:24px;align-items:center;background:var(--white);border-radius:28px;padding:28px;border:1px solid var(--line)}
+@media (min-width:880px){ .match{grid-template-columns:1fr 1fr;padding:44px} }
+.match ol{margin:0;padding-left:20px;color:var(--muted)}
+.match li{margin-bottom:6px}
+.faq{max-width:820px}
+.faq details.acc summary{font-size:1.02rem}
+.policy{max-width:760px;padding:34px 0 64px}
+.policy h2{font-size:1.8rem;margin-top:1.4em}
+.policy p,.policy li{color:var(--muted)}
+.draft{display:inline-block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--rose-dark);border:1px solid var(--rose);border-radius:4px;padding:3px 8px;margin-bottom:14px}
+.secure{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);background:var(--cream);border-radius:12px;padding:12px;margin-top:12px}
+.secure svg{flex:0 0 auto;color:var(--ok);margin-top:2px}
+.footnote{font-size:.78rem;color:var(--muted);margin-top:18px}
+/* ==== HERO (self-contained: this CSS block + heroSceneHTML() + heroFrame/updateHero in JS) ==== */
+.sj-pin{position:relative;height:260vh}
+.sj-sticky{position:sticky;top:84px}
+@media (max-width:879px){ .sj-pin{height:230vh} }
+@media (min-width:880px){ .hero-copy{position:sticky;top:130px;align-self:start;padding-top:40px} .hero-grid{align-items:start} }
+.cine{position:relative;width:100%;max-width:min(100%, calc((100vh - 110px) * .8));margin-left:auto;aspect-ratio:4/5;border-radius:32px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(59,42,51,.35);background:#E9CFC4;isolation:isolate;--bmax:7px}
+@media (max-width:700px){ .cine{--bmax:2.5px} }
+.cine-layer{position:absolute;inset:0;will-change:transform,opacity}
+.cine-layer img{width:100%;height:100%;object-fit:cover;display:block}
+.cine-l1{transform-origin:50% 55%;transform:scale(calc(1.02 + var(--z1,0) * .1));filter:blur(calc(var(--x2,0) * var(--bmax) * .5))}
+.cine-l2{transform-origin:45% 55%;transform:scale(calc(1.12 - var(--z2,0) * .08));opacity:var(--x2,0);filter:blur(calc((1 - var(--x2,0)) * var(--bmax) + var(--x3,0) * var(--bmax) * .4))}
+.cine-l3{transform-origin:34% 58%;transform:scale(calc(1.1 - var(--z3,0) * .08 + var(--z4,0) * .05));opacity:var(--x3,0);filter:blur(calc((1 - var(--x3,0)) * var(--bmax)))}
+.cine-sweep{position:absolute;top:-20%;bottom:-20%;left:0;width:36%;background:linear-gradient(100deg, rgba(255,240,228,0) 0%, rgba(255,246,236,.42) 50%, rgba(255,240,228,0) 100%);mix-blend-mode:screen;pointer-events:none;will-change:transform,opacity}
+.cine-s1{transform:translate3d(calc(-120% + var(--w1,0) * 360%), 0, 0) skewX(-12deg);opacity:calc(var(--w1,0) * (1 - var(--w1,0)) * 2)}
+.cine-s2{transform:translate3d(calc(-120% + var(--w2,0) * 360%), 0, 0) skewX(-12deg);opacity:calc(var(--w2,0) * (1 - var(--w2,0)) * 2)}
+.cine-shade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(40,24,20,0) 50%, rgba(40,24,20,.45) 100%);opacity:var(--cta,0);pointer-events:none}
+.cine-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:var(--x3,0)}
+.rib-layer{transform-origin:330px 250px;transform:translate3d(0, calc(var(--rib,0) * -6px), 0)}
+.rib{fill:none;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:calc(1 - var(--rib,0))}
+.rib-flow{fill:none;stroke-linecap:round;stroke-dasharray:.06 .14;animation:ribflow 7s linear infinite;opacity:calc(var(--rib,0) * .8)}
+@keyframes ribflow{to{stroke-dashoffset:-2}}
+.cine-p{transform-box:fill-box;transform-origin:center}
+.cine-float{animation:cinefloat 7s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes cinefloat{from{transform:translate3d(0,-4px,0) rotate(-4deg)}to{transform:translate3d(0,5px,0) rotate(5deg)}}
+.cine-chip{position:absolute;left:16px;top:16px;height:36px;width:238px;max-width:calc(100% - 110px);border-radius:999px;overflow:hidden}
+.cine-chip span{position:absolute;inset:0;display:flex;align-items:center;padding:0 16px;font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.cine-chip .c1{opacity:calc(1 - var(--x2,0))}
+.cine-chip .c2{opacity:calc(var(--x2,0) - var(--x3,0))}
+.cine-chip .c3{opacity:var(--x3,0)}
+.cine-hint{position:absolute;right:16px;top:16px;height:36px;display:flex;align-items:center;padding:0 14px;border-radius:999px;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#fff;opacity:calc(1 - var(--p,0) * 5)}
+.cine-copy{position:absolute;left:16px;right:16px;bottom:16px;padding:20px 20px 18px;border-radius:24px;color:#fff;opacity:var(--cta,0);transform:translate3d(0, calc((1 - var(--cta,0)) * 26px), 0)}
+.cine-copy .eyebrow{color:#FFE3CC;margin-bottom:6px}
+.cine-copy h2{color:#fff;font-size:clamp(1.8rem,5vw,2.6rem);margin:0 0 4px}
+.cine-copy p{margin:0 0 14px;color:rgba(255,255,255,.9);font-size:.95rem}
+@media (prefers-reduced-motion:reduce){ .sj-pin{height:auto} .sj-sticky{position:static} .hero-copy{position:static} .rib-flow,.cine-float{animation:none} }
+
+/* ==== Glass system (with non-backdrop-filter fallback) ==== */
+.glass,.glass-dark,.btn-glass{-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.65), inset 0 -1px 0 rgba(255,255,255,.12), 0 12px 32px -8px rgba(59,42,51,.25)}
+.glass{background:rgba(255,255,255,.42)}
+.glass-dark{background:rgba(59,42,51,.26)}
+/* zero-specificity default so absolutely positioned glass panels keep their position */
+:where(.glass,.glass-dark,.btn-glass){position:relative}
+.glass::before,.glass-dark::before,.btn-glass::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(125deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.08) 38%, rgba(255,255,255,0) 60%);pointer-events:none}
+:where(.glass,.glass-dark) > *{position:relative}
+.btn-glass{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.7)}
+.btn-glass:hover{background:rgba(255,255,255,.34)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .glass{background:rgba(251,246,242,.94)}
+  .glass-dark{background:rgba(59,42,51,.78)}
+  .btn-glass{background:rgba(59,42,51,.8)}
+  header.site.is-glass{background:rgba(251,246,242,.97)!important}
+  aside.drawer{background:var(--cream)!important}
+}
+header.site{transition:background .35s ease, box-shadow .35s ease, border-color .35s ease}
+header.site.is-glass{background:rgba(251,246,242,.6);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border-bottom-color:rgba(255,255,255,.6);box-shadow:inset 0 -1px 0 rgba(255,255,255,.5), 0 10px 30px -12px rgba(59,42,51,.25)}
+aside.drawer{background:rgba(251,246,242,.86);-webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);border-left:1px solid rgba(255,255,255,.6)}
+.drawer-foot{background:rgba(255,255,255,.55)}
+.card a.thumb .tag,.unbox .mini span{background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.65)}
+.toast{background:rgba(59,42,51,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.2)}
+
+/* Scroll reveals */
+#app > .reveal{animation:none;opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1)}
+#app > .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){ #app > .reveal{opacity:1;transform:none;transition:none} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+.cine-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#2b1d18}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+
+<div class="demo-banner" role="note">
+  <strong>Demo store</strong> — sample products and prices for preview only. No real orders or payments.
+</div>
+<div class="announce" id="announce"></div>
+
+<header class="site">
+  <div class="wrap head-row">
+    <a class="logo" href="#/" aria-label="Bella Beauty and Care — home"><b>Bella</b><small>Beauty &amp; Care</small></a>
+    <nav class="main" aria-label="Main">
+      <a href="#/" data-nav="home" class="hide-sm">Home</a>
+      <a href="#/shop" data-nav="shop">Shop</a>
+      <button class="cart-btn" id="cartBtn" type="button" aria-haspopup="dialog" aria-controls="drawer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <span class="lbl">Cart</span>
+        <span class="cart-count" id="cartCount">0</span><span class="sr-only">items in cart</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h3>Bella Beauty &amp; Care</h3>
+        <p>Hair extensions and body scrubs, curated by Dr. Balqis and delivered in luxury packaging. This is a preview of the future online store — every product, price and review shown here is a sample.</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <ul>
+          <li><a href="#/shop/extensions">Hair Extensions</a></li>
+          <li><a href="#/shop/scrubs">Body Scrubs</a></li>
+          <li><a href="#/shop/gifts">Gift Sets &amp; Packaging</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Demo tools</h3>
+        <ul>
+          <li><a href="#/admin">Test orders (admin)</a></li>
+          <li><a href="#/checkout">Checkout</a></li>
+        </ul>
+        <h3 style="margin-top:18px">Help</h3>
+        <ul>
+          <li><a href="#/care">Care guide</a></li>
+          <li><a href="#/faq">FAQ</a></li>
+          <li><a href="#/returns">Returns &amp; exchanges (draft)</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fine">Demo store — sample products and demo prices for preview only. Cash on Delivery is simulated; no payment details are collected.</div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <h2 id="drawerTitle">Your cart</h2>
+    <button class="icon-btn" type="button" id="closeDrawer" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   EDIT HERE — store settings. ALL PRICES ARE DEMO PRICES (EGP).
+   ===================================================================== */
+
+// WhatsApp number that receives order confirmations.
+// International format, digits only (Egypt = 20 + mobile without the leading 0), e.g. "201001234567".
+// While it still contains "X", the button opens WhatsApp and lets you pick the chat yourself.
+const WHATSAPP_NUMBER = "20XXXXXXXXXX";
+
+const CURRENCY = "EGP";
+
+// Shipping fees by zone — PLACEHOLDER values, replace with the real courier rates.
+const SHIPPING_ZONES = {
+  cairo_giza: { label: "Cairo & Giza",              fee: 50 },
+  delta_alex: { label: "Alexandria, Delta & Canal", fee: 65 },
+  upper:      { label: "Upper Egypt & frontier",    fee: 85 }
+};
+
+// Egyptian governorates -> shipping zone
+const GOVERNORATES = [
+  ["Cairo","cairo_giza"],["Giza","cairo_giza"],
+  ["Alexandria","delta_alex"],["Qalyubia","delta_alex"],["Sharqia","delta_alex"],["Dakahlia","delta_alex"],
+  ["Gharbia","delta_alex"],["Monufia","delta_alex"],["Beheira","delta_alex"],["Kafr El Sheikh","delta_alex"],
+  ["Damietta","delta_alex"],["Port Said","delta_alex"],["Ismailia","delta_alex"],["Suez","delta_alex"],
+  ["Faiyum","upper"],["Beni Suef","upper"],["Minya","upper"],["Asyut","upper"],["Sohag","upper"],
+  ["Qena","upper"],["Luxor","upper"],["Aswan","upper"],["Red Sea","upper"],["New Valley","upper"],
+  ["Matrouh","upper"],["North Sinai","upper"],["South Sinai","upper"]
+];
+
+// Free shipping when the order (after discount) reaches this amount — PLACEHOLDER. Set to 0 to disable.
+const FREE_SHIPPING_THRESHOLD = 3000;
+
+// "Build your routine" bundle — applied automatically in the cart.
+// Counts every product except packaging add-ons; discount applies to the same items.
+const BUNDLE = { minItems: 3, discount: 0.10, name: "Build your routine" };
+
+// ---- Hair extensions ------------------------------------------------
+// SKU format: BBC-<style>-<colour>-<length>-<weight>   ("/" in a colour code becomes ".")
+const LENGTHS = [14, 16, 18, 20, 22, 24, 26]; // inches
+
+// 22 shades. hex = swatch colour (approximate, for the demo only).
+const SHADES = [
+  { code:"1",       name:"Jet Black",           family:"Black",  hex:"#0E0C0D" },
+  { code:"1B",      name:"Natural Black",       family:"Black",  hex:"#1E1816" },
+  { code:"2",       name:"Darkest Brown",       family:"Brown",  hex:"#2C1F19" },
+  { code:"4",       name:"Chocolate Brown",     family:"Brown",  hex:"#3F2A1F" },
+  { code:"6",       name:"Chestnut Brown",      family:"Brown",  hex:"#5B3A26" },
+  { code:"8",       name:"Ash Brown",           family:"Brown",  hex:"#6A5646" },
+  { code:"10",      name:"Brown",            family:"Brown",  hex:"#7C5E45" },
+  { code:"12",      name:"Blonde",           family:"Blonde", hex:"#8E6B4B" },
+  { code:"14",      name:"Blonde",           family:"Blonde", hex:"#A78563" },
+  { code:"16",      name:"Blonde",           family:"Blonde", hex:"#B89470" },
+  { code:"18",      name:"Blonde",           family:"Blonde", hex:"#BCA283" },
+  { code:"22",      name:"Blonde",           family:"Blonde", hex:"#D7BE94" },
+  { code:"24",      name:"Blonde",           family:"Blonde", hex:"#E1C99B" },
+  { code:"27",      name:"Blonde",           family:"Blonde", hex:"#C48D52" },
+  { code:"60",      name:"Blonde",           family:"Blonde", hex:"#ECE3D2" },
+  { code:"613",     name:"Blonde",          family:"Blonde", hex:"#EFDDB0" },
+  { code:"30",      name:"Red",              family:"Red",    hex:"#8A4A2A" },
+  { code:"33",      name:"Red",              family:"Red",    hex:"#5E2B1E" },
+  { code:"99J",     name:"Red",             family:"Red",    hex:"#4C1727" },
+  { code:"T1B/27",  name:"Ombre",        family:"Mixes",  mix:"ombre",     a:"#1E1816", b:"#C48D52" },
+  { code:"P4/27",   name:"Highlight",     family:"Mixes",  mix:"highlight", a:"#3F2A1F", b:"#C48D52" },
+  { code:"B4/613",  name:"Balayage",     family:"Mixes",  mix:"balayage",  a:"#3F2A1F", b:"#EFDDB0" }
+];
+
+// Demo price tables: price[length] = [price for each weight, same order as "weights"].
+// Clip-In = from the SKU sheet. Tape-In / Halo / Ponytail = DERIVED demo prices
+// (TI 50g = CI100g x0.55, TI 100g = CI100g x1.05, HL 100g = CI100g x1.10, HL 150g = CI100g x1.55,
+//  PT 120g = CI120g x0.95, PT 160g = CI160g x0.95; rounded to 10). Replace with real prices.
+const EXTENSION_STYLES = {
+  CI: { name:"Clip-In Set", weights:[100,120,160,220], price:{
+        14:[3500,4080,5350,7000], 16:[3850,4490,5880,7700], 18:[4200,4900,6420,8400], 20:[4550,5310,6950,9100],
+        22:[4900,5720,7490,9800], 24:[5250,6120,8020,10500], 26:[5600,6530,8560,11200] } },
+  TI: { name:"Tape-In", weights:[50,100], price:{
+        14:[1930,3680], 16:[2120,4040], 18:[2310,4410], 20:[2500,4780], 22:[2700,5150], 24:[2890,5510], 26:[3080,5880] } },
+  HL: { name:"Halo", weights:[100,150], price:{
+        14:[3850,5430], 16:[4240,5970], 18:[4620,6510], 20:[5010,7050], 22:[5390,7600], 24:[5780,8140], 26:[6160,8680] } },
+  PT: { name:"Ponytail", weights:[120,160], price:{
+        14:[3880,5080], 16:[4270,5590], 18:[4660,6100], 20:[5040,6600], 22:[5430,7120], 24:[5810,7620], 26:[6200,8130] } }
+};
+
+// ---- Catalogue ------------------------------------------------------
+// type: "extension" (configurator) | "simple" | "giftset" (configurator) | "addon" (packaging)
+const PRODUCTS = [
+  { id:"clip-in", type:"extension", style:"CI", category:"extensions", featured:true,
+    short:"Full clip-in set — add length and volume in minutes, remove at night.",
+    desc:"Sample description. A full head set of clip-in wefts with silicone-lined clips. Choose your shade, length and weight; the more weight, the fuller the result.",
+    howTo:"Section hair, start at the nape, open each clip and snap it close to the root. Work upwards and blend with your own hair.",
+    care:"Wash gently with sulphate-free shampoo, air dry flat, store in your Bella hanger bag." },
+  { id:"tape-in", type:"extension", style:"TI", category:"extensions", featured:true,
+    short:"Seamless flat tapes for a natural, semi-permanent look.",
+    desc:"Sample description. Thin, flat tape wefts that lie close to the scalp. Best applied by a trained stylist; lasts several weeks between re-tapes.",
+    howTo:"Professional application recommended: sandwich a thin section of hair between two tapes close to the root.",
+    care:"Avoid oils near the tapes, brush from the ends up, use a loose braid for sleeping." },
+  { id:"halo", type:"extension", style:"HL", category:"extensions",
+    short:"One-piece halo on an invisible wire — no clips, no damage.",
+    desc:"Sample description. A single weft on an adjustable invisible wire that sits on your head like a crown, hidden under your top layer.",
+    howTo:"Place the wire on the crown, pull your top layer over it, and blend with a brush.",
+    care:"Detangle before and after wear; store hung in the hanger bag." },
+  { id:"ponytail", type:"extension", style:"PT", category:"extensions",
+    short:"Wrap-around ponytail for instant length and drama.",
+    desc:"Sample description. A wrap-around ponytail with a comb and velcro wrap. Ready in under a minute.",
+    howTo:"Make a tight ponytail, slide the comb into the base, wrap the strip around and secure.",
+    care:"Brush gently from the ends; store hung." },
+
+  { id:"scrub-coffee", type:"simple", sku:"BBC-SCR-COF-250", name:"Coffee Body Scrub", size:"250 g jar", price:450, category:"scrubs", featured:true,
+    tone:{ bg:"#EFE2D8", jar:"#5A3A2A", lid:"#3B2A33", fill:"#7A5038" },
+    short:"Energising coffee scrub for smooth, glowing skin.",
+    desc:"Sample description. A rich coffee-grounds scrub in a nourishing oil base that buffs away dullness and leaves skin soft.",
+    ingredients:"Sample list: Coffee grounds, Sugar, Coconut oil, Sweet almond oil, Vitamin E.",
+    howTo:"Use 2–3 times a week on damp skin in circular motions. Rinse well." },
+  { id:"scrub-rose", type:"simple", sku:"BBC-SCR-ROS-250", name:"Rose Body Scrub", size:"250 g jar", price:450, category:"scrubs", featured:true,
+    tone:{ bg:"#F5E6E1", jar:"#E9BFB3", lid:"#A0564C", fill:"#F2CFC6" },
+    short:"Soft rose sugar scrub with a delicate floral scent.",
+    desc:"Sample description. A gentle sugar scrub with rose water and petals for silky, lightly scented skin.",
+    ingredients:"Sample list: Sugar, Rosa damascena water, Shea butter, Jojoba oil, Rose petals.",
+    howTo:"Massage onto damp skin, focus on elbows and knees, rinse with warm water." },
+
+  { id:"gift-signature", type:"giftset", sku:"BBC-GFT-SIG", name:"Signature Gift Set", category:"gifts", featured:true,
+    // contents: Clip-In 120g (shade + length chosen) + one scrub (scent chosen) + magnetic box + hanger bag
+    giftWeight:120, packagingIncluded:["addon-box","addon-bag"],
+    short:"Clip-In Set + body scrub in the Bella magnetic box with satin hanger bag.",
+    desc:"Sample description. Our signature gift: a 120 g Clip-In Set in the shade and length of your choice, a body scrub, all presented in the luxury magnetic box with a satin hanger bag, tissue and a thank-you card.",
+    howTo:"Choose shade, length and scrub scent. Add a gift message in the order notes at checkout." },
+  { id:"gift-scrub-duo", type:"simple", sku:"BBC-GFT-DUO", name:"Scrub Duo Gift Box", size:"2 × 250 g", price:1050, category:"gifts",
+    tone:{ bg:"#F3E6E0", jar:"#A0564C", lid:"#3B2A33", fill:"#E9BFB3" }, box:true,
+    contents:["BBC-SCR-COF-250","BBC-SCR-ROS-250"],
+    short:"Coffee + Rose scrubs in the Bella magnetic box.",
+    desc:"Sample description. Both Bella scrubs presented in the luxury magnetic gift box with tissue and a thank-you card.",
+    ingredients:"See each scrub.", howTo:"Gift-ready — add a message in the order notes at checkout." },
+
+  { id:"addon-box", type:"addon", sku:"BBC-ADD-BOX", name:"Luxury Magnetic Gift Box", size:"Add-on", price:250, category:"gifts",
+    tone:{ bg:"#F3E6E0", jar:"#3B2A33", lid:"#A0564C", fill:"#3B2A33" }, box:true,
+    short:"Rigid magnetic box with tissue wrap — turns any order into a gift.",
+    desc:"Sample description. A rigid magnetic-closure box lined with tissue paper and finished with a Bella thank-you card.",
+    ingredients:"Packaging add-on.", howTo:"Add it to your cart; we pack your items inside." },
+  { id:"addon-bag", type:"addon", sku:"BBC-ADD-BAG", name:"Satin Hanger Bag", size:"Add-on", price:150, category:"gifts",
+    tone:{ bg:"#F5ECE7", jar:"#E9D3C8", lid:"#A0564C", fill:"#E9D3C8" }, bag:true,
+    short:"Satin storage bag with hanger — keeps extensions tangle-free.",
+    desc:"Sample description. A satin (or linen) hanger bag to store your extensions flat and tangle-free between wears.",
+    ingredients:"Packaging add-on.", howTo:"Hang your wefts on the hanger and zip the bag closed." }
+];
+
+// What each weight is for (shown in the configurator)
+const WEIGHT_NOTES = {
+  CI: { 100:"Fine hair", 120:"Fine to medium", 160:"Medium to thick", 220:"Thick · max volume" },
+  TI: { 50:"Top-up · fine hair", 100:"Full head" },
+  HL: { 100:"Fine to medium", 150:"Medium to thick" },
+  PT: { 120:"Everyday volume", 160:"Full & dramatic" }
+};
+
+const CATEGORIES = { extensions:"Hair Extensions", scrubs:"Body Scrubs", gifts:"Gift Sets & Packaging" };
+
+// Every order ships in this (shown on product pages / checkout):
+const STANDARD_PACKAGING = "Every order ships in a Bella mailer box with tissue paper and a thank-you card.";
+
+/* =====================================================================
+   Storage (localStorage with in-memory fallback)
+   ===================================================================== */
+const store = (() => {
+  const mem = {};
+  let ok = false;
+  try { const k = "__bella_t"; window.localStorage.setItem(k, "1"); window.localStorage.removeItem(k); ok = true; } catch (e) { ok = false; }
+  return {
+    get(key, fallback) {
+      if (ok) { try { const v = window.localStorage.getItem(key); if (v !== null) return JSON.parse(v); } catch (e) {} }
+      return Object.prototype.hasOwnProperty.call(mem, key) ? mem[key] : fallback;
+    },
+    set(key, value) {
+      mem[key] = value;
+      if (ok) { try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
+    },
+    persistent: () => ok
+  };
+})();
+const KEY_CART = "bella_demo_cart_v2", KEY_ORDERS = "bella_demo_orders_v2", KEY_CHECKOUT = "bella_demo_checkout_v2";
+
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const money = n => CURRENCY + " " + Math.round(n).toLocaleString("en-US");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const byId = id => PRODUCTS.find(p => p.id === id);
+const bySku = sku => PRODUCTS.find(p => p.sku === sku);
+const shadeBy = code => SHADES.find(s => s.code === code) || SHADES[1];
+const toLatinDigits = s => String(s).replace(/[\u0660-\u0669]/g, d => d.charCodeAt(0) - 0x0660).replace(/[\u06F0-\u06F9]/g, d => d.charCodeAt(0) - 0x06F0);
+const clampQty = n => Math.max(1, Math.min(20, parseInt(n, 10) || 1));
+const zoneFor = gov => { const g = GOVERNORATES.find(x => x[0] === gov); return g ? SHIPPING_ZONES[g[1]] : null; };
+const skuColour = code => code.replace(/\//g, ".");
+const SCRUBS = () => PRODUCTS.filter(p => p.category === "scrubs");
+
+function productName(p) {
+  if (p.type === "extension") return EXTENSION_STYLES[p.style].name + " Hair Extensions";
+  return p.name;
+}
+function fromPrice(p) {
+  if (p.type === "extension") { const s = EXTENSION_STYLES[p.style]; return Math.min(...LENGTHS.map(l => s.price[l][0])); }
+  if (p.type === "giftset") return giftsetPrice(p, { length: LENGTHS[0], scrub: SCRUBS()[0].id });
+  return p.price;
+}
+function extPrice(style, length, weight) {
+  const s = EXTENSION_STYLES[style], i = s.weights.indexOf(+weight);
+  return (s.price[length] && i >= 0) ? s.price[length][i] : null;
+}
+function extSku(style, colour, length, weight) { return ["BBC", style, skuColour(colour), length, weight].join("-"); }
+function giftsetPrice(p, o) {
+  const scrub = byId(o.scrub) || SCRUBS()[0];
+  // Demo rule: Clip-In 120g price + scrub price; magnetic box + hanger bag included free.
+  return extPrice("CI", o.length, p.giftWeight) + scrub.price;
+}
+
+// Resolve a cart line {pid, opts} into display data (name, detail, skus, unit price)
+function resolveLine(l) {
+  const p = byId(l.pid); if (!p) return null;
+  const o = l.opts || {};
+  if (p.type === "extension") {
+    const sh = shadeBy(o.shade), price = extPrice(p.style, o.length, o.weight);
+    if (price == null) return null;
+    const sku = extSku(p.style, sh.code, o.length, o.weight);
+    return { p, name: productName(p), detail: `${sh.code} ${sh.name} · ${o.length}" · ${o.weight}g`, skus: [sku], sku, price, shade: sh };
+  }
+  if (p.type === "giftset") {
+    const sh = shadeBy(o.shade), scrub = byId(o.scrub) || SCRUBS()[0];
+    const ciSku = extSku("CI", sh.code, o.length, p.giftWeight);
+    const skus = [ciSku, scrub.sku].concat(p.packagingIncluded.map(id => byId(id).sku));
+    return { p, name: p.name, detail: `Clip-In ${sh.code} · ${o.length}" · ${p.giftWeight}g + ${scrub.name}`, skus, sku: p.sku, price: giftsetPrice(p, o), shade: sh };
+  }
+  return { p, name: p.name, detail: p.size, skus: p.contents ? p.contents.slice() : [p.sku], sku: p.sku, price: p.price };
+}
+const lineKey = (pid, opts) => pid + "|" + JSON.stringify(opts || {});
+
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+/* =====================================================================
+   Placeholder visuals (pure SVG, no photos)
+   ===================================================================== */
+let _uid = 0;
+function hairFill(sh, id) {
+  if (sh.mix === "ombre" || sh.mix === "balayage")
+    return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="${sh.mix === "ombre" ? ".3" : ".15"}" stop-color="${sh.a}"/><stop offset="${sh.mix === "ombre" ? ".75" : ".95"}" stop-color="${sh.b}"/></linearGradient>`;
+  const c = sh.mix ? sh.a : sh.hex;
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset=".6" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity=".82"/></linearGradient>`;
+}
+function swatchBg(sh) {
+  if (sh.mix === "ombre") return `linear-gradient(180deg, ${sh.a} 30%, ${sh.b} 80%)`;
+  if (sh.mix === "balayage") return `linear-gradient(160deg, ${sh.a} 20%, ${sh.b} 95%)`;
+  if (sh.mix === "highlight") return `repeating-linear-gradient(100deg, ${sh.a} 0 7px, ${sh.b} 7px 11px)`;
+  return sh.hex;
+}
+function hairArt(style, sh, variant = 0) {
+  const id = "h" + (++_uid);
+  const bg = ["#F3E6E0", "#EFE2DA", "#F6ECE6"][variant % 3];
+  const strands = [150,175,200,225,250].map((x, i) => `<path d="M${x} 150 C${x - 14} 240 ${x + 18} 320 ${x - 6 + i * 2} 410" stroke="${sh.mix === "highlight" ? sh.b : "#fff"}" stroke-width="${sh.mix === "highlight" ? 6 : 1.2}" opacity="${sh.mix === "highlight" ? .85 : .18}" fill="none"/>`).join("");
+  const body = `<path d="M125 140 C112 230 142 310 122 420 Q200 452 278 420 C258 310 288 230 275 140 Z" fill="url(#${id})"/>${strands}`;
+  let top = "";
+  if (style === "CI") top = `<rect x="118" y="126" width="164" height="22" rx="8" fill="#3B2A33"/>` + [140,180,220,260].map(x => `<rect x="${x - 9}" y="118" width="18" height="12" rx="3" fill="#C9B8B0"/>`).join("");
+  if (style === "TI") top = [130,170,210,250].map(x => `<rect x="${x - 4}" y="124" width="36" height="18" rx="3" fill="#F4EFEA" stroke="#D9C9C1"/>`).join("");
+  if (style === "HL") top = `<path d="M110 150 Q200 40 290 150" stroke="#C9B8B0" stroke-width="3" fill="none"/><rect x="118" y="134" width="164" height="18" rx="8" fill="#3B2A33"/>`;
+  if (style === "PT") top = `<path d="M150 135 Q200 115 250 135 L235 170 Q200 182 165 170 Z" fill="url(#${id})"/><rect x="164" y="160" width="72" height="20" rx="8" fill="#3B2A33"/>`;
+  const extra = variant === 1 ? `<circle cx="320" cy="90" r="60" fill="#fff" opacity=".5"/>` : variant === 2 ? `<rect x="40" y="360" width="80" height="80" rx="12" fill="#A0564C" opacity=".12"/>` : `<circle cx="70" cy="80" r="50" fill="#E8C4B8" opacity=".35"/>`;
+  return `<svg viewBox="0 0 400 500" role="img" aria-label="Placeholder visual: ${esc(EXTENSION_STYLES[style].name)} in shade ${esc(sh.code)}" preserveAspectRatio="xMidYMid slice">
+    <defs>${hairFill(sh, id)}</defs><rect width="400" height="500" fill="${bg}"/>${extra}
+    <ellipse cx="200" cy="440" rx="110" ry="12" fill="#3B2A33" opacity=".08"/>${body}${top}
+    <text x="200" y="478" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" letter-spacing="3" fill="#6B5761">SAMPLE VISUAL</text></svg>`;
+}
+function label(x, y, w, h, fill) {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${fill || "#FBF6F2"}"/>
+    <text x="${x + w / 2}" y="${y + h / 2 + 2}" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="${Math.min(26, w / 4)}" font-weight="700" fill="#3B2A33">Bella</text>
+    <text x="${x + w / 2}" y="${y + h / 2 + 18}" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="8" letter-spacing="2" fill="#6B5761">SAMPLE</text>`;
+}
+function simpleArt(p, variant = 0) {
+  const t = p.tone, bg = [t.bg, "#EFE2DA", "#F6ECE6"][variant % 3];
+  let obj;
+  if (p.box) obj = `<rect x="90" y="190" width="220" height="180" rx="14" fill="${t.jar}"/><rect x="84" y="170" width="232" height="46" rx="12" fill="${t.lid}"/>
+      <rect x="190" y="170" width="20" height="200" fill="#FBF6F2" opacity=".55"/><path d="M200 172 c-30 -40 -64 -26 -50 -4 c8 12 30 10 50 4 c20 6 42 8 50 -4 c14 -22 -20 -36 -50 4z" fill="#FBF6F2"/>${label(116, 270, 64, 58)}`;
+  else if (p.bag) obj = `<path d="M200 90 q-22 0 -22 20 q0 14 22 22" stroke="#3B2A33" stroke-width="5" fill="none"/><path d="M120 150 L280 150 L200 128 Z" fill="#3B2A33"/>
+      <path d="M118 150 h164 v230 q-82 26 -164 0 z" fill="${t.jar}"/><path d="M118 150 h164 v230 q-82 26 -164 0 z" fill="url(#satin${variant})" opacity=".55"/>
+      <defs><linearGradient id="satin${variant}" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>${label(160, 250, 80, 62)}`;
+  else obj = `<rect x="112" y="182" width="176" height="46" rx="12" fill="${t.lid}"/><rect x="104" y="222" width="192" height="156" rx="36" fill="${t.jar}"/>
+      <rect x="118" y="236" width="164" height="60" rx="20" fill="${t.fill}" opacity=".6"/>${label(148, 290, 104, 62)}`;
+  return `<svg viewBox="0 0 400 500" role="img" aria-label="Placeholder visual for ${esc(p.name)}" preserveAspectRatio="xMidYMid slice">
+    <rect width="400" height="500" fill="${bg}"/><circle cx="${variant === 1 ? 90 : 310}" cy="110" r="100" fill="${t.jar}" opacity=".12"/>
+    <ellipse cx="200" cy="396" rx="125" ry="14" fill="#3B2A33" opacity=".08"/>${obj}
+    <text x="200" y="478" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" letter-spacing="3" fill="#6B5761">SAMPLE VISUAL</text></svg>`;
+}
+function giftArt(p, sh, variant = 0) {
+  const id = "g" + (++_uid);
+  return `<svg viewBox="0 0 400 500" role="img" aria-label="Placeholder visual for ${esc(p.name)}" preserveAspectRatio="xMidYMid slice">
+    <defs>${hairFill(sh, id)}</defs><rect width="400" height="500" fill="${["#F3E6E0", "#EFE2DA", "#F6ECE6"][variant % 3]}"/>
+    <rect x="60" y="210" width="280" height="190" rx="16" fill="#3B2A33"/><rect x="74" y="222" width="252" height="166" rx="10" fill="#F6ECE6"/>
+    <path d="M100 236 C92 300 116 340 104 380 Q150 396 196 380 C186 340 206 300 198 236 Z" fill="url(#${id})"/><rect x="96" y="230" width="108" height="14" rx="5" fill="#3B2A33"/>
+    <rect x="222" y="300" width="88" height="20" rx="6" fill="#A0564C"/><rect x="216" y="316" width="100" height="68" rx="18" fill="#E9BFB3"/>
+    <path d="M40 200 L360 200 L330 150 L70 150 Z" fill="#A0564C" opacity=".9"/>${label(150, 160, 100, 34, "#FBF6F2").replace(/<text[^>]*>SAMPLE<\/text>/, "")}
+    <text x="200" y="478" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" letter-spacing="3" fill="#6B5761">SAMPLE VISUAL</text></svg>`;
+}
+/* ---- Brand photos (img/ folder next to index.html) ---- */
+const PHOTOS = {
+  scrub:      { src:"img/scrub-jar.jpg",      w:1120, h:1400, alt:"Bella Coffee Body Scrub in a frosted jar with a gold lid, wooden spatula and pink velvet tube box" },
+  giftScrub:  { src:"img/gift-set-scrub.jpg", w:1254, h:1254, alt:"Bella Beauty Collection gift box: pink velvet drawer box and scrub jar on satin" },
+  extensions: { src:"img/extensions-set.jpg", w:1120, h:1400, alt:"Bella Hair Extensions box with a brown clip-in set, care card and rose-gold brush" },
+  velvet:     { src:"img/velvet-box.jpg",     w:1120, h:1400, alt:"Closed pink velvet Bella drawer gift box with satin ribbon and wax seal" },
+  unboxing:   { src:"img/unboxing.jpg",       w:1120, h:1400, alt:"Opening a pink Bella mailer box printed You deserve the glow, with tissue paper and wax seal" },
+  hanger:     { src:"img/hanger-bag.jpg",     w:1120, h:1400, alt:"Pink Bella hanger bag with zip, holding hair extensions" }
+};
+function photoKey(p) {
+  if (p.type === "extension") return "extensions";
+  if (p.category === "scrubs") return "scrub";
+  if (p.id === "addon-box") return "velvet";
+  if (p.id === "addon-bag") return "hanger";
+  return "giftScrub";
+}
+function photoTag(key, opts = {}) {
+  const ph = PHOTOS[key];
+  return `<img class="ph" src="${ph.src}" width="${ph.w}" height="${ph.h}" alt="${esc(opts.alt != null ? opts.alt : ph.alt)}" ${opts.eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+}
+const GALLERIES = {
+  extension: ["extensions", "shade", "hanger", "unboxing"],
+  scrubs: ["scrub", "giftScrub", "unboxing"],
+  "gift-signature": ["giftScrub", "shade", "extensions", "velvet", "unboxing"],
+  "gift-scrub-duo": ["giftScrub", "velvet", "unboxing"],
+  "addon-box": ["velvet", "unboxing", "giftScrub"],
+  "addon-bag": ["hanger", "extensions"]
+};
+let galIdx = 0;
+function galleryFor(p) { return GALLERIES[p.id] || GALLERIES[p.type] || GALLERIES[p.category] || [photoKey(p)]; }
+function shadePreview(p) {
+  const sh = shadeBy((cfg && cfg.shade) || p.defaultShade || "1B");
+  return p.type === "giftset" ? giftArt(p, sh, 0) : hairArt((cfg && cfg.style) || p.style, sh, 0);
+}
+function galleryItemHTML(p, item, thumb) {
+  if (item === "shade") return shadePreview(p);
+  return photoTag(item, thumb ? { alt: "" } : {});
+}
+function galleryHTML(p) {
+  const items = galleryFor(p);
+  galIdx = 0;
+  return `<div class="gallery">
+    <div class="main-art" id="mainArt">${galleryItemHTML(p, items[0])}</div>
+    <div class="thumbs" role="group" aria-label="Product images">
+      ${items.map((it, i) => `<button type="button" data-view="${i}" aria-pressed="${i === 0}" aria-label="${it === "shade" ? "Shade preview" : "Image " + (i + 1)}">${galleryItemHTML(p, it, true)}</button>`).join("")}
+    </div></div>`;
+}
+function refreshGallery(p) {
+  const items = galleryFor(p);
+  $("#mainArt").innerHTML = galleryItemHTML(p, items[galIdx] || items[0]);
+  $$("[data-view]").forEach(b => { b.setAttribute("aria-pressed", +b.dataset.view === galIdx ? "true" : "false"); if (items[+b.dataset.view] === "shade") b.innerHTML = shadePreview(p); });
+}
+
+function artFor(p, variant = 0, opts) {
+  if (p.type === "extension") return hairArt(p.style, shadeBy((opts && opts.shade) || p.defaultShade || "1B"), variant);
+  if (p.type === "giftset") return giftArt(p, shadeBy((opts && opts.shade) || "T1B/27"), variant);
+  return simpleArt(p, variant);
+}
+const DEFAULT_SHADE = { "clip-in":"1B", "tape-in":"4", "halo":"T1B/27", "ponytail":"B4/613" };
+PRODUCTS.forEach(p => { if (DEFAULT_SHADE[p.id]) p.defaultShade = DEFAULT_SHADE[p.id]; });
+
+function hero3DHTML() {
+  // Cinematic scroll scene: closed velvet box -> opened Beauty Collection -> scrub jar.
+  // Self-contained: replace this function (and the HERO CSS block) to swap in a video later.
+  const bean = (x, y, r, k, sc) => `<g class="cine-p" style="transform:translate3d(0, calc(var(--rib,0) * ${k}px), 0)"><g class="cine-float" style="animation-delay:${(-x % 7).toFixed(1)}s">
+      <g transform="translate(${x} ${y}) rotate(${r}) scale(${sc})"><ellipse cx="0" cy="0" rx="11" ry="7.5" fill="url(#cBean)"/>
+      <path d="M-9 0 C-4 -3 4 3 9 0" stroke="#24140D" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="-3" cy="-3.6" rx="4" ry="1.4" fill="#fff" opacity=".22"/></g></g></g>`;
+  const grain = (x, y, rr, k, c) => `<circle class="cine-p" cx="${x}" cy="${y}" r="${rr}" fill="${c}" style="transform:translate3d(0, calc(var(--rib,0) * ${k}px), 0)"/>`;
+  const RIB = "M430 520 C340 480 300 420 352 334 C398 258 304 204 344 120 C370 64 336 16 296 -24";
+  return `<div class="cine" id="hero3d">
+    <video class="cine-video" id="heroVid" src="video/bella-scrub-scroll.mp4" poster="video/frame-0.jpg" muted playsinline preload="auto" aria-label="The Bella Coffee Body Scrub jar opens; a hand scoops the scrub and a drop falls back into the jar"></video>
+    <div class="cine-shade"></div>
+    <div class="cine-chip glass-dark" aria-hidden="true"><span class="c1">Bella Coffee Body Scrub</span><span class="c2">Open the glow</span><span class="c3">The Bella ritual</span></div>
+    <span class="cine-hint glass-dark" aria-hidden="true">Scroll</span>
+    <div class="cine-copy glass-dark" id="sjCta">
+      <div class="eyebrow">Coffee Body Scrub</div>
+      <h2>Exfoliate. Smooth. Glow.</h2>
+      <p>Doctor-made coffee scrub, gift-wrapped in Bella velvet.</p>
+      <a class="btn btn-glass" href="#/shop/scrubs">Shop the scrub</a>
+    </div>
+  </div>`;
+}
+
+/* Scroll-driven hero + section reveals */
+const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const smooth = t => t * t * t * (t * (t * 6 - 15) + 10); // smootherstep for long, soft crossfades
+const seg = (p, a, b) => clamp01((p - a) / (b - a));
+function heroFrame(h, p) {
+  const v = {
+    "--p": p,
+    "--z1": ease(seg(p, 0, .42)),            // slow push-in on the closed box
+    "--x2": smooth(seg(p, .2, .48)),         // box -> opened collection
+    "--z2": ease(seg(p, .2, .7)),            // collection settles from soft zoom
+    "--x3": smooth(seg(p, .55, .8)),         // collection -> jar
+    "--z3": ease(seg(p, .55, .85)),          // jar settles
+    "--z4": ease(seg(p, .85, 1)),            // final gentle push-in
+    "--w1": seg(p, .18, .5), "--w2": seg(p, .53, .82), // light sweeps across each transition
+    "--rib": ease(seg(p, .78, .97)), "--cta": ease(seg(p, .82, .97))
+  };
+  for (const k in v) h.style.setProperty(k, v[k].toFixed(3));
+  const vid = document.getElementById("heroVid");
+  if (vid && vid.duration) { const t = Math.min(vid.duration - 0.05, seg(p, 0, .86) * vid.duration); if (Math.abs(vid.currentTime - t) > 0.02) vid.currentTime = t; }
+  const c = document.getElementById("sjCta");
+  if (c) { const on = v["--cta"] > .5; c.setAttribute("aria-hidden", on ? "false" : "true"); const a = c.querySelector("a"); if (a) a.tabIndex = on ? 0 : -1; c.style.pointerEvents = on ? "auto" : "none"; }
+}
+let _heroTick = false;
+function updateHero() {
+  _heroTick = false;
+  const hdr = document.querySelector("header.site"); if (hdr) hdr.classList.toggle("is-glass", (window.scrollY || 0) > 12);
+  const h = document.getElementById("hero3d"); if (!h) return;
+  if (REDUCED) { heroFrame(h, 1); return; }
+  const pin = h.closest(".sj-pin"), st = h.closest(".sj-sticky");
+  if (!pin || !st) { heroFrame(h, 1); return; }
+  const r = pin.getBoundingClientRect(), top = parseFloat(getComputedStyle(st).top) || 0;
+  const travel = Math.max(1, r.height - st.offsetHeight);
+  heroFrame(h, clamp01((top - r.top) / travel));
+}
+window.addEventListener("scroll", () => { if (!_heroTick) { _heroTick = true; requestAnimationFrame(updateHero); } }, { passive: true });
+window.addEventListener("resize", () => updateHero(), { passive: true });
+document.addEventListener("loadedmetadata", e => { if (e.target && e.target.id === "heroVid") updateHero(); }, true);
+const _primeVid = () => { const v = document.getElementById("heroVid"); if (v && !v._primed) { v._primed = true; const pr = v.play(); if (pr && pr.then) pr.then(() => { v.pause(); updateHero(); }).catch(() => {}); } };
+["touchstart","pointerdown","wheel"].forEach(ev => window.addEventListener(ev, _primeVid, { passive: true, once: true }));
+
+let _revealObs = null;
+function setupReveals() {
+  const els = $$("#app > section.block");
+  if (REDUCED || !("IntersectionObserver" in window)) return; // final state shown as-is
+  if (_revealObs) _revealObs.disconnect();
+  _revealObs = new IntersectionObserver(entries => entries.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add("in"); _revealObs.unobserve(en.target); }
+  }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  els.forEach(el => { el.classList.add("reveal"); _revealObs.observe(el); });
+}
+
+function heroArt() {
+  const inner = s => s.replace(/<svg[^>]*>|<\/svg>/g, "").replace(/<rect width="400" height="500"[^>]*\/>/, "").replace(/<text[^>]*>SAMPLE VISUAL<\/text>/, "");
+  return `<svg viewBox="0 0 600 600" aria-hidden="true">
+    <rect width="600" height="600" fill="#F3E6E0"/><circle cx="430" cy="170" r="190" fill="#E8C4B8" opacity=".45"/><circle cx="130" cy="480" r="150" fill="#fff" opacity=".55"/>
+    <g transform="translate(20 70) scale(1.05)">${inner(hairArt("CI", shadeBy("T1B/27"), 0))}</g>
+    <g transform="translate(290 250) scale(.72)">${inner(simpleArt(byId("scrub-rose"), 0))}</g>
+    <g transform="translate(330 60) scale(.55)">${inner(simpleArt(byId("scrub-coffee"), 0))}</g>
+    <text x="300" y="585" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="12" letter-spacing="3" fill="#6B5761">SAMPLE VISUAL</text>
+  </svg>`;
+}
+
+/* =====================================================================
+   Cart  (line = { key, pid, opts, qty })
+   ===================================================================== */
+let cart = store.get(KEY_CART, []);
+if (!Array.isArray(cart)) cart = [];
+cart = cart.filter(l => l && resolveLine(l)).map(l => ({ key: lineKey(l.pid, l.opts), pid: l.pid, opts: l.opts || {}, qty: clampQty(l.qty) }));
+
+function saveCart() { store.set(KEY_CART, cart); renderCartCount(); renderDrawer(); if (currentRoute().name === "checkout") renderSummary(); }
+function addToCart(pid, opts = {}, qty = 1, silent) {
+  const key = lineKey(pid, opts), line = cart.find(l => l.key === key);
+  if (line) line.qty = clampQty(line.qty + qty); else cart.push({ key, pid, opts, qty: clampQty(qty) });
+  saveCart(); if (!silent) toast("Added to cart — " + resolveLine({ pid, opts }).name);
+}
+function setQty(key, qty) { const l = cart.find(x => x.key === key); if (!l) return; l.qty = clampQty(qty); saveCart(); }
+function removeLine(key) { cart = cart.filter(l => l.key !== key); saveCart(); }
+
+function totals(governorate) {
+  const lines = cart.map(l => Object.assign({ qty: l.qty, key: l.key, opts: l.opts }, resolveLine(l))).filter(x => x.p);
+  const items = lines.reduce((s, l) => s + l.qty, 0);
+  const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0);
+  const bundleItems = lines.filter(l => l.p.type !== "addon").reduce((s, l) => s + l.qty, 0);
+  const bundleBase = lines.filter(l => l.p.type !== "addon").reduce((s, l) => s + l.price * l.qty, 0);
+  const bundleOn = bundleItems >= BUNDLE.minItems;
+  const discount = bundleOn ? Math.round(bundleBase * BUNDLE.discount) : 0;
+  const zone = governorate ? zoneFor(governorate) : null;
+  const afterDisc = subtotal - discount;
+  const freeShip = FREE_SHIPPING_THRESHOLD > 0 && afterDisc >= FREE_SHIPPING_THRESHOLD;
+  const shipping = items && zone && !freeShip ? zone.fee : 0;
+  return { lines, freeShip, afterDisc, items, bundleItems, subtotal, bundleOn, discount, zone, shipping, total: subtotal - discount + shipping };
+}
+
+function shipBarHTML(t) {
+  if (!(FREE_SHIPPING_THRESHOLD > 0)) return "";
+  if (t.freeShip) return `<div class="ship-bar done"><b>Free shipping unlocked</b> on this order.</div>`;
+  const left = FREE_SHIPPING_THRESHOLD - t.afterDisc, pct = Math.max(4, Math.min(100, t.afterDisc / FREE_SHIPPING_THRESHOLD * 100));
+  return `<div class="ship-bar">You're <b>${money(left)}</b> away from free shipping.<div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div></div>`;
+}
+function waGeneral(text) {
+  const num = String(WHATSAPP_NUMBER).replace(/\D/g, "");
+  const valid = /^\d{10,15}$/.test(num) && !/X/i.test(WHATSAPP_NUMBER);
+  return "https://wa.me/" + (valid ? num : "") + "?text=" + encodeURIComponent(text);
+}
+const SHADE_MATCH_TEXT = "Hello Bella, I'd like help matching my extension shade. I'm attaching a daylight photo of my hair (mid-lengths and ends).";
+
+function renderCartCount() { $("#cartCount").textContent = cart.reduce((s, l) => s + l.qty, 0); }
+
+function upsellHTML(t) {
+  const left = BUNDLE.minItems - t.bundleItems, pct = Math.min(100, (t.bundleItems / BUNDLE.minItems) * 100), off = Math.round(BUNDLE.discount * 100);
+  if (t.bundleOn) return `<div class="upsell done"><b>${BUNDLE.name} unlocked</b> — ${off}% off your products (packaging add-ons excluded).</div>`;
+  return `<div class="upsell"><b>${BUNDLE.name}:</b> add ${left} more product${left === 1 ? "" : "s"} (e.g. a scrub) to save ${off}%.
+    <div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div></div>`;
+}
+
+function lineItemHTML(l) {
+  return `<div class="line-item">
+    <div class="art">${photoTag(photoKey(l.p), { alt: "" })}</div>
+    <div>
+      <div class="nm">${esc(l.name)}</div>
+      <div class="sub">${esc(l.detail)} · ${money(l.price)} each</div>
+      <div class="sku">SKU ${esc(l.sku)}</div>
+      <div class="ctrl">
+        <div class="qty" role="group" aria-label="Quantity for ${esc(l.name)}">
+          <button type="button" data-act="dec" data-key="${esc(l.key)}" aria-label="Decrease quantity">−</button>
+          <input type="number" inputmode="numeric" min="1" max="20" value="${l.qty}" data-act="qty" data-key="${esc(l.key)}" aria-label="Quantity">
+          <button type="button" data-act="inc" data-key="${esc(l.key)}" aria-label="Increase quantity">+</button>
+        </div>
+        <b>${money(l.price * l.qty)}</b>
+        <button type="button" class="link-btn" data-act="remove" data-key="${esc(l.key)}">Remove<span class="sr-only"> ${esc(l.name)}</span></button>
+      </div>
+    </div></div>`;
+}
+
+function addonsHTML() {
+  const addons = PRODUCTS.filter(p => p.type === "addon");
+  return `<div class="addons"><h3>Make it a gift</h3>` + addons.map(a => {
+    const inCart = cart.some(l => l.pid === a.id);
+    return `<div class="addon ${inCart ? "on" : ""}"><div><b>${esc(a.name)}</b><span>${esc(a.short)} · ${money(a.price)} (demo)</span></div>
+      ${inCart ? `<span aria-label="Added" style="color:var(--ok);font-weight:700">Added</span>` : `<button class="add-mini" type="button" data-add="${a.id}">Add<span class="sr-only"> ${esc(a.name)}</span></button>`}</div>`;
+  }).join("") + `<p class="sub" style="font-size:.8rem;color:var(--muted);margin:6px 0 0">${STANDARD_PACKAGING}</p></div>`;
+}
+
+function renderDrawer() {
+  const body = $("#drawerBody"), foot = $("#drawerFoot");
+  if (!cart.length) {
+    body.innerHTML = `<div class="empty"><p style="font-family:var(--serif);font-size:1.5rem;color:var(--dark)">Your cart is empty</p><p>Explore the sample collection to test the flow.</p></div>`;
+    foot.innerHTML = `<a class="btn btn-dark btn-block" href="#/shop" data-close>Shop the collection</a>`;
+    return;
+  }
+  const t = totals();
+  body.innerHTML = shipBarHTML(t) + upsellHTML(t) + t.lines.map(lineItemHTML).join("") + addonsHTML();
+  foot.innerHTML = `<div class="totals">
+      <div><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
+      ${t.bundleOn ? `<div class="disc"><span>${BUNDLE.name} (−${Math.round(BUNDLE.discount * 100)}%)</span><span>−${money(t.discount)}</span></div>` : ""}
+      <div><span>Shipping</span><span>${t.freeShip ? "Free" : "Calculated at checkout"}</span></div>
+      <div class="grand"><span>Total</span><span>${money(t.subtotal - t.discount)}</span></div>
+    </div>
+    <a class="btn btn-primary btn-block" style="margin-top:14px" href="#/checkout" data-close>Checkout — Cash on Delivery</a>`;
+}
+
+let lastFocus = null;
+function openDrawer() {
+  lastFocus = document.activeElement;
+  renderDrawer();
+  const d = $("#drawer"); d.classList.add("open"); d.setAttribute("aria-hidden", "false");
+  $("#scrim").classList.add("open"); document.body.style.overflow = "hidden";
+  setTimeout(() => $("#closeDrawer").focus(), 50);
+}
+function closeDrawer() {
+  const d = $("#drawer"); if (!d.classList.contains("open")) return;
+  d.classList.remove("open"); d.setAttribute("aria-hidden", "true");
+  $("#scrim").classList.remove("open"); document.body.style.overflow = "";
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+
+/* =====================================================================
+   Views
+   ===================================================================== */
+function cardHTML(p) {
+  const configurable = p.type === "extension" || p.type === "giftset";
+  const nm = productName(p);
+  return `<article class="card">
+    <a class="thumb" href="#/product/${p.id}" aria-label="${esc(nm)}">${photoTag(photoKey(p), { alt: "" })}<span class="tag">Sample</span></a>
+    <div class="body">
+      <span class="cat">${CATEGORIES[p.category]}</span>
+      <h3><a href="#/product/${p.id}">${esc(nm)}</a></h3>
+      <div class="row"><span class="price">${configurable ? `<span class="from">From </span>` : ""}${money(fromPrice(p))}</span>
+        ${configurable ? `<a class="add-mini" href="#/product/${p.id}">Choose<span class="sr-only"> options for ${esc(nm)}</span></a>`
+                       : `<button class="add-mini" type="button" data-add="${p.id}">Add<span class="sr-only"> ${esc(nm)} to cart</span></button>`}</div>
+    </div></article>`;
+}
+
+function viewHome() {
+  const featured = PRODUCTS.filter(p => p.featured).slice(0, 4);
+  const off = Math.round(BUNDLE.discount * 100);
+  return `
+  <section class="hero"><div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">By Dr. Balqis</div>
+      <h1>Doctor-made care</h1>
+      <p class="lead">Premium hair extensions in 22 shades and indulgent body scrubs — chosen with a doctor's eye and delivered in luxury packaging across Egypt.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#/shop/extensions">Shop hair extensions</a>
+        <a class="btn btn-ghost" href="#/shop/scrubs">Body scrubs</a>
+      </div>
+      <div class="hero-note"><span>Cash on Delivery</span><span>Delivery across Egypt</span><span>Luxury gift packaging</span></div>
+    </div>
+    <div class="sj-pin"><div class="sj-sticky">${hero3DHTML()}</div></div>
+  </div></section>
+
+  <section class="block" style="padding:44px 0;border-bottom:1px solid var(--line)"><div class="wrap">
+    <div class="promise">
+      <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 3c0 6 10 6 10 12s-5 6-5 6M17 3c0 4-3 5-5 6"/></svg><h3>100% human hair</h3><p>Soft, natural movement; can be heat-styled.<sup>*</sup></p></div>
+      <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg><h3>Doctor-founded</h3><p>Every product selected by Dr. Balqis.</p></div>
+      <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" opacity=".25"/></svg><h3>Free shade match</h3><p>Send a photo, we'll find your shade.</p></div>
+      <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 7h13v10H3zM16 10h3l2 3v4h-5"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg><h3>${FREE_SHIPPING_THRESHOLD > 0 ? "Free shipping over " + money(FREE_SHIPPING_THRESHOLD) : "Delivery across Egypt"}</h3><p>Cash on Delivery to all 27 governorates.</p></div>
+    </div>
+    <p class="footnote" style="text-align:center">* Draft claim, to be confirmed by Bella before launch. Shipping threshold is a placeholder.</p>
+  </div></section>
+
+  <section class="block" style="padding-top:44px"><div class="wrap">
+    <div class="cat-tiles">
+      <a class="cat-tile" href="#/shop/extensions"><div class="art">${photoTag("extensions", { alt: "" })}</div><div><h3>Hair Extensions</h3><p>Clip-In, Tape-In, Halo &amp; Ponytail · 14–26" · 22 shades</p></div></a>
+      <a class="cat-tile" href="#/shop/scrubs"><div class="art">${photoTag("scrub", { alt: "" })}</div><div><h3>Body Scrubs</h3><p>Coffee &amp; Rose · 250 g jars</p></div></a>
+      <a class="cat-tile" href="#/shop/gifts"><div class="art">${photoTag("giftScrub", { alt: "" })}</div><div><h3>Gift Sets</h3><p>Magnetic box, satin hanger bag &amp; ready-made sets</p></div></a>
+    </div>
+  </div></section>
+
+  <section class="block" style="padding-top:20px"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">Best sellers</div><h2>Featured</h2></div>
+      <a class="btn btn-ghost" href="#/shop">View all</a></div>
+    <div class="grid four">${featured.map(cardHTML).join("")}</div>
+  </div></section>
+
+  <section class="block" style="padding-top:0"><div class="wrap">
+    <div class="bundle">
+      <div><div class="eyebrow" style="color:#F6CFC6">Bundle offer</div>
+        <h2>${BUNDLE.name}</h2>
+        <p>Pair your extensions with body care: any ${BUNDLE.minItems} products and get ${off}% off, applied automatically in your cart.</p></div>
+      <a class="btn btn-primary" href="#/shop">Start your routine</a>
+    </div>
+  </div></section>
+
+  <section class="block"><div class="wrap unbox">
+    <div class="pic">${photoTag("unboxing")}</div>
+    <div>
+      <div class="eyebrow">The Bella unboxing</div>
+      <h2>Every order arrives like a gift</h2>
+      <p style="color:var(--muted)">From the first glance at the box to the last fold of tissue, every Bella order is packed by hand to feel special.</p>
+      <ul>
+        <li>Bella mailer box with tissue wrap and wax seal — included with every order</li>
+        <li>A handwritten-style thank-you card</li>
+        <li>Upgrade to the velvet drawer gift box or a satin hanger bag for your extensions</li>
+      </ul>
+      <a class="btn btn-dark" href="#/shop/gifts">Make it a gift</a>
+      <div class="mini">
+        <a href="#/product/addon-box">${photoTag("velvet")}<span>Velvet gift box · ${money(byId("addon-box").price)}</span></a>
+        <a href="#/product/addon-bag">${photoTag("hanger")}<span>Hanger bag · ${money(byId("addon-bag").price)}</span></a>
+      </div>
+      <p class="footnote">Add-on prices are demo prices.</p>
+    </div>
+  </div></section>
+
+  <section class="block alt" id="why"><div class="wrap why">
+    <div class="founder">
+      <div class="avatar" aria-hidden="true">B</div>
+      <div class="eyebrow" style="margin:0">Founder</div>
+      <h3 style="font-size:1.8rem;margin:.2em 0 0">Dr. Balqis</h3>
+      <blockquote>“Beauty should feel effortless and look natural — with quality you can trust.”</blockquote>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:12px">Placeholder quote — to be replaced with Dr. Balqis's own words.</p>
+    </div>
+    <div>
+      <div class="eyebrow">Why Bella</div>
+      <h2>Chosen by a doctor, packed like a gift</h2>
+      <p style="color:var(--muted)">Bella Beauty &amp; Care was founded by Dr. Balqis to bring carefully selected hair extensions and body care to women in Egypt — with honest advice and a beautiful unboxing.</p>
+      <div class="pillars">
+        <div class="pillar"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg></div><h3>Doctor-made</h3><p>Every product is selected and reviewed by Dr. Balqis.</p></div>
+        <div class="pillar"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/></svg></div><h3>22 shades</h3><p>From Jet Black to 613 Blonde, plus ombre and balayage mixes.</p></div>
+        <div class="pillar"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s6 1 6 1 6 2 6-1-4-3-6 1"/></svg></div><h3>Luxury packaging</h3><p>Magnetic box, satin hanger bag, tissue and a thank-you card.</p></div>
+        <div class="pillar"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg></div><h3>Shade matching</h3><p>Not sure of your shade? Send a photo on WhatsApp and we'll help.</p></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="block"><div class="wrap">
+    <div class="match">
+      <div><div class="eyebrow">Shade matching</div><h2>Find your perfect shade</h2>
+        <p style="color:var(--muted)">The secret to undetectable extensions is the right shade. Our team will match yours for free — personally, in minutes.</p>
+        <a class="btn btn-wa" href="${esc(waGeneral(SHADE_MATCH_TEXT))}" target="_blank" rel="noopener">Send a photo on WhatsApp</a></div>
+      <div><ol>
+        <li>Stand near a window in natural daylight.</li>
+        <li>Photograph the mid-lengths and ends of your hair, no filter.</li>
+        <li>Send it to us on WhatsApp — we reply with your shade code.</li></ol>
+        <div class="swatches" style="grid-template-columns:repeat(6,1fr);margin-top:18px" aria-hidden="true">${["1B","4","8","14","613","T1B/27"].map(c => `<span style="display:block;aspect-ratio:1;border-radius:50%;background:${swatchBg(shadeBy(c))}"></span>`).join("")}</div></div>
+    </div>
+  </div></section>
+
+  <section class="block" style="padding-top:0"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">Questions</div><h2>Good to know</h2></div><a class="btn btn-ghost" href="#/faq">All FAQs</a></div>
+    ${faqHTML(FAQS.slice(0, 4))}
+    <p class="footnote"><a href="#/care">Care guide</a> · <a href="#/returns">Returns &amp; exchanges (draft)</a></p>
+  </div></section>
+
+  <section class="block alt"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">Reviews</div><h2>What customers say</h2></div>
+      <p><span class="tag soft">Sample placeholders</span> Real customer reviews will appear here after launch.</p></div>
+    <div class="reviews">
+      ${[["The clip-ins blended perfectly with my hair. So soft!", "Sample reviewer · Cairo"],
+         ["The rose scrub smells amazing and my skin feels silky.", "Sample reviewer · Alexandria"],
+         ["The gift box was beautiful — felt like real luxury.", "Sample reviewer · Giza"]].map(r =>
+        `<figure class="review"><div class="stars" aria-label="5 out of 5 stars (sample)">★★★★★</div><p>“${r[0]}”</p>
+         <figcaption class="who">${r[1]} — <em>sample placeholder</em></figcaption></figure>`).join("")}
+    </div>
+  </div></section>`;
+}
+
+function viewShop(cat) {
+  const list = cat ? PRODUCTS.filter(p => p.category === cat) : PRODUCTS;
+  const chips = [["", "All"]].concat(Object.entries(CATEGORIES));
+  return `<section class="block" style="padding-top:34px"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">The collection</div><h1 style="font-size:clamp(2.2rem,6vw,3.4rem)">${cat ? CATEGORIES[cat] : "Shop all"}</h1></div>
+      <p>All products, visuals and prices below are samples for preview.</p></div>
+    <div class="filters" role="group" aria-label="Filter by category">
+      ${chips.map(([k, v]) => `<button type="button" class="chip" data-filter="${k}" aria-pressed="${(cat || "") === k}">${esc(v)}</button>`).join("")}
+    </div>
+    <p class="sr-only" aria-live="polite">${list.length} products shown</p>
+    <div class="grid four">${list.map(cardHTML).join("")}</div>
+  </div></section>`;
+}
+
+/* ---- Product page state for configurators ---- */
+let cfg = null; // { pid, style, shade, length, weight, scrub }
+
+function shadeSwatchesHTML(selected) {
+  const fams = ["Black", "Brown", "Blonde", "Red", "Mixes"];
+  return fams.map(f => `<div class="sw-family" aria-hidden="true">${f}</div><div class="swatches">` +
+    SHADES.filter(s => s.family === f).map(s => `<label class="sw">
+      <input type="radio" name="shade" value="${esc(s.code)}" ${s.code === selected ? "checked" : ""}>
+      <span class="t"><i style="background:${swatchBg(s)}" aria-hidden="true"></i><b>${esc(s.code)}</b><small>${esc(s.name)}</small></span></label>`).join("") + `</div>`).join("");
+}
+const LENGTH_FALLS = {14:"Shoulder length",16:"Just below the shoulders",18:"Armpit / upper chest",20:"Mid-chest",22:"Bra-strap / mid-back",24:"Lower back",26:"Waist length"};
+function lengthVisualSVG(sel) {
+  const y = l => 64 + (l - 14) * 9.4; // 14" at shoulder -> 26" at waist
+  return `<svg viewBox="0 0 120 200" width="120" height="200" aria-hidden="true">
+    <circle cx="60" cy="30" r="17" fill="#F3E6E0" stroke="#3B2A33" stroke-width="1.2"/>
+    <path d="M42 50 Q60 44 78 50 L96 66 L88 190 L32 190 L24 66 Z" fill="#F3E6E0" stroke="#3B2A33" stroke-width="1.2"/>
+    <path d="M43 22 Q60 6 77 22 L${76 + 4} ${y(sel)} L${44 - 4} ${y(sel)} Z" fill="#A0564C" opacity=".85"/>
+    ${LENGTHS.map(l => `<line x1="8" x2="112" y1="${y(l)}" y2="${y(l)}" stroke="${l === +sel ? "#3B2A33" : "#CDB6AC"}" stroke-width="${l === +sel ? 1.6 : .7}" stroke-dasharray="${l === +sel ? "0" : "3 3"}"/><text x="2" y="${y(l) - 2}" font-size="7" fill="#6B5761" font-family="DM Sans, Arial">${l}"</text>`).join("")}
+  </svg>`;
+}
+function lengthVisualHTML(sel) {
+  return `<div class="len-visual" id="lenVisual">${lengthVisualSVG(sel)}<p><b>${sel}" · ${Math.round(sel * 2.54)} cm</b><br>${LENGTH_FALLS[sel]}<br><span style="font-size:.8rem">Approximate, on an average height.</span></p></div>`;
+}
+function lengthGuideHTML() {
+  const rows = [[14,"Shoulder length"],[16,"Just below the shoulders"],[18,"Armpit / upper chest"],[20,"Mid-chest"],[22,"Bra-strap / mid-back"],[24,"Lower back"],[26,"Waist length"]];
+  return `<table class="guide-table"><caption class="sr-only">Length guide</caption><thead><tr><th scope="col">Length</th><th scope="col">Where it falls (approx.)</th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td><b>${r[0]}"</b> (${Math.round(r[0] * 2.54)} cm)</td><td>${r[1]}</td></tr>`).join("")}</tbody></table>
+    <p style="margin:8px 0 0;font-size:.85rem">Approximate, for an average height and measured from the top of the weft. Sample guide.</p>`;
+}
+function shadeGuideHTML() {
+  return `<p style="margin:0 0 10px;font-size:.9rem">Match the extension to the <b>mid-lengths and ends</b> of your hair in daylight. Between two shades, choose the darker one. For help, send a daylight photo on WhatsApp.</p>
+    <div class="shade-guide">${SHADES.map(s => `<div><i style="background:${swatchBg(s)}"></i>${esc(s.code)} ${esc(s.name)}</div>`).join("")}</div>
+    <p style="margin:10px 0 0;font-size:.8rem">On-screen colours are approximate (demo swatches).</p>`;
+}
+function weightGuideHTML() {
+  return `<table class="guide-table"><tbody>
+    <tr><td><b>Clip-In 100–120 g</b></td><td>Fine to medium hair, up to 18"</td></tr>
+    <tr><td><b>Clip-In 160 g</b></td><td>Medium to thick hair, or 20"+</td></tr>
+    <tr><td><b>Clip-In 220 g</b></td><td>Thick hair, maximum volume, 22"+</td></tr>
+    <tr><td><b>Tape-In 50 / 100 g</b></td><td>50 g for a top-up, 100 g for a full head</td></tr>
+    <tr><td><b>Halo 100 / 150 g</b></td><td>150 g for longer lengths or thicker hair</td></tr>
+    <tr><td><b>Ponytail 120 / 160 g</b></td><td>160 g for a fuller, dramatic pony</td></tr></tbody></table>
+    <p style="margin:8px 0 0;font-size:.85rem">Sample guidance only.</p>`;
+}
+
+function viewExtension(p) {
+  if (!cfg || cfg.pid !== p.id) {
+    const prev = cfg || {};
+    const st = EXTENSION_STYLES[p.style];
+    cfg = { pid: p.id, style: p.style, shade: prev.shade || p.defaultShade || "1B",
+            length: prev.length || 18, weight: st.weights.includes(+prev.weight) ? +prev.weight : st.weights[Math.min(1, st.weights.length - 1)] };
+  }
+  const st = EXTENSION_STYLES[cfg.style];
+  const styleProducts = PRODUCTS.filter(x => x.type === "extension");
+  return `<div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Home</a> / <a href="#/shop/extensions">Hair Extensions</a> / <span aria-current="page">${esc(st.name)}</span></nav>
+    <div class="pdp">
+      ${galleryHTML(p)}
+      <div>
+        <div class="meta"><span class="tag">Sample</span><span class="tag soft">Hair Extensions</span><span style="color:var(--muted);font-size:.9rem">Demo prices</span></div>
+        <h1 style="font-size:clamp(2rem,5vw,3rem)">${esc(st.name)} Hair Extensions</h1>
+        <div class="price" id="cfgPrice" aria-live="polite"></div>
+        <p style="color:var(--muted);margin-top:10px">${esc(p.short)}</p>
+
+        <form id="cfgForm" onsubmit="return false">
+          <fieldset class="opt-group"><legend>Style</legend><div class="opts">
+            ${styleProducts.map(sp => `<label class="opt"><input type="radio" name="style" value="${sp.id}" ${sp.id === p.id ? "checked" : ""}><span>${esc(EXTENSION_STYLES[sp.style].name)}</span></label>`).join("")}
+          </div></fieldset>
+          <fieldset class="opt-group"><legend>Shade: <span id="shadeName"></span></legend>${shadeSwatchesHTML(cfg.shade)}
+            <p style="font-size:.88rem;color:var(--muted);margin:10px 0 0">Not sure? <a href="${esc(waGeneral(SHADE_MATCH_TEXT))}" target="_blank" rel="noopener">Send us a photo on WhatsApp</a> for free shade matching.</p></fieldset>
+          <fieldset class="opt-group"><legend>Length</legend><div class="opts">
+            ${LENGTHS.map(l => `<label class="opt"><input type="radio" name="length" value="${l}" ${l === +cfg.length ? "checked" : ""}><span>${l}"</span></label>`).join("")}
+          </div><div id="lenVisWrap">${lengthVisualHTML(cfg.length)}</div></fieldset>
+          <fieldset class="opt-group"><legend>Weight <span>· the more grams, the fuller the result</span></legend><div class="opts">
+            ${st.weights.map(w => `<label class="opt stack"><input type="radio" name="weight" value="${w}" ${w === +cfg.weight ? "checked" : ""}><span>${w} g<small>${esc((WEIGHT_NOTES[cfg.style] || {})[w] || "")}</small><small id="wp-${w}"></small></span></label>`).join("")}
+          </div></fieldset>
+        </form>
+
+        <div class="sku-box"><span class="lbl">Your selection · SKU</span><code id="cfgSku"></code><span id="cfgDesc" style="font-size:.9rem;color:var(--muted)"></span></div>
+        <div class="buy-row">
+          <div class="qty" role="group" aria-label="Quantity">
+            <button type="button" id="pdpDec" aria-label="Decrease quantity">−</button>
+            <input id="pdpQty" type="number" inputmode="numeric" min="1" max="20" value="1" aria-label="Quantity">
+            <button type="button" id="pdpInc" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn-primary" type="button" id="cfgAdd">Add to cart</button>
+        </div>
+        <div class="upsell" style="margin-top:0">${BUNDLE.name}: add a body scrub — any ${BUNDLE.minItems} products = ${Math.round(BUNDLE.discount * 100)}% off.</div>
+
+        <details class="acc" open><summary>Shade guide</summary><div class="in">${shadeGuideHTML()}</div></details>
+        <details class="acc"><summary>Length guide</summary><div class="in">${lengthGuideHTML()}</div></details>
+        <details class="acc"><summary>Weight guide</summary><div class="in">${weightGuideHTML()}</div></details>
+        <details class="acc"><summary>Description</summary><div class="in">${esc(p.desc)}</div></details>
+        <details class="acc"><summary>How to wear &amp; care</summary><div class="in"><p>${esc(p.howTo)}</p><p style="margin:0">${esc(p.care)}</p></div></details>
+        <div class="perks"><div>Cash on<br>Delivery</div><div>Ships in a<br>Bella mailer box</div><div>Free shade<br>matching</div></div>
+      </div>
+    </div>
+  </div>${relatedHTML(p)}`;
+}
+
+function viewGiftset(p) {
+  if (!cfg || cfg.pid !== p.id) cfg = { pid: p.id, shade: (cfg && cfg.shade) || "T1B/27", length: (cfg && cfg.length) || 18, scrub: SCRUBS()[0].id };
+  return `<div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Home</a> / <a href="#/shop/gifts">Gift Sets</a> / <span aria-current="page">${esc(p.name)}</span></nav>
+    <div class="pdp">
+      ${galleryHTML(p)}
+      <div>
+        <div class="meta"><span class="tag">Sample</span><span class="tag soft">Gift Set</span><span style="color:var(--muted);font-size:.9rem">Demo prices</span></div>
+        <h1 style="font-size:clamp(2rem,5vw,3rem)">${esc(p.name)}</h1>
+        <div class="price" id="cfgPrice" aria-live="polite"></div>
+        <p style="color:var(--muted);margin-top:10px">${esc(p.short)}</p>
+        <form id="cfgForm" onsubmit="return false">
+          <fieldset class="opt-group"><legend>Clip-In shade: <span id="shadeName"></span></legend>${shadeSwatchesHTML(cfg.shade)}</fieldset>
+          <fieldset class="opt-group"><legend>Clip-In length <span>(${p.giftWeight} g)</span></legend><div class="opts">
+            ${LENGTHS.map(l => `<label class="opt"><input type="radio" name="length" value="${l}" ${l === +cfg.length ? "checked" : ""}><span>${l}"</span></label>`).join("")}</div><div id="lenVisWrap">${lengthVisualHTML(cfg.length)}</div></fieldset>
+          <fieldset class="opt-group"><legend>Body scrub</legend><div class="opts">
+            ${SCRUBS().map(s => `<label class="opt"><input type="radio" name="scrub" value="${s.id}" ${s.id === cfg.scrub ? "checked" : ""}><span>${esc(s.name.replace(" Body Scrub", ""))}</span></label>`).join("")}</div></fieldset>
+        </form>
+        <div class="sku-box"><span class="lbl">Set contents · SKUs</span><code id="cfgSku"></code><span id="cfgDesc" style="font-size:.9rem;color:var(--muted)"></span></div>
+        <div class="buy-row">
+          <div class="qty" role="group" aria-label="Quantity">
+            <button type="button" id="pdpDec" aria-label="Decrease quantity">−</button>
+            <input id="pdpQty" type="number" inputmode="numeric" min="1" max="20" value="1" aria-label="Quantity">
+            <button type="button" id="pdpInc" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn-primary" type="button" id="cfgAdd">Add to cart</button>
+        </div>
+        <details class="acc" open><summary>What's in the box</summary><div class="in">
+          <p>Clip-In Set (${p.giftWeight} g) in your shade and length · one 250 g body scrub · Luxury Magnetic Gift Box · Satin Hanger Bag · tissue paper · thank-you card.</p>
+          <p style="margin:0">Demo pricing: Clip-In price + scrub price; the magnetic box and hanger bag are included free.</p></div></details>
+        <details class="acc"><summary>Shade guide</summary><div class="in">${shadeGuideHTML()}</div></details>
+        <details class="acc"><summary>Length guide</summary><div class="in">${lengthGuideHTML()}</div></details>
+        <details class="acc"><summary>Description</summary><div class="in">${esc(p.desc)}</div></details>
+      </div>
+    </div></div>${relatedHTML(p)}`;
+}
+
+function updateConfigurator() {
+  const p = byId(cfg.pid);
+  const line = resolveLine({ pid: cfg.pid, opts: cfgOpts() });
+  if (!line) return;
+  $("#cfgPrice").textContent = money(line.price);
+  $("#cfgSku").textContent = p.type === "giftset" ? line.sku + "  =  " + line.skus.join(" + ") : line.sku;
+  $("#cfgDesc").textContent = line.detail;
+  const lv = $("#lenVisWrap"); if (lv && lv.dataset.len !== String(cfg.length)) { lv.innerHTML = lengthVisualHTML(cfg.length); lv.dataset.len = String(cfg.length); }
+  $("#shadeName").textContent = line.shade.code + " " + line.shade.name;
+  if (p.type === "extension") EXTENSION_STYLES[cfg.style].weights.forEach(w => { const el = $("#wp-" + w); if (el) el.textContent = money(extPrice(cfg.style, cfg.length, w)); });
+  refreshGallery(p);
+}
+function cfgOpts() {
+  const p = byId(cfg.pid);
+  if (p.type === "giftset") return { shade: cfg.shade, length: +cfg.length, scrub: cfg.scrub };
+  return { shade: cfg.shade, length: +cfg.length, weight: +cfg.weight };
+}
+
+function viewSimple(p) {
+  return `<div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Home</a> / <a href="#/shop/${p.category}">${esc(CATEGORIES[p.category])}</a> / <span aria-current="page">${esc(p.name)}</span></nav>
+    <div class="pdp">
+      ${galleryHTML(p)}
+      <div>
+        <div class="meta"><span class="tag">Sample</span><span class="tag soft">${esc(CATEGORIES[p.category])}</span><span style="color:var(--muted);font-size:.9rem">${esc(p.size)}</span></div>
+        <h1 style="font-size:clamp(2rem,5vw,3rem)">${esc(p.name)}</h1>
+        <div class="price">${money(p.price)} <span class="from">(demo price)</span></div>
+        <p style="color:var(--muted);margin-top:12px">${esc(p.short)}</p>
+        <div class="sku-box"><span class="lbl">SKU</span><code>${esc(p.sku)}</code>${p.contents ? `<span style="font-size:.9rem;color:var(--muted)">Contains ${esc(p.contents.join(" + "))}</span>` : ""}</div>
+        <div class="buy-row">
+          <div class="qty" role="group" aria-label="Quantity">
+            <button type="button" id="pdpDec" aria-label="Decrease quantity">−</button>
+            <input id="pdpQty" type="number" inputmode="numeric" min="1" max="20" value="1" aria-label="Quantity">
+            <button type="button" id="pdpInc" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn-primary" type="button" id="pdpAdd" data-id="${p.id}">Add to cart</button>
+        </div>
+        ${p.type !== "addon" ? `<div class="upsell" style="margin-top:0">${BUNDLE.name}: any ${BUNDLE.minItems} products = ${Math.round(BUNDLE.discount * 100)}% off, automatically.</div>` : ""}
+        <details class="acc" open><summary>Description</summary><div class="in">${esc(p.desc)}</div></details>
+        <details class="acc"><summary>${p.type === "addon" ? "Details" : "Ingredients"}</summary><div class="in">${esc(p.ingredients)}</div></details>
+        <details class="acc"><summary>How to use</summary><div class="in">${esc(p.howTo)}</div></details>
+        <details class="acc"><summary>Packaging</summary><div class="in">${STANDARD_PACKAGING} Upgrade with the Luxury Magnetic Gift Box or Satin Hanger Bag in your cart.</div></details>
+        <div class="perks"><div>Cash on<br>Delivery</div><div>Ships across<br>Egypt</div><div>Gift-ready<br>packaging</div></div>
+      </div>
+    </div>
+  </div>${relatedHTML(p)}`;
+}
+
+function relatedHTML(p) {
+  const pick = p.category === "extensions" ? ["scrub-coffee", "scrub-rose", "addon-bag", "gift-signature"]
+             : p.category === "scrubs" ? ["clip-in", p.id === "scrub-rose" ? "scrub-coffee" : "scrub-rose", "gift-scrub-duo", "addon-box"]
+             : ["clip-in", "scrub-rose", "addon-box", "addon-bag"].filter(id => id !== p.id);
+  return `<section class="block alt"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">Complete your routine</div><h2>You may also like</h2></div></div>
+    <div class="grid four">${pick.map(byId).filter(Boolean).slice(0, 4).map(cardHTML).join("")}</div>
+  </div></section>`;
+}
+
+function viewProduct(id) {
+  const p = byId(id);
+  if (!p) return viewNotFound();
+  if (p.type === "extension") return viewExtension(p);
+  if (p.type === "giftset") return viewGiftset(p);
+  return viewSimple(p);
+}
+
+function govOptions(selected) {
+  return `<option value="">Select governorate</option>` + Object.entries(SHIPPING_ZONES).map(([zk, z]) =>
+    `<optgroup label="${esc(z.label)} — ${money(z.fee)} (placeholder)">` +
+    GOVERNORATES.filter(g => g[1] === zk).map(g => `<option value="${esc(g[0])}" ${g[0] === selected ? "selected" : ""}>${esc(g[0])}</option>`).join("") +
+    `</optgroup>`).join("");
+}
+
+function viewCheckout() {
+  if (!cart.length) return `<div class="wrap"><div class="confirm"><h1 style="font-size:2.6rem">Your cart is empty</h1><p style="color:var(--muted)">Add a few sample products to test the checkout.</p><a class="btn btn-primary" href="#/shop">Go to shop</a></div></div>`;
+  const d = store.get(KEY_CHECKOUT, {}) || {};
+  return `<div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Home</a> / <span aria-current="page">Checkout</span></nav>
+    <h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Checkout</h1>
+    <div class="checkout">
+      <form id="checkoutForm" novalidate>
+        <div class="form-alert" id="formAlert" role="alert" tabindex="-1"></div>
+        <fieldset><legend>Delivery details</legend>
+          <div class="field" data-f="name"><label for="f-name">Full name</label>
+            <input id="f-name" name="name" autocomplete="name" value="${esc(d.name)}" required aria-describedby="e-name">
+            <div class="err" id="e-name">Please enter your full name.</div></div>
+          <div class="field" data-f="phone"><label for="f-phone">Mobile number</label>
+            <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx" value="${esc(d.phone)}" required aria-describedby="h-phone e-phone">
+            <div class="hint" id="h-phone">Egyptian mobile, 11 digits starting with 010, 011, 012 or 015.</div>
+            <div class="err" id="e-phone">Enter a valid Egyptian mobile number (01xxxxxxxxx).</div></div>
+          <div class="field" data-f="governorate"><label for="f-gov">Governorate</label>
+            <select id="f-gov" name="governorate" required aria-describedby="e-gov">${govOptions(d.governorate)}</select>
+            <div class="err" id="e-gov">Please choose your governorate.</div></div>
+          <div class="field" data-f="address"><label for="f-address">Address</label>
+            <textarea id="f-address" name="address" autocomplete="street-address" placeholder="City / area, street, building, floor, apartment" required aria-describedby="e-address">${esc(d.address)}</textarea>
+            <div class="err" id="e-address">Please enter a full address (at least 10 characters).</div></div>
+          <div class="field" data-f="notes"><label for="f-notes">Order notes <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <textarea id="f-notes" name="notes" placeholder="Landmark, best time to call, gift message…">${esc(d.notes)}</textarea></div>
+        </fieldset>
+        <fieldset><legend>Payment</legend>
+          <label class="pay-opt selected"><input type="radio" name="payment" value="cod" checked>
+            <div><b>Cash on Delivery</b><span>Pay in cash when your order arrives.</span></div></label>
+          <label class="pay-opt disabled" aria-disabled="true"><input type="radio" name="payment" value="paymob" disabled>
+            <div><b>Pay online (Paymob) — coming soon</b><span>Card and wallet payments will be added at launch. Not available in this demo.</span></div></label>
+        </fieldset>
+        <button class="btn btn-primary btn-block" type="submit">Place order (Cash on Delivery)</button>
+        <div class="secure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <span><b>Secure checkout.</b> You pay in cash when your order arrives — no card details are ever requested. Your details are used only to deliver your order.</span></div>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:10px;text-align:center">Demo only — the order is saved in this browser. No payment details are collected.</p>
+      </form>
+      <aside class="summary" aria-labelledby="sumTitle"><h2 id="sumTitle">Order summary</h2><div id="summaryBody"></div></aside>
+    </div></div>`;
+}
+
+function renderSummary() {
+  const el = $("#summaryBody"); if (!el) return;
+  const gov = ($("#f-gov") || {}).value || "";
+  const t = totals(gov);
+  el.innerHTML = t.lines.map(l => `<div class="sum-line"><span>${esc(l.name)} × ${l.qty}<small>${esc(l.detail)} · ${esc(l.sku)}</small></span><span>${money(l.price * l.qty)}</span></div>`).join("") +
+    `<div style="margin-top:8px">${shipBarHTML(t)}${upsellHTML(t)}</div>
+    <div class="totals">
+      <div><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
+      ${t.bundleOn ? `<div class="disc"><span>${BUNDLE.name} (−${Math.round(BUNDLE.discount * 100)}%)</span><span>−${money(t.discount)}</span></div>` : ""}
+      <div><span>Shipping${t.zone ? " · " + esc(t.zone.label) : ""}</span><span>${t.freeShip ? "Free" : t.zone ? money(t.shipping) : "Select governorate"}</span></div>
+      <div class="grand"><span>Total</span><span>${money(t.total)}</span></div>
+    </div>
+    <div class="placeholder-note">Shipping fees are placeholders${FREE_SHIPPING_THRESHOLD > 0 ? " (free from " + money(FREE_SHIPPING_THRESHOLD) + ")" : ""}: ${Object.values(SHIPPING_ZONES).map(z => esc(z.label) + " " + money(z.fee)).join(" · ")}. ${STANDARD_PACKAGING}</div>`;
+}
+
+function validate(form) {
+  const v = {
+    name: form.elements.name.value.trim(),
+    phone: toLatinDigits(form.elements.phone.value).replace(/[\s\-()]/g, "").replace(/^\+?20(?=1)/, "0"),
+    governorate: form.elements.governorate.value,
+    address: form.elements.address.value.trim(),
+    notes: form.elements.notes.value.trim()
+  };
+  const errs = {};
+  if (v.name.length < 3) errs.name = true;
+  if (!/^01[0125]\d{8}$/.test(v.phone)) errs.phone = true;
+  if (!zoneFor(v.governorate)) errs.governorate = true;
+  if (v.address.length < 10) errs.address = true;
+  $$(".field[data-f]", form).forEach(f => {
+    const bad = !!errs[f.dataset.f]; f.classList.toggle("invalid", bad);
+    const inp = $("input,select,textarea", f); if (inp) inp.setAttribute("aria-invalid", bad ? "true" : "false");
+  });
+  return { v, errs, ok: !Object.keys(errs).length };
+}
+
+function newOrderId() {
+  const d = new Date(), pad = n => String(n).padStart(2, "0");
+  return "BB-" + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + Math.floor(1000 + Math.random() * 9000);
+}
+
+function placeOrder(v) {
+  const t = totals(v.governorate);
+  const order = {
+    id: newOrderId(), createdAt: new Date().toISOString(), status: "Test",
+    customer: { name: v.name, phone: v.phone, governorate: v.governorate, address: v.address, notes: v.notes },
+    items: t.lines.map(l => ({ pid: l.p.id, name: l.name, detail: l.detail, sku: l.sku, skus: l.skus, price: l.price, qty: l.qty })),
+    subtotal: t.subtotal, discount: t.discount, shipping: t.shipping, shippingZone: t.zone.label, total: t.total,
+    payment: "Cash on Delivery"
+  };
+  const orders = store.get(KEY_ORDERS, []) || [];
+  orders.unshift(order); store.set(KEY_ORDERS, orders);
+  cart = []; saveCart();
+  store.set(KEY_CHECKOUT, { name: v.name, phone: v.phone, governorate: v.governorate, address: v.address });
+  return order;
+}
+
+function waText(o) {
+  const lines = [
+    "Hello Bella Beauty & Care, I'd like to confirm my order.",
+    "",
+    "Order: " + o.id,
+    ...o.items.map(i => "- " + i.name + " (" + i.detail + ")\n  SKU: " + i.sku + (i.skus && (i.skus.length > 1 || i.skus[0] !== i.sku) ? " [" + i.skus.join(" + ") + "]" : "") + "\n  Qty " + i.qty + " x " + money(i.price) + " = " + money(i.price * i.qty)),
+    "",
+    "Subtotal: " + money(o.subtotal),
+    ...(o.discount ? [BUNDLE.name + " discount: -" + money(o.discount)] : []),
+    "Shipping (" + o.customer.governorate + "): " + (o.shipping ? money(o.shipping) : "Free"),
+    "TOTAL: " + money(o.total),
+    "Payment: " + o.payment,
+    "",
+    "Name: " + o.customer.name,
+    "Phone: " + o.customer.phone,
+    "Address: " + o.customer.address + ", " + o.customer.governorate,
+    ...(o.customer.notes ? ["Notes: " + o.customer.notes] : []),
+    "",
+    "(Demo order — test only)"
+  ];
+  return lines.join("\n");
+}
+function waLink(o) {
+  const num = String(WHATSAPP_NUMBER).replace(/\D/g, "");
+  const valid = /^\d{10,15}$/.test(num) && !/X/i.test(WHATSAPP_NUMBER);
+  return "https://wa.me/" + (valid ? num : "") + "?text=" + encodeURIComponent(waText(o));
+}
+
+function findOrder(id) { return (store.get(KEY_ORDERS, []) || []).find(o => o.id === id); }
+
+function viewOrder(id) {
+  const o = findOrder(id);
+  if (!o) return `<div class="wrap"><div class="confirm"><h1 style="font-size:2.4rem">Order not found</h1><p style="color:var(--muted)">This order isn't saved in this browser.</p><a class="btn btn-primary" href="#/shop">Back to shop</a></div></div>`;
+  const numberSet = !/X/i.test(WHATSAPP_NUMBER);
+  return `<div class="wrap"><div class="confirm">
+    <div class="check" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7"/></svg></div>
+    <div class="eyebrow">Test order placed</div>
+    <h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Thank you, ${esc(o.customer.name.split(" ")[0])}!</h1>
+    <p style="color:var(--muted)">Your order number is</p>
+    <div class="order-no">${esc(o.id)}</div>
+    <p>Please confirm your order on WhatsApp so our team can arrange delivery. You'll pay <b>${money(o.total)}</b> in cash on delivery.</p>
+    <div class="box">
+      ${o.items.map(i => `<div class="sum-line"><span>${esc(i.name)} × ${i.qty}<small>${esc(i.detail)} · ${esc(i.sku)}</small></span><span>${money(i.price * i.qty)}</span></div>`).join("")}
+      <div class="totals" style="margin-top:8px">
+        <div><span>Subtotal</span><span>${money(o.subtotal)}</span></div>
+        ${o.discount ? `<div class="disc"><span>${BUNDLE.name}</span><span>−${money(o.discount)}</span></div>` : ""}
+        <div><span>Shipping · ${esc(o.customer.governorate)}</span><span>${o.shipping ? money(o.shipping) : "Free"}</span></div>
+        <div class="grand"><span>Total (Cash on Delivery)</span><span>${money(o.total)}</span></div>
+      </div>
+      <p style="margin:14px 0 0;font-size:.9rem;color:var(--muted)">Deliver to: ${esc(o.customer.address)}, ${esc(o.customer.governorate)} · ${esc(o.customer.phone)}</p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-wa" href="${esc(waLink(o))}" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1.2z"/></svg>
+        Confirm on WhatsApp</a>
+      <a class="btn btn-ghost" href="#/shop">Continue shopping</a>
+    </div>
+    ${numberSet ? "" : `<p class="placeholder-note" style="margin-top:14px">Demo note: the store WhatsApp number isn't set yet, so WhatsApp will ask you to pick a chat. The message is prefilled with SKUs and the total.</p>`}
+  </div></div>`;
+}
+
+function viewAdmin() {
+  const orders = store.get(KEY_ORDERS, []) || [];
+  const revenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const units = orders.reduce((s, o) => s + o.items.reduce((a, i) => a + i.qty, 0), 0);
+  return `<section class="block" style="padding-top:34px"><div class="wrap">
+    <div class="section-head"><div><div class="eyebrow">Admin · demo</div><h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Test orders</h1></div>
+      <p>Orders placed in <b>this browser only</b>${store.persistent() ? "" : " (storage unavailable — kept in memory until the page is closed)"}. Not visible to anyone else.</p></div>
+    <div class="stat-row">
+      <div class="stat"><b>${orders.length}</b><span>Orders</span></div>
+      <div class="stat"><b>${units}</b><span>Units</span></div>
+      <div class="stat"><b style="font-size:1.4rem">${money(revenue)}</b><span>Total (demo)</span></div>
+    </div>
+    <div class="admin-tools">
+      <button class="btn btn-ghost" type="button" id="exportOrders" ${orders.length ? "" : "disabled"}>Copy orders as JSON</button>
+      <button class="btn btn-ghost" type="button" id="clearOrders" ${orders.length ? "" : "disabled"}>Clear test orders</button>
+    </div>
+    ${orders.length ? `<div class="table-wrap"><table class="admin-table">
+      <caption class="sr-only">Test orders placed in this browser</caption>
+      <thead><tr><th scope="col">Order</th><th scope="col">Date</th><th scope="col">Customer</th><th scope="col">Items &amp; SKUs</th><th scope="col">Total</th><th scope="col">Actions</th></tr></thead>
+      <tbody>${orders.map(o => `<tr>
+        <td><b>${esc(o.id)}</b><br><span style="color:var(--muted);font-size:.82rem">${esc(o.payment)}</span></td>
+        <td>${esc(new Date(o.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}</td>
+        <td>${esc(o.customer.name)}<br>${esc(o.customer.phone)}<br><span style="color:var(--muted);font-size:.85rem">${esc(o.customer.governorate)} — ${esc(o.customer.address)}</span>${o.customer.notes ? `<br><em style="font-size:.85rem">${esc(o.customer.notes)}</em>` : ""}</td>
+        <td>${o.items.map(i => esc(i.name) + " × " + i.qty + "<br><code>" + esc(i.sku) + "</code>").join("<br>")}</td>
+        <td><b>${money(o.total)}</b><br><span style="color:var(--muted);font-size:.82rem">Ship ${money(o.shipping)}${o.discount ? " · −" + money(o.discount) : ""}</span></td>
+        <td><a href="#/order/${encodeURIComponent(o.id)}">View</a> · <a href="${esc(waLink(o))}" target="_blank" rel="noopener">WhatsApp</a></td>
+      </tr>`).join("")}</tbody></table></div>`
+      : `<div class="empty">No test orders yet. <a href="#/shop">Place one from the shop</a>.</div>`}
+  </div></section>`;
+}
+
+/* ---- Content pages (DRAFT text — to be reviewed by Bella before launch) ---- */
+const FAQS = [
+  ["Is the hair 100% human hair?", "Draft answer: Bella extensions are 100% human hair, so they can be washed, heat-styled and blended with your own hair. (Claim to be confirmed by Bella with supplier documentation before launch.)"],
+  ["How do I choose my shade?", "Match the extension to the mid-lengths and ends of your hair in daylight. If you are between two shades, choose the darker one — or send us a daylight photo on WhatsApp and we'll match it for you, free."],
+  ["Which weight do I need?", "As a guide: 100–120 g for fine to medium hair, 160 g for medium to thick hair or lengths of 20\" and above, 220 g for thick hair or maximum volume."],
+  ["Clip-In, Tape-In, Halo or Ponytail?", "Clip-In and Halo are wear-and-remove, ready in minutes. Tape-In is semi-permanent and best applied by a stylist. Ponytail gives instant length for up-styles."],
+  ["How long does delivery take?", "Draft: Cairo & Giza in 1–3 working days, other governorates in 2–5 working days. Final times will be confirmed with the courier."],
+  ["How do I pay?", "Cash on Delivery. Online payment (cards and wallets) is coming soon. We never ask for card details."],
+  ["Can I return or exchange?", "Please see our Returns & Exchanges policy (draft)."]
+];
+function faqHTML(list) {
+  return `<div class="faq">${list.map(f => `<details class="acc"><summary>${esc(f[0])}</summary><div class="in">${esc(f[1])}</div></details>`).join("")}</div>`;
+}
+
+function viewFaq() {
+  return `<div class="wrap policy"><div class="eyebrow">Help</div><h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Frequently asked questions</h1>
+    <span class="draft">Draft text</span>${faqHTML(FAQS)}
+    <p style="margin-top:24px">Still have a question? <a href="${esc(waGeneral("Hello Bella, I have a question about your products."))}" target="_blank" rel="noopener">Message us on WhatsApp</a>.</p></div>`;
+}
+
+function viewCare() {
+  return `<div class="wrap policy"><div class="eyebrow">Care guide</div><h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Caring for your extensions</h1>
+    <span class="draft">Draft text</span>
+    <p>With the right care, quality human-hair extensions keep their softness and shine for many months. A few habits make all the difference.</p>
+    <h2>Washing</h2><ul><li>Wash every 15–20 wears, or when product build-up appears.</li><li>Use a sulphate-free shampoo and a light conditioner on the mid-lengths and ends only.</li><li>Rinse in lukewarm water, never rub — gently squeeze out the water.</li></ul>
+    <h2>Drying &amp; styling</h2><ul><li>Lay wefts flat on a towel to air dry, or blow-dry on low heat.</li><li>Always use a heat protectant; keep tools under 180&nbsp;°C.</li><li>Brush from the ends upwards with a loop or soft-bristle brush.</li></ul>
+    <h2>Storing</h2><ul><li>Detangle before storing, then hang wefts in your Bella satin hanger bag.</li><li>Keep away from humidity and direct sun.</li></ul>
+    <h2>Body scrubs</h2><ul><li>Use 2–3 times a week on damp skin; avoid freshly shaved or irritated skin.</li><li>Keep the jar closed and away from water between uses. Use a dry spoon.</li></ul>
+    <p class="footnote">Draft guidance for the demo. Final care instructions to be written by Dr. Balqis.</p></div>`;
+}
+
+function viewReturns() {
+  return `<div class="wrap policy"><div class="eyebrow">Policy</div><h1 style="font-size:clamp(2.2rem,6vw,3.2rem)">Returns &amp; exchanges</h1>
+    <span class="draft">Draft — placeholder, not a final policy</span>
+    <p>This is placeholder text to show where the policy will live. The final policy will be written and approved by Bella Beauty &amp; Care before launch and must follow Egyptian consumer-protection law.</p>
+    <h2>Hair extensions</h2><p>Placeholder: for hygiene reasons, extensions can be exchanged only if unopened, unused and in their original packaging, within [X] days of delivery. Shade exchanges are possible once per order.</p>
+    <h2>Body scrubs</h2><p>Placeholder: scrubs can be returned unopened within [X] days. Opened products cannot be returned unless faulty.</p>
+    <h2>Damaged or wrong items</h2><p>Placeholder: please contact us on WhatsApp within [X] hours of delivery with photos, and we will replace the item at no cost.</p>
+    <h2>How to request</h2><p>Send your order number on WhatsApp. Refunds for Cash on Delivery orders will be made by [method to be decided].</p></div>`;
+}
+
+function viewNotFound() {
+  return `<div class="wrap"><div class="confirm"><h1 style="font-size:2.6rem">Page not found</h1><a class="btn btn-primary" href="#/">Go home</a></div></div>`;
+}
+
+/* =====================================================================
+   Router
+   ===================================================================== */
+function currentRoute() {
+  const h = (location.hash || "#/").replace(/^#\/?/, "");
+  const parts = h.split("/").filter(Boolean).map(s => { try { return decodeURIComponent(s); } catch (e) { return s; } });
+  if (!parts.length) return { name: "home" };
+  if (parts[0] === "shop") return { name: "shop", cat: CATEGORIES[parts[1]] ? parts[1] : "" };
+  if (parts[0] === "product") return { name: "product", id: parts[1] };
+  if (parts[0] === "checkout") return { name: "checkout" };
+  if (parts[0] === "order") return { name: "order", id: parts[1] };
+  if (parts[0] === "admin") return { name: "admin" };
+  if (parts[0] === "faq" || parts[0] === "care" || parts[0] === "returns") return { name: parts[0] };
+  return { name: "home", anchor: parts[0] };
+}
+
+const TITLES = { home: "Doctor-made care", shop: "Shop", product: "Product", checkout: "Checkout", order: "Order confirmed", admin: "Test orders", faq: "FAQ", care: "Care guide", returns: "Returns & exchanges" };
+
+function render() {
+  const r = currentRoute(), app = $("#app");
+  let html;
+  switch (r.name) {
+    case "shop": html = viewShop(r.cat); break;
+    case "product": html = viewProduct(r.id); break;
+    case "checkout": html = viewCheckout(); break;
+    case "order": html = viewOrder(r.id); break;
+    case "admin": html = viewAdmin(); break;
+    case "faq": html = viewFaq(); break;
+    case "care": html = viewCare(); break;
+    case "returns": html = viewReturns(); break;
+    default: html = viewHome();
+  }
+  app.innerHTML = html;
+  const p = r.name === "product" ? byId(r.id) : null;
+  document.title = (p ? productName(p) : TITLES[r.name]) + " — Bella Beauty & Care (Demo)";
+  $$("nav.main a[data-nav]").forEach(a => a.removeAttribute("aria-current"));
+  const navKey = r.name === "home" ? "home" : (r.name === "shop" || r.name === "product") ? "shop" : "";
+  if (navKey) { const a = $(`nav.main a[data-nav="${navKey}"]`); if (a) a.setAttribute("aria-current", "page"); }
+  if (p && (p.type === "extension" || p.type === "giftset")) updateConfigurator();
+  if (r.name === "checkout") { renderSummary(); bindCheckout(); }
+  updateHero();
+  if (r.name === "home") setupReveals();
+  if (r.anchor) { const el = document.getElementById(r.anchor); if (el) { el.scrollIntoView(); return; } }
+  if (!render.keepScroll) window.scrollTo(0, 0);
+  render.keepScroll = false;
+  app.focus({ preventScroll: true });
+}
+
+function bindCheckout() {
+  const form = $("#checkoutForm"); if (!form) return;
+  form.elements.governorate.addEventListener("change", renderSummary);
+  form.addEventListener("input", e => {
+    const f = e.target.closest(".field"); if (f && f.classList.contains("invalid")) validate(form);
+    store.set(KEY_CHECKOUT, { name: form.elements.name.value, phone: form.elements.phone.value, governorate: form.elements.governorate.value, address: form.elements.address.value, notes: form.elements.notes.value });
+  });
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const res = validate(form), alert = $("#formAlert");
+    if (!res.ok) {
+      alert.textContent = "Please fix the highlighted fields."; alert.classList.add("show");
+      const first = $(".field.invalid input, .field.invalid select, .field.invalid textarea", form); if (first) first.focus();
+      return;
+    }
+    alert.classList.remove("show");
+    if (!cart.length) { location.hash = "#/shop"; return; }
+    const order = placeOrder(res.v);
+    location.hash = "#/order/" + encodeURIComponent(order.id);
+  });
+}
+
+/* =====================================================================
+   Global events
+   ===================================================================== */
+document.addEventListener("click", e => {
+  const add = e.target.closest("[data-add]");
+  if (add) { addToCart(add.dataset.add, {}, 1); return; }
+
+  const filt = e.target.closest("[data-filter]");
+  if (filt) { location.hash = filt.dataset.filter ? "#/shop/" + filt.dataset.filter : "#/shop"; return; }
+
+  const view = e.target.closest("[data-view]");
+  if (view) {
+    const p = byId(currentRoute().id); if (!p) return;
+    galIdx = +view.dataset.view; refreshGallery(p);
+    return;
+  }
+  if (e.target.closest("#pdpDec")) { const q = $("#pdpQty"); q.value = clampQty(+q.value - 1); return; }
+  if (e.target.closest("#pdpInc")) { const q = $("#pdpQty"); q.value = clampQty(+q.value + 1); return; }
+  const pdpAdd = e.target.closest("#pdpAdd");
+  if (pdpAdd) { addToCart(pdpAdd.dataset.id, {}, clampQty($("#pdpQty").value)); openDrawer(); return; }
+  if (e.target.closest("#cfgAdd")) { addToCart(cfg.pid, cfgOpts(), clampQty($("#pdpQty").value)); openDrawer(); return; }
+
+  const act = e.target.closest("[data-act]");
+  if (act && act.tagName === "BUTTON") {
+    const key = act.dataset.key, line = cart.find(l => l.key === key);
+    if (act.dataset.act === "inc" && line) setQty(key, line.qty + 1);
+    if (act.dataset.act === "dec" && line) { if (line.qty <= 1) removeLine(key); else setQty(key, line.qty - 1); }
+    if (act.dataset.act === "remove") { removeLine(key); toast("Removed from cart"); }
+    if ($("#drawer").classList.contains("open")) {
+      const same = $$(`#drawer [data-act="${act.dataset.act}"]`).find(b => b.dataset.key === key);
+      (same || $("#closeDrawer")).focus();
+    }
+    return;
+  }
+  if (e.target.closest("[data-close]")) { closeDrawer(); return; }
+
+  if (e.target.closest("#exportOrders")) {
+    const txt = JSON.stringify(store.get(KEY_ORDERS, []), null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast("Orders copied as JSON"), () => toast("Copy failed"));
+    else toast("Clipboard not available");
+    return;
+  }
+  if (e.target.closest("#clearOrders")) {
+    if (confirm("Delete all test orders saved in this browser?")) { store.set(KEY_ORDERS, []); render(); toast("Test orders cleared"); }
+  }
+});
+
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.matches('#drawer input[data-act="qty"]')) { setQty(t.dataset.key, t.value); return; }
+  if (t.matches("#pdpQty")) { t.value = clampQty(t.value); return; }
+  if (t.closest("#cfgForm") && cfg) {
+    if (t.name === "style") {
+      // switch to another style's page, keeping shade + length
+      const np = byId(t.value);
+      cfg = { pid: np.id, style: np.style, shade: cfg.shade, length: cfg.length, weight: cfg.weight };
+      const st = EXTENSION_STYLES[np.style];
+      if (!st.weights.includes(+cfg.weight)) cfg.weight = st.weights[Math.min(1, st.weights.length - 1)];
+      render.keepScroll = true;
+      if (history.replaceState) { history.replaceState(null, "", "#/product/" + np.id); render(); }
+      else location.hash = "#/product/" + np.id;
+      const el = $(`#cfgForm input[name="style"][value="${np.id}"]`); if (el) el.focus();
+      return;
+    }
+    if (t.name === "shade") cfg.shade = t.value;
+    if (t.name === "length") cfg.length = +t.value;
+    if (t.name === "weight") cfg.weight = +t.value;
+    if (t.name === "scrub") cfg.scrub = t.value;
+    updateConfigurator();
+  }
+});
+
+$("#cartBtn").addEventListener("click", openDrawer);
+$("#closeDrawer").addEventListener("click", closeDrawer);
+$("#scrim").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => {
+  const d = $("#drawer");
+  if (!d.classList.contains("open")) return;
+  if (e.key === "Escape") { closeDrawer(); return; }
+  if (e.key === "Tab") {
+    const f = $$('a[href],button:not([disabled]),input,select,textarea', d).filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+  }
+});
+window.addEventListener("hashchange", () => { closeDrawer(); render(); });
+
+$("#announce").textContent = (FREE_SHIPPING_THRESHOLD > 0 ? "Free shipping on orders over " + money(FREE_SHIPPING_THRESHOLD) + " · " : "") + "Cash on Delivery across Egypt · Free shade matching";
+renderCartCount();
+renderDrawer();
+render();
+</script>
+</body>
+</html>
